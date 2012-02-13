@@ -1,0 +1,17 @@
+#include "$forces_dir/ffoplsaa_mod.itp"
+#include "$base_dir/protein.itp"
+; Include Position restraint file
+#ifdef POSRES
+#include "$base_dir/posre.itp"
+#endif
+$lig_itp
+#include "$own_dir/popc.itp"
+#include "spc.itp"
+#include "ions.itp"
+[ system ]
+; Name
+Membrane protein
+[ molecules ]
+; Compound  #mols
+$protein_name 1
+$lig_name
