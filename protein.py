@@ -1,7 +1,8 @@
 class ProteinComplex:
-    def __init__(self):
+    def __init__(self, pdb = ""):
         self.cres = 0 #Central residue
         self.n_wats = 0 #Number of experimental waters
+        self.pdb = pdb
 
     def _setCharge(self):
         '''Calculate the total charge of the compound'''
@@ -9,7 +10,7 @@ class ProteinComplex:
         positives = ["HIP", "LYS", "ARG"]
         negatives = ["ASP", "GLU"]
 
-        for line in open(self.pdb_file, "r"):
+        for line in open(self.pdb, "r"):
             if (len(line.split()) > 3 and line.split()[0] == "ATOM"):
                 if line.split()[2] == "CA":
                     if line.split()[3] in positives:
@@ -21,8 +22,9 @@ class ProteinComplex:
     def _setHist(self):
         '''Touch the Histidine in the source protein, generating a new PDB'''
         tgt = open(self.pdb.replace(".pdb", "-his.pdb"), "w")
+        self.pdb_his = tgt.name
 
-        for line in open(self.pdb_file, "r"):
+        for line in open(self.pdb, "r"):
             if len(line.split()) > 3:
                 if line.split()[3] == "HIE":
                     tgt.write(line.replace('HIE ','HISB'))
@@ -39,10 +41,10 @@ class ProteinComplex:
         return True
 
 class Monomer(ProteinComplex):
-    def __init__(self):
-        super(Monomer, self).__init__()
-        self.pdb = "" #The ABSOLUTE path to the pdb file
-        self.itp = ""
+    def __init__(self, *args, **kwargs):
+        ProteinComplex.__init__(self, *args, **kwargs)
+        self._setCharge()
+        self._setHist()
 
 class Dimer(ProteinComplex):
     def __init__(self):
@@ -51,5 +53,3 @@ class Dimer(ProteinComplex):
 class Ligand(ProteinComplex):
     def __init__(self):
         super(Ligand, self).__init__()
-        self.pdb = "" #The ABSOLUTE path to the pdb file
-        self.itp = ""
