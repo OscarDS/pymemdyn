@@ -1,8 +1,32 @@
-class ProteinComplex:
-    def __init__(self, pdb = ""):
+class ProteinComplex(object):
+    def __init__(self, *args, **kwargs):
         self.cres = 0 #Central residue
         self.n_wats = 0 #Number of experimental waters
-        self.pdb = pdb
+
+        if "monomer" in kwargs.keys():
+            self.setMonomer(kwargs["monomer"])
+        if "ligand" in kwargs.keys():
+            self.setLigand(kwargs["ligand"])
+
+    def setMonomer(self, value):
+        '''Sets the monomer object'''
+        self.monomer = value
+    def getMonomer(self):
+        return self.monomer
+    property(getMonomer, setMonomer)
+
+    def setLigand(self, value):
+        '''Sets the ligand object'''
+        self.ligand = value
+    def getLigand(self):
+        return self.ligand
+    property(getLigand, setLigand)
+
+class Monomer(object):
+    def __init__(self, *args, **kwargs):
+        self.pdb = kwargs["pdb"]
+        self._setCharge()
+        self._setHist()
 
     def _setCharge(self):
         '''Calculate the total charge of the compound'''
@@ -40,16 +64,11 @@ class ProteinComplex:
 
         return True
 
-class Monomer(ProteinComplex):
+class Dimer(Monomer):
+    def __init__(self):
+        super(Dimer, self).__init__(self, *args, **kwargs)
+
+class Ligand(object):
     def __init__(self, *args, **kwargs):
-        ProteinComplex.__init__(self, *args, **kwargs)
-        self._setCharge()
-        self._setHist()
-
-class Dimer(ProteinComplex):
-    def __init__(self):
-        super(Dimer, self).__init__()
-
-class Ligand(ProteinComplex):
-    def __init__(self):
-        super(Ligand, self).__init__()
+        self.pdb = kwargs["pdb"]
+        self.itp = kwargs["itp"]

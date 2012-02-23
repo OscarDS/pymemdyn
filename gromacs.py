@@ -1,13 +1,78 @@
+import utils
 import os
 
-class Gromacs:
-    def __init__(self):
-        self.work_dir = os.getcwd()
-        self.own_dir = os.path.abspath(__file__)
+class Gromacs(object):
+    def __init__(self, *args, **kwargs):
+        self.work_dir = os.getcwd() # This is where the library is called
+        #And this is our directory to refer the "fixed" files
+        self.own_dir = os.path.dirname(os.path.abspath(__file__))
         #Repo dir is under gromacs.py file directory
-        self.repo_dir = self._setDir("templates")
+        self.repo_dir = os.path.join(self.own_dir, "templates")
         #The gromacs to be used
         self.gromacs_dir = "/opt/gromacs405/bin/"
+
+        self.membrane_complex = None
+        if "membrane_complex" in kwargs.keys():
+            self.set_membrane_complex(kwargs["membrane_complex"])
+
+    def set_membrane_complex(self, value):
+        '''Sets the monomer object'''
+        self.membrane_complex = value
+    def get_membrane_complex(self):
+        return self.membrane_complex
+    property(get_membrane_complex, set_membrane_complex)
+
+    def make_hexagon(self):
+        
+        if hasattr(self.membrane_complex.complex, "ligand"):
+            #We got a ligand included
+            from recipes import MonomerRecipe as recipe
+        else:
+            from recipes import MonomerLigandRecipe as recipe
+            #We got no ligand
+
+        r = recipe()
+        return r.recipe
+
+    def _set_popc(self, tgt = ""):
+        '''Create a pdb file only with the lipid bilayer (POP), no waters.
+        Set some measures on the fly (height of the bilayer)'''
+        tgt = open(tgt, "w")
+        pops = []
+
+        for line in open(self.membrane_complex.membrane.pdb, "r"):
+            if len(line.split()) > 7:
+                if line.split()[3] == "POP":
+                    tgt.write(line)
+                    pops.append(float(line.split()[7]))
+
+        tgt.close()
+        self.membrane_complex.membrane.bilayer_z = max(pops) - min(pops)
+
+        return True
+
+    def set_protein_size(self, src):
+        '''Get the protein max base wide from a pdb file'''
+        for line in open(src, "r"):
+            if line.startswith("CRYST1"):
+                if dir == "xy":
+                    self.membrane_complex.complex.prot_xy = \
+                        max(float(line.split()[1]), #xyprotein
+                            float(line.split()[2]))
+                elif dir == "z":
+                    self.membrane_complex.complex.prot_z = \
+                        float(line.split()[3]) # hprotein
+                break
+
+        return True
+
+    def test_wrapper(self):
+        w = Wrapper()
+        return w.own_dir
+
+class Wrapper(Gromacs):
+    def __init__(self, *args, **kwargs):
+        super(Wrapper, self).__init__(*args, **kwargs)
 
     def _common_io(self, src, tgt):
         '''Autoexpand many Gromacs commands that uses -f for the input
@@ -199,5 +264,5 @@ class Gromacs:
         return gro_out, gro_errs
 
     def _setDir(self, filename):
-        '''Expand a filename with the base dir, just to save code space'''
-        return os.path.join(self.own_dir, filename)
+        '''Expand a filename with the work dir, just to save code space'''
+        return os.path.join(self.work_dir, filename)
