@@ -9,14 +9,14 @@ import sys
 #First we define all parts to be used
 monomer = protein.Monomer(pdb = "Y1_min.pdb")
 ligand = protein.Ligand(pdb = "lig.pdb", itp = "lig.itp")
-membrane = membrane.Membrane()
+membr = membrane.Membrane()
 g = gromacs.Gromacs()
 
 #Now we create a complex membrane + protein(s) + ligand
 prot_complex = protein.ProteinComplex(monomer = monomer, ligand = ligand)
 full_complex = complex.MembraneComplex()
 full_complex.complex = prot_complex
-full_complex.membrane = membrane
+full_complex.membrane = membr
 
 #Now we call gromacs to make all the operations
 g = gromacs.Gromacs(membrane_complex = full_complex)
