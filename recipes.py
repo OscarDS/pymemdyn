@@ -106,13 +106,15 @@ class MonomerRecipe(object):
                        "pbc": "mol"}}
         ]
           
-        self.breaks = [(0, "src", "membrane_complex.complex.monomer.pdb"),
-                       (2, "dist", "membrane_complex.box_height"),
-                       (4, "dist", "membrane_complex.box_width"),
+        self.breaks = {0: ("src", "membrane_complex.complex.monomer.pdb"),
+                       2: ("dist", "membrane_complex.box_height"),
+                       4: ("dist", "membrane_complex.box_width"),
+#                       8: ("box", "membrane_complex.box_size")}
+                      }
                        
 
 # This recipe modifies the previous one taking a ligand into account
-class MonomerLigandRecipe(object):
+class MonomerLigandRecipe(MonomerRecipe):
     def __init__(self):
         super(MonomerLigandRecipe, self).__init__()
         self.recipe[18] = \
@@ -141,4 +143,9 @@ class MonomerLigandRecipe(object):
              "options": {"src": "proteinopls.pdb",
                          "tgt": "ligand.pdb"}})
 
-        self.breaks = []#
+        self.breaks = {0: ("src", "membrane_complex.complex.monomer.pdb"),
+                       3: ("dist", "membrane_complex.box_height"),
+                       5: ("dist", "membrane_complex.box_width"),
+                       #9: ("box", "dontknowwhat")
+                      }
+

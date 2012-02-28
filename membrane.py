@@ -8,7 +8,7 @@ class Membrane(object):
 
         if "pdb" not in kwargs.keys():
             self.pdb = os.path.join(
-                gromacs.Gromacs().repo_dir, "x4bilayer.pdb")
+                gromacs.Wrapper().repo_dir, "x4bilayer.pdb")
         else:
             self.pdb = kwargs["pdb"]
 

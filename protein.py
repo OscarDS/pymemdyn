@@ -25,23 +25,7 @@ class ProteinComplex(object):
 class Monomer(object):
     def __init__(self, *args, **kwargs):
         self.pdb = kwargs["pdb"]
-        self._setCharge()
         self._setHist()
-
-    def _setCharge(self):
-        '''Calculate the total charge of the compound'''
-        self.charge = 0
-        positives = ["HIP", "LYS", "ARG"]
-        negatives = ["ASP", "GLU"]
-
-        for line in open(self.pdb, "r"):
-            if (len(line.split()) > 3 and line.split()[0] == "ATOM"):
-                if line.split()[2] == "CA":
-                    if line.split()[3] in positives:
-                        self.charge += 1
-                    elif line.split()[3] in negatives:
-                        self.charge -= 1
-        return True
 
     def _setHist(self):
         '''Touch the Histidine in the source protein, generating a new PDB'''

@@ -1,16 +1,11 @@
+import recipes
+
 import utils
 import os
+import sys
 
 class Gromacs(object):
     def __init__(self, *args, **kwargs):
-        self.work_dir = os.getcwd() # This is where the library is called
-        #And this is our directory to refer the "fixed" files
-        self.own_dir = os.path.dirname(os.path.abspath(__file__))
-        #Repo dir is under gromacs.py file directory
-        self.repo_dir = os.path.join(self.own_dir, "templates")
-        #The gromacs to be used
-        self.gromacs_dir = "/opt/gromacs405/bin/"
-
         self.membrane_complex = None
         if "membrane_complex" in kwargs.keys():
             self.set_membrane_complex(kwargs["membrane_complex"])
@@ -22,19 +17,70 @@ class Gromacs(object):
         return self.membrane_complex
     property(get_membrane_complex, set_membrane_complex)
 
-    def make_hexagon(self):
+    def run_recipe(self):
+        '''Run the recipe for the complex'''
+        if not hasattr(self, "recipe"):
+            self.select_recipe()
+
+        wrapper = Wrapper()
+
+        for n, command in enumerate(self.recipe.recipe):
+            if n in self.recipe.breaks.keys():
+                # This is a hack to get the attribute recursively,
+                # feeding getattr with dot-splitted string thanks to reduce
+                # Here we charge some commands with options calculated
+                option = reduce(getattr,
+                         self.recipe.breaks[n][1].split("."),
+                         self)
+                command["options"][self.recipe.breaks[n][0]] = option
+
+            # NOW RUN IT !
+            try:
+                # Either run a Gromacs pure command...
+                print " ".join(wrapper.generate_command(command))
+            except KeyError:
+                # ...or run a local function
+                getattr(self, command["command"])(**command["options"])
+                sys.exit()
+
+    def select_recipe(self):
+        '''Select the appropiate recipe for the complex'''
+        if self.membrane_complex:
+            if hasattr(self.membrane_complex.complex, "ligand"):
+                self.recipe = recipes.MonomerLigandRecipe()
+            else:
+                self.recipe = recipes.MonomerRecipe()
+
+        return True
         
-        if hasattr(self.membrane_complex.complex, "ligand"):
-            #We got a ligand included
-            from recipes import MonomerRecipe as recipe
-        else:
-            from recipes import MonomerLigandRecipe as recipe
-            #We got no ligand
+    def set_itp(self, **kwargs):
+        '''Cut a top file to be usable later as itp'''
+        src = open(kwargs["src"], "r")
+        tgt = open(kwargs["tgt"], "w")
 
-        r = recipe()
-        return r.recipe
+        get_name = False
 
-    def _set_popc(self, tgt = ""):
+        for line in src:
+            if line.startswith("#include"):
+                pass
+            elif line.startswith("; Include Position restraint file"):
+                break
+            else:
+                tgt.write(line)
+
+            if get_name and not line.startswith(";"):
+                self.membrane_complex.complex.monomer.name = line.split()[0]
+                get_name = False
+
+            if line.startswith("[ moleculetype ]"):
+                get_name = True
+
+        tgt.close()
+        src.close()
+
+        return True
+
+    def set_popc(self, tgt = ""):
         '''Create a pdb file only with the lipid bilayer (POP), no waters.
         Set some measures on the fly (height of the bilayer)'''
         tgt = open(tgt, "w")
@@ -51,7 +97,7 @@ class Gromacs(object):
 
         return True
 
-    def set_protein_size(self, src):
+    def set_protein_size(self, src, dir):
         '''Get the protein max base wide from a pdb file'''
         for line in open(src, "r"):
             if line.startswith("CRYST1"):
@@ -66,13 +112,15 @@ class Gromacs(object):
 
         return True
 
-    def test_wrapper(self):
-        w = Wrapper()
-        return w.own_dir
-
-class Wrapper(Gromacs):
+class Wrapper(object):
     def __init__(self, *args, **kwargs):
-        super(Wrapper, self).__init__(*args, **kwargs)
+        self.work_dir = os.getcwd()
+        #The gromacs to be used
+        self.gromacs_dir = "/opt/gromacs405/bin/"
+        #And this is our directory to refer the "fixed" files
+        self.own_dir = os.path.dirname(os.path.abspath(__file__))
+        #Repo dir is under gromacs.py file directory
+        self.repo_dir = os.path.join(self.own_dir, "templates")
 
     def _common_io(self, src, tgt):
         '''Autoexpand many Gromacs commands that uses -f for the input
@@ -96,7 +144,7 @@ class Wrapper(Gromacs):
 
         command = [os.path.join(self.gromacs_dir, mode)]
 
-        # STD -f input -o output
+        # Standard -f input -o output
         if mode in ["pdb2gmx", "editconf", "grompp", "trjconv",
                     "make_ndx", "genrestr", "g_energy"]:
             command.extend(self._common_io(src, tgt))
