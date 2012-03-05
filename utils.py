@@ -1,3 +1,4 @@
+import os
 import shutil
 from string import Template
 
@@ -21,14 +22,14 @@ def _arrange_dir(src_dir, new_dir, useful_files=[], useful_fixed=[]):
 
     return True
 
-def concat(src, file2add):
-    '''Add (concatenate) a pdb file to another pdb'''
-    src_f = open(src, "r")
-    f2a = open(file2add, "r")
-    tgt_name = src.replace(".pdb", "-ligand.pdb")
+def concat(**kwargs):
+    '''Add (concatenate) a tgt pdb file to another src pdb file'''
+    src = open(kwargs["src"], "r")
+    f2a = open(kwargs["tgt"], "r")
+    tgt_name = kwargs["src"].replace(".pdb", "-ligand.pdb")
     tgt = open(tgt_name, "w")
 
-    for line in src_f:
+    for line in src:
         if ("TER" or "ENDMDL") not in line:
             tgt.write(line)
         else:
@@ -38,10 +39,10 @@ def concat(src, file2add):
     tgt.write("TER\nENDMDL\n")
     tgt.close()
     f2a.close()
-    src_f.close()
+    src.close()
 
     shutil.copy(tgt_name,
-                src)
+                kwargs["src"])
 
     return True
 
@@ -76,8 +77,8 @@ def count_lipids(src, tgt, prot_z = 0):
 def make_topol(template_dir = "templates",
     target_dir = "", #Dir where topol.top should land
     working_dir = "", #Dir where script is working
-    protein_name="",
-    ligand_name = ""):
+    protein= "",
+    ligand = ""):
     '''Make the topol starting from our topol.top template'''
 
     src = open(os.path.join(template_dir, "topol.top"), "r")
@@ -86,8 +87,9 @@ def make_topol(template_dir = "templates",
     t = Template("".join(src.readlines()))
     src.close()
 
-    if(ligand_name):
-        lig_itp = '#include "lig.itp"\n' + \
+    if(ligand):
+        ligand_name = ligand.replace(".pdb", "")
+        lig_itp = '#include "{0}.itp"\n'.format(ligand_name) + \
                   '; Include Position restraint file\n' + \
                   '#ifdef POSRESLIG\n' + \
                   '#include "posre_lig.itp"\n' + \
@@ -97,12 +99,10 @@ def make_topol(template_dir = "templates",
         lig_itp = ";"
         lig_name = ";"
 
-
-    tgt.write(t.substitute(template_dir = template_dir,
-                           working_dir = working_dir,
-                           protein_name = protein_name,
+    tgt.write(t.substitute(working_dir = working_dir,
+                           protein_name = "protein 1",
                            lig_itp = lig_itp,
-                           lig_name = lig_name))
+                           lig_name = "lig 1"))
     tgt.close()
 
     return True

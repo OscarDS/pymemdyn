@@ -1,7 +1,10 @@
 import recipes
-
 import utils
+
+import logging
 import os
+import shutil
+import subprocess
 import sys
 
 class Gromacs(object):
@@ -17,30 +20,101 @@ class Gromacs(object):
         return self.membrane_complex
     property(get_membrane_complex, set_membrane_complex)
 
+    def count_lipids(self, **kwargs):
+        '''Count the lipids in source and write a target with N4 tags'''
+        src = open(kwargs["src"], "r")
+        tgt = open(kwargs["tgt"], "w")
+
+        half = self.membrane_complex.complex.prot_z / 2
+        self.membrane_complex.membrane.lipids_up = 0
+        self.membrane_complex.membrane.lipids_down = 0
+        self.membrane_complex.membrane.n_wats = 0
+
+        for line in src:
+            if len(line.split()) > 2:
+                if line.split()[2] == "N4": #Lipid marker
+                    tgt.write(line)
+                    if(float(line.split()[7]) >= half):
+                        self.membrane_complex.membrane.lipids_up += 1
+                    elif(float(line.split()[7]) < half):
+                        self.membrane_complex.membrane.lipids_down += 1
+                elif line.split()[2] == "OW": #Water marker
+                    self.membrane_complex.membrane.n_wats += 1
+
+        src.close()
+        tgt.close()
+    
+        return True
+
+    def get_charge(self, **kwargs):
+        '''Get the total charge of a system using gromacs grompp command'''
+        wrapper = Wrapper()
+
+        out, err = wrapper.run_command({"gromacs": "grompp",
+                                        "options": kwargs})
+
+        # Now we are looking for this line:
+        # System has non-zero total charge: 6.000002e+00
+        for line in err.split("\n"):
+            if "total charge" in line:
+                charge = int(float(line.split()[-1]))
+                break
+
+        self.membrane_complex.complex.negative_charge = 0
+        self.membrane_complex.complex.positive_charge = 0
+        if charge > 0:
+            self.membrane_complex.complex.positive_charge = charge
+        elif charge < 0:
+            self.membrane_complex.complex.positive_charge = 0
+
+        return True
+
+    def make_topol_lipids(self, **kwargs):
+        '''Add the lipid positions to our topol.top'''
+        topol = open("topol.top", "a")
+        topol.write("; Number of POPC molecules with higher z-coord value:\n")
+        topol.write("POPC " + str(self.membrane_complex.membrane.lipids_up))
+        topol.write("\n; Number of POPC molecules with lower z-coord value:\n")
+        topol.write("POPC " + str(self.membrane_complex.membrane.lipids_down))
+        topol.write("\n; Total number of water molecules:\n")
+        topol.write("SOL " + str(self.membrane_complex.membrane.n_wats) + "\n")
+        topol.close()
+
+        return True
+
     def run_recipe(self):
         '''Run the recipe for the complex'''
         if not hasattr(self, "recipe"):
             self.select_recipe()
 
         wrapper = Wrapper()
+        self.repo_dir = wrapper.repo_dir
 
         for n, command in enumerate(self.recipe.recipe):
             if n in self.recipe.breaks.keys():
-                # This is a hack to get the attribute recursively,
-                # feeding getattr with dot-splitted string thanks to reduce
-                # Here we charge some commands with options calculated
-                option = reduce(getattr,
-                         self.recipe.breaks[n][1].split("."),
-                         self)
-                command["options"][self.recipe.breaks[n][0]] = option
+                command["options"] = self.set_options(command["options"],
+                                     self.recipe.breaks[n])
 
             # NOW RUN IT !
-            try:
+            print n, command
+            if command.has_key("gromacs"):
                 # Either run a Gromacs pure command...
-                print " ".join(wrapper.generate_command(command))
-            except KeyError:
+                out, err = wrapper.run_command(command)
+            else:
                 # ...or run a local function
-                getattr(self, command["command"])(**command["options"])
+                try:
+                    if command.has_key("options"):
+                        getattr(self, command["command"])(**command["options"])
+                    else:
+                        getattr(self, command["command"])()
+                except AttributeError:
+                    #Fallback to the utils module
+                    getattr(utils, command["command"])(**command["options"])
+
+            if n == 30:
+                print " ".join(wrapper.generate_command(command))
+                print out, err
+                #print self.membrane_complex.complex.gmx_prot_z
                 sys.exit()
 
     def select_recipe(self):
@@ -52,7 +126,52 @@ class Gromacs(object):
                 self.recipe = recipes.MonomerRecipe()
 
         return True
-        
+
+    def set_box_sizes(self):
+        '''Set some meassurements of the different boxes'''
+
+        self.membrane_complex.complex.set_nanom()
+        self.membrane_complex.trans_box_size = \
+            [str(self.membrane_complex.complex.gmx_prot_xy),
+             str(self.membrane_complex.complex.gmx_prot_xy),
+             str(self.membrane_complex.membrane.gmx_bilayer_z)]
+        self.membrane_complex.bilayer_box_size = \
+            [str(self.membrane_complex.membrane.gmx_bilayer_x),
+             str(self.membrane_complex.membrane.gmx_bilayer_y),
+             str(self.membrane_complex.membrane.gmx_bilayer_z)]
+        self.membrane_complex.embeded_box_size = \
+            [str(self.membrane_complex.membrane.gmx_bilayer_x),
+             str(self.membrane_complex.membrane.gmx_bilayer_y),
+             str(self.membrane_complex.complex.gmx_prot_z)]
+        self.membrane_complex.protein_box_size = \
+            [str(self.membrane_complex.complex.gmx_prot_xy),
+             str(self.membrane_complex.complex.gmx_prot_xy),
+             str(self.membrane_complex.complex.gmx_prot_z)]
+
+        return True
+       
+    def set_grompp(self, **kwargs):
+        '''Copy the template files to the working dir'''
+        itp = ""
+        if hasattr(self.membrane_complex.complex, "ligand"): itp = "_lig"
+
+        shutil.copy(os.path.join(
+            self.repo_dir, "steep.mdp"),
+            "steep.mdp")
+        shutil.copy(os.path.join(
+            self.repo_dir, "popc.itp"),
+            "popc.itp")
+        shutil.copy(os.path.join(
+            self.repo_dir, "ffoplsaanb_mod{0}.itp".format(itp)),
+            "ffoplsaanb_mod.itp")
+        shutil.copy(os.path.join(
+            self.repo_dir, "ffoplsaabon_mod{0}.itp".format(itp)),
+            "ffoplsaabon_mod.itp")
+        shutil.copy(os.path.join(
+            self.repo_dir, "ffoplsaa_mod{0}.itp".format(itp)),
+            "ffoplsaa_mod.itp")
+        return True
+ 
     def set_itp(self, **kwargs):
         '''Cut a top file to be usable later as itp'''
         src = open(kwargs["src"], "r")
@@ -80,6 +199,19 @@ class Gromacs(object):
 
         return True
 
+    def set_options(self, options, breaks):
+        '''Set the break options from a recipe'''
+        for option, value in breaks.iteritems():
+            # This is a hack to get the attribute recursively,
+            # feeding getattr with dot-splitted string thanks to reduce
+            # Here we charge some commands with options calculated
+            new_option = reduce(getattr,
+                         value.split("."),
+                         self)
+            options[option] = new_option
+
+        return options
+
     def set_popc(self, tgt = ""):
         '''Create a pdb file only with the lipid bilayer (POP), no waters.
         Set some measures on the fly (height of the bilayer)'''
@@ -97,18 +229,51 @@ class Gromacs(object):
 
         return True
 
-    def set_protein_size(self, src, dir):
+    def set_protein_size(self, **kwargs):
         '''Get the protein max base wide from a pdb file'''
-        for line in open(src, "r"):
+        for line in open(kwargs["src"], "r"):
             if line.startswith("CRYST1"):
-                if dir == "xy":
+                if kwargs["dir"] == "xy":
                     self.membrane_complex.complex.prot_xy = \
                         max(float(line.split()[1]), #xyprotein
                             float(line.split()[2]))
-                elif dir == "z":
+                elif kwargs["dir"] == "z":
                     self.membrane_complex.complex.prot_z = \
                         float(line.split()[3]) # hprotein
+                    self.set_box_sizes()
+
                 break
+
+        return True
+
+    def set_steep(self, **kwargs):
+        '''Copy the template steep.mdp to the target dir'''
+        shutil.copy(os.path.join(self.repo_dir, "steep.mdp"),
+                    "steep.mdp")
+        return True
+
+    def set_water(self, **kwargs):
+        '''Creates a water layer for a box'''
+        start = (self.membrane_complex.membrane.bilayer_zw - \
+                 self.membrane_complex.complex.prot_z) / 2
+        end = start + self.membrane_complex.complex.prot_z
+
+        src = open(self.membrane_complex.membrane.pdb, "r")
+        tgt = open(kwargs["tgt"], "w")
+
+        res = "NULL"
+        for line in src:
+            if len(line.split()) > 7:
+                if ((line.split()[2] == "OW") and
+                    ((float(line.split()[7]) > end) or
+                     (float(line.split()[7]) < start))):
+                    res = line.split()[4]
+                if ((line.split()[4] != res) and
+                    (line.split()[3] == "SOL")):
+                    tgt.write(line)
+
+        tgt.close()
+        src.close()
 
         return True
 
@@ -219,8 +384,8 @@ class Wrapper(object):
                    "-o", kwargs["tgt"],
                    "-p", self._setDir(kwargs["src2"]),
                    "-g", self._setDir("genion.log"),
-                   "-np", kwargs["np"],
-                   "-nn", kwargs["nn"],
+                   "-np", str(kwargs["np"]),
+                   "-nn", str(kwargs["nn"]),
                    "-pname", "NA+",
                    "-nname", "CL-"]
 
@@ -276,7 +441,7 @@ class Wrapper(object):
             command.extend(["-ur", kwargs["ur"]])
         if "trans" in kwargs.keys():
             command.extend(["-trans"])
-            command.extend(kwargs["trans"])
+            command.extend([str(x) for x in kwargs["trans"]])
         else:
             command.extend(["-center"])
 

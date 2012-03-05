@@ -1,6 +1,7 @@
 class ProteinComplex(object):
     def __init__(self, *args, **kwargs):
         self.cres = 0 #Central residue
+        self.trans = [0, 0, self.cres] #Module for translating complex
         self.n_wats = 0 #Number of experimental waters
 
         if "monomer" in kwargs.keys():
@@ -21,6 +22,12 @@ class ProteinComplex(object):
     def getLigand(self):
         return self.ligand
     property(getLigand, setLigand)
+
+    def set_nanom(self):
+        '''Set some meassurements to nanometers, as GROMACS wants'''
+        NANOM = 10
+        self.gmx_prot_xy = self.prot_xy / NANOM
+        self.gmx_prot_z = self.prot_z / NANOM
 
 class Monomer(object):
     def __init__(self, *args, **kwargs):
