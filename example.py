@@ -18,7 +18,8 @@ to_unlink = ["#ligand_ha.ndx.1#", "#mdout.mdp.1#", "#mdout.mdp.2#",
              "#topol.tpr.1#", "#topol.tpr.2#", "#water.pdb.1#",
              "ffoplsaabon_mod.itp", "ffoplsaa_mod.itp", "ffoplsaanb_mod.itp",
              "genion.log", "hexagon.pdb",
-             "ligand_ha.ndx", "mdout.mdp", "output.pdb", "popc.pdb",
+             "ligand_ha.ndx", "mdout.mdp", "output.pdb", "output.tpr",
+             "popc.pdb",
              "popc.itp", 
              "posre.itp", "posre_lig.itp", "protein.itp", "protein.top",
              "proteinopls.pdb",
@@ -53,7 +54,7 @@ g = gromacs.Gromacs(membrane_complex = full_complex)
 # g.repo_dir
 # ... and so on
 
-print g.run_recipe()
+g.run_recipe()
 # At this point we should have our hexagon, and the useful files topol.tpr
 # to make a minimization with eq.mdp file.
 # Through the execution of the recipe we set some new properties:
@@ -69,6 +70,9 @@ print g.run_recipe()
 # g.membrane_complex.complex.negative_charge
 # g.membrane_complex.complex.prot_xy
 # g.membrane_complex.complex.prot_z
+
+g.recipe = recipes.BasicMinimization()
+g.run_recipe()
 
 #Execute function by its name
 #getattr(utils, step["command"])(step["options"])

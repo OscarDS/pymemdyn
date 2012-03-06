@@ -89,7 +89,7 @@ class MonomerRecipe(object):
                        "tgt": "output.pdb",#<------------
                        "np": "",
                        "nn": ""},
-           "input": "14\n"},
+           "input": "SOL\n"},
           {"gromacs": "grompp", #24
            "options": {"src": "steep.mdp",
                        "src2": "output.pdb",#<------------
@@ -114,6 +114,18 @@ class MonomerRecipe(object):
                        "ur": "compact",
                        "pbc": "mol"},
            "input": "1\n0\n"}
+        ]
+
+        self.minimize = [{"command": "set_init", #1
+                          "options": {"src": "topol.tpr",
+                                      "mdp": "eq.mdp"}},
+                         {"gromacs": "md_run", #0
+                          "options": {"src": "topol.tpr",
+                                      "tgt": "traj.trj",
+                                      "energy": "ener.edr",
+                                      "conf": "confout.gro",
+				      "log": "md.log"}},
+
         ]
           
         self.breaks = {0: {"src": "membrane_complex.complex.monomer.pdb"},
@@ -167,7 +179,7 @@ class MonomerLigandRecipe(MonomerRecipe):
                        11: {"src": "membrane_complex.complex.ligand.pdb"},
                        12: {"ligand": "membrane_complex.complex.ligand.pdb",
                             "protein": "membrane_complex.complex.monomer.pdb"},
-                       13: {"box": "membrane_complex.bilayer_box_size"},
+                       #13: {"box": "membrane_complex.embeded_box_size"},
                        14: {"box": "membrane_complex.protein_box_size"},
                        16: {"box": "membrane_complex.embeded_box_size"},
                        17: {"box": "membrane_complex.protein_box_size"},
@@ -177,4 +189,20 @@ class MonomerLigandRecipe(MonomerRecipe):
                             "nn": "membrane_complex.complex.negative_charge"},
                        28: {"trans": "membrane_complex.complex.trans"}
                       }
+
+class BasicMinimization(object):
+    def __init__(self):
+        self.recipe = \
+        [{"command": "set_minimization_init", #1
+          "options": {"src": "topol.tpr",
+                      "mdp": "eq.mdp"}},
+         {"gromacs": "md_run", #0
+          "options": {"src": "topol.tpr",
+                      "tgt": "traj.trj",
+                      "energy": "ener.edr",
+                      "conf": "confout.gro",
+                      "log": "md.log"}},
+        ]
+
+        self.breaks = {}
 

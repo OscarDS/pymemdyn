@@ -96,9 +96,10 @@ class Gromacs(object):
                                      self.recipe.breaks[n])
 
             # NOW RUN IT !
-            print n, command
+            print n,
             if command.has_key("gromacs"):
                 # Either run a Gromacs pure command...
+                print " ".join(wrapper.generate_command(command))
                 out, err = wrapper.run_command(command)
             else:
                 # ...or run a local function
@@ -111,11 +112,13 @@ class Gromacs(object):
                     #Fallback to the utils module
                     getattr(utils, command["command"])(**command["options"])
 
-            if n == 30:
-                print " ".join(wrapper.generate_command(command))
-                print out, err
-                #print self.membrane_complex.complex.gmx_prot_z
+            if n == 40:
+            #    print " ".join(wrapper.generate_command(command))
+            #    print out, err
+            #    #print self.membrane_complex.complex.gmx_prot_z
                 sys.exit()
+
+        return True
 
     def select_recipe(self):
         '''Select the appropiate recipe for the complex'''
