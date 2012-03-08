@@ -86,48 +86,36 @@ class MonomerRecipe(object):
           {"gromacs": "genion", #23
            "options": {"src": "topol.tpr",
                        "src2": "topol.top",
-                       "tgt": "output.pdb",#<------------
+                       "tgt": "output.pdb",
                        "np": "",
                        "nn": ""},
            "input": "SOL\n"},
           {"gromacs": "grompp", #24
            "options": {"src": "steep.mdp",
-                       "src2": "output.pdb",#<------------
+                       "src2": "output.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}},
           {"gromacs": "trjconv", #25
-           "options": {"src": "output.pdb",#<------------
+           "options": {"src": "output.pdb",
                        "src2": "topol.tpr",
-                       "tgt": "output.pdb",#<------------
+                       "tgt": "output.pdb",
                        "trans": [],
                        "pbc": "mol"},
            "input": "0\n"},
           {"gromacs": "grompp", #26
            "options": {"src": "steep.mdp",
                        "src2": "output.pdb",
-                       "tgt": "output.tpr", #<------------
+                       "tgt": "topol.tpr",
                        "top": "topol.top"}},
           {"gromacs": "trjconv", #27
            "options": {"src": "output.pdb",
-                       "src2": "output.tpr",
+                       "src2": "topol.tpr",
                        "tgt": "hexagon.pdb",
                        "ur": "compact",
                        "pbc": "mol"},
            "input": "1\n0\n"}
         ]
 
-        self.minimize = [{"command": "set_init", #1
-                          "options": {"src": "topol.tpr",
-                                      "mdp": "eq.mdp"}},
-                         {"gromacs": "md_run", #0
-                          "options": {"src": "topol.tpr",
-                                      "tgt": "traj.trj",
-                                      "energy": "ener.edr",
-                                      "conf": "confout.gro",
-				      "log": "md.log"}},
-
-        ]
-          
         self.breaks = {0: {"src": "membrane_complex.complex.monomer.pdb"},
                        2: {"dist": "membrane_complex.box_height"},
                        4: {"dist": "membrane_complex.box_width"},
@@ -154,7 +142,7 @@ class MonomerLigandRecipe(MonomerRecipe):
              "options": {"src": "",
                          "tgt": "posre_lig.itp",
                          "index": "lig_ha.ndx",
-                         "forces": ["1000, 1000, 1000"]},
+                         "forces": ["1000", "1000", "1000"]},
              "input": "1\n"})
 
         self.recipe.insert(9,
@@ -187,22 +175,46 @@ class MonomerLigandRecipe(MonomerRecipe):
                             "protein": "membrane_complex.complex.monomer.pdb"},
                        26: {"np": "membrane_complex.complex.positive_charge",
                             "nn": "membrane_complex.complex.negative_charge"},
-                       28: {"trans": "membrane_complex.complex.trans"}
+                       28: {"trans": "membrane_complex.complex.trans"},
                       }
 
 class BasicMinimization(object):
     def __init__(self):
         self.recipe = \
-        [{"command": "set_minimization_init", #1
-          "options": {"src": "topol.tpr",
+        [{"command": "set_minimization_init", #0
+          "options": {"src_tpr": "topol.tpr",
+                      "min_dir": "Rmin",
                       "mdp": "eq.mdp"}},
-         {"gromacs": "md_run", #0
-          "options": {"src": "topol.tpr",
-                      "tgt": "traj.trj",
-                      "energy": "ener.edr",
-                      "conf": "confout.gro",
-                      "log": "md.log"}},
-        ]
+         {"gromacs": "mdrun", #1
+          "options": {"src": "Rmin/topol.tpr",
+                      "tgt": "Rmin/traj.trj",
+                      "energy": "Rmin/ener.edr",
+                      "conf": "Rmin/confout.gro",
+                      "log": "Rmin/md.log"}},
+         {"gromacs": "editconf", #2
+          "options": {"src": "Rmin/confout.gro",
+                      "tgt": "min.pdb"}},
+         {"command": "make_ndx", #3
+          "options": {"src": "min.pdb",
+                      "tgt": "index.ndx"}},
+         {"gromacs": "grompp", #4
+          "options": {"src": "Rmin/eq.mdp",
+                      "src2": "min.pdb",
+                      "top": "topol.top",
+                      "tgt": "topol.tpr",
+                      "index":"index.ndx"}},
 
+        ]
         self.breaks = {}
+
+class LigandMinimization(BasicMinimization):
+    def __init__(self):
+        super(LigandMinimization, self).__init__()
+        self.recipe.insert(4,
+            {"gromacs": "genrestr",
+             "options": {"src": "Rmin/topol.tpr",
+                         "tgt": "protein_ca200.itp",
+                         "index": "index.ndx",
+                         "forces": ["200", "200", "200"]},
+             "input": "3\n"})
 

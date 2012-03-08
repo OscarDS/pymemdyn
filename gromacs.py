@@ -9,16 +9,20 @@ import sys
 
 class Gromacs(object):
     def __init__(self, *args, **kwargs):
-        self.membrane_complex = None
+        self._membrane_complex = None
         if "membrane_complex" in kwargs.keys():
             self.set_membrane_complex(kwargs["membrane_complex"])
+            self.tpr = \
+                self.membrane_complex.complex.monomer.pdb.replace(".pdb",
+                    ".tpr")
 
     def set_membrane_complex(self, value):
         '''Sets the monomer object'''
-        self.membrane_complex = value
+        self._membrane_complex = value
     def get_membrane_complex(self):
-        return self.membrane_complex
-    property(get_membrane_complex, set_membrane_complex)
+        return self._membrane_complex
+    membrane_complex = property(get_membrane_complex, set_membrane_complex)
+
 
     def count_lipids(self, **kwargs):
         '''Count the lipids in source and write a target with N4 tags'''
@@ -69,6 +73,58 @@ class Gromacs(object):
 
         return True
 
+    def get_ndx_groups(self, **kwargs):
+        '''Run make_ndx and sets the group Other'''
+        wrapper = Wrapper()
+
+        out, err = wrapper.run_command({"gromacs": "make_ndx",
+                                        "options": kwargs,
+                                        "input": "q\n"})
+
+        for line in out.split("\n"):
+            if "Other" in line and "atoms" in line:
+                self.n_groups = int(line.split()[0])
+                break
+        return True
+
+    def make_ndx(self, **kwargs):
+        '''Wraps the make_ndx command tweaking the input to reflect the
+        complex characteristics.'''
+
+        if not (self.get_ndx_groups(**kwargs)): return False
+
+        n_group = self.n_groups + 1
+        groups = {"lipids": "POP",
+                  "solvent": "wation",
+                  "complex": "Protein"}
+        #This makes the (always present) group wation
+        input =  "r SOL || r HOH || atom Cl* || atom Na*\n"
+        input += "name {0} wation\n".format(n_group)
+
+        if hasattr(self.membrane_complex.complex, "ligand"):
+            #This makes the group prot_ligand if there's any
+            groups["complex"] = "protlig"
+            n_group += 1
+            input += "1 || r LIG\nname {0} {1}\n".format(
+                n_group, groups["complex"])
+        if hasattr(self.membrane_complex.membrane, "ions"):
+            #This makes the group ions TODO
+            #n_group += 1
+            #input += "1 || r LIG\nname {0} protlig\n".format(n_group)
+            pass
+        input += "\nq\n"
+
+        #Now the wrap itself
+        wrapper = Wrapper()
+        out, err = wrapper.run_command({"gromacs": "make_ndx",
+                                        "options": kwargs,
+                                        "input": input})
+
+        #We need to set the eq.mdp with these new groups
+        utils.tune_mdp(groups)
+
+        return True
+
     def make_topol_lipids(self, **kwargs):
         '''Add the lipid positions to our topol.top'''
         topol = open("topol.top", "a")
@@ -99,10 +155,12 @@ class Gromacs(object):
             print n,
             if command.has_key("gromacs"):
                 # Either run a Gromacs pure command...
+                if hasattr(self, "queue"): command["queue"] = self.queue
                 print " ".join(wrapper.generate_command(command))
                 out, err = wrapper.run_command(command)
             else:
                 # ...or run a local function
+                print command
                 try:
                     if command.has_key("options"):
                         getattr(self, command["command"])(**command["options"])
@@ -112,11 +170,12 @@ class Gromacs(object):
                     #Fallback to the utils module
                     getattr(utils, command["command"])(**command["options"])
 
-            if n == 40:
+            #if n == 40:
             #    print " ".join(wrapper.generate_command(command))
             #    print out, err
             #    #print self.membrane_complex.complex.gmx_prot_z
-                sys.exit()
+            #    sys.exit()
+        print out, err
 
         return True
 
@@ -201,6 +260,17 @@ class Gromacs(object):
         src.close()
 
         return True
+
+    def set_minimization_init(self, **kwargs):
+        min_dir = kwargs["min_dir"]
+        if not os.path.isdir(min_dir): os.mkdir(min_dir)
+
+        if "src_tpr" in kwargs.keys():
+            shutil.copy(kwargs["src_tpr"],
+                os.path.join(min_dir, kwargs["src_tpr"]))
+            mdp = os.path.join(self.repo_dir, kwargs["mdp"])
+            shutil.copy(mdp,
+                os.path.join(min_dir, kwargs["mdp"]))
 
     def set_options(self, options, breaks):
         '''Set the break options from a recipe'''
@@ -311,7 +381,13 @@ class Wrapper(object):
         options = kwargs["options"]
 
         command = [os.path.join(self.gromacs_dir, mode)]
-
+        if "queue" in kwargs.keys():
+            if hasattr(kwargs["queue"], mode):
+               # If we got a queue enabled for this command, use it
+               command = kwargs["queue"].command # Already a list
+               command.append(os.path.join(self.gromacs_dir,
+                              getattr(kwargs["queue"], mode)))
+            
         # Standard -f input -o output
         if mode in ["pdb2gmx", "editconf", "grompp", "trjconv",
                     "make_ndx", "genrestr", "g_energy"]:
@@ -343,8 +419,8 @@ class Wrapper(object):
                 command.extend(self._mode_trjcat(options))
             if (mode == "eneconv"): #ENECONV
                 command.extend(self._mode_eneconv(options))
-            if (mode == "mdrun_slurm"): #MDRUN_SLURM
-                command.extend(self._mode_mdrun_slurm(options))
+            if (mode == "mdrun"): #MDRUN_SLURM
+                command.extend(self._mode_mdrun(options))
 
         return command
 
@@ -396,7 +472,12 @@ class Wrapper(object):
 
     def _mode_genrest(self, kwargs):
         '''Wraps the genrest command options'''
-        return ["-fc"] + kwargs["forces"]
+        command = ["-fc"] + kwargs["forces"]
+
+        if "index" in kwargs.keys():
+            command.extend(["-n", kwargs["index"]])        
+        
+        return command
 
     def _mode_grompp(self, kwargs):
         '''Wraps the grompp command options'''
@@ -408,8 +489,8 @@ class Wrapper(object):
 
         return command
 
-    def _mode_mdrun_slurm(self, kwargs):
-        '''Wraps the mdrun_slurm command options'''
+    def _mode_mdrun(self, kwargs):
+        '''Wraps the mdrun command options'''
         command = ["-s", self._setDir(kwargs["src"]),
                    "-o", self._setDir(kwargs["tgt"]),
                    "-e", self._setDir(kwargs["energy"]),

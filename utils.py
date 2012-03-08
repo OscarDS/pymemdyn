@@ -46,34 +46,6 @@ def concat(**kwargs):
 
     return True
 
-def count_lipids(src, tgt, prot_z = 0):
-    '''Count the lipids in src and write a target with N4 tags'''
-    src = open(src, "r")
-    tgt = open(tgt, "w")
-
-    half = prot_z / 2
-    lipids_up = 0
-    lipids_down = 0
-    n_wats = 0
-
-    for line in src:
-        if len(line.split()) > 2:
-            if line.split()[2] == "N4": #Lipid marker
-                tgt.write(line)
-                if(float(line.split()[7]) >= half):
-                    lipids_up += 1
-                elif(float(line.split()[7]) < half):
-                    lipids_down += 1
-            elif line.split()[2] == "OW": #Water marker
-                n_wats += 1
-
-    src.close()
-    tgt.close()
-
-    return {"lipids_up": lipids_up,
-            "lipids_down": lipids_down,
-            "n_wats": n_wats}
-
 def make_topol(template_dir = "templates",
     target_dir = "", #Dir where topol.top should land
     working_dir = "", #Dir where script is working
@@ -107,79 +79,21 @@ def make_topol(template_dir = "templates",
 
     return True
 
-def make_topol_lipids(topol_dir = "", lipids_up = 0, lipids_down = 0, n_wats = 0):
-    '''Actualize topol.top with lipids and waters'''
-
-    topol = open(os.path.join(topol_dir, "topol.top"), "a")
-    topol.write("; Number of POPC molecules with higher z-coord value:\n")
-    topol.write("POPC " + lipids_up + "\n")
-    topol.write("; Number of POPC molecules with lower z-coord value:\n")
-    topol.write("POPC " + lipids_down + "\n")
-    topol.write("; Total number of water molecules:\n")
-    topol.write("SOL " + n_wats + "\n")
-    topol.close()
-
-    return True
-
-def _make_steep(template_dir = "", tgt_dir = ""):
-    '''Copy the template steep.mdp to the target dir'''
-    shutil.copy(os.path.join(template_dir, "steep.mdp"),
-                os.path.join(tgt_dir, "steep.mdp"))
+def tune_mdp(groups):
+    '''Adjust the tc-groups of eq.mdp to be in line with our system'''
+    shutil.move("Rmin/eq.mdp", "Rmin/eq.mdp~")
+    eq = open("Rmin/eq.mdp~", "r")
+    eq_out = open("Rmin/eq.mdp", "w")
+    
+    for line in eq:
+        new_line = line
+        if line.startswith("tc-grps"):
+            new_line = line.replace("POP", groups["lipids"])
+            new_line = line.replace("wation", groups["solvent"])
+            new_line = line.replace("Protein", groups["complex"])
+        eq_out.write(new_line)
+    eq.close()
+    eq_out.close()
 
     return True
-
-def _make_water(self,
-    bilayer_zw = 0,
-    prot_z = 0,
-    x4pdb = "",
-    tgt = ""):
-    '''Create water from x4bilayer.pdb'''
-    start = (bilayer_zw - prot_z) / 2
-    end = start + prot_z
-
-    src = open(x4pdb, "r")
-    tgt = open(tgt, "w")
-
-    res = "NULL"
-    for line in src:
-        if len(line.split()) > 7:
-            if ((line.split()[2] == "OW") and
-                ((float(line.split()[7]) > end) or
-                 (float(line.split()[7]) < start))):
-                res = line.split()[4]
-            if ((line.split()[4] != res) and
-                (line.split()[3] == "SOL")):
-                tgt.write(line)
-
-    tgt.close()
-    src.close()
-
-    return True
-    return True
-
-def set_itp(kwargs):
-    '''Cut a top file to be usable later'''
-    src = open(kwargs["src"], "r")
-    tgt = open(kwargs["tgt"], "w")
-
-    get_name = False
-
-    for line in src:
-        if line.startswith("#include"):
-            pass
-        elif line.startswith("; Include Position restraint file"):
-            break
-        else:
-            tgt.write(line)
-
-        if get_name and not line.startswith(";"):
-            protein_name = line.split()[0]
-            get_name = False
-
-        if line.startswith("[ moleculetype ]"):
-            get_name = True
-
-    tgt.close()
-    src.close()
-
-    return protein_name
+    
