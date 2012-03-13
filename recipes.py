@@ -1,3 +1,5 @@
+import os
+
 class MonomerRecipe(object):
     def __init__(self):
         self.recipe = \
@@ -141,9 +143,9 @@ class MonomerLigandRecipe(MonomerRecipe):
             {"gromacs": "genrestr",
              "options": {"src": "",
                          "tgt": "posre_lig.itp",
-                         "index": "lig_ha.ndx",
+                         "index": "ligand_ha.ndx",
                          "forces": ["1000", "1000", "1000"]},
-             "input": "1\n"})
+             "input": "2\n"})
 
         self.recipe.insert(9,
             {"gromacs": "make_ndx",
@@ -203,7 +205,6 @@ class BasicMinimization(object):
                       "top": "topol.top",
                       "tgt": "topol.tpr",
                       "index":"index.ndx"}},
-
         ]
         self.breaks = {}
 
@@ -217,4 +218,82 @@ class LigandMinimization(BasicMinimization):
                          "index": "index.ndx",
                          "forces": ["200", "200", "200"]},
              "input": "3\n"})
+
+class BasicEquilibration(object):
+    def __init__(self):
+        self.recipe = \
+        [{"command": "set_equilibration_init", #0
+          "options": {"src_tpr": "Rmin/topol.tpr",
+                      "src_itp": "posre.itp",
+                      "mdp": "Rmin/eq.mdp",
+                      "eq_dir": "eq"}},
+         {"gromacs": "mdrun", #1
+          "options": {"src": "eq/topol.tpr",
+                      "tgt": "eq/traj.trj",
+                      "energy": "eq/ener.edr",
+                      "conf": "eq/confout.gro",
+                      "log": "eq/md.log"}},
+        ]
+        self.breaks = {}
+
+class LigandEquilibration(BasicEquilibration):
+    def __init__(self):
+        super(LigandEquilibration, self).__init__()
+        self.recipe[0]["options"]["src_lig_itp"] = "posre_lig.itp"
+
+class BasicRelax(object):
+    def __init__(self):
+        self.recipe = []
+        for const in range(800, 0, -200):
+            tgt_dir = "eq/{0}".format(const)
+            src_dir = "eq"
+            self.recipe += [
+            {"command": "relax", #0, 3, 6, 9
+             "options": {"const": const,
+                         "src_dir": src_dir,
+                         "tgt_dir": tgt_dir}},
+            {"gromacs": "grompp", #1, 4, 7, 10
+             "options": {"src": os.path.join(tgt_dir, "eq.mdp"),
+                         "src2": os.path.join(src_dir, "confout.gro"),
+                         "top": os.path.join(tgt_dir, "topol.top"),
+                         "tgt": os.path.join(tgt_dir, "topol.tpr"),
+                         "index": "index.ndx"}},
+            {"gromacs": "mdrun", #2, 5, 8, 11
+             "options": {"src": os.path.join(tgt_dir, "topol.tpr"),
+                         "tgt": os.path.join(tgt_dir, "traj.trr"),
+                         "energy": os.path.join(tgt_dir, "ener.edr"),
+                         "conf": os.path.join(src_dir, "confout.gro"),
+                         "traj": os.path.join(tgt_dir, "traj.xtc"),
+                         "log": os.path.join(src_dir,
+                             "md_eq{0}.log".format(const))}},
+            ]
+        self.breaks = {}
+
+class CAEquilibrate(object):
+    def __init__(self):
+        self.recipe = \
+            [{"command": "set_caequil_init", #0
+              "options": {"src_dir": "eq",
+                          "tgt_dir": "eqCA",
+                          "src_files": ["confout.gro", "eq.mdp"],
+                          "tmp_files": ["eqCA.mdp"]}},
+             {"gromacs": "genrestr" #1,
+              "options": {"src": "Rmin/topol.tpr",
+                          "tgt": "posre.itp",
+                          "forces": ["200"] * 3}},
+             {"gromacs": "grompp", #2
+              "options": {"src": , "eqCA/eq.mdp",
+                          "src2": "eqCA/confout.gro",
+                          "top": "topol.top",
+                          "tgt": "eqCA/topol.tpr",
+                          "index": "index.ndx"}},
+             {"gromacs": "mdrun", #3
+              "options": {"src": "eqCA/topol.tpr",
+                          "tgt": "eqCA/traj.trr",
+                          "energy": "eqCA/ener.edr",
+                          "conf": "eqCA/confout.gro",
+                          "traj": "eqCA/traj.xtc",
+                          "log": "eqCA/md_eqCA.log"}},
+             ]
+
 

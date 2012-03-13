@@ -32,8 +32,8 @@ to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
              #"topol.top",
              #"topol.tpr",
              "Y1_min-his.pdb", "water.pdb"]
-for target in to_unlink:
-    if os.path.isfile(target): os.unlink(target)
+#for target in to_unlink:
+#    if os.path.isfile(target): os.unlink(target)
 
 #sys.exit()
 #First we define all parts to be used
@@ -63,7 +63,7 @@ g = gromacs.Gromacs(membrane_complex = full_complex)
 # g.repo_dir
 # ... and so on
 
-g.run_recipe()
+#g.run_recipe()
 
 # At this point we should have our hexagon, and the useful files topol.tpr
 # to make a minimization with eq.mdp file.
@@ -83,8 +83,16 @@ g.run_recipe()
 
 slurm = queue.Slurm()
 g.queue = slurm
-g.recipe = recipes.LigandMinimization()
+#.recipe = recipes.LigandMinimization()
+#.run_recipe()
+#g.recipe = recipes.LigandEquilibration()
+#g.run_recipe()
+#g.recipe = recipes.BasicRelax()
 #g.recipe.recipe = g.recipe.recipe[3:-1]
+#for n, com in enumerate(g.recipe.recipe):
+#    print n, com
+#g.run_recipe()
+g.recipe = recipes.CAEquilibrate()
 g.run_recipe()
 
 #Execute function by its name

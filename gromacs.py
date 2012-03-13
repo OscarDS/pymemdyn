@@ -138,6 +138,60 @@ class Gromacs(object):
 
         return True
 
+    def relax(self, **kwargs):
+        '''Relax a protein'''
+        step_time = int(5 / 0.002)
+
+        if not os.path.isdir(kwargs["tgt_dir"]): os.makedirs(kwargs["tgt_dir"])
+
+        posres = ["posre.itp"]
+        if hasattr(self.protein_complex.complex, "ligand"): posres
+
+        new_posre = open(os.path.join(kwargs["tgt_dir"], "posre.itp"), "w")
+        src_posre = open(os.path.join(kwargs["src_dir"], "posre.itp"), "r")
+        for line in src_posre:
+            new_posre.write(line.replace("1  1000  1000  1000",
+                "1  {0}  {0}  {0}".format(kwargs["const"])))
+        src_posre.close()
+        new_posre.close()
+
+        if hasattr(self.protein_complex.complex, "ligand"):
+            new_posre = open(os.path.join(kwargs["tgt_dir"], "posre_lig.itp"),
+                             "w")
+            src_posre = open(os.path.join(kwargs["src_dir"], "posre_lig.itp"),
+                             "r")
+            for line in src_posre:
+                new_posre.write(line.replace("1  1000  1000  1000",
+                    "1  {0}  {0}  {0}".format(kwargs["const"])))
+            src_posre.close()
+            new_posre.close()
+
+        new_mdp = open(os.path.join(kwargs["tgt_dir"], "eq.mdp"), "w")
+        src_mdp = open(os.path.join(kwargs["src_dir"], "eq.mdp"), "r")
+
+        for line in src_mdp:
+            if(line.startswith("nsteps")):
+                new_mdp.write("nsteps = {0}\n".format(step_time))
+            elif(line.startswith("gen_vel")):
+                new_mdp.write("gen_vel = no\n")
+            else:
+                new_mdp.write(line)
+        src_mdp.close()
+        new_mdp.close()
+
+        new_topol = open(os.path.join(kwargs["tgt_dir"], "topol.top"), "w")
+        src_topol = open("topol.top", "r")
+        for line in src_topol:
+            if(line.endswith("posre.itp\"\n")):
+                new_topol.write("#include \"")
+                new_topol.write(os.path.join(kwargs["tgt_dir"], "posre.itp"))
+                new_topol.write("\"\n")
+            else:
+                new_topol.write(line)
+
+        src_topol.close()
+        new_topol.close()
+
     def run_recipe(self):
         '''Run the recipe for the complex'''
         if not hasattr(self, "recipe"):
@@ -175,7 +229,7 @@ class Gromacs(object):
             #    print out, err
             #    #print self.membrane_complex.complex.gmx_prot_z
             #    sys.exit()
-        print out, err
+        #print out, err
 
         return True
 
@@ -209,6 +263,37 @@ class Gromacs(object):
             [str(self.membrane_complex.complex.gmx_prot_xy),
              str(self.membrane_complex.complex.gmx_prot_xy),
              str(self.membrane_complex.complex.gmx_prot_z)]
+
+        return True
+
+    def set_caequil_init(self, **kwargs):
+        if not os.path.isdir(kwargs["tgt_dir"]): os.mkdir(kwargs["tgt_dir"]
+
+        for f_name in kwargs["src_files"]:
+            shutil.copy(os.path.join(kwargs["src_dir"], f_name,
+                        os.path.join(kwargs["tgt_dir"], f_name)
+
+        for f_name in kwargs["tmp_files"]:
+            shutil.copy(os.path.join(self.repo_dir, f_name),
+                        os.path.join(kwargs["tgt_dir"], f_name))
+
+        return True
+
+    def set_equilibration_init(self, **kwargs):
+        eq_dir = kwargs["eq_dir"]
+        if not os.path.isdir(eq_dir): os.mkdir(eq_dir)
+
+        if "src_tpr" in kwargs.keys():
+            shutil.copy(kwargs["src_tpr"],
+                os.path.join(eq_dir, os.path.split(kwargs["src_tpr"])[1]))
+            shutil.copy(kwargs["mdp"],
+                os.path.join(eq_dir, os.path.split(kwargs["mdp"])[1]))
+        if "src_itp" in kwargs.keys():
+            shutil.copy(kwargs["src_itp"],
+                os.path.join(eq_dir, kwargs["src_itp"]))
+        if "src_lig_itp" in kwargs.keys():
+            shutil.copy(kwargs["src_lig_itp"],
+                os.path.join(eq_dir, kwargs["src_lig_itp"]))
 
         return True
        
@@ -384,7 +469,7 @@ class Wrapper(object):
         if "queue" in kwargs.keys():
             if hasattr(kwargs["queue"], mode):
                # If we got a queue enabled for this command, use it
-               command = kwargs["queue"].command # Already a list
+               command = list(kwargs["queue"].command) # Already a list
                command.append(os.path.join(self.gromacs_dir,
                               getattr(kwargs["queue"], mode)))
             
