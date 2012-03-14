@@ -28,7 +28,7 @@ optimize_fft        =  yes
 
 Tcoupl              =  nose-hoover ; thermostat
 tau_t               =  0.1   0.1  0.1      
-tc-grps             =  POP  wation Protein 
+tc-grps             =  membr  wation protlig 
 ref_t               =  310   310   310     
 
 Pcoupl              =  Parrinello-Rahman ; barostat

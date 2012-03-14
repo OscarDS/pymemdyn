@@ -10,6 +10,10 @@ import sys
 class Gromacs(object):
     def __init__(self, *args, **kwargs):
         self._membrane_complex = None
+        self.wrapper = Wrapper()
+        logging.basicConfig(filename="GROMACS.output",
+                            level=logging.DEBUG,
+                            format='%(message)s')
         if "membrane_complex" in kwargs.keys():
             self.set_membrane_complex(kwargs["membrane_complex"])
             self.tpr = \
@@ -52,10 +56,10 @@ class Gromacs(object):
 
     def get_charge(self, **kwargs):
         '''Get the total charge of a system using gromacs grompp command'''
-        wrapper = Wrapper()
+        #wrapper = Wrapper()
 
-        out, err = wrapper.run_command({"gromacs": "grompp",
-                                        "options": kwargs})
+        out, err = self.wrapper.run_command({"gromacs": "grompp",
+                                             "options": kwargs})
 
         # Now we are looking for this line:
         # System has non-zero total charge: 6.000002e+00
@@ -75,11 +79,11 @@ class Gromacs(object):
 
     def get_ndx_groups(self, **kwargs):
         '''Run make_ndx and sets the group Other'''
-        wrapper = Wrapper()
+        #wrapper = Wrapper()
 
-        out, err = wrapper.run_command({"gromacs": "make_ndx",
-                                        "options": kwargs,
-                                        "input": "q\n"})
+        out, err = self.wrapper.run_command({"gromacs": "make_ndx",
+                                             "options": kwargs,
+                                             "input": "q\n"})
 
         for line in out.split("\n"):
             if "Other" in line and "atoms" in line:
@@ -94,34 +98,34 @@ class Gromacs(object):
         if not (self.get_ndx_groups(**kwargs)): return False
 
         n_group = self.n_groups + 1
-        groups = {"lipids": "POP",
-                  "solvent": "wation",
-                  "complex": "Protein"}
+
         #This makes the (always present) group wation
         input =  "r SOL || r HOH || atom Cl* || atom Na*\n"
         input += "name {0} wation\n".format(n_group)
 
-        if hasattr(self.membrane_complex.complex, "ligand"):
-            #This makes the group prot_ligand if there's any
-            groups["complex"] = "protlig"
-            n_group += 1
-            input += "1 || r LIG\nname {0} {1}\n".format(
-                n_group, groups["complex"])
+        #This makes the group protlig
+        n_group += 1
+        input += "1 || r LIG\nname {0} protlig\n".format(n_group)
+
+        #And this makes the membrane group as membr
+        n_group += 1
+        input += "r POP || r CHO\n name {0} membr\n".format(n_group)
+
         if hasattr(self.membrane_complex.membrane, "ions"):
             #This makes the group ions TODO
             #n_group += 1
             #input += "1 || r LIG\nname {0} protlig\n".format(n_group)
             pass
-        input += "\nq\n"
+        input += "q\n"
 
         #Now the wrap itself
-        wrapper = Wrapper()
-        out, err = wrapper.run_command({"gromacs": "make_ndx",
-                                        "options": kwargs,
-                                        "input": input})
+        out, err = self.wrapper.run_command({"gromacs": "make_ndx",
+                                             "options": kwargs,
+                                             "input": input})
 
         #We need to set the eq.mdp with these new groups
-        utils.tune_mdp(groups)
+        #NO LONGER NEEDED AS eq.mdp IS NOW GENERIC
+        #utils.tune_mdp(groups)
 
         return True
 
@@ -145,7 +149,7 @@ class Gromacs(object):
         if not os.path.isdir(kwargs["tgt_dir"]): os.makedirs(kwargs["tgt_dir"])
 
         posres = ["posre.itp"]
-        if hasattr(self.protein_complex.complex, "ligand"): posres
+        if hasattr(self.membrane_complex.complex, "ligand"): pass #TODO
 
         new_posre = open(os.path.join(kwargs["tgt_dir"], "posre.itp"), "w")
         src_posre = open(os.path.join(kwargs["src_dir"], "posre.itp"), "r")
@@ -155,7 +159,7 @@ class Gromacs(object):
         src_posre.close()
         new_posre.close()
 
-        if hasattr(self.protein_complex.complex, "ligand"):
+        if hasattr(self.membrane_complex.complex, "ligand"):
             new_posre = open(os.path.join(kwargs["tgt_dir"], "posre_lig.itp"),
                              "w")
             src_posre = open(os.path.join(kwargs["src_dir"], "posre_lig.itp"),
@@ -197,8 +201,8 @@ class Gromacs(object):
         if not hasattr(self, "recipe"):
             self.select_recipe()
 
-        wrapper = Wrapper()
-        self.repo_dir = wrapper.repo_dir
+        #wrapper = Wrapper()
+        self.repo_dir = self.wrapper.repo_dir
 
         for n, command in enumerate(self.recipe.recipe):
             if n in self.recipe.breaks.keys():
@@ -206,30 +210,29 @@ class Gromacs(object):
                                      self.recipe.breaks[n])
 
             # NOW RUN IT !
-            print n,
+            print self.recipe.__class__.__name__, 
+            print "Step {0}: ".format(n),
             if command.has_key("gromacs"):
                 # Either run a Gromacs pure command...
+                print command["gromacs"]
                 if hasattr(self, "queue"): command["queue"] = self.queue
-                print " ".join(wrapper.generate_command(command))
-                out, err = wrapper.run_command(command)
+                out, err = self.wrapper.run_command(command)
+                logging.debug(" ".join(self.wrapper.generate_command(command)))
+                logging.debug(err)
+                logging.debug(out)
             else:
                 # ...or run a local function
-                print command
+                logging.debug(command)
                 try:
-                    if command.has_key("options"):
-                        getattr(self, command["command"])(**command["options"])
-                    else:
-                        getattr(self, command["command"])()
+                    f = getattr(self, command["command"])
                 except AttributeError:
                     #Fallback to the utils module
-                    getattr(utils, command["command"])(**command["options"])
+                    f = getattr(utils, command["command"])
 
-            #if n == 40:
-            #    print " ".join(wrapper.generate_command(command))
-            #    print out, err
-            #    #print self.membrane_complex.complex.gmx_prot_z
-            #    sys.exit()
-        #print out, err
+                if command.has_key("options"): f(**command["options"])
+                else: f()
+                logging.debug("This function does: " + str(f.__doc__))
+                print command["command"]
 
         return True
 
@@ -267,11 +270,12 @@ class Gromacs(object):
         return True
 
     def set_caequil_init(self, **kwargs):
-        if not os.path.isdir(kwargs["tgt_dir"]): os.mkdir(kwargs["tgt_dir"]
+        '''Set all the necessary files to init an equilibration of CA'''
+        if not os.path.isdir(kwargs["tgt_dir"]): os.mkdir(kwargs["tgt_dir"])
 
         for f_name in kwargs["src_files"]:
-            shutil.copy(os.path.join(kwargs["src_dir"], f_name,
-                        os.path.join(kwargs["tgt_dir"], f_name)
+            shutil.copy(os.path.join(kwargs["src_dir"], f_name),
+                        os.path.join(kwargs["tgt_dir"], f_name))
 
         for f_name in kwargs["tmp_files"]:
             shutil.copy(os.path.join(self.repo_dir, f_name),
@@ -280,6 +284,7 @@ class Gromacs(object):
         return True
 
     def set_equilibration_init(self, **kwargs):
+        '''Set all the necessary files to init an equilibration'''
         eq_dir = kwargs["eq_dir"]
         if not os.path.isdir(eq_dir): os.mkdir(eq_dir)
 
@@ -347,6 +352,8 @@ class Gromacs(object):
         return True
 
     def set_minimization_init(self, **kwargs):
+        '''Copy the needed files to the minimization directory, supplied as
+        "min_dir" argument'''
         min_dir = kwargs["min_dir"]
         if not os.path.isdir(min_dir): os.mkdir(min_dir)
 
@@ -501,7 +508,7 @@ class Wrapper(object):
             if (mode == "tpbconv"): #TPBCONV
                 command.extend(self._mode_tpbconv(options))
             if (mode == "trjcat"): #TRJCAT
-                command.extend(self._mode_trjcat(options))
+                command.extend(self._mode_trjcat(options)) 
             if (mode == "eneconv"): #ENECONV
                 command.extend(self._mode_eneconv(options))
             if (mode == "mdrun"): #MDRUN_SLURM
@@ -530,10 +537,15 @@ class Wrapper(object):
 
     def _mode_eneconv(self, kwargs):
         '''Wraps the eneconv command options'''
+        src_files = utils.make_cat(kwargs["dir1"],
+                                   kwargs["dir2"],
+                                   kwargs["name"])
         command = ["-f"]
-        command.extend(kwargs["src_files"])
+        command.extend(src_files)
         command.extend(["-o", self._setDir(kwargs["tgt"]),
                         "-settime"])
+
+        return command
 
     def _mode_genbox(self, kwargs):
         '''Wraps the genbox command options'''
@@ -601,6 +613,18 @@ class Wrapper(object):
         return ["-s", self._setDir(kwargs["src"]),
                 "-o", self._setDir(kwargs["tgt"]),
                 "-extend", kwargs["extend"]]
+
+    def _mode_trjcat(self, kwargs):
+        '''Wraps the trjcat command options'''
+        src_files = utils.make_cat(kwargs["dir1"],
+                                   kwargs["dir2"],
+                                   kwargs["name"])
+        command = ["-f"]
+        command.extend(src_files)
+        command.extend(["-o", self._setDir(kwargs["tgt"]),
+                        "-settime"])
+
+        return command
 
     def _mode_trjconv(self, kwargs):
         '''Wraps the trjconf command options'''

@@ -193,46 +193,36 @@ class BasicMinimization(object):
                       "energy": "Rmin/ener.edr",
                       "conf": "Rmin/confout.gro",
                       "log": "Rmin/md.log"}},
-         {"gromacs": "editconf", #2
+        ]
+        self.breaks = {}
+
+class BasicEquilibration(object):
+    def __init__(self):
+        self.recipe = \
+        [{"gromacs": "editconf", #0
           "options": {"src": "Rmin/confout.gro",
                       "tgt": "min.pdb"}},
-         {"command": "make_ndx", #3
+         {"command": "make_ndx", #1
           "options": {"src": "min.pdb",
                       "tgt": "index.ndx"}},
-         {"gromacs": "grompp", #4
+         {"gromacs": "grompp", #2
           "options": {"src": "Rmin/eq.mdp",
                       "src2": "min.pdb",
                       "top": "topol.top",
                       "tgt": "topol.tpr",
                       "index":"index.ndx"}},
-        ]
-        self.breaks = {}
-
-class LigandMinimization(BasicMinimization):
-    def __init__(self):
-        super(LigandMinimization, self).__init__()
-        self.recipe.insert(4,
-            {"gromacs": "genrestr",
-             "options": {"src": "Rmin/topol.tpr",
-                         "tgt": "protein_ca200.itp",
-                         "index": "index.ndx",
-                         "forces": ["200", "200", "200"]},
-             "input": "3\n"})
-
-class BasicEquilibration(object):
-    def __init__(self):
-        self.recipe = \
-        [{"command": "set_equilibration_init", #0
+         {"command": "set_equilibration_init", #3
           "options": {"src_tpr": "Rmin/topol.tpr",
                       "src_itp": "posre.itp",
                       "mdp": "Rmin/eq.mdp",
                       "eq_dir": "eq"}},
-         {"gromacs": "mdrun", #1
+         {"gromacs": "mdrun", #4
           "options": {"src": "eq/topol.tpr",
                       "tgt": "eq/traj.trj",
                       "energy": "eq/ener.edr",
                       "conf": "eq/confout.gro",
-                      "log": "eq/md.log"}},
+                      "traj": "eq/traj.xtc",
+                      "log": "eq/md_eq1000.log"}},
         ]
         self.breaks = {}
 
@@ -240,6 +230,13 @@ class LigandEquilibration(BasicEquilibration):
     def __init__(self):
         super(LigandEquilibration, self).__init__()
         self.recipe[0]["options"]["src_lig_itp"] = "posre_lig.itp"
+        self.recipe.insert(2,
+            {"gromacs": "genrestr",
+             "options": {"src": "Rmin/topol.tpr",
+                         "tgt": "protein_ca200.itp",
+                         "index": "index.ndx",
+                         "forces": ["200", "200", "200"]},
+             "input": "3\n"})
 
 class BasicRelax(object):
     def __init__(self):
@@ -277,12 +274,14 @@ class CAEquilibrate(object):
                           "tgt_dir": "eqCA",
                           "src_files": ["confout.gro", "eq.mdp"],
                           "tmp_files": ["eqCA.mdp"]}},
-             {"gromacs": "genrestr" #1,
+             {"gromacs": "genrestr", #1
               "options": {"src": "Rmin/topol.tpr",
                           "tgt": "posre.itp",
-                          "forces": ["200"] * 3}},
+                          "index": "index.ndx",
+                          "forces": ["200"] * 3},
+              "input": "3\n"},
              {"gromacs": "grompp", #2
-              "options": {"src": , "eqCA/eq.mdp",
+              "options": {"src": "eqCA/eq.mdp",
                           "src2": "eqCA/confout.gro",
                           "top": "topol.top",
                           "tgt": "eqCA/topol.tpr",
@@ -294,6 +293,18 @@ class CAEquilibrate(object):
                           "conf": "eqCA/confout.gro",
                           "traj": "eqCA/traj.xtc",
                           "log": "eqCA/md_eqCA.log"}},
+             {"gromacs": "trjcat", #4
+              "options": {"dir1": "eq",
+                          "dir2": "",
+                          "name": "traj.xtc",
+                          "tgt": "traj_EQ.xtc"},
+              "input": "c\n" * 6},
+             {"gromacs": "eneconv", #5
+              "options": {"dir1": "eq",
+                          "dir2": "eqCA",
+                          "name": "ener.edr",
+                          "tgt": "ener_EQ.edr"},
+              "input": "c\n" * 6}
              ]
 
-
+        self.breaks = {}

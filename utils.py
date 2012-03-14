@@ -46,6 +46,17 @@ def concat(**kwargs):
 
     return True
 
+def make_cat(dir1, dir2, name):
+    '''Very tight function to make a list of files to inject 
+    in some GROMACS suite programs
+    '''
+    traj_src = [os.path.join(dir1, name)]
+    traj_src.extend([os.path.join(dir1, "{0}", name).format(x)
+                     for x in range(800, 0, -200)])
+    traj_src.extend([os.path.join(dir2, name)])
+
+    return traj_src
+
 def make_topol(template_dir = "templates",
     target_dir = "", #Dir where topol.top should land
     working_dir = "", #Dir where script is working

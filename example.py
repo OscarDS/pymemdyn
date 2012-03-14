@@ -28,12 +28,12 @@ to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
              "posre.itp", "posre_lig.itp", "protein.itp", "protein.top",
              "protein_ca200.itp",
              "proteinopls.pdb",
-             "proteinopls-ligand.pdb", "protpopc.pdb", "steep.mdp", "tmp.pdb",
-             #"topol.top",
-             #"topol.tpr",
+             "proteinopls-ligand.pdb", "protpopc.pdb", "steep.mdp",
+             "traj.xtc", "tmp.pdb", "topol.top", "topol.tpr",
              "Y1_min-his.pdb", "water.pdb"]
-#for target in to_unlink:
-#    if os.path.isfile(target): os.unlink(target)
+
+for target in to_unlink:
+    if os.path.isfile(target): os.unlink(target)
 
 #sys.exit()
 #First we define all parts to be used
@@ -81,13 +81,14 @@ g = gromacs.Gromacs(membrane_complex = full_complex)
 # g.membrane_complex.complex.prot_xy
 # g.membrane_complex.complex.prot_z
 
+g.run_recipe() #This is the basic recipe (should be explicit?)
 slurm = queue.Slurm()
 g.queue = slurm
-#.recipe = recipes.LigandMinimization()
-#.run_recipe()
-#g.recipe = recipes.LigandEquilibration()
-#g.run_recipe()
-#g.recipe = recipes.BasicRelax()
+g.recipe = recipes.BasicMinimization()
+g.run_recipe()
+g.recipe = recipes.LigandEquilibration()
+g.run_recipe()
+g.recipe = recipes.BasicRelax()
 #g.recipe.recipe = g.recipe.recipe[3:-1]
 #for n, com in enumerate(g.recipe.recipe):
 #    print n, com
