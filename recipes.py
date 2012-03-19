@@ -188,13 +188,18 @@ class BasicMinimization(object):
                       "min_dir": "Rmin",
                       "mdp": "eq.mdp"}},
          {"gromacs": "mdrun", #1
-          "options": {"src": "Rmin/topol.tpr",
-                      "tgt": "Rmin/traj.trj",
-                      "energy": "Rmin/ener.edr",
-                      "conf": "Rmin/confout.gro",
-                      "log": "Rmin/md.log"}},
+          "options": {"dir": "Rmin",
+                      "src": "topol.tpr",
+                      "tgt": "traj.trj",
+                      "energy": "ener.edr",
+                      "conf": "confout.gro",
+                      "log": "md.log"}},
         ]
         self.breaks = {}
+
+class LigandMinimization(BasicMinimization):
+    def __init__(self):
+        super(LigandMinimization, self).__init__()
 
 class BasicEquilibration(object):
     def __init__(self):
@@ -217,19 +222,20 @@ class BasicEquilibration(object):
                       "mdp": "Rmin/eq.mdp",
                       "eq_dir": "eq"}},
          {"gromacs": "mdrun", #4
-          "options": {"src": "eq/topol.tpr",
-                      "tgt": "eq/traj.trj",
-                      "energy": "eq/ener.edr",
-                      "conf": "eq/confout.gro",
-                      "traj": "eq/traj.xtc",
-                      "log": "eq/md_eq1000.log"}},
+          "options": {"dir": "eq",
+                      "src": "topol.tpr",
+                      "tgt": "traj.trj",
+                      "energy": "ener.edr",
+                      "conf": "confout.gro",
+                      "traj": "traj.xtc",
+                      "log": "md_eq1000.log"}},
         ]
         self.breaks = {}
 
 class LigandEquilibration(BasicEquilibration):
     def __init__(self):
         super(LigandEquilibration, self).__init__()
-        self.recipe[0]["options"]["src_lig_itp"] = "posre_lig.itp"
+        self.recipe[3]["options"]["src_lig_itp"] = "posre_lig.itp"
         self.recipe.insert(2,
             {"gromacs": "genrestr",
              "options": {"src": "Rmin/topol.tpr",
@@ -255,14 +261,15 @@ class BasicRelax(object):
                          "top": os.path.join(tgt_dir, "topol.top"),
                          "tgt": os.path.join(tgt_dir, "topol.tpr"),
                          "index": "index.ndx"}},
+             #TODO ese conf hai que copialo, non vale asi
             {"gromacs": "mdrun", #2, 5, 8, 11
-             "options": {"src": os.path.join(tgt_dir, "topol.tpr"),
-                         "tgt": os.path.join(tgt_dir, "traj.trr"),
-                         "energy": os.path.join(tgt_dir, "ener.edr"),
-                         "conf": os.path.join(src_dir, "confout.gro"),
-                         "traj": os.path.join(tgt_dir, "traj.xtc"),
-                         "log": os.path.join(src_dir,
-                             "md_eq{0}.log".format(const))}},
+             "options": {"dir": tgt_dir,
+                         "src": "topol.tpr",
+                         "tgt": "traj.trr",
+                         "energy": "ener.edr",
+                         "conf": "../confout.gro"),
+                         "traj": "traj.xtc",
+                         "log": "md_eq{0}.log".format(const)}},
             ]
         self.breaks = {}
 
@@ -287,12 +294,13 @@ class CAEquilibrate(object):
                           "tgt": "eqCA/topol.tpr",
                           "index": "index.ndx"}},
              {"gromacs": "mdrun", #3
-              "options": {"src": "eqCA/topol.tpr",
-                          "tgt": "eqCA/traj.trr",
-                          "energy": "eqCA/ener.edr",
-                          "conf": "eqCA/confout.gro",
-                          "traj": "eqCA/traj.xtc",
-                          "log": "eqCA/md_eqCA.log"}},
+              "options": {"dir": "eqCA",
+                          "src": "topol.tpr",
+                          "tgt": "traj.trr",
+                          "energy": "ener.edr",
+                          "conf": "confout.gro",
+                          "traj": "traj.xtc",
+                          "log": "md_eqCA.log"}},
              {"gromacs": "trjcat", #4
               "options": {"dir1": "eq",
                           "dir2": "",

@@ -449,7 +449,7 @@ class Wrapper(object):
         self.gromacs_dir = "/opt/gromacs405/bin/"
         #And this is our directory to refer the "fixed" files
         self.own_dir = os.path.dirname(os.path.abspath(__file__))
-        #Repo dir is under gromacs.py file directory
+        #Repo dir is under pymoldyn file directory
         self.repo_dir = os.path.join(self.own_dir, "templates")
 
     def _common_io(self, src, tgt):
@@ -588,17 +588,18 @@ class Wrapper(object):
 
     def _mode_mdrun(self, kwargs):
         '''Wraps the mdrun command options'''
-        command = ["-s", self._setDir(kwargs["src"]),
-                   "-o", self._setDir(kwargs["tgt"]),
-                   "-e", self._setDir(kwargs["energy"]),
-                   "-c", self._setDir(kwargs["conf"]),
-                   "-g", self._setDir(kwargs["log"])]
+
+        command = ["-s", kwargs["src"],
+                   "-o", kwargs["tgt"],
+                   "-e", kwargs["energy"],
+                   "-c", kwargs["conf"],
+                   "-g", kwargs["log"]]
 
         if("traj" in kwargs.keys()):
-            command.extend(["-x", self._setDir(kwargs["traj"])])
+            command.extend(["-x", kwargs["traj"]])
 
         if("cpi" in kwargs.keys()):
-            command.extend(["-cpi", self._setDir(kwargs["cpi"])])
+            command.extend(["-cpi", kwargs["cpi"]])
 
         return command
 
@@ -644,15 +645,13 @@ class Wrapper(object):
         '''Run a command that comes in kwargs in a subprocess, and returns
         the output as (output, errors)'''
 
-        if("multiproc" in kwargs.keys()):
-            #Command is (probably) a mdrun, so it requires parallelization
-            #TODO: This initial command should be generated inside "Queue"
-            # class
-            command = ["srun", "-n", kwargs["multiproc"], "-t", "50:00:00"]
-        else:
-            command = []
+        command = self.generate_command(kwargs)
 
-        command.extend(self.generate_command(kwargs))
+        my_dir = os.getcwd()
+
+        if kwargs["gromacs"] == "mdrun":
+            #MDRUN depends on the local .mdp, no option to set it.
+            os.chdir(kwargs["options"]["dir"])
 
         if("input" in kwargs.keys()):
             p = subprocess.Popen(command,
@@ -666,6 +665,8 @@ class Wrapper(object):
                 stderr = subprocess.PIPE)
 
             gro_out, gro_errs = p.communicate()
+
+        os.chdir(my_dir)
 
         return gro_out, gro_errs
 
