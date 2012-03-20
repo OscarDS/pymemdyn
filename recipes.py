@@ -306,7 +306,7 @@ class CAEquilibrate(object):
                           "log": "md_eqCA.log"}},
              {"gromacs": "trjcat", #4
               "options": {"dir1": "eq",
-                          "dir2": "",
+                          "dir2": "eqCA",
                           "name": "traj.xtc",
                           "tgt": "traj_EQ.xtc"},
               "input": "c\n" * 6},

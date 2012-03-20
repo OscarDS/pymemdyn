@@ -1,3 +1,4 @@
+import inspect
 import os
 import shutil
 from string import Template
@@ -60,9 +61,24 @@ def make_cat(dir1, dir2, name):
 def make_topol(template_dir = "templates",
     target_dir = "", #Dir where topol.top should land
     working_dir = "", #Dir where script is working
-    protein= "",
-    ligand = ""):
+    protein = "",
+    ligand = "",
+    crystal_waters = "",
+    ions = ""):
     '''Make the topol starting from our topol.top template'''
+
+    comps = {"protein": {"itp_name": "protein.itp",
+                 "ifdef_name": "POSRES",
+                 "posre_name": "posre.itp"},
+             "ligand": {"itp_name": ligand.replace(".pdb", ".itp"),
+                 "ifdef_name": "POSRESLIG",
+                 "posre_name": "posre_lig.itp"},
+             "crystal_waters": {"itp_name": "hoh.itp",
+                 "ifdef_name": "POSRESHOH",
+                 "posre_name": "posre_hoh.itp"},
+             "ions": {"itp_name": "ions_local.itp",
+                 "ifdef_name": "POSRESION",
+                 "posre_name": "posre_ion.itp"}}
 
     src = open(os.path.join(template_dir, "topol.top"), "r")
     tgt = open(os.path.join(target_dir, "topol.top"), "w")
@@ -70,9 +86,13 @@ def make_topol(template_dir = "templates",
     t = Template("".join(src.readlines()))
     src.close()
 
+    #for comp in comps.keys():
+    #    if locals()[comp]:  
+    #        return comp
+
     if(ligand):
-        ligand_name = ligand.replace(".pdb", "")
-        lig_itp = '#include "{0}.itp"\n'.format(ligand_name) + \
+        ligand_name = ligand.replace(".pdb", ".itp")
+        lig_itp = '#include "{0}"\n'.format(ligand_name) + \
                   '; Include Position restraint file\n' + \
                   '#ifdef POSRESLIG\n' + \
                   '#include "posre_lig.itp"\n' + \
@@ -89,6 +109,19 @@ def make_topol(template_dir = "templates",
     tgt.close()
 
     return True
+
+def make_topol_lines(itp_name = "",
+    ifdef_name = "",
+    posre_name = ""):
+    '''Make the topol lines to be included'''
+
+    return "\n".join(['#include "{it}"',
+        '; Include Position restraint file',
+        '#ifdef {id}',
+        '#include "{po}"',
+        '#endif']).format(it = itp_name,
+                          id = ifdef_name,
+                          po = posre_name)
 
 def tune_mdp(groups):
     '''Adjust the tc-groups of eq.mdp to be in line with our system'''

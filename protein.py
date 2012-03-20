@@ -63,3 +63,34 @@ class Ligand(object):
     def __init__(self, *args, **kwargs):
         self.pdb = kwargs["pdb"]
         self.itp = kwargs["itp"]
+
+class CrystalWater(object):
+    def __init__(self, *args, **kwargs):
+        self.pdb = kwargs["pdb"]
+        self.itp = "posre_hoh.itp"
+        self._n_wats = self.count_waters()
+
+    def setWaters(self, value):
+        '''Sets the crystal waters'''
+        self._n_wats = value
+    def getWaters(self):
+        '''Get the crystal waters'''
+        return self._n_wats
+    n_wats = property(getWaters, setWaters)
+
+    def count_waters(self):
+       '''Count and set the number of waters in the pdb'''
+       return len([x for x in open(self.pdb, "r") if "OW" in x])
+
+    def _setITP(self):
+        '''Create the itp to this structure'''
+        s = "\n".join([
+            "; position restraints for crystallographic waters (resn HOH)",
+            "[ position_restraints ]",
+            ";  i funct       fcx        fcy        fcz",
+            "   1    1       1000       1000       1000"])
+
+        tgt = open(self.itp, "w")
+        tgt.writelines(s)
+        tgt.close()
+

@@ -32,9 +32,8 @@ to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
              "traj.xtc", "tmp.pdb", "topol.top", "topol.tpr",
              "Y1_min-his.pdb", "water.pdb"]
 
-for target in to_unlink:
-    pass
-    #if os.path.isfile(target): os.unlink(target)
+#for target in to_unlink:
+#    if os.path.isfile(target): os.unlink(target)
 
 #sys.exit()
 #First we define all parts to be used
@@ -82,21 +81,21 @@ g = gromacs.Gromacs(membrane_complex = full_complex)
 # g.membrane_complex.complex.prot_xy
 # g.membrane_complex.complex.prot_z
 
-#g.run_recipe() #This is the basic recipe (should be explicit?)
+g.run_recipe() #This is the basic recipe (should be explicit?)
 #
 slurm = queue.Slurm()
 g.queue = slurm
 #
 g.recipe = recipes.BasicMinimization()
-#g.run_recipe()
+g.run_recipe()
 #sys.exit()
 #
 g.recipe = recipes.LigandEquilibration()
-#g.run_recipe()
+g.run_recipe()
 #sys.exit()
 #
 g.recipe = recipes.BasicRelax()
-#g.run_recipe()
+g.run_recipe()
 #sys.exit()
 #
 g.recipe = recipes.CAEquilibrate()
