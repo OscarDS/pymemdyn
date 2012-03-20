@@ -88,16 +88,16 @@ slurm = queue.Slurm()
 g.queue = slurm
 #
 g.recipe = recipes.BasicMinimization()
-g.run_recipe()
-sys.exit()
+#g.run_recipe()
+#sys.exit()
 #
 g.recipe = recipes.LigandEquilibration()
 #g.run_recipe()
 #sys.exit()
 #
 g.recipe = recipes.BasicRelax()
-g.run_recipe()
-sys.exit()
+#g.run_recipe()
+#sys.exit()
 #
 g.recipe = recipes.CAEquilibrate()
 g.run_recipe()

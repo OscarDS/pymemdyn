@@ -183,10 +183,11 @@ class MonomerLigandRecipe(MonomerRecipe):
 class BasicMinimization(object):
     def __init__(self):
         self.recipe = \
-        [{"command": "set_minimization_init", #0
-          "options": {"src_tpr": "topol.tpr",
-                      "min_dir": "Rmin",
-                      "mdp": "eq.mdp"}},
+        [{"command": "set_stage_init", #0
+          "options": {"src_dir": "",
+                      "src_files": ["topol.tpr"],
+                      "tgt_dir": "Rmin",
+                      "repo_files": ["eq.mdp"]}},
          {"gromacs": "mdrun", #1
           "options": {"dir": "Rmin",
                       "src": "topol.tpr",
@@ -216,12 +217,15 @@ class BasicEquilibration(object):
                       "top": "topol.top",
                       "tgt": "topol.tpr",
                       "index":"index.ndx"}},
-         {"command": "set_equilibration_init", #3
-          "options": {"src_tpr": "Rmin/topol.tpr",
-                      "src_itp": "posre.itp",
-                      "mdp": "Rmin/eq.mdp",
-                      "eq_dir": "eq"}},
-         {"gromacs": "mdrun", #4
+         {"command": "set_stage_init", #3
+          "options": {"src_dir": "Rmin",
+                      "src_files": ["topol.tpr", "eq.mdp"],
+                      "tgt_dir": "eq"}},
+         {"command": "set_stage_init", #4
+          "options": {"src_dir": "",
+                      "src_files": ["posre.itp"],
+                      "tgt_dir": "eq"}},
+         {"gromacs": "mdrun", #5
           "options": {"dir": "eq",
                       "src": "topol.tpr",
                       "tgt": "traj.trj",
@@ -235,7 +239,7 @@ class BasicEquilibration(object):
 class LigandEquilibration(BasicEquilibration):
     def __init__(self):
         super(LigandEquilibration, self).__init__()
-        self.recipe[3]["options"]["src_lig_itp"] = "posre_lig.itp"
+        self.recipe[4]["options"]["src_files"].append("posre_lig.itp")
         self.recipe.insert(2,
             {"gromacs": "genrestr",
              "options": {"src": "Rmin/topol.tpr",
@@ -261,13 +265,13 @@ class BasicRelax(object):
                          "top": os.path.join(tgt_dir, "topol.top"),
                          "tgt": os.path.join(tgt_dir, "topol.tpr"),
                          "index": "index.ndx"}},
-             #TODO ese conf hai que copialo, non vale asi
+             #TODO ese conf de abaixo hai que copialo, non vale asi
             {"gromacs": "mdrun", #2, 5, 8, 11
              "options": {"dir": tgt_dir,
                          "src": "topol.tpr",
                          "tgt": "traj.trr",
                          "energy": "ener.edr",
-                         "conf": "../confout.gro"),
+                         "conf": "../confout.gro",
                          "traj": "traj.xtc",
                          "log": "md_eq{0}.log".format(const)}},
             ]
@@ -276,11 +280,10 @@ class BasicRelax(object):
 class CAEquilibrate(object):
     def __init__(self):
         self.recipe = \
-            [{"command": "set_caequil_init", #0
+            [{"command": "set_stage_init", #0
               "options": {"src_dir": "eq",
                           "tgt_dir": "eqCA",
-                          "src_files": ["confout.gro", "eq.mdp"],
-                          "tmp_files": ["eqCA.mdp"]}},
+                          "src_files": ["confout.gro", "eq.mdp"]}},
              {"gromacs": "genrestr", #1
               "options": {"src": "Rmin/topol.tpr",
                           "tgt": "posre.itp",

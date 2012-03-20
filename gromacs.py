@@ -269,39 +269,6 @@ class Gromacs(object):
 
         return True
 
-    def set_caequil_init(self, **kwargs):
-        '''Set all the necessary files to init an equilibration of CA'''
-        if not os.path.isdir(kwargs["tgt_dir"]): os.mkdir(kwargs["tgt_dir"])
-
-        for f_name in kwargs["src_files"]:
-            shutil.copy(os.path.join(kwargs["src_dir"], f_name),
-                        os.path.join(kwargs["tgt_dir"], f_name))
-
-        for f_name in kwargs["tmp_files"]:
-            shutil.copy(os.path.join(self.repo_dir, f_name),
-                        os.path.join(kwargs["tgt_dir"], f_name))
-
-        return True
-
-    def set_equilibration_init(self, **kwargs):
-        '''Set all the necessary files to init an equilibration'''
-        eq_dir = kwargs["eq_dir"]
-        if not os.path.isdir(eq_dir): os.mkdir(eq_dir)
-
-        if "src_tpr" in kwargs.keys():
-            shutil.copy(kwargs["src_tpr"],
-                os.path.join(eq_dir, os.path.split(kwargs["src_tpr"])[1]))
-            shutil.copy(kwargs["mdp"],
-                os.path.join(eq_dir, os.path.split(kwargs["mdp"])[1]))
-        if "src_itp" in kwargs.keys():
-            shutil.copy(kwargs["src_itp"],
-                os.path.join(eq_dir, kwargs["src_itp"]))
-        if "src_lig_itp" in kwargs.keys():
-            shutil.copy(kwargs["src_lig_itp"],
-                os.path.join(eq_dir, kwargs["src_lig_itp"]))
-
-        return True
-       
     def set_grompp(self, **kwargs):
         '''Copy the template files to the working dir'''
         itp = ""
@@ -351,19 +318,6 @@ class Gromacs(object):
 
         return True
 
-    def set_minimization_init(self, **kwargs):
-        '''Copy the needed files to the minimization directory, supplied as
-        "min_dir" argument'''
-        min_dir = kwargs["min_dir"]
-        if not os.path.isdir(min_dir): os.mkdir(min_dir)
-
-        if "src_tpr" in kwargs.keys():
-            shutil.copy(kwargs["src_tpr"],
-                os.path.join(min_dir, kwargs["src_tpr"]))
-            mdp = os.path.join(self.repo_dir, kwargs["mdp"])
-            shutil.copy(mdp,
-                os.path.join(min_dir, kwargs["mdp"]))
-
     def set_options(self, options, breaks):
         '''Set the break options from a recipe'''
         for option, value in breaks.iteritems():
@@ -408,6 +362,21 @@ class Gromacs(object):
                     self.set_box_sizes()
 
                 break
+
+        return True
+
+    def set_stage_init(self, **kwargs):
+        '''Copy a set of files from the source to the target dir'''
+        if not os.path.isdir(kwargs["tgt_dir"]): os.mkdir(kwargs["tgt_dir"])
+
+        for src_file in kwargs["src_files"]:
+            shutil.copy(os.path.join(kwargs["src_dir"], src_file),
+                        os.path.join(kwargs["tgt_dir"], src_file))
+
+        if "repo_files" in kwargs.keys():
+            for repo_file in kwargs["repo_files"]:
+                shutil.copy(os.path.join(self.repo_dir, repo_file),
+                            os.path.join(kwargs["tgt_dir"], repo_file))
 
         return True
 
