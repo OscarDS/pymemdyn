@@ -1,6 +1,6 @@
 constraints = none
 integrator      = steep
-nsteps          = 10#200
+nsteps          = 500
 nstlist         = 1
 ns-type         = Grid
 pbc             = xyz

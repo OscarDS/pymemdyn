@@ -109,7 +109,7 @@ class Gromacs(object):
 
         #And this makes the membrane group as membr
         n_group += 1
-        input += "r POP || r CHO\n name {0} membr\n".format(n_group)
+        input += "r POP || r CHO || r LIP\n name {0} membr\n".format(n_group)
 
         if hasattr(self.membrane_complex.membrane, "ions"):
             #This makes the group ions TODO
@@ -123,6 +123,9 @@ class Gromacs(object):
                                              "options": kwargs,
                                              "input": input})
 
+        logging.debug("make_ndx command")
+        logging.debug(err)
+        logging.debug(out)
         #We need to set the eq.mdp with these new groups
         #NO LONGER NEEDED AS eq.mdp IS NOW GENERIC
         #utils.tune_mdp(groups)
@@ -144,7 +147,7 @@ class Gromacs(object):
 
     def relax(self, **kwargs):
         '''Relax a protein'''
-        step_time = int(5 / 0.002)
+        step_time = int(500 / 0.002)
 
         if not os.path.isdir(kwargs["tgt_dir"]): os.makedirs(kwargs["tgt_dir"])
 
@@ -154,6 +157,7 @@ class Gromacs(object):
         new_posre = open(os.path.join(kwargs["tgt_dir"], "posre.itp"), "w")
         src_posre = open(os.path.join(kwargs["src_dir"], "posre.itp"), "r")
         for line in src_posre:
+            #Replace after splitting!
             new_posre.write(line.replace("1  1000  1000  1000",
                 "1  {0}  {0}  {0}".format(kwargs["const"])))
         src_posre.close()

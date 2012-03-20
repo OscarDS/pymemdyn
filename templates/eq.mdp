@@ -5,7 +5,7 @@ define		    =  -DPOSRES ; Restraint heavy atoms of the protein (all except H's)
 
 integrator          =  md        ; leap-frog integrator
 dt                  =  0.002     ; in ps !  = 2 fs
-nsteps              =  2500    ; total 0.5 ns
+nsteps              =  250000    ; total 0.5 ns
 
 nstxout             =  25000     ; save coordinates every 50 ps
 nstvout             =  250000    ; save velocities every 500 ps
