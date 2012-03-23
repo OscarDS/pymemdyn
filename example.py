@@ -5,7 +5,7 @@ import queue
 import recipes
 import membrane
 
-import os, sys
+import os, shutil, sys
 
 #Remove all previous files
 to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
@@ -17,9 +17,10 @@ to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
              "#proteinopls.pdb.3#", "#proteinopls.pdb.4#","#protein.top.1#",
              "#protpopc.pdb.1#", "#protpopc.pdb.2#", "#tmp.pdb.1#",
              "#topol.top.1#", "#topol.top.2#", "#topol.top.3#",
-             "#topol.tpr.1#", "#topol.tpr.2#", "#water.pdb.1#",
+             "#topol.tpr.1#", "#topol.tpr.2#", "#topol.tpr.3#",
+             "#topol.tpr.4#", "#water.pdb.1#",
              "protein_ca200.itp", "ffoplsaabon_mod.itp", "ffoplsaa_mod.itp",
-             "ffoplsaanb_mod.itp",
+             "ffoplsaanb_mod.itp", "GROMACS.output",
              "genion.log", "hexagon.pdb", "index.ndx",
              "ligand_ha.ndx", "mdout.mdp", "min.pdb", "output.pdb",
              "output.tpr",
@@ -32,8 +33,13 @@ to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
              "traj.xtc", "tmp.pdb", "topol.top", "topol.tpr",
              "Y1_min-his.pdb", "water.pdb"]
 
-#for target in to_unlink:
-#    if os.path.isfile(target): os.unlink(target)
+dirs_to_unlink = ["Rmin", "eq"]
+
+for target in to_unlink:
+    pass#if os.path.isfile(target): os.unlink(target)
+
+for target in dirs_to_unlink:
+    pass#if os.path.isdir(target): shutil.rmtree(target)
 
 #sys.exit()
 #First we define all parts to be used
@@ -45,7 +51,7 @@ g = gromacs.Gromacs()
 
 #Now we create a complex membrane + protein(s) + ligand
 
-prot_complex = protein.ProteinComplex(monomer = monomer, ligand = ligand)
+prot_complex = protein.ProteinComplex(monomer = monomer)#, ligand = ligand)
 full_complex = complex.MembraneComplex()
 full_complex.complex = prot_complex
 full_complex.membrane = membr
@@ -81,22 +87,23 @@ g = gromacs.Gromacs(membrane_complex = full_complex)
 # g.membrane_complex.complex.prot_xy
 # g.membrane_complex.complex.prot_z
 
-g.run_recipe() #This is the basic recipe (should be explicit?)
+#g.run_recipe() #This is the basic recipe (should be explicit?)
 #
+g.recipe = recipes.MonomerRecipe("debug")
+#g.run_recipe()
 slurm = queue.Slurm()
 g.queue = slurm
 #
-g.recipe = recipes.BasicMinimization()
-g.run_recipe()
+g.recipe = recipes.BasicMinimization("debug")
+#g.run_recipe()
 #sys.exit()
 #
-g.recipe = recipes.LigandEquilibration()
-g.run_recipe()
+g.recipe = recipes.BasicEquilibration("debug")
+#g.run_recipe()
 #sys.exit()
 #
-g.recipe = recipes.BasicRelax()
-g.run_recipe()
-#sys.exit()
+g.recipe = recipes.BasicRelax("debug")
+#g.run_recipe()
 #
-g.recipe = recipes.CAEquilibrate()
+g.recipe = recipes.CAEquilibrate("debug")
 g.run_recipe()

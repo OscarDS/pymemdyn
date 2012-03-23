@@ -3,6 +3,8 @@ import os
 import shutil
 from string import Template
 
+import sys
+
 def _arrange_dir(src_dir, new_dir, useful_files=[], useful_fixed=[]):
     '''Copy the files in useful files from src_dir and
     fixed files from self.own_dir to new dir, which is created if needed'''
@@ -61,22 +63,23 @@ def make_cat(dir1, dir2, name):
 def make_topol(template_dir = "templates",
     target_dir = "", #Dir where topol.top should land
     working_dir = "", #Dir where script is working
-    protein = "",
-    ligand = "",
-    crystal_waters = "",
-    ions = ""):
+    protein = "", # Number of proteins
+    lig = "", # Number of ligands
+    hoh = "", # Number of crystal waters
+    na = ""): # Number of ions
     '''Make the topol starting from our topol.top template'''
 
+    order = ("protein", "hoh", "lig", "na")
     comps = {"protein": {"itp_name": "protein.itp",
                  "ifdef_name": "POSRES",
                  "posre_name": "posre.itp"},
-             "ligand": {"itp_name": ligand.replace(".pdb", ".itp"),
+             "lig": {"itp_name": "ligand.itp",
                  "ifdef_name": "POSRESLIG",
                  "posre_name": "posre_lig.itp"},
-             "crystal_waters": {"itp_name": "hoh.itp",
+             "hoh": {"itp_name": "hoh.itp",
                  "ifdef_name": "POSRESHOH",
                  "posre_name": "posre_hoh.itp"},
-             "ions": {"itp_name": "ions_local.itp",
+             "na": {"itp_name": "ions_local.itp",
                  "ifdef_name": "POSRESION",
                  "posre_name": "posre_ion.itp"}}
 
@@ -86,26 +89,29 @@ def make_topol(template_dir = "templates",
     t = Template("".join(src.readlines()))
     src.close()
 
-    #for comp in comps.keys():
-    #    if locals()[comp]:  
-    #        return comp
+    itp_include = []
+    for c in order:
+        if locals()[c]:
+            itp_name = comps[c]["itp_name"]
+            itp_include.extend(['#include "{0}"'.format(comps[c]["itp_name"]),
+                '; Include Position restraint file',
+                '#ifdef {0}'.format(comps[c]["ifdef_name"]),
+                '#include "{0}/{1}"'.format(working_dir,
+                                           comps[c]["posre_name"]),
+                '#endif'])
 
-    if(ligand):
-        ligand_name = ligand.replace(".pdb", ".itp")
-        lig_itp = '#include "{0}"\n'.format(ligand_name) + \
-                  '; Include Position restraint file\n' + \
-                  '#ifdef POSRESLIG\n' + \
-                  '#include "posre_lig.itp"\n' + \
-                  '#endif'
-        lig_name = (os.path.join(working_dir, ligand_name + ".itp")) + " 1"
-    else:
-        lig_itp = ";"
-        lig_name = ";"
+            comps[c]["line"] = "{0} {1}".format(c, locals()[c])
+        else:
+            comps[c]["line"] = ";"
+
+    if working_dir: working_dir += "/" #Root dir doesn't need to be slashed
 
     tgt.write(t.substitute(working_dir = working_dir,
-                           protein_name = "protein 1",
-                           lig_itp = lig_itp,
-                           lig_name = "lig 1"))
+                           protein = comps["protein"]["line"],
+                           lig = comps["lig"]["line"],
+                           hoh = comps["hoh"]["line"],
+                           na = comps["na"]["line"],
+                           itp_includes = "\n".join(itp_include)))
     tgt.close()
 
     return True

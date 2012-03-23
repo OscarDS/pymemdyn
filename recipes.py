@@ -1,7 +1,7 @@
 import os
 
 class MonomerRecipe(object):
-    def __init__(self):
+    def __init__(self, *args):
         self.recipe = \
         [{"gromacs": "pdb2gmx", #0
           "options": {"src": "",
@@ -36,7 +36,8 @@ class MonomerRecipe(object):
           "options": {"src": "popc.pdb",
                       "tgt": "popc.pdb",
                       "box": ""}},
-         {"command": "make_topol"}, #9
+         {"command": "make_topol",
+          "options": {"protein" :1}}, #9
          {"gromacs": "editconf", #10
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
@@ -66,9 +67,15 @@ class MonomerRecipe(object):
           {"command": "count_lipids", #16
            "options": {"src": "tmp.pdb",
                        "tgt": "popc.pdb"}},
-          {"command": "make_topol"}, #17
+          {"command": "make_topol",#17
+           "options": {"protein": 1}},
           {"command": "make_topol_lipids"}, #18
-          {"command": "set_grompp"}, #19
+          {"command": "set_grompp", #19
+           "options": {"steep.mdp": "steep.mdp",
+                       "popc.itp": "popc.itp",
+                       "ffoplsaanb_mod.itp": "ffoplsaanb_mod.itp",
+                       "ffoplsaabon_mod.itp": "ffoplsaabon_mod.itp",
+                       "ffoplsaa_mod.itp": "ffoplsaa_mod.itp"}},
           {"gromacs": "grompp", #20
            "options": {"src": "steep.mdp",
                        "src2": "tmp.pdb",
@@ -125,17 +132,27 @@ class MonomerRecipe(object):
                        8: {"box": "membrane_complex.bilayer_box_size"},
                        13: {"box": "membrane_complex.embeded_box_size"},
                        14: {"box": "membrane_complex.protein_box_size"},
+                       23: {"np": "membrane_complex.complex.positive_charge",
+                            "nn": "membrane_complex.complex.negative_charge"},
+                       25: {"trans": "membrane_complex.complex.trans"}
                       }
-                       
+
+        if "debug" in args:
+            self.recipe[19]["options"]["steep.mdp"] = "steepDEBUG.mdp"
 
 # This recipe modifies the previous one taking a ligand into account
 class MonomerLigandRecipe(MonomerRecipe):
     def __init__(self):
         super(MonomerLigandRecipe, self).__init__()
-        self.recipe[17] = \
+        self.recipe[19]["options"]["ffoplsaanb_mod.itp"] =\
+            "ffoplsaanb_mod_lig.itp"
+        self.recipe[19]["options"]["ffoplsaabon_mod.itp"] =\
+            "ffoplsaabon_mod_lig.itp"
+        self.recipe[19]["options"]["ffoplsaa_mod.itp"] = "ffoplsaa_mod_lig.itp"
+        self.recipe[17] =\
             {"command": "make_topol",
              "options": {"ligand": ""}}
-        self.recipe[9] = \
+        self.recipe[9] =\
             {"command": "make_topol",
              "options": {"ligand": ""}}
 
@@ -181,7 +198,7 @@ class MonomerLigandRecipe(MonomerRecipe):
                       }
 
 class BasicMinimization(object):
-    def __init__(self):
+    def __init__(self, *args):
         self.recipe = \
         [{"command": "set_stage_init", #0
           "options": {"src_dir": "",
@@ -198,12 +215,15 @@ class BasicMinimization(object):
         ]
         self.breaks = {}
 
+        if "debug" in args:
+            self.recipe[0]["options"]["repo_files"] = ["eqDEBUG.mdp"]
+
 class LigandMinimization(BasicMinimization):
     def __init__(self):
         super(LigandMinimization, self).__init__()
 
 class BasicEquilibration(object):
-    def __init__(self):
+    def __init__(self, args):
         self.recipe = \
         [{"gromacs": "editconf", #0
           "options": {"src": "Rmin/confout.gro",
@@ -236,6 +256,11 @@ class BasicEquilibration(object):
         ]
         self.breaks = {}
 
+        if "debug" in args:
+            self.recipe[2]["options"]["src"] = "Rmin/eqDEBUG.mdp"
+            self.recipe[3]["options"]["src_files"] =\
+                ["topol.tpr", "eqDEBUG.mdp"]
+
 class LigandEquilibration(BasicEquilibration):
     def __init__(self):
         super(LigandEquilibration, self).__init__()
@@ -249,7 +274,7 @@ class LigandEquilibration(BasicEquilibration):
              "input": "3\n"})
 
 class BasicRelax(object):
-    def __init__(self):
+    def __init__(self, *args):
         self.recipe = []
         for const in range(800, 0, -200):
             tgt_dir = "eq/{0}".format(const)
@@ -258,11 +283,14 @@ class BasicRelax(object):
             {"command": "relax", #0, 3, 6, 9
              "options": {"const": const,
                          "src_dir": src_dir,
-                         "tgt_dir": tgt_dir}},
+                         "tgt_dir": tgt_dir,
+                         "mdp": "eq.mdp",
+                         "posres": ["posre.itp"]}},
             {"gromacs": "grompp", #1, 4, 7, 10
              "options": {"src": os.path.join(tgt_dir, "eq.mdp"),
                          "src2": os.path.join(src_dir, "confout.gro"),
-                         "top": os.path.join(tgt_dir, "topol.top"),
+                         #top": os.path.join(tgt_dir, "topol.top"),
+                         "top": "topol.top",
                          "tgt": os.path.join(tgt_dir, "topol.tpr"),
                          "index": "index.ndx"}},
              #TODO ese conf de abaixo hai que copialo, non vale asi
@@ -277,8 +305,17 @@ class BasicRelax(object):
             ]
         self.breaks = {}
 
-class CAEquilibrate(object):
+        if "debug" in args:
+            for i in range(0, 12, 3): #All relax lines
+                self.recipe[i]["options"]["mdp"] = "eqDEBUG.mdp"
+
+class LigandRelax(BasicRelax):
     def __init__(self):
+        super(LigandRelax, self).__init__()
+        self.recipe[4]["options"]["posres"].append("posre_lig.itp")
+
+class CAEquilibrate(object):
+    def __init__(self, *args):
         self.recipe = \
             [{"command": "set_stage_init", #0
               "options": {"src_dir": "eq",
@@ -319,3 +356,9 @@ class CAEquilibrate(object):
              ]
 
         self.breaks = {}
+
+        if "debug" in args:
+            self.recipe[0]["options"]["src_files"] =\
+                ["confout.gro", "eqDEBUG.mdp"]
+            self.recipe[2]["options"]["src"] = "eqCA/eqDEBUG.mdp"
+

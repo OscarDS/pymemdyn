@@ -145,60 +145,54 @@ class Gromacs(object):
 
         return True
 
+    def passing(self):
+        '''Do nothing, to respect some orders'''
+        return True
+
     def relax(self, **kwargs):
         '''Relax a protein'''
-        step_time = int(500 / 0.002)
 
         if not os.path.isdir(kwargs["tgt_dir"]): os.makedirs(kwargs["tgt_dir"])
 
-        posres = ["posre.itp"]
-        if hasattr(self.membrane_complex.complex, "ligand"): pass #TODO
+        for posre in kwargs["posres"]:
+            new_posre = open(os.path.join(kwargs["tgt_dir"], posre), "w")
 
-        new_posre = open(os.path.join(kwargs["tgt_dir"], "posre.itp"), "w")
-        src_posre = open(os.path.join(kwargs["src_dir"], "posre.itp"), "r")
-        for line in src_posre:
-            #Replace after splitting!
-            new_posre.write(line.replace("1  1000  1000  1000",
-                "1  {0}  {0}  {0}".format(kwargs["const"])))
-        src_posre.close()
-        new_posre.close()
-
-        if hasattr(self.membrane_complex.complex, "ligand"):
-            new_posre = open(os.path.join(kwargs["tgt_dir"], "posre_lig.itp"),
-                             "w")
-            src_posre = open(os.path.join(kwargs["src_dir"], "posre_lig.itp"),
-                             "r")
-            for line in src_posre:
-                new_posre.write(line.replace("1  1000  1000  1000",
-                    "1  {0}  {0}  {0}".format(kwargs["const"])))
-            src_posre.close()
+            for line in open(os.path.join(kwargs["src_dir"], posre), "r"):
+                if line.split()[-3:] == ["1000", "1000", "1000"]:
+                    new_posre.write(" ".join(line.split()[:2] +\
+                                             [str(kwargs["const"])] * 3))
+                    new_posre.write("\n")
+                else:
+                    new_posre.write(line)
             new_posre.close()
 
         new_mdp = open(os.path.join(kwargs["tgt_dir"], "eq.mdp"), "w")
-        src_mdp = open(os.path.join(kwargs["src_dir"], "eq.mdp"), "r")
+        src_mdp = open(os.path.join(kwargs["src_dir"], kwargs["mdp"]), "r")
 
         for line in src_mdp:
-            if(line.startswith("nsteps")):
-                new_mdp.write("nsteps = {0}\n".format(step_time))
-            elif(line.startswith("gen_vel")):
+            if(line.startswith("gen_vel")):
                 new_mdp.write("gen_vel = no\n")
             else:
                 new_mdp.write(line)
         src_mdp.close()
         new_mdp.close()
 
-        new_topol = open(os.path.join(kwargs["tgt_dir"], "topol.top"), "w")
-        src_topol = open("topol.top", "r")
-        for line in src_topol:
-            if(line.endswith("posre.itp\"\n")):
-                new_topol.write("#include \"")
-                new_topol.write(os.path.join(kwargs["tgt_dir"], "posre.itp"))
-                new_topol.write("\"\n")
-            else:
-                new_topol.write(line)
+        protein = ligand = crystal_waters = ions = 0
+        if hasattr(self.membrane_complex.complex, "monomer"):
+            protein = 1
+        if hasattr(self.membrane_complex.complex, "ligand"):
+            ligand = 1
+        if hasattr(self.membrane_complex.complex, "crystal_waters"):
+            crystal_waters = 6 #Number TODO
+        if hasattr(self.membrane_complex.complex, "ions"):
+            ions = 0 #Number TODO
 
-        src_topol.close()
-        new_topol.close()
+        utils.make_topol(target_dir = kwargs["tgt_dir"],
+            working_dir = os.getcwd(),
+            protein = protein,
+            lig = ligand,
+            hoh = crystal_waters,
+            na = ions)
 
     def run_recipe(self):
         '''Run the recipe for the complex'''
@@ -275,24 +269,11 @@ class Gromacs(object):
 
     def set_grompp(self, **kwargs):
         '''Copy the template files to the working dir'''
-        itp = ""
-        if hasattr(self.membrane_complex.complex, "ligand"): itp = "_lig"
+        for repo_src in kwargs.keys():
+            shutil.copy(os.path.join(
+                self.repo_dir, kwargs[repo_src]),
+                repo_src)
 
-        shutil.copy(os.path.join(
-            self.repo_dir, "steep.mdp"),
-            "steep.mdp")
-        shutil.copy(os.path.join(
-            self.repo_dir, "popc.itp"),
-            "popc.itp")
-        shutil.copy(os.path.join(
-            self.repo_dir, "ffoplsaanb_mod{0}.itp".format(itp)),
-            "ffoplsaanb_mod.itp")
-        shutil.copy(os.path.join(
-            self.repo_dir, "ffoplsaabon_mod{0}.itp".format(itp)),
-            "ffoplsaabon_mod.itp")
-        shutil.copy(os.path.join(
-            self.repo_dir, "ffoplsaa_mod{0}.itp".format(itp)),
-            "ffoplsaa_mod.itp")
         return True
  
     def set_itp(self, **kwargs):

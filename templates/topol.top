@@ -1,10 +1,5 @@
 #include "ffoplsaa_mod.itp"
-#include "${working_dir}protein.itp"
-; Include Position restraint file
-#ifdef POSRES
-#include "${working_dir}posre.itp"
-#endif
-$lig_itp
+$itp_includes
 #include "${working_dir}popc.itp"
 #include "spc.itp"
 #include "ions.itp"
@@ -13,5 +8,7 @@ $lig_itp
 Membrane protein
 [ molecules ]
 ; Compound  #mols
-$protein_name
-$lig_name
+$protein
+$hoh
+$lig
+$na
