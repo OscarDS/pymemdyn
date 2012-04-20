@@ -26,26 +26,33 @@ def _arrange_dir(src_dir, new_dir, useful_files=[], useful_fixed=[]):
     return True
 
 def concat(**kwargs):
-    '''Add (concatenate) a tgt pdb file to another src pdb file'''
-    src = open(kwargs["src"], "r")
-    f2a = open(kwargs["tgt"], "r")
-    tgt_name = kwargs["src"].replace(".pdb", "-ligand.pdb")
-    tgt = open(tgt_name, "w")
+    '''Make a whole pdb file with all the pdb provided'''
+    for compound_class in ["waters", "ligand", "ions", "cho"]:
+        #Does the complex carry the group?
+        if hasattr(kwargs["tgt"], compound_class):
+            if getattr(kwargs["tgt"], compound_class):
+                _file_append(kwargs["src"],
+                             getattr(kwargs["tgt"], compound_class).pdb)
+
+def _file_append(f_src, f2a):
+    '''Add (concatenate) a f2a pdb file to another src pdb file'''
+    src = open(f_src, "r")
+    f2a = open(f2a, "r")
+    tgt = open("tmp_" + f_src, "w")
 
     for line in src:
         if ("TER" or "ENDMDL") not in line:
             tgt.write(line)
         else:
-            for line_ligand in f2a:
-                tgt.write(line_ligand)
+            for line_2_add in f2a:
+                tgt.write(line_2_add)
             break
     tgt.write("TER\nENDMDL\n")
     tgt.close()
     f2a.close()
     src.close()
 
-    shutil.copy(tgt_name,
-                kwargs["src"])
+    shutil.copy(tgt.name, f_src)
 
     return True
 
@@ -63,17 +70,29 @@ def make_cat(dir1, dir2, name):
 def make_topol(template_dir = "templates",
     target_dir = "", #Dir where topol.top should land
     working_dir = "", #Dir where script is working
-    protein = "", # Number of proteins
-    lig = "", # Number of ligands
-    hoh = "", # Number of crystal waters
-    na = ""): # Number of ions
+    complex = None): # The MembraneComplex object to deal
     '''Make the topol starting from our topol.top template'''
 
-    order = ("protein", "hoh", "lig", "na")
+    protein = lig = hoh = na = cho = 0
+    if hasattr(complex, "monomer"):
+        protein = 1
+    if hasattr(complex, "ligand"):
+        lig = 1
+    if hasattr(complex, "waters"):
+        if hasattr(complex.waters, "number"):
+            hoh = complex.waters.number
+    if hasattr(complex, "ions"):
+        if hasattr(complex.ions, "number"):
+            na = complex.ions.number
+    if hasattr(complex, "cho"):
+        if hasattr(complex.cho, "number"):
+            cho = complex.cho.number
+
+    order = ("protein", "hoh", "lig", "na", "cho")
     comps = {"protein": {"itp_name": "protein.itp",
                  "ifdef_name": "POSRES",
                  "posre_name": "posre.itp"},
-             "lig": {"itp_name": "ligand.itp",
+             "lig": {"itp_name": complex.ligand.itp,
                  "ifdef_name": "POSRESLIG",
                  "posre_name": "posre_lig.itp"},
              "hoh": {"itp_name": "hoh.itp",
@@ -81,7 +100,8 @@ def make_topol(template_dir = "templates",
                  "posre_name": "posre_hoh.itp"},
              "na": {"itp_name": "ions_local.itp",
                  "ifdef_name": "POSRESION",
-                 "posre_name": "posre_ion.itp"}}
+                 "posre_name": "posre_ion.itp"},
+             "cho": {}}
 
     src = open(os.path.join(template_dir, "topol.top"), "r")
     tgt = open(os.path.join(target_dir, "topol.top"), "w")
@@ -96,8 +116,8 @@ def make_topol(template_dir = "templates",
             itp_include.extend(['#include "{0}"'.format(comps[c]["itp_name"]),
                 '; Include Position restraint file',
                 '#ifdef {0}'.format(comps[c]["ifdef_name"]),
-                '#include "{0}/{1}"'.format(working_dir,
-                                           comps[c]["posre_name"]),
+                '#include "{0}"'.format(os.path.join(target_dir,
+                                            comps[c]["posre_name"])),
                 '#endif'])
 
             comps[c]["line"] = "{0} {1}".format(c, locals()[c])

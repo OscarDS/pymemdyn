@@ -8,6 +8,12 @@ class ProteinComplex(object):
             self.setMonomer(kwargs["monomer"])
         if "ligand" in kwargs.keys():
             self.setLigand(kwargs["ligand"])
+        if "waters" in kwargs.keys():
+            self.setWaters(kwargs["waters"])
+        if "ions" in kwargs.keys():
+            self.setIons(kwargs["ions"])
+        if "cho" in kwargs.keys():
+            self.setCho(kwargs["cho"])
 
     def setMonomer(self, value):
         '''Sets the monomer object'''
@@ -22,6 +28,28 @@ class ProteinComplex(object):
     def getLigand(self):
         return self.ligand
     property(getLigand, setLigand)
+
+    def setWaters(self, value):
+        '''Sets the crystal waters object'''
+        self.waters = value
+    def getWaters(self):
+        return self.waters
+    property(getWaters, setWaters)
+
+    def setIons(self, value):
+        '''Sets the ions object'''
+        self.ions = value
+    def getIons(self):
+        return self.ions
+    property(getIons, setIons)
+
+    def setCho(self, value):
+        '''Sets the cholesterol object'''
+        self.cho = value
+    def getCho(self):
+        return self.cho
+    property(getCho, setCho)
+
 
     def set_nanom(self):
         '''Set some meassurements to nanometers, as GROMACS wants'''
@@ -64,10 +92,11 @@ class Ligand(object):
         self.pdb = kwargs["pdb"]
         self.itp = kwargs["itp"]
 
-class CrystalWater(object):
+class CrystalWaters(object):
     def __init__(self, *args, **kwargs):
-        self.pdb = kwargs["pdb"]
-        self.itp = "posre_hoh.itp"
+        self.pdb = "hoh.pdb"
+        self.itp = "hoh.itp"
+        self.posre_itp = "posre_hoh.itp"
         self._n_wats = self.count_waters()
 
     def setWaters(self, value):
@@ -76,7 +105,7 @@ class CrystalWater(object):
     def getWaters(self):
         '''Get the crystal waters'''
         return self._n_wats
-    n_wats = property(getWaters, setWaters)
+    number = property(getWaters, setWaters)
 
     def count_waters(self):
        '''Count and set the number of waters in the pdb'''
@@ -90,7 +119,36 @@ class CrystalWater(object):
             ";  i funct       fcx        fcy        fcz",
             "   1    1       1000       1000       1000"])
 
-        tgt = open(self.itp, "w")
+        tgt = open(self.posre_itp, "w")
         tgt.writelines(s)
         tgt.close()
 
+class Ions(object):
+    def __init__(self, *args, **kwargs):
+        self.pdb = "local_ions.pdb"
+        self.itp = "local_ions.itp"
+
+        self._n_ions = self.count_ions()
+
+    def setIons(self, value):
+        '''Sets the crystal ions'''
+        self._n_ions = value
+    def getIons(self):
+        '''Get the crystal ions'''
+        return self._n_ions
+    number = property(getIons, setIons)
+
+    def count_ions(self):
+       '''Count and set the number of ions in the pdb'''
+       ions = ["NA", "CA", "MG", "CL", "ZN"]
+       ion_count = 0
+       for line in open(self.pdb, "r"):
+           if len(line.split()) > 2:
+               if line.split()[2] in ions:
+                   ion_count += 1
+       return ion_count
+
+class Cholesterol(object):
+    def __init__(self, *args, **kwargs):
+        self.pdb = "cho.pdb"
+        self.itp = "cho.itp"

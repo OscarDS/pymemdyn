@@ -33,13 +33,13 @@ to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
              "traj.xtc", "tmp.pdb", "topol.top", "topol.tpr",
              "Y1_min-his.pdb", "water.pdb"]
 
-dirs_to_unlink = ["Rmin", "eq"]
+dirs_to_unlink = ["Rmin", "eq", "eqCA"]
 
 for target in to_unlink:
-    pass#if os.path.isfile(target): os.unlink(target)
+    if os.path.isfile(target): os.unlink(target)
 
 for target in dirs_to_unlink:
-    pass#if os.path.isdir(target): shutil.rmtree(target)
+    if os.path.isdir(target): shutil.rmtree(target)
 
 #sys.exit()
 #First we define all parts to be used
@@ -51,7 +51,7 @@ g = gromacs.Gromacs()
 
 #Now we create a complex membrane + protein(s) + ligand
 
-prot_complex = protein.ProteinComplex(monomer = monomer)#, ligand = ligand)
+prot_complex = protein.ProteinComplex(monomer = monomer, ligand = ligand)
 full_complex = complex.MembraneComplex()
 full_complex.complex = prot_complex
 full_complex.membrane = membr
@@ -89,21 +89,23 @@ g = gromacs.Gromacs(membrane_complex = full_complex)
 
 #g.run_recipe() #This is the basic recipe (should be explicit?)
 #
-g.recipe = recipes.MonomerRecipe("debug")
-#g.run_recipe()
+g.recipe = recipes.MonomerLigandRecipe("debug")
+g.run_recipe()
 slurm = queue.Slurm()
 g.queue = slurm
+sys.exit()
 #
 g.recipe = recipes.BasicMinimization("debug")
-#g.run_recipe()
+g.run_recipe()
 #sys.exit()
 #
 g.recipe = recipes.BasicEquilibration("debug")
-#g.run_recipe()
+g.run_recipe()
 #sys.exit()
 #
 g.recipe = recipes.BasicRelax("debug")
-#g.run_recipe()
+g.run_recipe()
+sys.exit()
 #
 g.recipe = recipes.CAEquilibrate("debug")
 g.run_recipe()

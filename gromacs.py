@@ -27,7 +27,6 @@ class Gromacs(object):
         return self._membrane_complex
     membrane_complex = property(get_membrane_complex, set_membrane_complex)
 
-
     def count_lipids(self, **kwargs):
         '''Count the lipids in source and write a target with N4 tags'''
         src = open(kwargs["src"], "r")
@@ -88,8 +87,8 @@ class Gromacs(object):
         for line in out.split("\n"):
             if "Other" in line and "atoms" in line:
                 self.n_groups = int(line.split()[0])
-                break
-        return True
+                return True
+        return False
 
     def make_ndx(self, **kwargs):
         '''Wraps the make_ndx command tweaking the input to reflect the
@@ -154,6 +153,16 @@ class Gromacs(object):
 
         if not os.path.isdir(kwargs["tgt_dir"]): os.makedirs(kwargs["tgt_dir"])
 
+        if hasattr(self.membrane_complex.complex, "waters") and\
+            self.membrane_complex.complex.waters:
+            kwargs["posres"].append("hoh.itp")
+        if hasattr(self.membrane_complex.complex, "ions") and\
+            self.membrane_complex.complex.ions:
+            kwargs["posres"].append("local_ions.itp")
+        if hasattr(self.membrane_complex.complex, "cho") and\
+            self.membrane_complex.complex.cho:
+            kwargs["posres"].append("cho.itp")
+
         for posre in kwargs["posres"]:
             new_posre = open(os.path.join(kwargs["tgt_dir"], posre), "w")
 
@@ -177,39 +186,28 @@ class Gromacs(object):
         src_mdp.close()
         new_mdp.close()
 
-        protein = ligand = crystal_waters = ions = 0
-        if hasattr(self.membrane_complex.complex, "monomer"):
-            protein = 1
-        if hasattr(self.membrane_complex.complex, "ligand"):
-            ligand = 1
-        if hasattr(self.membrane_complex.complex, "crystal_waters"):
-            crystal_waters = 6 #Number TODO
-        if hasattr(self.membrane_complex.complex, "ions"):
-            ions = 0 #Number TODO
-
         utils.make_topol(target_dir = kwargs["tgt_dir"],
             working_dir = os.getcwd(),
-            protein = protein,
-            lig = ligand,
-            hoh = crystal_waters,
-            na = ions)
+            complex = self.membrane_complex.complex)
 
-    def run_recipe(self):
+    def run_recipe(self, debug = False):
         '''Run the recipe for the complex'''
         if not hasattr(self, "recipe"):
-            self.select_recipe()
+            self.select_recipe(debug = debug)
 
         #wrapper = Wrapper()
         self.repo_dir = self.wrapper.repo_dir
 
-        for n, command in enumerate(self.recipe.recipe):
-            if n in self.recipe.breaks.keys():
+        for n, command_name in enumerate(self.recipe.steps):
+            command = self.recipe.recipe[command_name]
+
+            if command_name in self.recipe.breaks.keys():
                 command["options"] = self.set_options(command["options"],
-                                     self.recipe.breaks[n])
+                                     self.recipe.breaks[command_name])
 
             # NOW RUN IT !
             print self.recipe.__class__.__name__, 
-            print "Step {0}: ".format(n),
+            print "Step {0}: ".format(command_name),
             if command.has_key("gromacs"):
                 # Either run a Gromacs pure command...
                 print command["gromacs"]
@@ -234,13 +232,17 @@ class Gromacs(object):
 
         return True
 
-    def select_recipe(self):
+    def select_recipe(self, debug = False):
         '''Select the appropiate recipe for the complex'''
+        recipe = "Monomer" # All recipes starts with Monomer
         if self.membrane_complex:
             if hasattr(self.membrane_complex.complex, "ligand"):
-                self.recipe = recipes.MonomerLigandRecipe()
-            else:
-                self.recipe = recipes.MonomerRecipe()
+                recipe += "Ligand"
+
+        recipe += "Recipe" # This is the basic recipe. TODO: receive an *arg
+                           # to set Minimization, Equilibration, etc.
+
+        self.recipe = getattr(recipes, recipe)(debug = debug)
 
         return True
 
