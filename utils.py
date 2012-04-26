@@ -142,7 +142,7 @@ def make_ffoplsaanb(complex = None):
 
     return True
 
-def make_topol(template_dir = "templates",
+def make_topol(template_dir = os.path.join(os.getcwd(), "templates"),
     target_dir = "", #Dir where topol.top should land
     working_dir = "", #Dir where script is working
     complex = None): # The MembraneComplex object to deal
