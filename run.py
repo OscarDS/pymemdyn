@@ -136,7 +136,9 @@ if __name__ == "__main__":
                         default = os.getcwd())
     parser.add_argument('-r',
                         dest = "repo_dir",
-                        help = "Path to templates of fixed files",
+                        help = "Path to templates of fixed files. If not \
+                                provided, take the value from \
+                                settings.REPO_DIR.",
                         default = settings.REPO_DIR)
     parser.add_argument('-p',
                         dest = "pdb",
@@ -144,21 +146,21 @@ if __name__ == "__main__":
                         help = "Name of the pdb to insert into MD (mandatory)")
     parser.add_argument('-l',
                         dest = "ligand",
-                        help = "Name of the ligand, without extension. Two \
+                        help = "Name of the ligand, without extension. Three \
                                 files must be present along with the molecule \
-                                pdb: the ligand and its itp.")
+                                pdb: the ligand, its itp and its force field.")
     parser.add_argument('--waters',
                         action="store_true",
                         help = "Crystalized water molecules hoh.pdb file \
-                                present.")
+                                must exist.")
     parser.add_argument('--ions',
                         action="store_true",
                         help = "Crystalized ions ions_local.pdb and \
-                                ions_loca.itp file present.")
+                                ions_loca.itp file must exist.")
     parser.add_argument('--cho',
                         action="store_true",
                         help = "Crystalized cholesterol molecules cho.pdb \
-                                file present.")
+                                file must exist.")
     parser.add_argument('-q',
                         dest = "queue",
                         help = "Queue system to use (SLURM supported)",

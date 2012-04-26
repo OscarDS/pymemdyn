@@ -149,10 +149,13 @@ def make_topol(template_dir = "templates",
     '''Make the topol starting from our topol.top template'''
 
     protein = lig = hoh = na = cho = 0
+    lig_name = ""
     if hasattr(complex, "monomer"):
         protein = 1
     if hasattr(complex, "ligand"):
-        lig = 1
+        if complex.ligand:
+            lig = 1
+            lig_name = complex.ligand.itp
     if hasattr(complex, "waters"):
         if hasattr(complex.waters, "number"):
             hoh = complex.waters.number
@@ -167,7 +170,7 @@ def make_topol(template_dir = "templates",
     comps = {"protein": {"itp_name": "protein.itp",
                  "ifdef_name": "POSRES",
                  "posre_name": "posre.itp"},
-             "lig": {"itp_name": complex.ligand.itp,
+             "lig": {"itp_name": lig_name,
                  "ifdef_name": "POSRESLIG",
                  "posre_name": "posre_lig.itp"},
              "hoh": {"itp_name": "hoh.itp",
@@ -192,7 +195,7 @@ def make_topol(template_dir = "templates",
                 '; Include Position restraint file',
                 '#ifdef {0}'.format(comps[c]["ifdef_name"]),
                 '#include "{0}"'.format(os.path.join(target_dir,
-                                            comps[c]["posre_name"])),
+                                        comps[c]["posre_name"])),
                 '#endif'])
 
             comps[c]["line"] = "{0} {1}".format(c, locals()[c])
