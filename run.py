@@ -22,7 +22,6 @@ except ImportError:
 
 import settings
 
-
 class Run(object):
     def __init__(self, *args, **kwargs):
         self.own_dir = kwargs["own_dir"] or ""
@@ -105,8 +104,10 @@ class Run(object):
     def moldyn(self):
         '''Runs all the dynamics'''
         self.g.run_recipe(debug = self.debug) #Basic recipe
-
-        self.g.recipe = recipes.LigandMinimization(debug = self.debug)
+        if self.ligand:
+            self.g.recipe = recipes.LigandMinimization(debug = self.debug)
+        else:
+            self.g.recipe = recipes.BasicMinimization(debug = self.debug)
         self.g.run_recipe()
         if self.ligand:
             self.g.recipe = recipes.LigandEquilibration(debug = self.debug)

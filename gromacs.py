@@ -242,7 +242,8 @@ class Gromacs(object):
         recipe = "Monomer" # All recipes starts with Monomer
         if self.membrane_complex:
             if hasattr(self.membrane_complex.complex, "ligand"):
-                recipe += "Ligand"
+                if self.membrane_complex.complex.ligand:
+                    recipe += "Ligand"
 
         recipe += "Recipe" # This is the basic recipe. TODO: receive an *arg
                            # to set Minimization, Equilibration, etc.
