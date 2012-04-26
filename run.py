@@ -157,9 +157,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.debug:
-        logging.basicConfig(filename='md_file.log',level=logging.DEBUG)
+        logging.basicConfig(filename='GROMACS.log',level=logging.DEBUG)
     else:
-        logging.basicConfig(filename='md_file.log',
+        logging.basicConfig(filename='GROMACS.log',
                             format='%(asctime)s %(message)s',
                             datefmt='%m/%d/%Y %I:%M:%S',
                             level=logging.ERROR)

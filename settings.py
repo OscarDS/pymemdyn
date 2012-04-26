@@ -5,4 +5,7 @@
 
 REPO_DIR = "templates"
 
-QUEUE = "slurm"
+#Set the queue to use. Look inside queue.py.
+QUEUE = ""
+#QUEUE = "slurm"
+#QUEUE = "pbs"
