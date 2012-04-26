@@ -118,7 +118,8 @@ def make_cat(dir1, dir2, name):
 
 def make_ffoplsaanb(complex = None):
     '''Join all OPLS force fields needed to run the simulation'''
-    ff = os.path.join("templates", "ffoplsaanb_")
+    ff = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                      "templates", "ffoplsaanb_")
 
     base = "{0}base.itp".format(ff) # This is the ff for proteins and other
     lip = "{0}lip.itp".format(ff) # This for the lipids
@@ -142,7 +143,8 @@ def make_ffoplsaanb(complex = None):
 
     return True
 
-def make_topol(template_dir = os.path.join(os.getcwd(), "templates"),
+def make_topol(template_dir = \
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates"),
     target_dir = "", #Dir where topol.top should land
     working_dir = "", #Dir where script is working
     complex = None): # The MembraneComplex object to deal
