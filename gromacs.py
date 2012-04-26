@@ -38,7 +38,7 @@ class Gromacs(object):
         self.membrane_complex.membrane.n_wats = 0
 
         if getattr(self.membrane_complex.complex, "waters"):
-            #Careful, some waters belong are crystal, not solvent
+            #Careful, some waters belong to crystal, not solvent
             self.membrane_complex.membrane.n_wats -=\
             self.membrane_complex.complex.waters.number
 
