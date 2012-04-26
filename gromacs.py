@@ -37,6 +37,11 @@ class Gromacs(object):
         self.membrane_complex.membrane.lipids_down = 0
         self.membrane_complex.membrane.n_wats = 0
 
+        if getattr(self.membrane_complex.complex, "waters"):
+            #Careful, some waters belong are crystal, not solvent
+            self.membrane_complex.membrane.n_wats -=\
+            self.membrane_complex.complex.waters.number
+
         for line in src:
             if len(line.split()) > 2:
                 if line.split()[2] == "N4": #Lipid marker
@@ -155,13 +160,13 @@ class Gromacs(object):
 
         if hasattr(self.membrane_complex.complex, "waters") and\
             self.membrane_complex.complex.waters:
-            kwargs["posres"].append("hoh.itp")
+            kwargs["posres"].append("posre_hoh.itp")
         if hasattr(self.membrane_complex.complex, "ions") and\
             self.membrane_complex.complex.ions:
-            kwargs["posres"].append("local_ions.itp")
+            kwargs["posres"].append("posre_ion.itp")
         if hasattr(self.membrane_complex.complex, "cho") and\
             self.membrane_complex.complex.cho:
-            kwargs["posres"].append("cho.itp")
+            kwargs["posres"].append("posre_cho.itp")
 
         for posre in kwargs["posres"]:
             new_posre = open(os.path.join(kwargs["tgt_dir"], posre), "w")
@@ -357,8 +362,9 @@ class Gromacs(object):
         if not os.path.isdir(kwargs["tgt_dir"]): os.mkdir(kwargs["tgt_dir"])
 
         for src_file in kwargs["src_files"]:
-            shutil.copy(os.path.join(kwargs["src_dir"], src_file),
-                        os.path.join(kwargs["tgt_dir"], src_file))
+            if(os.path.isfile(os.path.join(kwargs["src_dir"], src_file))):
+                shutil.copy(os.path.join(kwargs["src_dir"], src_file),
+                            os.path.join(kwargs["tgt_dir"], src_file))
 
         if "repo_files" in kwargs.keys():
             for repo_file in kwargs["repo_files"]:

@@ -1,3 +1,5 @@
+import os
+
 class ProteinComplex(object):
     def __init__(self, *args, **kwargs):
         self.cres = 0 #Central residue
@@ -87,16 +89,81 @@ class Dimer(Monomer):
     def __init__(self):
         super(Dimer, self).__init__(self, *args, **kwargs)
 
-class Ligand(object):
+class Compound(object):
+    '''This is a super-class to provide common functions to added compounds'''
+    def __init__(self, *args, **kwargs):
+        self.check_files(self.pdb, self.itp)
+
+    def check_files(self, *files):
+        '''Check if files passed as *args exist'''
+        for src in files:
+            if not os.path.isfile(src):
+                raise IOError("File {0} missing".format(src))
+
+class Ligand(Compound):
     def __init__(self, *args, **kwargs):
         self.pdb = kwargs["pdb"]
         self.itp = kwargs["itp"]
+        super(Ligand, self).__init__(self, *args, **kwargs)
 
-class CrystalWaters(object):
+        self.force_field = kwargs["ff"]
+
+        self.check_forces()
+
+    def check_forces(self):
+        '''A force field must give a set of forces that matches every atom in
+        the pdb file. This showed particularly important to the ligands, as they
+        may vary along a very broad range of atoms'''
+
+        #The itp matches each residue in the ligand pdb with the force field
+        atoms_def = False
+        molecules = {}
+        for line in open(self.itp, "r"):
+            if "[ atoms ]" in line:
+                atoms_def = True
+            if "[ bonds ]" in line:
+                atoms_def = False
+            if atoms_def and not line.startswith(";"):
+                data = line.split()
+                if len(data) > 6:
+                    if data[3] not in molecules.keys(): molecules[data[3]] = {}
+                    #{"LIG": {"C1": "TC1"},}
+                    molecules[data[3]][data[4]] = data[1]
+
+        atoms = {}
+        #The force field matches each atom in the pdb with one line
+        for line in open(self.force_field, "r"):
+            if not line.startswith(";"):
+                if (len(line.split()) > 6):
+                    #{"TC1": "C1"}
+                    atoms[line.split()[0]] = line.split()[1]
+
+        #The pdb have the name of the atom in the third position.
+        #Here we cross-check all three files to match their harvested values
+        for line in open(self.pdb, "r"):
+            data = line.split()
+            if len(data) > 6:
+                if molecules[data[3]][data[2]] not in atoms.keys():
+                    #Some atoms in the pdb has no definition in force field
+                    # TODO : add a guessing function
+                    print "Atom {0} have no field definition".format(data[1])
+                    #return False
+                if atoms[molecules[data[3]][data[2]]] not in\
+                    molecules[data[3]].keys():
+                    print "Atom {0} have a wrong field definition".format(
+                        data[1])
+                    #return False
+
+        return True
+
+class CrystalWaters(Compound):
     def __init__(self, *args, **kwargs):
         self.pdb = "hoh.pdb"
         self.itp = "hoh.itp"
+        super(CrystalWaters, self).__init__(self, *args, **kwargs)
+
         self.posre_itp = "posre_hoh.itp"
+        self._setITP()
         self._n_wats = self.count_waters()
 
     def setWaters(self, value):
@@ -123,10 +190,11 @@ class CrystalWaters(object):
         tgt.writelines(s)
         tgt.close()
 
-class Ions(object):
+class Ions(Compound):
     def __init__(self, *args, **kwargs):
         self.pdb = "local_ions.pdb"
         self.itp = "local_ions.itp"
+        super(Ions, self).__init__(self, *args, **kwargs)
 
         self._n_ions = self.count_ions()
 
@@ -148,7 +216,8 @@ class Ions(object):
                    ion_count += 1
        return ion_count
 
-class Cholesterol(object):
+class Cholesterol(Compound):
     def __init__(self, *args, **kwargs):
         self.pdb = "cho.pdb"
         self.itp = "cho.itp"
+        super(Cholesterol, self).__init__(self, *args, **kwargs)

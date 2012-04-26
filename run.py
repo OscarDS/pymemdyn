@@ -29,7 +29,8 @@ class Run(object):
             self.pdb = protein.Monomer(pdb = self.pdb)
         if self.ligand:
             self.ligand = protein.Ligand(pdb = self.ligand + ".pdb",
-                                         itp = self.ligand + ".itp")
+                                         itp = self.ligand + ".itp",
+                                         ff = self.ligand + ".ff")
 
         if self.waters:
             self.waters = protein.CrystalWaters()
@@ -53,6 +54,9 @@ class Run(object):
         full_complex.membrane = self.membr
 
         self.g = gromacs.Gromacs(membrane_complex = full_complex)
+
+        # Note that if not provided in command line, self.queue is set in
+        # settings.py
         if self.queue:
             if self.queue == "slurm":
                 my_queue = queue.Slurm()
@@ -71,8 +75,8 @@ class Run(object):
             "#topol.tpr.4#", "#water.pdb.1#", "protein_ca200.itp",
             "ffoplsaabon_mod.itp", "ffoplsaa_mod.itp", "ffoplsaanb_mod.itp",
             "GROMACS.output", "genion.log", "hexagon.pdb", "index.ndx",
-            "ligand_ha.ndx", "mdout.mdp", "min.pdb", "output.pdb",
-            "output.tpr", "popc.pdb", "popc.itp", "posre.itp",
+            "ligand_ha.ndx", "mdout.mdp", "min.pdb",
+            "output.pdb", "output.tpr", "popc.pdb", "popc.itp", "posre.itp",
             "posre_lig.itp", "protein.itp", "protein.top",
             "protein_ca200.itp", "proteinopls.pdb", "proteinopls-ligand.pdb",
             "protpopc.pdb", "steep.mdp", "traj.xtc", "tmp.pdb", "topol.top",

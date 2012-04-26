@@ -8,9 +8,9 @@ class MonomerRecipe(object):
                       "editconf3", "editconf4", "make_topol", "editconf5",
                       "genbox", "set_water", "editconf6", "editconf7",
                       "genbox2", "count_lipids", "make_topol2",
-                      "make_topol_lipids", "set_grompp", "grompp", "trjconv",
-                      "get_charge", "genion", "grompp2", "trjconv2", "grompp3",
-                      "trjconv3"]
+                      "make_topol_lipids", "make_ffoplsaanb", "set_grompp",
+                      "grompp", "trjconv", "get_charge", "genion", "grompp2",
+                      "trjconv2", "grompp3", "trjconv3"]
 
         # And then we have to define each step
         self.recipe = \
@@ -81,10 +81,12 @@ class MonomerRecipe(object):
          "make_topol2": {"command": "make_topol",#17
           "options": {}},
          "make_topol_lipids": {"command": "make_topol_lipids"}, #18
+         "make_ffoplsaanb": {"command": "make_ffoplsaanb",
+          "options": {}},
          "set_grompp": {"command": "set_grompp", #19
           "options": {"steep.mdp": "steep.mdp",
                        "popc.itp": "popc.itp",
-                       "ffoplsaanb_mod.itp": "ffoplsaanb_mod.itp",
+                       #"ffoplsaanb_mod.itp": "ffoplsaanb_mod.itp",
                        "ffoplsaabon_mod.itp": "ffoplsaabon_mod.itp",
                        "ffoplsaa_mod.itp": "ffoplsaa_mod.itp"}},
          "grompp": {"gromacs": "grompp", #20
@@ -137,7 +139,7 @@ class MonomerRecipe(object):
         }
 
         self.breaks = \
-            {"pdb2gmx": {"src": "membrane_complex.complex.monomer.pdb"},
+            {"pdb2gmx": {"src": "membrane_complex.complex.monomer.pdb_his"},
              "editconf": {"dist": "membrane_complex.box_height"},
              "editconf2": {"dist": "membrane_complex.box_width"},
              "editconf3": {"box": "membrane_complex.trans_box_size"},
@@ -148,6 +150,7 @@ class MonomerRecipe(object):
                         "nn": "membrane_complex.complex.negative_charge"},
              "make_topol": {"complex": "membrane_complex.complex"},
              "make_topol2": {"complex": "membrane_complex.complex"},
+             "make_ffoplsaanb": {"complex": "membrane_complex.complex"},
              "trjconv2": {"trans": "membrane_complex.complex.trans"}
             }
 
@@ -158,12 +161,12 @@ class MonomerRecipe(object):
 class MonomerLigandRecipe(MonomerRecipe):
     def __init__(self, **kwargs):
         super(MonomerLigandRecipe, self).__init__(**kwargs)
-        self.recipe["set_grompp"]["options"]["ffoplsaanb_mod.itp"] =\
-            "ffoplsaanb_mod_lig.itp"
-        self.recipe["set_grompp"]["options"]["ffoplsaabon_mod.itp"] =\
-            "ffoplsaabon_mod_lig.itp"
-        self.recipe["set_grompp"]["options"]["ffoplsaa_mod.itp"] =\
-            "ffoplsaa_mod_lig.itp"
+        #self.recipe["set_grompp"]["options"]["ffoplsaanb_mod.itp"] =\
+        #    "ffoplsaanb_mod_lig.itp"
+        #self.recipe["set_grompp"]["options"]["ffoplsaabon_mod.itp"] =\
+        #    "ffoplsaabon_mod_lig.itp"
+        #self.recipe["set_grompp"]["options"]["ffoplsaa_mod.itp"] =\
+        #    "ffoplsaa_mod_lig.itp"
 
         self.steps.insert(9, "genrestr")
         self.recipe["genrestr"] =\
@@ -249,11 +252,12 @@ class BasicEquilibration(object):
                       "index":"index.ndx"}},
          "set_stage_init": {"command": "set_stage_init", #3
           "options": {"src_dir": "Rmin",
-                      "src_files": ["topol.tpr", "eq.mdp"],
+                      "src_files": ["eq.mdp"],
                       "tgt_dir": "eq"}},
          "set_stage_init2": {"command": "set_stage_init", #4
           "options": {"src_dir": "",
-                      "src_files": ["posre.itp"],
+                      "src_files": ["topol.tpr", "posre.itp", "posre_hoh.itp",
+                                   "posre_ion.itp", "posre_lig.itp"],
                       "tgt_dir": "eq"}},
          "mdrun": {"gromacs": "mdrun", #5
           "options": {"dir": "eq",
@@ -269,13 +273,11 @@ class BasicEquilibration(object):
         if kwargs["debug"] or False:
             self.recipe["grompp"]["options"]["src"] = "Rmin/eqDEBUG.mdp"
             self.recipe["set_stage_init"]["options"]["src_files"] =\
-                ["topol.tpr", "eqDEBUG.mdp"]
+                ["eqDEBUG.mdp"]
 
 class LigandEquilibration(BasicEquilibration):
     def __init__(self, **kwargs):
         super(LigandEquilibration, self).__init__(**kwargs)
-        self.recipe["set_stage_init2"]["options"]["src_files"].append(
-            "posre_lig.itp")
         self.steps.insert(2, "genrestr")
         self.recipe["genrestr"] = \
             {"gromacs": "genrestr",

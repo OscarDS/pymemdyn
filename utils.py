@@ -25,6 +25,55 @@ def _arrange_dir(src_dir, new_dir, useful_files=[], useful_fixed=[]):
 
     return True
 
+def check_forces(pdb, itp, ffield):
+    '''A force field must give a set of forces that matches every atom in
+    the pdb file. This showed particularly important to the ligands, as they
+    may vary along a very broad range of atoms'''
+
+    #The itp matches each residue in the ligand pdb with the force field
+    atoms_def = False
+    molecules = {}
+    for line in open(itp, "r"):
+        if "[ atoms ]" in line:
+            atoms_def = True
+        if "[ bonds ]" in line:
+            atoms_def = False
+        if atoms_def and not line.startswith(";"):
+            data = line.split()
+            if len(data) > 6:
+                if data[3] not in molecules.keys(): molecules[data[3]] = {}
+                #{"LIG": {"C1": "TC1"},}
+                molecules[data[3]][data[4]] = data[1]
+
+    atoms = {}
+    #The force field matches each atom in the pdb with one line
+    atomtypes = False
+    for line in open(ffield, "r"):
+        if "[ atomtypes ]" in line:
+            atomtypes = True
+        if atomtypes:
+            #We are inside the atomtypes definition, so add the defined atoms
+            if (len(line.split()) > 6):
+                #{"TC1": "C1"}
+                atoms[line.split()[0]] = line.split()[1]
+            
+    #The pdb have the name of the atom in the third position.
+    #Here we cross-check all three files to match their harvested values
+    for line in open(pdb, "r"):
+        data = line.split()
+        if len(data) > 6:
+            if molecules[data[3]][data[2]] not in atoms.keys():
+                #Some atoms in the pdb has no definition in force field
+                # TODO : add a guessing function
+                print "Atom {0} have no field definition".format(data[1])
+                #return False
+            if atoms[molecules[data[3]][data[2]]] not in\
+                molecules[data[3]].keys():
+                print "Atom {0} have a wrong field definition".format(data[1])
+                #return False
+
+    return True
+
 def concat(**kwargs):
     '''Make a whole pdb file with all the pdb provided'''
     for compound_class in ["waters", "ligand", "ions", "cho"]:
@@ -66,6 +115,32 @@ def make_cat(dir1, dir2, name):
     #traj_src.extend([os.path.join(dir2, name)])
 
     return traj_src
+
+def make_ffoplsaanb(complex = None):
+    '''Join all OPLS force fields needed to run the simulation'''
+    ff = os.path.join("templates", "ffoplsaanb_")
+
+    base = "{0}base.itp".format(ff) # This is the ff for proteins and other
+    lip = "{0}lip.itp".format(ff) # This for the lipids
+    cho = "{0}cho.itp".format(ff) #This for the cholesterol
+
+    to_concat = []
+    if hasattr(complex, "ligand"):
+        if hasattr(complex.ligand, "force_field"):
+            to_concat.append(complex.ligand.force_field)
+    if hasattr(complex, "cho"):
+        to_concat.append(cho)
+
+    to_concat.extend([lip, base])
+
+    output = "[ atomtypes ]\n"
+    for ff_i in to_concat:
+        output += open(ff_i).read()
+        if not output.endswith("\n"): output += "\n"
+
+    open("ffoplsaanb_mod.itp", "w").write(output)
+
+    return True
 
 def make_topol(template_dir = "templates",
     target_dir = "", #Dir where topol.top should land
