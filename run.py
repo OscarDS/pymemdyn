@@ -74,22 +74,24 @@ class Run(object):
     def clean(self):
         '''Removes all previously generated files'''
         to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
-            "#mdout.mdp.2#", "#mdout.mdp.3#", "#output.pdb.1#",
-            "#output.tpr.1#", "#popc.pdb.1#",
+            "#mdout.mdp.2#", "#mdout.mdp.3#", "#mdout.mdp.4#", "#mdout.mdp.5#",
+            "#mdout.mdp.6#", "#mdout.mdp.7#", "#mdout.mdp.8#", "#mdout.mdp.9#",
+            "#output.pdb.1#", "#output.tpr.1#", "#popc.pdb.1#",
             "#posre.itp.1#", "#proteinopls.pdb.1#", "#proteinopls.pdb.2#",
             "#proteinopls.pdb.3#", "#proteinopls.pdb.4#","#protein.top.1#",
             "#protpopc.pdb.1#", "#protpopc.pdb.2#", "#tmp.pdb.1#",
             "#topol.top.1#", "#topol.top.2#", "#topol.top.3#",
             "#topol.tpr.1#", "#topol.tpr.2#", "#topol.tpr.3#",
-            "#topol.tpr.4#", "#water.pdb.1#", "protein_ca200.itp",
+            "#topol.tpr.4#", "#water.pdb.1#", "ener_EQ.edr", 
             "ffoplsaabon_mod.itp", "ffoplsaa_mod.itp", "ffoplsaanb_mod.itp",
             "GROMACS.output", "genion.log", "hexagon.pdb", "index.ndx",
             "ligand_ha.ndx", "mdout.mdp", "min.pdb",
             "output.pdb", "output.tpr", "popc.pdb", "popc.itp", "posre.itp",
             "posre_lig.itp", "protein.itp", "protein.top",
             "protein_ca200.itp", "proteinopls.pdb", "proteinopls-ligand.pdb",
-            "protpopc.pdb", "steep.mdp", "traj.xtc", "tmp.pdb", "topol.top",
-            "topol.tpr", "tmp_proteinopls.pdb", "Y1_min-his.pdb", "water.pdb"]
+            "protpopc.pdb", "steep.mdp", "traj.xtc", "traj_EQ.xtc", "tmp.pdb",
+            "topol.top", "topol.tpr", "tmp_proteinopls.pdb", "Y1_min-his.pdb",
+            "water.pdb"]
 
         dirs_to_unlink = ["Rmin", "eq", "eqCA"]
 
