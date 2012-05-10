@@ -23,6 +23,7 @@ except ImportError:
 import settings
 
 class Run(object):
+    #This is a dummy
     def __init__(self, *args, **kwargs):
         self.own_dir = kwargs["own_dir"] or ""
         self.repo_dir = kwargs["repo_dir"] or ""
