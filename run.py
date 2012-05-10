@@ -169,14 +169,6 @@ if __name__ == "__main__":
                         action="store_true")
     args = parser.parse_args()
 
-    if args.debug:
-        logging.basicConfig(filename='GROMACS.log',level=logging.DEBUG)
-    else:
-        logging.basicConfig(filename='GROMACS.log',
-                            format='%(asctime)s %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S',
-                            level=logging.ERROR)
-
     run = Run(own_dir = args.own_dir,
               repo_dir = args.repo_dir,
               pdb = args.pdb,
@@ -187,5 +179,14 @@ if __name__ == "__main__":
               queue = args.queue,
               debug = args.debug)
     run.clean()
+    # 
+    if args.debug:
+        logging.basicConfig(filename='GROMACS.log', level=logging.DEBUG)
+    else:
+        logging.basicConfig(filename='GROMACS.log',
+                            format='%(asctime)s %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S',
+                            level=logging.ERROR)
+    #
     run.moldyn()
 
