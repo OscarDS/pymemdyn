@@ -69,7 +69,12 @@ class Run(object):
         if self.queue:
             if self.queue == "slurm":
                 my_queue = queue.Slurm()
-            self.g.queue = my_queue
+            elif self.queue == "pbs":
+                my_queue = queue.PBS()
+        else:
+            my_queue = queue.NoQueue()
+
+        self.g.queue = my_queue
 
     def clean(self):
         '''Removes all previously generated files'''
@@ -90,8 +95,7 @@ class Run(object):
             "posre_lig.itp", "protein.itp", "protein.top",
             "protein_ca200.itp", "proteinopls.pdb", "proteinopls-ligand.pdb",
             "protpopc.pdb", "steep.mdp", "traj.xtc", "traj_EQ.xtc", "tmp.pdb",
-            "topol.top", "topol.tpr", "tmp_proteinopls.pdb", "Y1_min-his.pdb",
-            "water.pdb"]
+            "topol.top", "topol.tpr", "tmp_proteinopls.pdb", "water.pdb"]
 
         dirs_to_unlink = ["Rmin", "eq", "eqCA"]
 
@@ -165,7 +169,7 @@ if __name__ == "__main__":
                                 file must exist.")
     parser.add_argument('-q',
                         dest = "queue",
-                        help = "Queue system to use (SLURM supported)",
+                        help = "Queue system to use (slurm and pbs supported)",
                         default = settings.QUEUE)
     parser.add_argument('--debug',
                         action="store_true")

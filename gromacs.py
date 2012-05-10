@@ -429,7 +429,6 @@ class Wrapper(object):
     def generate_command(self, kwargs):
         '''Received some variables in kwargs, generate the appropiate command 
         to be run. Return a set in the form of a string "command -with flags"'''
-
         try:
             mode = kwargs["gromacs"]
         except KeyError:
@@ -446,8 +445,9 @@ class Wrapper(object):
             if hasattr(kwargs["queue"], mode):
                # If we got a queue enabled for this command, use it
                command = list(kwargs["queue"].command) # Already a list
-               command.append(os.path.join(self.gromacs_dir,
-                              getattr(kwargs["queue"], mode)))
+               kwargs["queue"].make_script(
+                   workdir = kwargs["options"]["dir"],
+                   options = self._mode_mdrun(options))
             
         # Standard -f input -o output
         if mode in ["pdb2gmx", "editconf", "grompp", "trjconv",
@@ -481,7 +481,8 @@ class Wrapper(object):
             if (mode == "eneconv"): #ENECONV
                 command.extend(self._mode_eneconv(options))
             if (mode == "mdrun"): #MDRUN_SLURM
-                command.extend(self._mode_mdrun(options))
+                pass
+                #command.extend(self._mode_mdrun(options))
 
         return command
 
@@ -616,11 +617,11 @@ class Wrapper(object):
 
         command = self.generate_command(kwargs)
 
-        my_dir = os.getcwd()
+        #my_dir = os.getcwd()
 
-        if kwargs["gromacs"] == "mdrun":
+        #if kwargs["gromacs"] == "mdrun":
             #MDRUN depends on the local .mdp, no option to set it.
-            os.chdir(kwargs["options"]["dir"])
+        #    os.chdir(kwargs["options"]["dir"])
 
         if("input" in kwargs.keys()):
             p = subprocess.Popen(command,
@@ -635,7 +636,7 @@ class Wrapper(object):
 
             gro_out, gro_errs = p.communicate()
 
-        os.chdir(my_dir)
+        #os.chdir(my_dir)
 
         return gro_out, gro_errs
 

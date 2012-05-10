@@ -197,8 +197,8 @@ class MonomerLigandRecipe(MonomerRecipe):
 
         #self.breaks["concat"] =\
         #    {"tgt": "membrane_complex.complex"}
-        #self.breaks["make_ndx"] =\
-        #    {"src": "membrane_complex.complex.ligand.pdb"}
+        self.breaks["make_ndx"] =\
+            {"src": "membrane_complex.complex.ligand.pdb"}
         self.breaks["genrestr"] =\
             {"src": "membrane_complex.complex.ligand.pdb"}
 
@@ -353,7 +353,8 @@ class CAEquilibrate(object):
              "set_stage_init": {"command": "set_stage_init", #0
               "options": {"src_dir": "eq",
                           "tgt_dir": "eqCA",
-                          "src_files": ["confout.gro", "eq.mdp"]}},
+                          "src_files": ["confout.gro"],
+                          "repo_files": ["eqCA.mdp"]}},
              "genrestr": {"gromacs": "genrestr", #1
               "options": {"src": "Rmin/topol.tpr",
                           "tgt": "posre.itp",
@@ -361,7 +362,7 @@ class CAEquilibrate(object):
                           "forces": ["200"] * 3},
               "input": "3\n"},
              "grompp": {"gromacs": "grompp", #2
-              "options": {"src": "eqCA/eq.mdp",
+              "options": {"src": "eqCA/eqCA.mdp",
                           "src2": "eqCA/confout.gro",
                           "top": "topol.top",
                           "tgt": "eqCA/topol.tpr",
