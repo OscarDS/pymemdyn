@@ -84,7 +84,7 @@ class Run(object):
             "#topol.tpr.1#", "#topol.tpr.2#", "#topol.tpr.3#",
             "#topol.tpr.4#", "#water.pdb.1#", "ener_EQ.edr", 
             "ffoplsaabon_mod.itp", "ffoplsaa_mod.itp", "ffoplsaanb_mod.itp",
-            "GROMACS.output", "genion.log", "hexagon.pdb", "index.ndx",
+            "genion.log", "hexagon.pdb", "index.ndx",
             "ligand_ha.ndx", "mdout.mdp", "min.pdb",
             "output.pdb", "output.tpr", "popc.pdb", "popc.itp", "posre.itp",
             "posre_lig.itp", "protein.itp", "protein.top",
@@ -181,14 +181,17 @@ if __name__ == "__main__":
               queue = args.queue,
               debug = args.debug)
     run.clean()
-    # 
+
+    f = open("GROMACS.log", "w")
+    f.close()
+
     if args.debug:
         logging.basicConfig(filename='GROMACS.log', level=logging.DEBUG)
     else:
         logging.basicConfig(filename='GROMACS.log',
                             format='%(asctime)s %(message)s',
                             datefmt='%m/%d/%Y %I:%M:%S',
-                            level=logging.ERROR)
+                            level=logging.DEBUG)
     #
     run.moldyn()
 

@@ -11,7 +11,7 @@ class Gromacs(object):
     def __init__(self, *args, **kwargs):
         self._membrane_complex = None
         self.wrapper = Wrapper()
-        logging.basicConfig(filename="GROMACS.output",
+        logging.basicConfig(filename="GROMACS.log",
                             level=logging.DEBUG,
                             format='%(message)s')
         if "membrane_complex" in kwargs.keys():
@@ -67,6 +67,7 @@ class Gromacs(object):
 
         # Now we are looking for this line:
         # System has non-zero total charge: 6.000002e+00
+        charge = 0
         for line in err.split("\n"):
             if "total charge" in line:
                 charge = int(float(line.split()[-1]))
@@ -76,8 +77,13 @@ class Gromacs(object):
         self.membrane_complex.complex.positive_charge = 0
         if charge > 0:
             self.membrane_complex.complex.positive_charge = charge
+            self.membrane_complex.complex.negative_charge = 0
         elif charge < 0:
+            self.membrane_complex.complex.negative_charge = charge
             self.membrane_complex.complex.positive_charge = 0
+        else:
+            self.membrane_complex.complex.negative_charge = 16
+            self.membrane_complex.complex.positive_charge = 16
 
         return True
 
