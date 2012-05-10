@@ -3,11 +3,11 @@ import os
 class MonomerRecipe(object):
     def __init__(self, **kwargs):
         # First we have to make a list of ordered steps
-        self.steps = ["pdb2gmx", "set_itp", "editconf", "set_protein_size",
-                      "editconf2", "set_protein_size2", "set_popc",
-                      "editconf3", "editconf4", "make_topol", "editconf5",
-                      "genbox", "set_water", "editconf6", "editconf7",
-                      "genbox2", "count_lipids", "make_topol2",
+        self.steps = ["pdb2gmx", "set_itp", "concat", "editconf",
+                      "set_protein_size", "editconf2", "set_protein_size2",
+                      "set_popc", "editconf3", "editconf4", "make_topol",
+                      "editconf5", "genbox", "set_water", "editconf6",
+                      "editconf7", "genbox2", "count_lipids", "make_topol2",
                       "make_topol_lipids", "make_ffoplsaanb", "set_grompp",
                       "grompp", "trjconv", "get_charge", "genion", "grompp2",
                       "trjconv2", "grompp3", "trjconv3"]
@@ -21,6 +21,9 @@ class MonomerRecipe(object):
          "set_itp": {"command": "set_itp", #1
           "options": {"src": "protein.top",
                       "tgt": "protein.itp"}},
+         "concat": {"command": "concat",
+          "options": {"src": "proteinopls.pdb",
+                      "tgt": ""}},
          "editconf": {"gromacs": "editconf", #2
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
@@ -136,10 +139,11 @@ class MonomerRecipe(object):
                        "ur": "compact",
                        "pbc": "mol"},
           "input": "1\n0\n"}
-        }
+           }
 
         self.breaks = \
             {"pdb2gmx": {"src": "membrane_complex.complex.monomer.pdb_his"},
+             "concat": {"tgt": "membrane_complex.complex"},
              "editconf": {"dist": "membrane_complex.box_height"},
              "editconf2": {"dist": "membrane_complex.box_width"},
              "editconf3": {"box": "membrane_complex.trans_box_size"},
@@ -185,16 +189,16 @@ class MonomerLigandRecipe(MonomerRecipe):
                          "ligand": True},
              "input": "! a H*\nq\n"}
 
-        self.steps.insert(2, "concat")
-        self.recipe["concat"] =\
-            {"command": "concat",
-             "options": {"src": "proteinopls.pdb",
-                         "tgt": ""}}
+        #self.steps.insert(2, "concat")
+        #self.recipe["concat"] =\
+        #    {"command": "concat",
+        #     "options": {"src": "proteinopls.pdb",
+        #                 "tgt": ""}}
 
-        self.breaks["concat"] =\
-            {"tgt": "membrane_complex.complex"}
-        self.breaks["make_ndx"] =\
-            {"src": "membrane_complex.complex.ligand.pdb"}
+        #self.breaks["concat"] =\
+        #    {"tgt": "membrane_complex.complex"}
+        #self.breaks["make_ndx"] =\
+        #    {"src": "membrane_complex.complex.ligand.pdb"}
         self.breaks["genrestr"] =\
             {"src": "membrane_complex.complex.ligand.pdb"}
 
