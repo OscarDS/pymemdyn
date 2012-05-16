@@ -192,8 +192,8 @@ class CrystalWaters(Compound):
 
 class Ions(Compound):
     def __init__(self, *args, **kwargs):
-        self.pdb = "local_ions.pdb"
-        self.itp = "local_ions.itp"
+        self.pdb = "ions_local.pdb"
+        self.itp = "ions_local.itp"
         super(Ions, self).__init__(self, *args, **kwargs)
 
         self._n_ions = self.count_ions()
