@@ -233,15 +233,76 @@ class Ions(Compound):
         tgt.writelines(s)
         tgt.close()
 
-
 class Cholesterol(Compound):
     def __init__(self, *args, **kwargs):
         self.pdb = "cho.pdb"
         self.itp = "cho.itp"
         super(Cholesterol, self).__init__(self, *args, **kwargs)
 
-        self.posre_itp = "posre_ion.itp"
-        self._setITP()
+        #self.posre_itp = "posre_cho.itp"
+        #self._setITP()
+
+        self._n_cho = self.count_cho()
+
+    def setCho(self, value):
+        '''Sets the crystal cholesterol'''
+        self._n_cho = value
+    def getCho(self):
+        '''Get the crystal cholesterols'''
+        return self._n_cho
+    number = property(getCho, setCho)
+
+    def count_cho(self):
+       '''Count and set the number of cho in the pdb'''
+       cho_count = 0
+       for line in open(self.pdb, "r"):
+           if len(line.split()) > 2:
+               if line.split()[3] == "CHO":
+                   cho_count += 1
+       return cho_count / 74 #Each CHO has 74 atoms
+
+    def _setITP(self):
+        '''Create the itp to this structure'''
+        s = "\n".join([
+            "; position restraints for cholesterol (resn CHO)",
+            "[ position_restraints ]",
+            ";  i funct       fcx        fcy        fcz",
+            "   1    1       1000       1000       1000"])
+
+        tgt = open(self.posre_itp, "w")
+        tgt.writelines(s)
+        tgt.close()
+
+class Lipids(Compound):
+    def __init__(self, *args, **kwargs):
+        self.pdb = "lip.pdb"
+        self.itp = "lip.itp"
+        super(Lipids, self).__init__(self, *args, **kwargs)
+
+        #self.posre_itp = "posre_lip.itp"
+        #self._setITP()
+
+        self._n_lip = self.count_lip()
+
+    def setLip(self, value):
+        '''Sets the crystal lipids'''
+        self._n_lip = value
+    def getLip(self):
+        '''Get the crystal lipidss'''
+        return self._n_lip
+    number = property(getLip, setLip)
+
+    def count_lip(self):
+       '''Count and set the number of lipids in the pdb'''
+       lip_count = []
+       for line in open(self.pdb, "r"):
+           if len(line.split()) > 2:
+               if (line.split()[3] == "LIP" and
+                   line.split()[4].isdigit() and
+                   line.split()[4] not in lip_count):
+                   #Lipid + number + new
+                   lip_count.append(line.split()[4])
+       return len(lip_count)
 
     def _setITP(self):
         '''Create the itp to this structure'''
