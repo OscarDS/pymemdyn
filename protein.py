@@ -196,6 +196,9 @@ class Ions(Compound):
         self.itp = "ions_local.itp"
         super(Ions, self).__init__(self, *args, **kwargs)
 
+        self.posre_itp = "posre_ion.itp"
+        self._setITP()
+
         self._n_ions = self.count_ions()
 
     def setIons(self, value):
@@ -215,6 +218,19 @@ class Ions(Compound):
                if line.split()[2] in ions:
                    ion_count += 1
        return ion_count
+
+    def _setITP(self):
+        '''Create the itp to this structure'''
+        s = "\n".join([
+            "; position restraints for ions (resn HOH)",
+            "[ position_restraints ]",
+            ";  i funct       fcx        fcy        fcz",
+            "   1    1       1000       1000       1000"])
+
+        tgt = open(self.posre_itp, "w")
+        tgt.writelines(s)
+        tgt.close()
+
 
 class Cholesterol(Compound):
     def __init__(self, *args, **kwargs):
