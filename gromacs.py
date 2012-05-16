@@ -70,7 +70,7 @@ class Gromacs(object):
         charge = 0
         for line in err.split("\n"):
             if "total charge" in line:
-                charge = int(float(line.split()[-1]))
+                charge = abs(int(float(line.split()[-1])))
                 break
 
         self.membrane_complex.complex.negative_charge = 0
@@ -82,8 +82,8 @@ class Gromacs(object):
             self.membrane_complex.complex.negative_charge = charge
             self.membrane_complex.complex.positive_charge = 0
         else:
-            self.membrane_complex.complex.negative_charge = 16
-            self.membrane_complex.complex.positive_charge = 16
+            self.membrane_complex.complex.negative_charge = 0
+            self.membrane_complex.complex.positive_charge = 0
 
         return True
 
