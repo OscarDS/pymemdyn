@@ -239,3 +239,18 @@ class Cholesterol(Compound):
         self.pdb = "cho.pdb"
         self.itp = "cho.itp"
         super(Cholesterol, self).__init__(self, *args, **kwargs)
+
+        self.posre_itp = "posre_ion.itp"
+        self._setITP()
+
+    def _setITP(self):
+        '''Create the itp to this structure'''
+        s = "\n".join([
+            "; position restraints for cholesterol (resn CHO)",
+            "[ position_restraints ]",
+            ";  i funct       fcx        fcy        fcz",
+            "   1    1       1000       1000       1000"])
+
+        tgt = open(self.posre_itp, "w")
+        tgt.writelines(s)
+        tgt.close()
