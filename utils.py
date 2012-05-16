@@ -181,7 +181,9 @@ def make_topol(template_dir = \
              "na": {"itp_name": "ions_local.itp",
                  "ifdef_name": "POSRESION",
                  "posre_name": "posre_ion.itp"},
-             "cho": {}}
+             "cho": {"itp_name": "posre_cho.itp",
+                 "ifdef_name": "POSRESCHO",
+                 "posre_name": "posre_cho.itp"}}
 
     src = open(os.path.join(template_dir, "topol.top"), "r")
     tgt = open(os.path.join(target_dir, "topol.top"), "w")
