@@ -62,6 +62,8 @@ class ProteinComplex(object):
 class Monomer(object):
     def __init__(self, *args, **kwargs):
         self.pdb = kwargs["pdb"]
+        if not os.path.isfile(self.pdb):
+            raise IOError("File '{0}' missing".format(self.pdb))
         self._setHist()
 
     def _setHist(self):
