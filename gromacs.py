@@ -1,4 +1,5 @@
 import recipes
+import settings
 import utils
 
 import logging
@@ -415,7 +416,7 @@ class Wrapper(object):
     def __init__(self, *args, **kwargs):
         self.work_dir = os.getcwd()
         #The gromacs to be used
-        self.gromacs_dir = "/opt/gromacs405/bin/"
+        self.gromacs_dir = settings.GROMACS_PATH
         #And this is our directory to refer the "fixed" files
         self.own_dir = os.path.dirname(os.path.abspath(__file__))
         #Repo dir is under pymoldyn file directory
