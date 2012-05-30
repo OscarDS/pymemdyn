@@ -5,22 +5,13 @@ import shutil
 import sys
 import textwrap
 
-try:
-    import complex
-    import gromacs
-    import membrane
-    import protein
-    import queue
-    import recipes
-except ImportError:
-    from pymoldyn import complex
-    from pymoldyn import gromacs
-    from pymoldyn import membrane
-    from pymoldyn import protein
-    from pymoldyn import queue
-    from pymoldyn import recipes
-
-import settings
+import .complex
+import .gromacs
+import .membrane
+import .protein
+import .queue
+import .recipes
+import .settings
 
 class Run(object):
     #This is a dummy
