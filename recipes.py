@@ -150,8 +150,8 @@ class MonomerRecipe(object):
              "editconf4": {"box": "membrane_complex.bilayer_box_size"},
              "editconf6": {"box": "membrane_complex.embeded_box_size"},
              "editconf7": {"box": "membrane_complex.protein_box_size"},
-             "genion": {"np": "membrane_complex.complex.positive_charge",
-                        "nn": "membrane_complex.complex.negative_charge"},
+             "genion": {"nn": "membrane_complex.complex.positive_charge",
+                        "np": "membrane_complex.complex.negative_charge"},
              "make_topol": {"complex": "membrane_complex.complex"},
              "make_topol2": {"complex": "membrane_complex.complex"},
              "make_ffoplsaanb": {"complex": "membrane_complex.complex"},
@@ -197,8 +197,8 @@ class MonomerLigandRecipe(MonomerRecipe):
 
         #self.breaks["concat"] =\
         #    {"tgt": "membrane_complex.complex"}
-        #self.breaks["make_ndx"] =\
-        #    {"src": "membrane_complex.complex.ligand.pdb"}
+        self.breaks["make_ndx"] =\
+            {"src": "membrane_complex.complex.ligand.pdb"}
         self.breaks["genrestr"] =\
             {"src": "membrane_complex.complex.ligand.pdb"}
 
@@ -353,7 +353,8 @@ class CAEquilibrate(object):
              "set_stage_init": {"command": "set_stage_init", #0
               "options": {"src_dir": "eq",
                           "tgt_dir": "eqCA",
-                          "src_files": ["confout.gro", "eq.mdp"]}},
+                          "src_files": ["confout.gro"],
+                          "repo_files": ["eqCA.mdp"]}},
              "genrestr": {"gromacs": "genrestr", #1
               "options": {"src": "Rmin/topol.tpr",
                           "tgt": "posre.itp",
@@ -361,7 +362,7 @@ class CAEquilibrate(object):
                           "forces": ["200"] * 3},
               "input": "3\n"},
              "grompp": {"gromacs": "grompp", #2
-              "options": {"src": "eqCA/eq.mdp",
+              "options": {"src": "eqCA/eqCA.mdp",
                           "src2": "eqCA/confout.gro",
                           "top": "topol.top",
                           "tgt": "eqCA/topol.tpr",

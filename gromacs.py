@@ -1,4 +1,5 @@
 import recipes
+import settings
 import utils
 
 import logging
@@ -70,7 +71,7 @@ class Gromacs(object):
         charge = 0
         for line in err.split("\n"):
             if "total charge" in line:
-                charge = int(float(line.split()[-1]))
+                charge = abs(int(float(line.split()[-1])))
                 break
 
         self.membrane_complex.complex.negative_charge = 0
@@ -82,8 +83,8 @@ class Gromacs(object):
             self.membrane_complex.complex.negative_charge = charge
             self.membrane_complex.complex.positive_charge = 0
         else:
-            self.membrane_complex.complex.negative_charge = 16
-            self.membrane_complex.complex.positive_charge = 16
+            self.membrane_complex.complex.negative_charge = 0
+            self.membrane_complex.complex.positive_charge = 0
 
         return True
 
@@ -415,7 +416,7 @@ class Wrapper(object):
     def __init__(self, *args, **kwargs):
         self.work_dir = os.getcwd()
         #The gromacs to be used
-        self.gromacs_dir = "/opt/gromacs405/bin/"
+        self.gromacs_dir = settings.GROMACS_PATH
         #And this is our directory to refer the "fixed" files
         self.own_dir = os.path.dirname(os.path.abspath(__file__))
         #Repo dir is under pymoldyn file directory

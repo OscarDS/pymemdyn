@@ -112,7 +112,7 @@ def make_cat(dir1, dir2, name):
     traj_src = [os.path.join(dir1, name)]
     traj_src.extend([os.path.join(dir1, "{0}", name).format(x)
                      for x in range(800, 0, -200)])
-    #traj_src.extend([os.path.join(dir2, name)])
+    traj_src.extend([os.path.join(dir2, name)])
 
     return traj_src
 
@@ -181,7 +181,9 @@ def make_topol(template_dir = \
              "na": {"itp_name": "ions_local.itp",
                  "ifdef_name": "POSRESION",
                  "posre_name": "posre_ion.itp"},
-             "cho": {}}
+             "cho": {"itp_name": "cho.itp"}}
+                 #"ifdef_name": "POSRESCHO",
+                 #"posre_name": "posre_cho.itp"}}
 
     src = open(os.path.join(template_dir, "topol.top"), "r")
     tgt = open(os.path.join(target_dir, "topol.top"), "w")
@@ -193,11 +195,14 @@ def make_topol(template_dir = \
     for c in order:
         if locals()[c]:
             itp_name = comps[c]["itp_name"]
-            itp_include.extend(['#include "{0}"'.format(comps[c]["itp_name"]),
-                '; Include Position restraint file',
+            if "posre_name" in comps[c].keys():
+                posre_name = comps[c]["posre_name"]
+            itp_include.append('#include "{0}"'.format(comps[c]["itp_name"]))
+            if "posre_name" in comps[c].keys():
+                itp_include.extend(['; Include Position restraint file',
                 '#ifdef {0}'.format(comps[c]["ifdef_name"]),
                 '#include "{0}"'.format(os.path.join(target_dir,
-                                        comps[c]["posre_name"])),
+                    comps[c]["posre_name"])),
                 '#endif'])
 
             comps[c]["line"] = "{0} {1}".format(c, locals()[c])
@@ -211,6 +216,7 @@ def make_topol(template_dir = \
                            lig = comps["lig"]["line"],
                            hoh = comps["hoh"]["line"],
                            na = comps["na"]["line"],
+                           cho = comps["cho"]["line"],
                            itp_includes = "\n".join(itp_include)))
     tgt.close()
 

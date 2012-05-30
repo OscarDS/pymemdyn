@@ -5,6 +5,10 @@
 
 REPO_DIR = "templates"
 
+#GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/ib/bin/"
+#GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/gige/bin/"
+GROMACS_PATH = "/opt/gromacs405/bin/"
+
 #Set the queue to use. Look inside queue.py.
 QUEUE = ""
 #QUEUE = "slurm"
