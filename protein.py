@@ -315,3 +315,12 @@ class Lipids(Compound):
         tgt = open(self.posre_itp, "w")
         tgt.writelines(s)
         tgt.close()
+
+class Alosteric(Compound):
+    def __init__(self, *args, **kwargs):
+        self.pdb = kwargs["pdb"]
+        self.itp = kwargs["itp"]
+        super(Alosteric, self).__init__(self, *args, **kwargs)
+
+        self.force_field = kwargs["ff"]
+
