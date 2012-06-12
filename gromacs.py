@@ -121,7 +121,8 @@ class Gromacs(object):
 
         #And this makes the membrane group as membr
         n_group += 1
-        input += "r POP || r CHO || r LIP\n name {0} membr\n".format(n_group)
+        input += "r POP || r CHO || r LIP\n"
+        input += "name {0} membr\n".format(n_group)
 
         if hasattr(self.membrane_complex.membrane, "ions"):
             #This makes the group ions TODO
