@@ -1,6 +1,6 @@
 import os
 
-class MonomerRecipe(object):
+class BasicInit(object):
     def __init__(self, **kwargs):
         # First we have to make a list of ordered steps
         self.steps = ["pdb2gmx", "set_itp", "concat", "editconf",
@@ -162,18 +162,12 @@ class MonomerRecipe(object):
             self.recipe["set_grompp"]["options"]["steep.mdp"] = "steepDEBUG.mdp"
 
 # This recipe modifies the previous one taking a ligand into account
-class MonomerLigandRecipe(MonomerRecipe):
+class LigandInit(BasicInit):
     def __init__(self, **kwargs):
-        super(MonomerLigandRecipe, self).__init__(**kwargs)
-        #self.recipe["set_grompp"]["options"]["ffoplsaanb_mod.itp"] =\
-        #    "ffoplsaanb_mod_lig.itp"
-        #self.recipe["set_grompp"]["options"]["ffoplsaabon_mod.itp"] =\
-        #    "ffoplsaabon_mod_lig.itp"
-        #self.recipe["set_grompp"]["options"]["ffoplsaa_mod.itp"] =\
-        #    "ffoplsaa_mod_lig.itp"
+        super(LigandInit, self).__init__(**kwargs)
 
-        self.steps.insert(9, "genrestr")
-        self.recipe["genrestr"] =\
+        self.steps.insert(9, "genrestr_lig")
+        self.recipe["genrestr_lig"] =\
             {"gromacs": "genrestr",
              "options": {"src": "",
                          "tgt": "posre_lig.itp",
@@ -181,26 +175,45 @@ class MonomerLigandRecipe(MonomerRecipe):
                          "forces": ["1000", "1000", "1000"]},
              "input": "2\n"}
 
-        self.steps.insert(9, "make_ndx")
-        self.recipe["make_ndx"] =\
+        self.steps.insert(9, "make_ndx_lig")
+        self.recipe["make_ndx_lig"] =\
             {"gromacs": "make_ndx",
              "options": {"src": "",
                          "tgt": "ligand_ha.ndx",
                          "ligand": True},
              "input": "! a H*\nq\n"}
 
-        #self.steps.insert(2, "concat")
-        #self.recipe["concat"] =\
-        #    {"command": "concat",
-        #     "options": {"src": "proteinopls.pdb",
-        #                 "tgt": ""}}
+        self.breaks["make_ndx_lig"] =\
+            {"src": "membrane_complex.complex.ligand.pdb"}
+        self.breaks["genrestr_lig"] =\
+            {"src": "membrane_complex.complex.ligand.pdb"}
 
-        #self.breaks["concat"] =\
-        #    {"tgt": "membrane_complex.complex"}
-        self.breaks["make_ndx"] =\
-            {"src": "membrane_complex.complex.ligand.pdb"}
-        self.breaks["genrestr"] =\
-            {"src": "membrane_complex.complex.ligand.pdb"}
+# This recipe modifies the previous one taking an alosteric into account
+class LigandAlostericInit(LigandInit):
+    def __init__(self, **kwargs):
+        super(LigandAlostericInit, self).__init__(**kwargs)
+
+        self.steps.insert(9, "genrestr_alo")
+        self.recipe["genrestr_alo"] =\
+            {"gromacs": "genrestr",
+             "options": {"src": "",
+                         "tgt": "posre_alo.itp",
+                         "index": "alosteric_ha.ndx",
+                         "forces": ["1000", "1000", "1000"]},
+             "input": "2\n"}
+
+        self.steps.insert(9, "make_ndx_alo")
+        self.recipe["make_ndx_alo"] =\
+            {"gromacs": "make_ndx",
+             "options": {"src": "",
+                         "tgt": "alosteric_ha.ndx",
+                         "alosteric": True},
+             "input": "! a H*\nq\n"}
+
+        self.breaks["make_ndx_alo"] =\
+            {"src": "membrane_complex.complex.alosteric.pdb"}
+        self.breaks["genrestr_alo"] =\
+            {"src": "membrane_complex.complex.alosteric.pdb"}
 
 ##########################################################################
 #                 Minimization                                           #
@@ -232,6 +245,10 @@ class BasicMinimization(object):
 class LigandMinimization(BasicMinimization):
     def __init__(self, **kwargs):
         super(LigandMinimization, self).__init__(**kwargs)
+
+class LigandAlostericMinimization(BasicMinimization):
+    def __init__(self, **kwargs):
+        super(LigandAlostericMinimization, self).__init__(**kwargs)
 
 ##########################################################################
 #                 Equilibration                                          #
@@ -291,6 +308,18 @@ class LigandEquilibration(BasicEquilibration):
                          "forces": ["200", "200", "200"]},
              "input": "3\n"}
 
+class LigandAlostericEquilibration(LigandEquilibration):
+    def __init__(self, **kwargs):
+        super(LigandAlostericEquilibration, self).__init__(**kwargs)
+        self.steps.insert(2, "genrestr")
+        self.recipe["genrestr"] = \
+            {"gromacs": "genrestr",
+             "options": {"src": "Rmin/topol.tpr",
+                         "tgt": "protein_ca200.itp",
+                         "index": "index.ndx",
+                         "forces": ["200", "200", "200"]},
+             "input": "3\n"}
+
 ##########################################################################
 #                    Relaxation                                          #
 ##########################################################################
@@ -340,6 +369,11 @@ class LigandRelax(BasicRelax):
     def __init__(self, **kwargs):
         super(LigandRelax, self).__init__(**kwargs)
         self.recipe["relax800"]["options"]["posres"].append("posre_lig.itp")
+
+class LigandAlostericRelax(LigandRelax):
+    def __init__(self, **kwargs):
+        super(LigandAlostericRelax, self).__init__(**kwargs)
+        self.recipe["relax800"]["options"]["posres"].append("posre_alo.itp")
 
 ##########################################################################
 #                    Alpha Chains Relaxation                             #
