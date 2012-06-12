@@ -76,7 +76,7 @@ def check_forces(pdb, itp, ffield):
 
 def concat(**kwargs):
     '''Make a whole pdb file with all the pdb provided'''
-    for compound_class in ["waters", "ligand", "ions", "cho", "alosteric"]:
+    for compound_class in ["waters", "ligand", "ions", "cho"]:
         #Does the complex carry the group?
         if hasattr(kwargs["tgt"], compound_class):
             if getattr(kwargs["tgt"], compound_class):
@@ -129,9 +129,6 @@ def make_ffoplsaanb(complex = None):
     if hasattr(complex, "ligand"):
         if hasattr(complex.ligand, "force_field"):
             to_concat.append(complex.ligand.force_field)
-    if hasattr(complex, "alosteric"):
-        if hasattr(complex.alosteric, "force_field"):
-            to_concat.append(complex.alosteric.force_field)
     if hasattr(complex, "cho"):
         to_concat.append(cho)
 
@@ -153,7 +150,7 @@ def make_topol(template_dir = \
     complex = None): # The MembraneComplex object to deal
     '''Make the topol starting from our topol.top template'''
 
-    protein = lig = hoh = na = cho = alo = 0
+    protein = lig = hoh = na = cho = 0
     lig_name = ""
     if hasattr(complex, "monomer"):
         protein = 1
@@ -170,12 +167,8 @@ def make_topol(template_dir = \
     if hasattr(complex, "cho"):
         if hasattr(complex.cho, "number"):
             cho = complex.cho.number
-    if hasattr(complex, "alosteric"):
-        if complex.alosteric:
-            alo = 1
-            alosteric_name = complex.alosteric.itp
 
-    order = ("protein", "hoh", "lig", "na", "cho", "alo")
+    order = ("protein", "hoh", "lig", "na", "cho")
     comps = {"protein": {"itp_name": "protein.itp",
                  "ifdef_name": "POSRES",
                  "posre_name": "posre.itp"},
@@ -188,13 +181,9 @@ def make_topol(template_dir = \
              "na": {"itp_name": "ions_local.itp",
                  "ifdef_name": "POSRESION",
                  "posre_name": "posre_ion.itp"},
-             "cho": {"itp_name": "cho.itp"},
+             "cho": {"itp_name": "cho.itp"}}
                  #"ifdef_name": "POSRESCHO",
-                 #"posre_name": "posre_cho.itp"}
-             "alo": {"itp_name": alosteric_name,
-                 "ifdef_name": "POSRESALO",
-                 "posre_name": "posre_alo.itp"},
-             }
+                 #"posre_name": "posre_cho.itp"}}
 
     src = open(os.path.join(template_dir, "topol.top"), "r")
     tgt = open(os.path.join(target_dir, "topol.top"), "w")
@@ -228,7 +217,6 @@ def make_topol(template_dir = \
                            hoh = comps["hoh"]["line"],
                            na = comps["na"]["line"],
                            cho = comps["cho"]["line"],
-                           alosteric = comps["alo"]["line"],
                            itp_includes = "\n".join(itp_include)))
     tgt.close()
 

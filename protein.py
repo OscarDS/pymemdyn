@@ -1,6 +1,4 @@
 import os
-import shutil
-import tempfile
 
 class ProteinComplex(object):
     def __init__(self, *args, **kwargs):
@@ -18,8 +16,6 @@ class ProteinComplex(object):
             self.setIons(kwargs["ions"])
         if "cho" in kwargs.keys():
             self.setCho(kwargs["cho"])
-        if "alosteric" in kwargs.keys():
-            self.setAlosteric(kwargs["alosteric"])
 
     def setMonomer(self, value):
         '''Sets the monomer object'''
@@ -56,12 +52,6 @@ class ProteinComplex(object):
         return self.cho
     property(getCho, setCho)
 
-    def setAlosteric(self, value):
-        '''Sets the alosteric object'''
-        self.alosteric = value
-    def getAlosteric(self):
-        return self.alosteric
-    property(getAlosteric, setAlosteric)
 
     def set_nanom(self):
         '''Set some meassurements to nanometers, as GROMACS wants'''
@@ -74,40 +64,7 @@ class Monomer(object):
         self.pdb = kwargs["pdb"]
         if not os.path.isfile(self.pdb):
             raise IOError("File '{0}' missing".format(self.pdb))
-
-        self.group = "protlig"
-
-        self.delete_chain()
         self._setHist()
-
-    def delete_chain(self):
-        '''PDBs that has a chain column messes with the pdb2gmx, creating
-        an unsuitable protein.itp file by naming the protein ie "Protein_A".
-        Here we remove the chain value
-
-        According to http://www.wwpdb.org/documentation/format33/sect9.html,
-        the chain value is in the column 22'''
-
-        shutil.move(self.pdb, self.pdb + "~")
-        pdb = open(self.pdb + "~", "r")
-        pdb_out = open(self.pdb, "w")
-
-        replacing = False
-        for line in pdb:
-            new_line = line
-            if len(line.split()) > 2:
-                #Remove the chain id
-                if line[21] != " ":
-                    replacing = True
-                    tbr = " %s " % line[21] # Chain is surrouned by spaces
-                    new_line = new_line.replace(tbr, "   ")
-            pdb_out.write(new_line)
-
-        if replacing: print "Removed chain id from your protein pdb!"
-        pdb.close()
-        pdb_out.close()
- 
-        return True
 
     def _setHist(self):
         '''Touch the Histidine in the source protein, generating a new PDB'''
@@ -150,8 +107,6 @@ class Ligand(Compound):
         self.pdb = kwargs["pdb"]
         self.itp = kwargs["itp"]
         super(Ligand, self).__init__(self, *args, **kwargs)
-
-        self.group = "protlig"
 
         self.force_field = kwargs["ff"]
 
@@ -209,8 +164,6 @@ class CrystalWaters(Compound):
         self.itp = "hoh.itp"
         super(CrystalWaters, self).__init__(self, *args, **kwargs)
 
-        self.group = "wation"
-
         self.posre_itp = "posre_hoh.itp"
         self._setITP()
         self._n_wats = self.count_waters()
@@ -244,8 +197,6 @@ class Ions(Compound):
         self.pdb = "ions_local.pdb"
         self.itp = "ions_local.itp"
         super(Ions, self).__init__(self, *args, **kwargs)
-
-        self.group = "wation"
 
         self.posre_itp = "posre_ion.itp"
         self._setITP()
@@ -288,9 +239,9 @@ class Cholesterol(Compound):
         self.itp = "cho.itp"
         super(Cholesterol, self).__init__(self, *args, **kwargs)
 
-        self.group = "membr"
+        #self.posre_itp = "posre_cho.itp"
+        #self._setITP()
 
-        self.check_pdb()
         self._n_cho = self.count_cho()
 
     def setCho(self, value):
@@ -301,44 +252,32 @@ class Cholesterol(Compound):
         return self._n_cho
     number = property(getCho, setCho)
 
-    def check_pdb(self):
-       '''Check the cholesterol file meet some standards'''
-       shutil.move(self.pdb, self.pdb + "~")
-       pdb = open(self.pdb + "~", "r")
-       pdb_out = open(self.pdb, "w")
-
-       replacing = False
-       for line in pdb:
-           new_line = line
-           if len(line.split()) > 2:
-               #Ensure the cholesterol is labeled as CHO
-               if line.split()[3] != "CHO":
-                   replacing = True
-                   new_line = new_line.replace(line.split()[3], "CHO")
-           pdb_out.write(new_line)
-
-       if replacing: print "Made some CHO replacements in cho.pdb!"
-       pdb.close()
-       pdb_out.close()
-
-       return True
-
     def count_cho(self):
        '''Count and set the number of cho in the pdb'''
        cho_count = 0
        for line in open(self.pdb, "r"):
            if len(line.split()) > 2:
-               if line.split()[3] in ["CHO", "CLR"]:
+               if line.split()[3] == "CHO":
                    cho_count += 1
        return cho_count / 74 #Each CHO has 74 atoms
+
+    def _setITP(self):
+        '''Create the itp to this structure'''
+        s = "\n".join([
+            "; position restraints for cholesterol (resn CHO)",
+            "[ position_restraints ]",
+            ";  i funct       fcx        fcy        fcz",
+            "   1    1       1000       1000       1000"])
+
+        tgt = open(self.posre_itp, "w")
+        tgt.writelines(s)
+        tgt.close()
 
 class Lipids(Compound):
     def __init__(self, *args, **kwargs):
         self.pdb = "lip.pdb"
         self.itp = "lip.itp"
         super(Lipids, self).__init__(self, *args, **kwargs)
-
-        self.group = "membr"
 
         #self.posre_itp = "posre_lip.itp"
         #self._setITP()
@@ -376,72 +315,3 @@ class Lipids(Compound):
         tgt = open(self.posre_itp, "w")
         tgt.writelines(s)
         tgt.close()
-
-class Alosteric(Compound):
-    '''This is a compound that goes as a ligand but in other place'''
-    def __init__(self, *args, **kwargs):
-        self.pdb = kwargs["pdb"]
-        self.itp = kwargs["itp"]
-        super(Alosteric, self).__init__(self, *args, **kwargs)
-
-        self.check_pdb()
-
-        self.force_field = kwargs["ff"]
-        self.check_itp()
-
-        self.group = "protlig"
-
-    def check_pdb(self):
-       '''Check the alosteric file meet some standards'''
-       shutil.move(self.pdb, self.pdb + "~")
-       pdb = open(self.pdb + "~", "r")
-       pdb_out = open(self.pdb, "w")
-
-       replacing = False
-       for line in pdb:
-           new_line = line
-           if len(line.split()) > 2:
-               #Ensure the alosteric compound is labeled as ALO
-               if line.split()[3] != "ALO":
-                   replacing = True
-                   new_line = new_line.replace(line.split()[3], "ALO")
-           pdb_out.write(new_line)
-
-       if replacing: print "Made some ALO replacements in %s!" % self.pdb
-       pdb.close()
-       pdb_out.close()
-
-       return True
-
-    def check_itp(self):
-        '''Check the force field is correct'''
-        shutil.move(self.itp, self.itp + "~")
-        itp = open(self.itp + "~", "r")
-        itp_out = open(self.itp, "w")
- 
-        molecule_type = atoms = False
-        for line in itp:
-            new_line = line
-            if line.startswith("[ moleculetype ]"): molecule_type = True
-            if molecule_type:
-                if not line.startswith(";"): #Not a comment
-                    if len(line.split()) == 2:
-                        #Change the user name to "alo"
-                        new_line = line.replace(line.split()[0], "alo")
-                        molecule_type = False
-
-            if line.startswith("[ "): #Next section (after atoms) reached
-                atoms = False
-            if line.startswith("[ atoms ]"): atoms = True
-            if atoms:
-                if not line.startswith(";"):
-                    if len(line.split()) > 4:
-                        #Change the name of the compound to "ALO"
-                        new_line = line.replace(line.split()[3], "ALO")
-            itp_out.write(new_line)
-
-        itp.close()
-        itp_out.close()
-  
-        return True
-
