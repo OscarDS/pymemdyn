@@ -6,16 +6,24 @@ import shutil
 import sys
 import textwrap
 
-import .complex
-import .gromacs
-import .membrane
-import .protein
-import .queue
-import .recipes
-import .settings
+try:
+    import complex
+    import gromacs
+    import membrane
+    import protein
+    import queue
+    import recipes
+except ImportError:
+    from pymoldyn import complex
+    from pymoldyn import gromacs
+    from pymoldyn import membrane
+    from pymoldyn import protein
+    from pymoldyn import queue
+    from pymoldyn import recipes
+
+import settings
 
 class Run(object):
-    #This is a dummy
     def __init__(self, *args, **kwargs):
         self.own_dir = kwargs["own_dir"] or ""
         self.repo_dir = kwargs["repo_dir"] or ""
@@ -144,15 +152,10 @@ if __name__ == "__main__":
                         required = True,
                         help = "Name of the pdb to insert into MD (mandatory)")
     parser.add_argument('-l',
-        dest = "ligand",
-        help = "Name of the ligand, without extension. Three \
-                files must be present along with the molecule \
-                pdb: the ligand, its itp and its force field.")
-    parser.add_argument("-alo",
-        dest = "alosteric",
-        help = "Name of the alosteric interaction, without extension. \
-               Three files must be present along with the molecule \
-                pdb: the alosteric, its itp and its force field.")
+                        dest = "ligand",
+                        help = "Name of the ligand, without extension. Three \
+                                files must be present along with the molecule \
+                                pdb: the ligand, its itp and its force field.")
     parser.add_argument('--waters',
                         action="store_true",
                         help = "Crystalized water molecules hoh.pdb file \
