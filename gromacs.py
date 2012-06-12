@@ -116,7 +116,8 @@ class Gromacs(object):
 
         #This makes the group protlig
         n_group += 1
-        input += "1 || r LIG\nname {0} protlig\n".format(n_group)
+        input += "1 || r LIG || r ALO\n"
+        input += "name {0} protlig\n".format(n_group)
 
         #And this makes the membrane group as membr
         n_group += 1
@@ -244,16 +245,23 @@ class Gromacs(object):
 
         return True
 
-    def select_recipe(self, debug = False):
+    def select_recipe(self, stage = "", debug = False):
         '''Select the appropiate recipe for the complex'''
-        recipe = "Monomer" # All recipes starts with Monomer
+        recipe = ""
+        stage = stage or "Init"
+
         if self.membrane_complex:
+            if not hasattr(self.membrane_complex.complex, "ligand"):
+                recipe += "Basic"
             if hasattr(self.membrane_complex.complex, "ligand"):
                 if self.membrane_complex.complex.ligand:
                     recipe += "Ligand"
+            if hasattr(self.membrane_complex.complex, "alosteric"):
+                if self.membrane_complex.complex.alosteric:
+                    recipe += "Alosteric"
 
-        recipe += "Recipe" # This is the basic recipe. TODO: receive an *arg
-                           # to set Minimization, Equilibration, etc.
+        recipe += stage #This kwarg carries the proper recipe:
+                        #Init, Minimization, Equilibration...
 
         self.recipe = getattr(recipes, recipe)(debug = debug)
 

@@ -6,13 +6,13 @@ import shutil
 import sys
 import textwrap
 
-import .complex
-import .gromacs
-import .membrane
-import .protein
-import .queue
-import .recipes
-import .settings
+import complex
+import gromacs
+import membrane
+import protein
+import queue
+import recipes
+import settings
 
 class Run(object):
     #This is a dummy
@@ -21,6 +21,7 @@ class Run(object):
         self.repo_dir = kwargs["repo_dir"] or ""
         self.pdb = kwargs["pdb"] or ""
         self.ligand = kwargs["ligand"] or ""
+        self.alosteric = kwargs["alosteric"] or ""
         self.waters = kwargs["waters"] or False
         self.ions = kwargs["ions"] or False
         self.cho = kwargs["cho"] or False
@@ -33,6 +34,11 @@ class Run(object):
             self.ligand = protein.Ligand(pdb = self.ligand + ".pdb",
                                          itp = self.ligand + ".itp",
                                          ff = self.ligand + ".ff")
+
+        if self.alosteric:
+            self.alosteric = protein.Alosteric(pdb = self.alosteric + ".pdb",
+                                               itp = self.alosteric + ".itp",
+                                               ff = self.alosteric + ".ff")
 
         if self.waters:
             self.waters = protein.CrystalWaters()
@@ -48,6 +54,7 @@ class Run(object):
         prot_complex = protein.ProteinComplex(
             monomer = self.pdb,
             ligand = self.ligand or None,
+            alosteric = self.alosteric or None,
             waters = self.waters or None,
             ions = self.ions or None,
             cho = self.cho or None)
@@ -102,23 +109,13 @@ class Run(object):
 
     def moldyn(self):
         '''Runs all the dynamics'''
-        self.g.run_recipe(debug = self.debug) #Basic recipe
-        if self.ligand:
-            self.g.recipe = recipes.LigandMinimization(debug = self.debug)
-        else:
-            self.g.recipe = recipes.BasicMinimization(debug = self.debug)
-        self.g.run_recipe()
-        if self.ligand:
-            self.g.recipe = recipes.LigandEquilibration(debug = self.debug)
-        else:
-            self.g.recipe = recipes.BasicEquilibration(debug = self.debug)
-        self.g.run_recipe()
 
-        if self.ligand:
-            self.g.recipe = recipes.LigandRelax(debug = self.debug)
-        else:
-            self.g.recipe = recipes.BasicRelax(debug = self.debug)
-        self.g.run_recipe()
+        steps = ["Init", "Minimization", "Equilibration", "Relax"]
+
+        for step in steps:
+            self.g.select_recipe(stage = step)
+            self.g.run_recipe(debug = self.debug)
+        
         self.g.recipe = recipes.CAEquilibrate(debug = self.debug)
         self.g.run_recipe()
 
@@ -148,10 +145,10 @@ if __name__ == "__main__":
         help = "Name of the ligand, without extension. Three \
                 files must be present along with the molecule \
                 pdb: the ligand, its itp and its force field.")
-    parser.add_argument("-alo",
+    parser.add_argument("--alo",
         dest = "alosteric",
         help = "Name of the alosteric interaction, without extension. \
-               Three files must be present along with the molecule \
+                Three files must be present along with the molecule \
                 pdb: the alosteric, its itp and its force field.")
     parser.add_argument('--waters',
                         action="store_true",
@@ -177,6 +174,7 @@ if __name__ == "__main__":
               repo_dir = args.repo_dir,
               pdb = args.pdb,
               ligand = args.ligand,
+              alosteric = args.alosteric,
               waters = args.waters,
               ions = args.ions,
               cho = args.cho,
