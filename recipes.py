@@ -278,7 +278,8 @@ class BasicEquilibration(object):
          "set_stage_init2": {"command": "set_stage_init", #4
           "options": {"src_dir": "",
                       "src_files": ["topol.tpr", "posre.itp", "posre_hoh.itp",
-                                   "posre_ion.itp", "posre_lig.itp"],
+                                   "posre_ion.itp", "posre_lig.itp",
+                                   "posre_alo.itp", "posre_cho.itp"],
                       "tgt_dir": "eq"}},
          "mdrun": {"gromacs": "mdrun", #5
           "options": {"dir": "eq",

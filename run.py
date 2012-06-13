@@ -181,6 +181,7 @@ if __name__ == "__main__":
               queue = args.queue,
               debug = args.debug)
     run.clean()
+    sys.exit()
 
     f = open("GROMACS.log", "w")
     f.close()
