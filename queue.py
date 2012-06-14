@@ -73,6 +73,7 @@ class PBS(Queue):
             "-walltime=%s" % self.max_time,                            #
             "-cput=%s" % self.max_cpu_time,                            #
             "-mem=%s" % self.max_mem,                                  #
+            self.sh]                                                   #
                                                                        #
         ################################################################
 
