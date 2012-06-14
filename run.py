@@ -113,7 +113,7 @@ class Run(object):
         steps = ["Init", "Minimization", "Equilibration", "Relax"]
 
         for step in steps:
-            self.g.select_recipe(stage = step)
+            self.g.select_recipe(stage = step, debug = self.debug)
             self.g.run_recipe(debug = self.debug)
         
         self.g.recipe = recipes.CAEquilibrate(debug = self.debug)
@@ -164,7 +164,8 @@ if __name__ == "__main__":
                                 file must exist.")
     parser.add_argument('-q',
                         dest = "queue",
-                        help = "Queue system to use (slurm and pbs supported)",
+                        help = "Queue system to use (slurm, pbs and pbs_ib \
+                                supported)",
                         default = settings.QUEUE)
     parser.add_argument('--debug',
                         action="store_true")
