@@ -71,6 +71,8 @@ class Run(object):
                 my_queue = queue.Slurm()
             elif self.queue == "pbs":
                 my_queue = queue.PBS()
+            elif self.queue == "pbs_ib":
+                my_queue = queue.PBS_IB()
         else:
             my_queue = queue.NoQueue()
 
