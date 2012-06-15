@@ -73,6 +73,8 @@ class Run(object):
                 my_queue = queue.PBS()
             elif self.queue == "pbs_ib":
                 my_queue = queue.PBS_IB()
+            elif self.queue == "svgd":
+                my_queue = queue.Svgd()
         else:
             my_queue = queue.NoQueue()
 
@@ -166,8 +168,8 @@ if __name__ == "__main__":
                                 file must exist.")
     parser.add_argument('-q',
                         dest = "queue",
-                        help = "Queue system to use (slurm, pbs and pbs_ib \
-                                supported)",
+                        help = "Queue system to use (slurm, pbs, pbs_ib and \
+                                svgd supported)",
                         default = settings.QUEUE)
     parser.add_argument('--debug',
                         action="store_true")
