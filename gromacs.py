@@ -1,3 +1,4 @@
+import groerror
 import recipes
 import settings
 import utils
@@ -230,6 +231,9 @@ class Gromacs(object):
                 logging.debug(" ".join(self.wrapper.generate_command(command)))
                 logging.debug(err)
                 logging.debug(out)
+                #This test the Gromacs output checking for known errors
+                groerror.GromacsMessages(gro_err=err, command=command[0])
+                
             else:
                 # ...or run a local function
                 logging.debug(command)
