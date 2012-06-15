@@ -232,7 +232,8 @@ class Gromacs(object):
                 logging.debug(err)
                 logging.debug(out)
                 #This test the Gromacs output checking for known errors
-                groerror.GromacsMessages(gro_err=err, command=command[0])
+                groerrors.GromacsMessages(gro_err=err,
+                    command=command["gromacs"])
                 
             else:
                 # ...or run a local function
@@ -256,7 +257,7 @@ class Gromacs(object):
         stage = stage or "Init"
 
         if self.membrane_complex:
-            if not hasattr(self.membrane_complex.complex, "ligand"):
+            if not self.membrane_complex.complex.ligand:
                 recipe += "Basic"
             if hasattr(self.membrane_complex.complex, "ligand"):
                 if self.membrane_complex.complex.ligand:

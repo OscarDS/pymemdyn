@@ -131,7 +131,7 @@ class PBS_IB(Queue):
         return True
 
 class Svgd(Queue):
-   '''Queue for the PBS system at svgd.cesga.es'''
+    '''Queue for the PBS system at svgd.cesga.es'''
     def __init__(self, *args, **kwargs):
         super(PBS, self).__init__(self, *args, **kwargs)
         '''Setting the command to run mdrun in pbs queue with mpi'''

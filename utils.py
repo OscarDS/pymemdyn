@@ -154,7 +154,7 @@ def make_topol(template_dir = \
     '''Make the topol starting from our topol.top template'''
 
     protein = lig = hoh = na = cho = alo = 0
-    lig_name = ""
+    lig_name = alosteric_name = ""
     if hasattr(complex, "monomer"):
         protein = 1
     if hasattr(complex, "ligand"):
