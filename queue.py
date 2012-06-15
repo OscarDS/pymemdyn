@@ -130,6 +130,29 @@ class PBS_IB(Queue):
 
         return True
 
+class Svgd(Queue):
+   '''Queue for the PBS system at svgd.cesga.es'''
+    def __init__(self, *args, **kwargs):
+        super(PBS, self).__init__(self, *args, **kwargs)
+        '''Setting the command to run mdrun in pbs queue with mpi'''
+        self._mdrun=os.path.join(settings.GROMACS_PATH, "mdrun")
+        self.command = [self.sh]
+
+    def make_script(self, workdir, options):
+        '''PBS must load some modules in each node by shell scripts
+        options is a list with all the options'''
+        sh = open(self.sh, "w")
+        sh.write("#!/bin/bash\n")
+        sh.write("cd %s\n" % os.path.join(os.getcwd(), workdir))
+        sh.write("module load acml\n")
+        sh.write("module load gromacs/4.0.7\n")
+        sh.write("%s %s -v &>mdrun.log\n" \
+            % (self.mdrun, " ".join(options)))
+        sh.close()
+        os.chmod(self.sh, 0755)
+
+        return True
+
 class Other(Queue):
     def __init__(self):
         pass

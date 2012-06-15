@@ -7,6 +7,7 @@ REPO_DIR = "templates"
 
 #GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/ib/bin/"
 #GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/gige/bin/"
+#GROMACS_PATH = "/opt/cesga/gromacs-4.0.7/bin/"
 GROMACS_PATH = "/opt/gromacs405/bin/"
 
 #Set the queue to use. Look inside queue.py.
@@ -14,3 +15,4 @@ GROMACS_PATH = "/opt/gromacs405/bin/"
 QUEUE = "slurm"
 #QUEUE = "pbs"
 #QUEUE = "pbs_ib"
+#QUEUE = "svgd"
