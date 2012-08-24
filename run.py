@@ -16,17 +16,30 @@ import settings
 
 class Run(object):
     #This is a dummy
-    def __init__(self, *args, **kwargs):
-        self.own_dir = kwargs["own_dir"] or ""
-        self.repo_dir = kwargs["repo_dir"] or ""
-        self.pdb = kwargs["pdb"] or ""
-        self.ligand = kwargs["ligand"] or ""
-        self.alosteric = kwargs["alosteric"] or ""
-        self.waters = kwargs["waters"] or False
-        self.ions = kwargs["ions"] or False
-        self.cho = kwargs["cho"] or False
-        self.queue = kwargs["queue"] or ""
-        self.debug = kwargs["debug"] or False
+    def __init__(self, pdb, *args, **kwargs):
+        '''
+        A "Run()" of molecular dynamics MUST be provided with a "pdb"
+        
+        This class try to init a full complex to send to simulation. Given
+        a bunch of molecules (protein, ligand, other ligand, waters, ...), 
+        this class would try to build a full embedded-in-membrane complex.
+
+        This complex are stored in self.g (it is a "Gromacs" object), and thus
+        can be 'runned' through g.recipe and g.run_recipe procedure. See
+        gromacs.py for more on this.
+
+        Here is also created the queue system to use in certain steps.'''
+
+        self.pdb = pdb
+        self.own_dir = kwargs.get("own_dir") or ""
+        self.repo_dir = kwargs.get("repo_dir") or ""
+        self.ligand = kwargs.get("ligand") or ""
+        self.alosteric = kwargs.get("alosteric") or ""
+        self.waters = kwargs.get("waters") or False
+        self.ions = kwargs.get("ions") or False
+        self.cho = kwargs.get("cho") or False
+        self.queue = kwargs.get("queue") or ""
+        self.debug = kwargs.get("debug") or False
 
         if self.pdb:
             self.pdb = protein.Monomer(pdb = self.pdb)
