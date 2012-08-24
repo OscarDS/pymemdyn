@@ -541,6 +541,11 @@ class Wrapper(object):
 
     def _mode_genion(self, kwargs):
         '''Wraps the genion command options'''
+        if (kwargs["np"]) == 0 and (kwargs["nn"] == 0):
+            #Genion refuses to run at all if no ion are provided, so provide
+            #one of each
+            kwargs["np"] = 1
+            kwargs["nn"] = 1
         command = ["-s", kwargs["src"],
                    "-o", kwargs["tgt"],
                    "-p", self._setDir(kwargs["src2"]),
