@@ -45,13 +45,13 @@ class Run(object):
             self.pdb = protein.Monomer(pdb = self.pdb)
         if self.ligand:
             self.ligand = protein.Ligand(pdb = self.ligand + ".pdb",
-                                         itp = self.ligand + ".itp",
-                                         ff = self.ligand + ".ff")
+                itp = self.ligand + ".itp",
+                ff = self.ligand + ".ff")
 
         if self.alosteric:
             self.alosteric = protein.Alosteric(pdb = self.alosteric + ".pdb",
-                                               itp = self.alosteric + ".itp",
-                                               ff = self.alosteric + ".ff")
+                itp = self.alosteric + ".itp",
+                ff = self.alosteric + ".ff")
 
         if self.waters:
             self.waters = protein.CrystalWaters()
@@ -144,60 +144,56 @@ if __name__ == "__main__":
     '''))
 
     parser.add_argument('-b',
-                        dest = "own_dir",
-                        help = "Working dir if different from actual dir",
-                        default = os.getcwd())
+        dest = "own_dir",
+        help = "Working dir if different from actual dir",
+        default = os.getcwd())
     parser.add_argument('-r',
-                        dest = "repo_dir",
-                        help = "Path to templates of fixed files. If not \
-                                provided, take the value from \
-                                settings.REPO_DIR.",
-                        default = settings.REPO_DIR)
+        dest = "repo_dir",
+        help = "Path to templates of fixed files. If not \
+            provided, take the value from settings.REPO_DIR.",
+        default = settings.REPO_DIR)
     parser.add_argument('-p',
-                        dest = "pdb",
-                        required = True,
-                        help = "Name of the pdb to insert into MD (mandatory)")
+        dest = "pdb",
+        required = True,
+        help = "Name of the pdb to insert into MD (mandatory)")
     parser.add_argument('-l',
         dest = "ligand",
-        help = "Name of the ligand, without extension. Three \
-                files must be present along with the molecule \
-                pdb: the ligand, its itp and its force field.")
+        help = "Name of the ligand, without extension. Three files must be \
+            present along with the molecule pdb: the ligand, its itp and \
+            its force field.")
     parser.add_argument("--alo",
         dest = "alosteric",
-        help = "Name of the alosteric interaction, without extension. \
-                Three files must be present along with the molecule \
-                pdb: the alosteric, its itp and its force field.")
+        help = "Name of the alosteric interaction, without extension. Three \
+            files must be present along with the molecule pdb: the alosteric, \
+            its itp and its force field.")
     parser.add_argument('--waters',
-                        action="store_true",
-                        help = "Crystalized water molecules hoh.pdb file \
-                                must exist.")
+        action="store_true",
+        help = "Crystalized water molecules hoh.pdb file must exist.")
     parser.add_argument('--ions',
-                        action="store_true",
-                        help = "Crystalized ions ions_local.pdb and \
-                                ions_loca.itp file must exist.")
+        action="store_true",
+        help = "Crystalized ions ions_local.pdb and ions_local.itp file\
+            must exist.")
     parser.add_argument('--cho',
-                        action="store_true",
-                        help = "Crystalized cholesterol molecules cho.pdb \
-                                file must exist.")
+        action="store_true",
+        help = "Crystalized cholesterol molecules cho.pdb file must exist.")
     parser.add_argument('-q',
-                        dest = "queue",
-                        help = "Queue system to use (slurm, pbs, pbs_ib and \
-                                svgd supported)",
-                        default = settings.QUEUE)
+        dest = "queue",
+        help = "Queue system to use (slurm, pbs, pbs_ib and svgd supported)",
+        default = settings.QUEUE)
     parser.add_argument('--debug',
-                        action="store_true")
+        action="store_true")
     args = parser.parse_args()
 
     run = Run(own_dir = args.own_dir,
-              repo_dir = args.repo_dir,
-              pdb = args.pdb,
-              ligand = args.ligand,
-              alosteric = args.alosteric,
-              waters = args.waters,
-              ions = args.ions,
-              cho = args.cho,
-              queue = args.queue,
-              debug = args.debug)
+        repo_dir = args.repo_dir,
+        pdb = args.pdb,
+        ligand = args.ligand,
+        alosteric = args.alosteric,
+        waters = args.waters,
+        ions = args.ions,
+        cho = args.cho,
+        queue = args.queue,
+        debug = args.debug)
     run.clean()
 
     f = open("GROMACS.log", "w")
@@ -207,9 +203,9 @@ if __name__ == "__main__":
         logging.basicConfig(filename='GROMACS.log', level=logging.DEBUG)
     else:
         logging.basicConfig(filename='GROMACS.log',
-                            format='%(asctime)s %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S',
-                            level=logging.DEBUG)
+            format='%(asctime)s %(message)s',
+            datefmt='%m/%d/%Y %I:%M:%S',
+            level=logging.DEBUG)
     #
     run.moldyn()
 

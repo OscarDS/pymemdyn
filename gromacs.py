@@ -67,11 +67,15 @@ class Gromacs(object):
         out, err = self.wrapper.run_command({"gromacs": "grompp",
                                              "options": kwargs})
 
+        #logging.debug(err)
+        #logging.debug(out)
+
         # Now we are looking for this line:
         # System has non-zero total charge: 6.000002e+00
         charge = 0
         for line in err.split("\n"):
             if "total charge" in line:
+                print line
                 charge = abs(int(float(line.split()[-1])))
                 break
 

@@ -205,8 +205,8 @@ class Ligand(Compound):
 
 class CrystalWaters(Compound):
     def __init__(self, *args, **kwargs):
-        self.pdb = "hoh.pdb"
-        self.itp = "hoh.itp"
+        self.pdb = kwargs.get("pdb", "hoh.pdb")
+        self.itp = kwargs.get("itp", "hoh.itp")
         super(CrystalWaters, self).__init__(self, *args, **kwargs)
 
         self.group = "wation"
@@ -241,8 +241,8 @@ class CrystalWaters(Compound):
 
 class Ions(Compound):
     def __init__(self, *args, **kwargs):
-        self.pdb = "ions_local.pdb"
-        self.itp = "ions_local.itp"
+        self.pdb = kwargs.get("pdb", "ions_local.pdb")
+        self.itp = kwargs.get("itp", "ions_local.itp")
         super(Ions, self).__init__(self, *args, **kwargs)
 
         self.group = "wation"
@@ -284,8 +284,8 @@ class Ions(Compound):
 
 class Cholesterol(Compound):
     def __init__(self, *args, **kwargs):
-        self.pdb = "cho.pdb"
-        self.itp = "cho.itp"
+        self.pdb = kwargs.get("pdb", "cho.pdb")
+        self.itp = kwargs.get("itp", "cho.itp")
         super(Cholesterol, self).__init__(self, *args, **kwargs)
 
         self.group = "membr"
@@ -334,8 +334,8 @@ class Cholesterol(Compound):
 
 class Lipids(Compound):
     def __init__(self, *args, **kwargs):
-        self.pdb = "lip.pdb"
-        self.itp = "lip.itp"
+        self.pdb = kwargs.get("pdb", "lip.pdb")
+        self.itp = kwargs.get("itp", "lip.itp")
         super(Lipids, self).__init__(self, *args, **kwargs)
 
         self.group = "membr"
