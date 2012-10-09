@@ -382,8 +382,7 @@ class LigandAlostericRelax(LigandRelax):
 
 class CAEquilibrate(object):
     def __init__(self, **kwargs):
-        self.steps = ["set_stage_init", "genrestr", "grompp", "mdrun",
-                      "trjcat", "eneconv"]
+        self.steps = ["set_stage_init", "genrestr", "grompp", "mdrun"]
         self.recipe = {
              "set_stage_init": {"command": "set_stage_init", #0
               "options": {"src_dir": "eq",
@@ -410,19 +409,7 @@ class CAEquilibrate(object):
                           "conf": "confout.gro",
                           "traj": "traj.xtc",
                           "log": "md_eqCA.log"}},
-             "trjcat": {"gromacs": "trjcat", #4
-              "options": {"dir1": "eq",
-                          "dir2": "eqCA",
-                          "name": "traj.xtc",
-                          "tgt": "traj_EQ.xtc"},
-              "input": "c\n" * 6},
-             "eneconv": {"gromacs": "eneconv", #5
-              "options": {"dir1": "eq",
-                          "dir2": "eqCA",
-                          "name": "ener.edr",
-                          "tgt": "ener_EQ.edr"},
-              "input": "c\n" * 6}
-             }
+        }
 
         self.breaks = {}
 
@@ -430,3 +417,86 @@ class CAEquilibrate(object):
             self.recipe["set_stage_init"]["options"]["src_files"] =\
                 ["confout.gro", "eqDEBUG.mdp"]
             self.recipe["grompp"]["options"]["src"] = "eqCA/eqDEBUG.mdp"
+
+##########################################################################
+#                    Collect all results & outputs                       #
+##########################################################################
+class CollectResults(object):
+    def __init__(self, **kwargs):
+        '''This recipe navigates through the output of GROMACS, generating and
+        collecting various files and logs, and finally putting it all together
+        in a tar file.
+
+        Provides list "steps" as the order to execute the recipe.
+        dict "recipe" as the variables to pass to funcions.
+        dict "breaks" as points where objects calling can put their vars.'''
+        self.breaks = {}
+        self.steps = ["trjcat", "eneconv", "g_rms", "tot_ener", "temp",
+            "pressure", "volume", "set_end", "clean_topol", "set_end_2",
+            "set_end_3", "set_end_4", "set_end_5", "tar_it"]
+        self.recipe = {"trjcat":
+            {"gromacs": "trjcat", #1
+                "options": {"dir1": "eq",
+                    "dir2": "eqCA",
+                    "name": "traj.xtc",
+                    "tgt": "traj_EQ.xtc"},
+                "input": "c\n" * 6},
+            "eneconv": {"gromacs": "eneconv", #2
+                "options": {"dir1": "eq",
+                    "dir2": "eqCA",
+                    "name": "ener.edr",
+                    "tgt": "ener_EQ.edr"},
+                "input": "c\n" * 6},
+            "g_rms": {"gromacs": "grms", #3
+                "options": {"src": "eq/topol.tpr",
+                    "src2": "traj_EQ.xtc",
+                    "tgr": "rmsd.xvg"}},
+            "eneconv": {"gromacs": "eneconv", #4
+                "options": {"dir1": "eq",
+                    "dir2": "eqCA",
+                    "name": "ener.edr",
+                    "tgt": "ener_EQ.edr"},
+                "input": "c\n" * 6},
+            "set_end": {"command": "set_stage_init", #9
+                "options": {"src_dir": "eqCA",
+                    "src_files": ["traj.xtc", "confout.gro", "topol.tpr"],
+                    "repo_files": ["protein.itp", "ffoplsaa_mod.itp",
+                        "ffoplsaabon_mod.itp", "ffoplsaanb_mod.itp",
+                        "popc.itp", "README.txt", "prod_example.mdp"],
+                    "tgt_dir": "finalOutput"}},
+            "clean_topol": {"command": "clean_topol",
+                "options": {"src": "topol.top",
+                    "tgt": "finalOutput/topol.top"}},
+            "set_end_2": {"command": "set_stage_init", #9
+                "options": {"src_dir": "",
+                    "src_files": ["hexagon.pdb", "protein.itp", "index.ndx",
+                        "traj_EQ.xtc", "ener_EQ.edr", "rmsd.xvg"],
+                    "tgt_dir": "finalOutput"}},
+            "set_end_3": {"command": "set_stage_init", #9
+                "options": {"src_dir": "",
+                    "src_files": ["tot_ener.xvg", "tot_ener.log", "temp.xvg",
+                        "temp.log", "pressure.svg", "pressure.log",
+                        "volume.xvg", "volume.log"],
+                    "tgt_dir": "finalOutput/reports"}},
+            "set_end_4": {"command": "set_stage_init", #9
+                "options": {"src_dir": "eq",
+                    "src_files": ["md_eq{0}.log".format(const)
+                        for const in range(1000, 0, -200)],
+                    "tgt_dir": "finalOutput/logs"}},
+            "set_end_5": {"command": "set_stage_init", #9
+                "options": {"src_dir": "eqCA",
+                    "src_files": ["md_eqCA.log"],
+                    "tgt_dir": "finalOutput/logs"}},
+            "tar_it": {"command": "tar_out",
+                "options": {"src_dir": "finalOutput",
+                    "tgt": "MD_output.tgz"}},
+        }
+
+        options = {"tot_ener": "13\n", "temp": "14\n", "pressure": "15\n",
+            "volume": "20\n"}
+        for option, gro_key in options.iteritems():
+            self.recipe[option] =\
+                {"gromacs": "g_energy",
+                    "options": {"src": "ener_EQ.edr",
+                        "tgt": "{0}.xvg".format(option)},
+                    "input": gro_key}
