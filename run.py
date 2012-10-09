@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import argparse
+import datetime
 import logging
 import os
 import shutil
@@ -35,32 +36,55 @@ class Run(object):
         self.repo_dir = kwargs.get("repo_dir") or ""
         self.ligand = kwargs.get("ligand") or ""
         self.alosteric = kwargs.get("alosteric") or ""
-        self.waters = kwargs.get("waters") or False
-        self.ions = kwargs.get("ions") or False
-        self.cho = kwargs.get("cho") or False
+        self.waters = kwargs.get("waters") or ""
+        self.ions = kwargs.get("ions") or ""
+        self.cho = kwargs.get("cho") or ""
         self.queue = kwargs.get("queue") or ""
         self.debug = kwargs.get("debug") or False
 
         if self.pdb:
             self.pdb = protein.Monomer(pdb = self.pdb)
-        if self.ligand:
-            self.ligand = protein.Ligand(pdb = self.ligand + ".pdb",
-                itp = self.ligand + ".itp",
-                ff = self.ligand + ".ff")
 
-        if self.alosteric:
-            self.alosteric = protein.Alosteric(pdb = self.alosteric + ".pdb",
-                itp = self.alosteric + ".itp",
-                ff = self.alosteric + ".ff")
+        sugars = {"ligand": "Ligand",
+            "alosteric": "Alosteric",
+            "waters": "CrystalWaters",
+            "ions": "Ions",
+            "cho": "Cholesterol"}
 
-        if self.waters:
-            self.waters = protein.CrystalWaters()
+        for sugar_type, class_name in sugars.iteritems():
+            if getattr(self, sugar_type):
+                base_name = getattr(self, sugar_type)
+                setattr(self,
+                    sugar_type,
+                    getattr(protein, class_name)(
+                        pdb = base_name + ".pdb",
+                        itp = base_name + ".itp",
+                        ff = base_name + ".ff"))
+        
+        #if self.ligand:
+        #    self.ligand = protein.Ligand(pdb = self.ligand + ".pdb",
+        #        itp = self.ligand + ".itp",
+        #        ff = self.ligand + ".ff")
 
-        if self.ions:
-            self.ions = protein.Ions()
+        #if self.alosteric:
+        #    self.alosteric = protein.Alosteric(pdb = self.alosteric + ".pdb",
+        #        itp = self.alosteric + ".itp",
+        #        ff = self.alosteric + ".ff")
 
-        if self.cho:
-            self.cho = protein.Cholesterol()
+        #if self.waters:
+        #    self.waters = protein.CrystalWaters(pdb = self.waters + ".pdb",
+        #        itp = self.waters + ".itp",
+        #        ff = self.waters + ".ff")
+
+        #if self.ions:
+        #    self.ions = protein.Ions(pdb = self.ions + ".pdb",
+        #        itp = self.ions + ".itp",
+        #        ff = self.ions + ".ff")
+
+        #if self.cho:
+        #    self.cho = protein.Cholesterol(pdb = self.cho + ".pdb",
+        #        itp = self.cho + ".itp",
+        #        ff = self.cho + ".ff")
 
         self.membr = membrane.Membrane()
 
@@ -167,15 +191,15 @@ if __name__ == "__main__":
             files must be present along with the molecule pdb: the alosteric, \
             its itp and its force field.")
     parser.add_argument('--waters',
-        action="store_true",
-        help = "Crystalized water molecules hoh.pdb file must exist.")
+        dest="waters",
+        help = "Crystalized water molecules file name without extensions.")
     parser.add_argument('--ions',
-        action="store_true",
-        help = "Crystalized ions ions_local.pdb and ions_local.itp file\
-            must exist.")
+        dest="ions",
+        help = "Crystalized ions file name without extensions.")
     parser.add_argument('--cho',
-        action="store_true",
-        help = "Crystalized cholesterol molecules cho.pdb file must exist.")
+        dest="cho",
+        help = "Crystalized cholesterol molecules file name\
+            without extensions.")
     parser.add_argument('-q',
         dest = "queue",
         help = "Queue system to use (slurm, pbs, pbs_ib and svgd supported)",
@@ -183,6 +207,11 @@ if __name__ == "__main__":
     parser.add_argument('--debug',
         action="store_true")
     args = parser.parse_args()
+
+    if not (os.path.isdir(args.own_dir)):
+        os.makedirs(args.own_dir)
+        print "Created working dir {0}".format(args.own_dir)
+    os.chdir(args.own_dir)
 
     run = Run(own_dir = args.own_dir,
         repo_dir = args.repo_dir,
@@ -196,6 +225,7 @@ if __name__ == "__main__":
         debug = args.debug)
     run.clean()
 
+    #Delete old GROMACS.log if this is a re-run
     f = open("GROMACS.log", "w")
     f.close()
 
@@ -208,4 +238,3 @@ if __name__ == "__main__":
             level=logging.DEBUG)
     #
     run.moldyn()
-
