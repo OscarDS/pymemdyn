@@ -75,7 +75,6 @@ class Gromacs(object):
         charge = 0
         for line in err.split("\n"):
             if "total charge" in line:
-                print line
                 charge = abs(int(float(line.split()[-1])))
                 break
 
