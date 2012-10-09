@@ -154,7 +154,7 @@ def make_topol(template_dir = \
     '''Make the topol starting from our topol.top template'''
 
     protein = lig = hoh = na = cho = alo = 0
-    lig_name = alosteric_name = ""
+    lig_name = hoh_name = ions_name = cho_name = alosteric_name = ""
     if hasattr(complex, "monomer"):
         protein = 1
     if hasattr(complex, "ligand"):
@@ -164,12 +164,15 @@ def make_topol(template_dir = \
     if hasattr(complex, "waters"):
         if hasattr(complex.waters, "number"):
             hoh = complex.waters.number
+            hoh_name = complex.waters.itp
     if hasattr(complex, "ions"):
         if hasattr(complex.ions, "number"):
             na = complex.ions.number
+            ions_name = complex.ions.itp
     if hasattr(complex, "cho"):
         if hasattr(complex.cho, "number"):
             cho = complex.cho.number
+            cho_name = complex.cho.itp
     if hasattr(complex, "alosteric"):
         if complex.alosteric:
             alo = 1
@@ -182,13 +185,13 @@ def make_topol(template_dir = \
              "lig": {"itp_name": lig_name,
                  "ifdef_name": "POSRESLIG",
                  "posre_name": "posre_lig.itp"},
-             "hoh": {"itp_name": "hoh.itp",
+             "hoh": {"itp_name": hoh_name,
                  "ifdef_name": "POSRESHOH",
                  "posre_name": "posre_hoh.itp"},
-             "na": {"itp_name": "ions_local.itp",
+             "na": {"itp_name": ions_name,
                  "ifdef_name": "POSRESION",
                  "posre_name": "posre_ion.itp"},
-             "cho": {"itp_name": "cho.itp"},
+             "cho": {"itp_name": cho_name},
                  #"ifdef_name": "POSRESCHO",
                  #"posre_name": "posre_cho.itp"}
              "alo": {"itp_name": alosteric_name,
