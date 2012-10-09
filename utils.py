@@ -74,6 +74,24 @@ def check_forces(pdb, itp, ffield):
 
     return True
 
+def clean_topol(src, tgt):
+    '''Clean the src topol of path specifics, and paste results in target'''
+    src = open(source, "r")
+    tgt = open(target, "w")
+
+    for line in src:
+        newline = line
+        if line.startswith("#include"):
+            newline = line.split()[0] + ' "'
+            newline += os.path.split(line.split()[1][1:-1])[1]
+            newline += '"\n'
+        tgt.write(newline)
+
+    tgt.close()
+    src.close()
+
+    return True
+
 def concat(**kwargs):
     '''Make a whole pdb file with all the pdb provided'''
     for compound_class in ["waters", "ligand", "ions", "cho", "alosteric"]:
