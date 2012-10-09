@@ -18,6 +18,8 @@ class GromacsMessages(object):
     #Map the messages with the errors
     e = {"File input/output error": IOGromacsError,
          "Can not open file": IOGromacsError,
+         #TODO: Clearly this is not IOError
+         "srun: error: Unable to create job step": IOGromacsError,
         }
 
     def __init__(self, gro_err="", command="", *args, **kwargs):
@@ -28,7 +30,6 @@ class GromacsMessages(object):
         self.gro_err = gro_err.split("\n")
 
         self.check()
-
 
     def check(self):
         '''Check if the GROMACS error message have any of the known error
