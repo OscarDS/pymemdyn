@@ -268,6 +268,18 @@ def make_topol_lines(itp_name = "",
                           id = ifdef_name,
                           po = posre_name)
 
+def tar_it(src_dir, tar_file):
+    '''Tar everything in a src_dir to the tar_file'''
+    import tarfile
+
+    t_f = tarfile.open(tar_file, mode="w:gz")
+    base_dir = os.getcwd()
+    os.chdir(src_dir) #To avoid the include of all parent dirs
+    for to_tar in os.listdir(src_dir):
+        t_f.add(to_tar)
+    t_f.close()
+    os.chdir(base_dir)
+
 def tune_mdp(groups):
     '''Adjust the tc-groups of eq.mdp to be in line with our system'''
     shutil.move("Rmin/eq.mdp", "Rmin/eq.mdp~")
