@@ -1,3 +1,4 @@
+import broker
 import groerrors
 import recipes
 import settings
@@ -11,6 +12,7 @@ import sys
 
 class Gromacs(object):
     def __init__(self, *args, **kwargs):
+        self.broker = kwargs.get("broker") or broker.Printing()
         self._membrane_complex = None
         self.wrapper = Wrapper()
         logging.basicConfig(filename="GROMACS.log",
@@ -66,9 +68,6 @@ class Gromacs(object):
 
         out, err = self.wrapper.run_command({"gromacs": "grompp",
                                              "options": kwargs})
-
-        #logging.debug(err)
-        #logging.debug(out)
 
         # Now we are looking for this line:
         # System has non-zero total charge: 6.000002e+00
@@ -162,6 +161,14 @@ class Gromacs(object):
 
         return True
 
+    def manual_log(self, command, output):
+        '''Redirect the output to the file in command["options"]["log"]'''
+        log = open(command["options"]["log"], "w")
+        log.writelines(output)
+        log.close()
+
+        return True
+
     def passing(self):
         '''Do nothing, to respect some orders'''
         return True
@@ -224,19 +231,26 @@ class Gromacs(object):
                                      self.recipe.breaks[command_name])
 
             # NOW RUN IT !
-            print self.recipe.__class__.__name__, 
-            print "Step {0}: ".format(command_name),
+            
+            self.broker.dispatch("{0} Step ({1}/{2}): {3}.".format(
+                self.recipe.__class__.__name__,
+                n + 1, len(self.recipe.steps),
+                command_name))
             if command.has_key("gromacs"):
                 # Either run a Gromacs pure command...
-                print command["gromacs"]
                 if hasattr(self, "queue"): command["queue"] = self.queue
                 out, err = self.wrapper.run_command(command)
                 logging.debug(" ".join(self.wrapper.generate_command(command)))
                 logging.debug(err)
                 logging.debug(out)
-                #This test the Gromacs output checking for known errors
+                ## Next line test the Gromacs output checking for known errors
                 groerrors.GromacsMessages(gro_err=err,
                     command=command["gromacs"])
+
+                # Some commands are unable to log via flag, so we catch and
+                # redirect the stdout and stderr
+                if command["gromacs"] in ["g_energy"]:
+                    self.manual_log(command, out)
                 
             else:
                 # ...or run a local function
@@ -250,7 +264,6 @@ class Gromacs(object):
                 if command.has_key("options"): f(**command["options"])
                 else: f()
                 logging.debug("This function does: " + str(f.__doc__))
-                print command["command"]
 
         return True
 

@@ -14,6 +14,7 @@ import os
 import shutil
 import textwrap
 
+import broker
 import complex
 import gromacs
 import membrane
@@ -42,6 +43,10 @@ class Run(object):
         Here is also created the queue system to use in certain steps.'''
 
         self.dynamic = DynamicDynamic.objects.get(pk = dynamic_pk)
+        if kwargs.get("broker_pk"):
+            self.broker = broker.DjangoDB(pk=kwargs.get("broker_pk"))
+        else:
+            self.broker = broker.Printing()
 
         self.pdb = os.path.join(CUELEBRE_ROOT, self.dynamic.pdb.file_path)
 
@@ -53,8 +58,8 @@ class Run(object):
 
         if not (os.path.isdir(self.own_dir)):
             os.makedirs(self.own_dir)
-            #XXX: Probably this should be logged rather than printed.
-            print "Created working dir {0}".format(self.own_dir)
+            self.broker.dispatch("Created working dir {0}".format(self.own_dir))
+
         os.chdir(self.own_dir)
 
         self.repo_dir = kwargs.get("repo_dir") or ""
@@ -86,7 +91,8 @@ class Run(object):
         full_complex.complex = prot_complex
         full_complex.membrane = self.membr
 
-        self.g = gromacs.Gromacs(membrane_complex = full_complex)
+        self.g = gromacs.Gromacs(membrane_complex = full_complex,
+            broker=self.broker)
 
         # Note that if not provided in command line, self.queue is set in
         # settings.py
@@ -169,20 +175,21 @@ class Run(object):
     def moldyn(self):
         '''Runs all the dynamics'''
 
-        steps = ["Init", "Minimization", "Equilibration", "Relax"]
+        steps = ["Init", "Minimization", "Equilibration",
+            "Relax", "CAEquilibrate", "CollectResults"]
 
         for step in steps:
             self.g.select_recipe(stage = step, debug = self.debug)
             self.g.run_recipe(debug = self.debug)
-        
-        self.g.recipe = recipes.CAEquilibrate(debug = self.debug)
-        self.g.run_recipe()
 
 def update_queue(queue_obj, status, timefield):
+      '''Update a queue_obj (a DB Table) with current status (Started, Running,
+      ...) in the timefield appropiate (started, ended)'''
       now = datetime.datetime.now()
 
       setattr(queue_obj, timefield, now)
       queue_obj.last_status = status
+      if(timefield == "started"): queue_obj.ended = None
       queue_obj.save()
 
 if __name__ == "__main__":
@@ -220,8 +227,9 @@ if __name__ == "__main__":
     run = Run(dynamic_pk = args.dynamic_pk,
         repo_dir = args.repo_dir,
         queue = args.queue,
+        broker_pk = args.queue_pk,
         debug = args.debug)
-    run.clean()
+    #run.clean()
 
     #Delete old GROMACS.log if this is a re-run
     f = open("GROMACS.log", "w")
