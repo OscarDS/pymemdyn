@@ -43,7 +43,7 @@ class Run(object):
         self.debug = kwargs.get("debug") or False
 
         if self.pdb:
-            self.pdb = protein.Monomer(pdb = self.pdb)
+            self.pdb = protein.Protein(pdb = self.pdb).check_number_of_chains()
 
         sugars = {"ligand": "Ligand",
             "alosteric": "Alosteric",
@@ -61,31 +61,6 @@ class Run(object):
                         itp = base_name + ".itp",
                         ff = base_name + ".ff"))
         
-        #if self.ligand:
-        #    self.ligand = protein.Ligand(pdb = self.ligand + ".pdb",
-        #        itp = self.ligand + ".itp",
-        #        ff = self.ligand + ".ff")
-
-        #if self.alosteric:
-        #    self.alosteric = protein.Alosteric(pdb = self.alosteric + ".pdb",
-        #        itp = self.alosteric + ".itp",
-        #        ff = self.alosteric + ".ff")
-
-        #if self.waters:
-        #    self.waters = protein.CrystalWaters(pdb = self.waters + ".pdb",
-        #        itp = self.waters + ".itp",
-        #        ff = self.waters + ".ff")
-
-        #if self.ions:
-        #    self.ions = protein.Ions(pdb = self.ions + ".pdb",
-        #        itp = self.ions + ".itp",
-        #        ff = self.ions + ".ff")
-
-        #if self.cho:
-        #    self.cho = protein.Cholesterol(pdb = self.cho + ".pdb",
-        #        itp = self.cho + ".itp",
-        #        ff = self.cho + ".ff")
-
         self.membr = membrane.Membrane()
 
         prot_complex = protein.ProteinComplex(
@@ -96,6 +71,10 @@ class Run(object):
             ions = self.ions or None,
             cho = self.cho or None)
         full_complex = complex.MembraneComplex()
+        if self.pdb.__class__.__name__ == "Dimer":
+            '''The box for the dimers is slightly bigger'''
+            full_complex.box_height = 3.5
+            full_complex.box_width = 1.2
         full_complex.complex = prot_complex
         full_complex.membrane = self.membr
 
@@ -159,6 +138,13 @@ class Run(object):
         
         self.g.recipe = recipes.CAEquilibrate(debug = self.debug)
         self.g.run_recipe()
+
+    def light_moldyn(self):
+        '''This is a function to debug a run in steps'''
+        steps = ["Init"]
+        for step in steps:
+            self.g.select_recipe(stage = step, debug = self.debug)
+            self.g.run_recipe(debug = self.debug)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -237,4 +223,5 @@ if __name__ == "__main__":
             datefmt='%m/%d/%Y %I:%M:%S',
             level=logging.DEBUG)
     #
-    run.moldyn()
+    #run.moldyn()
+    run.light_moldyn()
