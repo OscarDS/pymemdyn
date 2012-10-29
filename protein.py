@@ -69,6 +69,29 @@ class ProteinComplex(object):
         self.gmx_prot_xy = self.prot_xy / NANOM
         self.gmx_prot_z = self.prot_z / NANOM
 
+class Protein(object):
+    def __init__(self, *args, **kwargs):
+        '''This is a proxy to determine if a protein is a Monomer or a Dimer'''
+        self.pdb = kwargs["pdb"]
+        if not os.path.isfile(self.pdb):
+            raise IOError("File '{0}' missing".format(self.pdb))
+
+    def check_number_of_chains(self):
+        '''Determine if a PDB is a Monomer or a Dimer'''
+        
+        chains = []
+        with open(self.pdb, "r") as pdb_fp:
+            for line in pdb_fp:
+                if (len(line) > 21) and (
+                    line.startswith(("ATOM", "TER", "HETATM"))):
+                    if (line[21] != " ") and (line[21] not in chains):
+                        chains.append(line[21])
+    
+        if len(chains) < 2:
+            return Monomer(pdb = self.pdb)
+        elif len(chains) == 2:
+            return Dimer(pdb = self.pdb, chains = chains) 
+
 class Monomer(object):
     def __init__(self, *args, **kwargs):
         self.pdb = kwargs["pdb"]
@@ -76,7 +99,6 @@ class Monomer(object):
             raise IOError("File '{0}' missing".format(self.pdb))
 
         self.group = "protlig"
-
         self.delete_chain()
         self._setHist()
 
@@ -99,8 +121,9 @@ class Monomer(object):
                 #Remove the chain id
                 if line[21] != " ":
                     replacing = True
-                    tbr = " %s " % line[21] # Chain is surrouned by spaces
-                    new_line = new_line.replace(tbr, "   ")
+                    new_line = list(line) #Transform the line into a list...
+                    new_line[21] = " " 
+                    new_line = "".join(new_line)
             pdb_out.write(new_line)
 
         if replacing: print "Removed chain id from your protein pdb!"
@@ -131,13 +154,13 @@ class Monomer(object):
         return True
 
 class Dimer(Monomer):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super(Dimer, self).__init__(self, *args, **kwargs)
-    
+
+        self.chains = kwargs["chains"]
+
     def delete_chain(self):
-        '''If the protein has more than one chain, it's OK to create the
-        two protein_A.itp and protein_B.itp. In Monomer we deleted the "A"
-        columnt from the .pdb. Here we keep it.'''
+        '''Overload the delete_chain method from Monomer'''
         return True
 
 class Compound(object):
