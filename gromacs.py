@@ -402,7 +402,8 @@ class Gromacs(object):
         for src_file in kwargs["src_files"]:
             if(os.path.isfile(os.path.join(kwargs["src_dir"], src_file))):
                 shutil.copy(os.path.join(kwargs["src_dir"], src_file),
-                            os.path.join(kwargs["tgt_dir"], src_file))
+                            os.path.join(kwargs["tgt_dir"], 
+                                os.path.split(src_file)[1]))
 
         if "repo_files" in kwargs.keys():
             for repo_file in kwargs["repo_files"]:
