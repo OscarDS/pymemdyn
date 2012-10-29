@@ -9,6 +9,7 @@ Membrane protein
 [ molecules ]
 ; Compound  #mols
 $protein
+$dimer
 $hoh
 $lig
 $na
