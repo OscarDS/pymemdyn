@@ -133,6 +133,12 @@ class Monomer(object):
 class Dimer(Monomer):
     def __init__(self):
         super(Dimer, self).__init__(self, *args, **kwargs)
+    
+    def delete_chain(self):
+        '''If the protein has more than one chain, it's OK to create the
+        two protein_A.itp and protein_B.itp. In Monomer we deleted the "A"
+        columnt from the .pdb. Here we keep it.'''
+        return True
 
 class Compound(object):
     '''This is a super-class to provide common functions to added compounds'''
