@@ -448,10 +448,11 @@ class BasicCollectResults(object):
                     "name": "ener.edr",
                     "tgt": "ener_EQ.edr"},
                 "input": "c\n" * 6},
-            "g_rms": {"gromacs": "grms", #3
+            "g_rms": {"gromacs": "g_rms", #3
                 "options": {"src": "eq/topol.tpr",
                     "src2": "traj_EQ.xtc",
-                    "tgr": "rmsd.xvg"}},
+                    "tgt": "rmsd.xvg"},
+                "input": "4\n" * 2},
             "eneconv": {"gromacs": "eneconv", #4
                 "options": {"dir1": "eq",
                     "dir2": "eqCA",
@@ -461,36 +462,43 @@ class BasicCollectResults(object):
             "set_end": {"command": "set_stage_init", #9
                 "options": {"src_dir": "eqCA",
                     "src_files": ["traj.xtc", "confout.gro", "topol.tpr"],
-                    "repo_files": ["protein.itp", "ffoplsaa_mod.itp",
-                        "ffoplsaabon_mod.itp", "ffoplsaanb_mod.itp",
-                        "popc.itp", "README.txt", "prod_example.mdp"],
+                    "repo_files": ["popc.itp", "README.txt",
+                        "prod_example.mdp"],
                     "tgt_dir": "finalOutput"}},
             "clean_topol": {"command": "clean_topol",
                 "options": {"src": "topol.top",
                     "tgt": "finalOutput/topol.top"}},
             "set_end_2": {"command": "set_stage_init", #9
                 "options": {"src_dir": "",
-                    "src_files": ["hexagon.pdb", "protein.itp", "index.ndx",
-                        "traj_EQ.xtc", "ener_EQ.edr", "rmsd.xvg"],
+                    "src_files": ["ffoplsaa_mod.itp", "ffoplsaabon_mod.itp",
+                        "ffoplsaanb_mod.itp", "hexagon.pdb", "protein.itp",
+                        "index.ndx", "traj_EQ.xtc", "ener_EQ.edr", "rmsd.xvg"],
                     "tgt_dir": "finalOutput"}},
             "set_end_3": {"command": "set_stage_init", #9
                 "options": {"src_dir": "",
                     "src_files": ["tot_ener.xvg", "tot_ener.log", "temp.xvg",
-                        "temp.log", "pressure.svg", "pressure.log",
+                        "temp.log", "pressure.xvg", "pressure.log",
                         "volume.xvg", "volume.log"],
                     "tgt_dir": "finalOutput/reports"}},
             "set_end_4": {"command": "set_stage_init", #9
                 "options": {"src_dir": "eq",
-                    "src_files": ["md_eq{0}.log".format(const)
-                        for const in range(1000, 0, -200)],
+                    "src_files": ["md_eq1000.log"],
                     "tgt_dir": "finalOutput/logs"}},
             "set_end_5": {"command": "set_stage_init", #9
+                "options": {"src_dir": "eq",
+                    "src_files": ["{0}/md_eq{0}.log".format(const)
+                        for const in range(800, 0, -200)],
+                    "tgt_dir": "finalOutput/logs"}},
+            "set_end_6": {"command": "set_stage_init", #9
                 "options": {"src_dir": "eqCA",
                     "src_files": ["md_eqCA.log"],
                     "tgt_dir": "finalOutput/logs"}},
             "tar_it": {"command": "tar_out",
                 "options": {"src_dir": "finalOutput",
                     "tgt": "MD_output.tgz"}},
+            "final_clean": {"command": "clean_all",
+                "options": {"target_dir": "",
+                    "exclude": ["MD_output.tgz", "GROMACS.log"]}},
         }
 
         options = {"tot_ener": "13\n", "temp": "14\n", "pressure": "15\n",
@@ -499,5 +507,6 @@ class BasicCollectResults(object):
             self.recipe[option] =\
                 {"gromacs": "g_energy",
                     "options": {"src": "ener_EQ.edr",
-                        "tgt": "{0}.xvg".format(option)},
+                        "tgt": "{0}.xvg".format(option),
+                        "log": "{0}.log".format(option)},
                     "input": gro_key}

@@ -502,16 +502,18 @@ class Wrapper(object):
                 pass
 
         else:
+            if (mode == "eneconv"): #ENECONV
+                command.extend(self._mode_eneconv(options))
             if (mode == "genbox"): #GENBOX
                 command.extend(self._mode_genbox(options))
             if (mode == "genion"): #GENION
                 command.extend(self._mode_genion(options))
+            if (mode == "g_rms"): #G_RMS
+                command.extend(self._mode_g_rms(options))
             if (mode == "tpbconv"): #TPBCONV
                 command.extend(self._mode_tpbconv(options))
             if (mode == "trjcat"): #TRJCAT
                 command.extend(self._mode_trjcat(options)) 
-            if (mode == "eneconv"): #ENECONV
-                command.extend(self._mode_eneconv(options))
             if (mode == "mdrun"): #MDRUN_SLURM
                 pass
                 #command.extend(self._mode_mdrun(options))
@@ -548,6 +550,12 @@ class Wrapper(object):
                         "-settime"])
 
         return command
+
+    def _mode_g_rms(self, kwargs):
+        '''Wraps the g_rms command options'''
+        return ["-s", self._setDir(kwargs["src"]),
+                "-f", self._setDir(kwargs["src2"]),
+                "-o", self._setDir(kwargs["tgt"])]
 
     def _mode_genbox(self, kwargs):
         '''Wraps the genbox command options'''
