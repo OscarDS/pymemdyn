@@ -74,21 +74,45 @@ def check_forces(pdb, itp, ffield):
 
     return True
 
-def clean_topol(src, tgt):
-    '''Clean the src topol of path specifics, and paste results in target'''
-    src = open(source, "r")
-    tgt = open(target, "w")
+def clean_all(target_dir = "", exclude = []):
+        '''Remove all intermediate files from "target_dir"  except that files in "exclude"'''
+        to_unlink_dir = os.path.join(os.getcwd(), target_dir)
+        #First a security checkout to not delete up a certain point
+        minimum = "/home/slurm/cuelebre_media/"
+        if not to_unlink_dir.startswith(minimum): return False
+        if not "dynamic" in to_unlink_dir: return False
 
-    for line in src:
+        targets = os.listdir(to_unlink_dir)
+
+        for file_name in targets:
+            target = os.path.join(to_unlink_dir, file_name)
+            if file_name not in exclude:
+                #Deleting files
+                if os.path.isfile(target): os.unlink(target)
+                #Deleting subdirs
+                if os.path.isdir(target): shutil.rmtree(target)
+            else:
+                #Changing remaining files to be dowloadable by web user
+                os.chmod(target, 0775)
+                os.chown(target, -1, 8)
+
+        return True
+
+def clean_topol(src = [], tgt = []):
+    '''Clean the src topol of path specifics, and paste results in target'''
+    source = open(src, "r")
+    target = open(tgt, "w")
+
+    for line in source:
         newline = line
         if line.startswith("#include"):
             newline = line.split()[0] + ' "'
             newline += os.path.split(line.split()[1][1:-1])[1]
             newline += '"\n'
-        tgt.write(newline)
+        target.write(newline)
 
-    tgt.close()
-    src.close()
+    target.close()
+    source.close()
 
     return True
 
@@ -268,14 +292,14 @@ def make_topol_lines(itp_name = "",
                           id = ifdef_name,
                           po = posre_name)
 
-def tar_it(src_dir, tar_file):
+def tar_out(src_dir = [], tgt = []):
     '''Tar everything in a src_dir to the tar_file'''
     import tarfile
 
-    t_f = tarfile.open(tar_file, mode="w:gz")
+    t_f = tarfile.open(tgt, mode="w:gz")
     base_dir = os.getcwd()
     os.chdir(src_dir) #To avoid the include of all parent dirs
-    for to_tar in os.listdir(src_dir):
+    for to_tar in os.listdir(os.path.join(base_dir, src_dir)):
         t_f.add(to_tar)
     t_f.close()
     os.chdir(base_dir)

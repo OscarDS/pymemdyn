@@ -75,7 +75,7 @@ class PBS(Queue):
             "-mem=%s" % self.max_mem,                                  #
             self.sh]                                                   #
                                                                        #
-        ################################################################
+        # XXX ##########################################################
 
         self._mdrun=os.path.join(settings.GROMACS_PATH, "mdrun_mpi")
         self.command = [self.sh]

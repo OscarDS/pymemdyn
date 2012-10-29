@@ -380,7 +380,7 @@ class LigandAlostericRelax(LigandRelax):
 #                    Alpha Chains Relaxation                             #
 ##########################################################################
 
-class CAEquilibrate(object):
+class BasicCAEquilibrate(object):
     def __init__(self, **kwargs):
         self.steps = ["set_stage_init", "genrestr", "grompp", "mdrun"]
         self.recipe = {
@@ -421,7 +421,7 @@ class CAEquilibrate(object):
 ##########################################################################
 #                    Collect all results & outputs                       #
 ##########################################################################
-class CollectResults(object):
+class BasicCollectResults(object):
     def __init__(self, **kwargs):
         '''This recipe navigates through the output of GROMACS, generating and
         collecting various files and logs, and finally putting it all together
@@ -433,7 +433,8 @@ class CollectResults(object):
         self.breaks = {}
         self.steps = ["trjcat", "eneconv", "g_rms", "tot_ener", "temp",
             "pressure", "volume", "set_end", "clean_topol", "set_end_2",
-            "set_end_3", "set_end_4", "set_end_5", "tar_it"]
+            "set_end_3", "set_end_4", "set_end_5", "set_end_6", "tar_it",
+            "final_clean"]
         self.recipe = {"trjcat":
             {"gromacs": "trjcat", #1
                 "options": {"dir1": "eq",

@@ -18,7 +18,7 @@ class GromacsMessages(object):
     #Map the messages with the errors
     e = {"File input/output error": IOGromacsError,
          "Can not open file": IOGromacsError,
-         #TODO: Clearly this is not IOError
+         #FIXME: Clearly the following is not IOError
          "srun: error: Unable to create job step": IOGromacsError,
         }
 
