@@ -277,7 +277,8 @@ class BasicEquilibration(object):
                       "tgt_dir": "eq"}},
          "set_stage_init2": {"command": "set_stage_init", #4
           "options": {"src_dir": "",
-                      "src_files": ["topol.tpr", "posre.itp", "posre_hoh.itp",
+                      "src_files": ["topol.tpr", "posre.itp", "posre_A.itp",
+                                   "posre_B.itp", "posre_hoh.itp",
                                    "posre_ion.itp", "posre_lig.itp",
                                    "posre_alo.itp", "posre_cho.itp"],
                       "tgt_dir": "eq"}},
@@ -330,9 +331,9 @@ class BasicRelax(object):
         self.steps = []
         self.recipe = {}
         for const in range(800, 0, -200):
-            self.steps.extend(["relax%d" % const,
-                               "grompp%d" % const,
-                               "mdrun%d" % const])
+            self.steps.extend(["relax{0}".format(const),
+                               "grompp{0}".format(const),
+                               "mdrun{0}".format(const)])
             tgt_dir = "eq/{0}".format(const)
             src_dir = "eq"
             self.recipe["relax%d" % const] =\
@@ -340,8 +341,7 @@ class BasicRelax(object):
               "options": {"const": const,
                           "src_dir": src_dir,
                           "tgt_dir": tgt_dir,
-                          "mdp": "eq.mdp",
-                          "posres": ["posre.itp"]}}
+                          "mdp": "eq.mdp"}}
             self.recipe["grompp%d" % const] =\
              {"gromacs": "grompp", #1, 4, 7, 10
               "options": {"src": os.path.join(tgt_dir, "eq.mdp"),

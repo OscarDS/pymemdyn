@@ -1,5 +1,6 @@
 import broker
 import groerrors
+import protein
 import recipes
 import settings
 import utils
@@ -178,17 +179,22 @@ class Gromacs(object):
 
         if not os.path.isdir(kwargs["tgt_dir"]): os.makedirs(kwargs["tgt_dir"])
 
+        if type(self.membrane_complex.complex.monomer) == protein.Monomer:
+            posres = ["posre.itp"]
+        elif type(self.membrane_complex.complex.monomer) == protein.Dimer:
+            posres = ["posre_A.itp", "posre_B.itp"]
+
         if hasattr(self.membrane_complex.complex, "waters") and\
             self.membrane_complex.complex.waters:
-            kwargs["posres"].append("posre_hoh.itp")
+            posres.append("posre_hoh.itp")
         if hasattr(self.membrane_complex.complex, "ions") and\
             self.membrane_complex.complex.ions:
-            kwargs["posres"].append("posre_ion.itp")
+            posres.append("posre_ion.itp")
         if hasattr(self.membrane_complex.complex, "cho") and\
             self.membrane_complex.complex.cho:
-            kwargs["posres"].append("posre_cho.itp")
-
-        for posre in kwargs["posres"]:
+            posres.append("posre_cho.itp")
+        
+        for posre in posres:
             new_posre = open(os.path.join(kwargs["tgt_dir"], posre), "w")
 
             for line in open(os.path.join(kwargs["src_dir"], posre), "r"):
