@@ -382,7 +382,7 @@ class LigandAlostericRelax(LigandRelax):
 #                    Alpha Chains Relaxation                             #
 ##########################################################################
 
-class BasicCAEquilibrate(object):
+class BasicCARelax(object):
     def __init__(self, **kwargs):
         self.steps = ["set_stage_init", "genrestr", "grompp", "mdrun"]
         self.recipe = {
