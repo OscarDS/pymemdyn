@@ -10,7 +10,7 @@ class BasicInit(object):
                       "editconf7", "genbox2", "count_lipids", "make_topol2",
                       "make_topol_lipids", "make_ffoplsaanb", "set_grompp",
                       "grompp", "trjconv", "get_charge", "genion", "grompp2",
-                      "trjconv2", "grompp3", "trjconv3"]
+                      "trjconv2", "grompp3", "trjconv3", "set_chains"]
 
         # And then we have to define each step
         self.recipe = \
@@ -138,7 +138,9 @@ class BasicInit(object):
                        "tgt": "hexagon.pdb",
                        "ur": "compact",
                        "pbc": "mol"},
-          "input": "1\n0\n"}
+          "input": "1\n0\n"},
+         "set_chains": {"command": "set_chains",#28
+          "options": {"src": "proteinopls.pdb"}},
            }
 
         self.breaks = \
