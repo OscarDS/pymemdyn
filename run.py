@@ -130,18 +130,20 @@ class Run(object):
     def moldyn(self):
         '''Runs all the dynamics'''
 
-        steps = ["Init", "Minimization", "Equilibration", "Relax"]
+        steps = ["Init", "Minimization", "Equilibration", "Relax", "CARelax"]
 
         for step in steps:
             self.g.select_recipe(stage = step, debug = self.debug)
             self.g.run_recipe(debug = self.debug)
         
-        self.g.recipe = recipes.CAEquilibrate(debug = self.debug)
+        self.g.recipe = recipes.CARelax(debug = self.debug)
         self.g.run_recipe()
 
     def light_moldyn(self):
         '''This is a function to debug a run in steps'''
-        steps = ["Init"]
+        steps = ["Init", "Minimization", "Equilibration", "Relax", "CARelax"]
+        steps = ["CARelax"]
+        #steps = ["CollectResults"]
         for step in steps:
             self.g.select_recipe(stage = step, debug = self.debug)
             self.g.run_recipe(debug = self.debug)
@@ -209,7 +211,7 @@ if __name__ == "__main__":
         cho = args.cho,
         queue = args.queue,
         debug = args.debug)
-    run.clean()
+    #run.clean()
 
     #Delete old GROMACS.log if this is a re-run
     f = open("GROMACS.log", "w")

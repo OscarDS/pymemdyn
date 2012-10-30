@@ -498,9 +498,9 @@ class BasicCollectResults(object):
             "tar_it": {"command": "tar_out",
                 "options": {"src_dir": "finalOutput",
                     "tgt": "MD_output.tgz"}},
-            "final_clean": {"command": "clean_all",
-                "options": {"target_dir": "",
-                    "exclude": ["MD_output.tgz", "GROMACS.log"]}},
+         #   "final_clean": {"command": "clean_all",
+         #       "options": {"target_dir": "",
+         #           "exclude": ["MD_output.tgz", "GROMACS.log"]}},
         }
 
         options = {"tot_ener": "13\n", "temp": "14\n", "pressure": "15\n",
