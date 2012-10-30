@@ -10,7 +10,7 @@ class BasicInit(object):
                       "editconf7", "genbox2", "count_lipids", "make_topol2",
                       "make_topol_lipids", "make_ffoplsaanb", "set_grompp",
                       "grompp", "trjconv", "get_charge", "genion", "grompp2",
-                      "trjconv2", "grompp3", "trjconv3"]
+                      "trjconv2", "grompp3", "trjconv3", "set_chains"]
 
         # And then we have to define each step
         self.recipe = \
@@ -138,7 +138,9 @@ class BasicInit(object):
                        "tgt": "hexagon.pdb",
                        "ur": "compact",
                        "pbc": "mol"},
-          "input": "1\n0\n"}
+          "input": "1\n0\n"},
+         "set_chains": {"command": "set_chains",#28
+          "options": {"src": "proteinopls.pdb"}},
            }
 
         self.breaks = \
@@ -277,7 +279,8 @@ class BasicEquilibration(object):
                       "tgt_dir": "eq"}},
          "set_stage_init2": {"command": "set_stage_init", #4
           "options": {"src_dir": "",
-                      "src_files": ["topol.tpr", "posre.itp", "posre_hoh.itp",
+                      "src_files": ["topol.tpr", "posre.itp", "posre_A.itp",
+                                   "posre_B.itp", "posre_hoh.itp",
                                    "posre_ion.itp", "posre_lig.itp",
                                    "posre_alo.itp", "posre_cho.itp"],
                       "tgt_dir": "eq"}},
@@ -330,9 +333,9 @@ class BasicRelax(object):
         self.steps = []
         self.recipe = {}
         for const in range(800, 0, -200):
-            self.steps.extend(["relax%d" % const,
-                               "grompp%d" % const,
-                               "mdrun%d" % const])
+            self.steps.extend(["relax{0}".format(const),
+                               "grompp{0}".format(const),
+                               "mdrun{0}".format(const)])
             tgt_dir = "eq/{0}".format(const)
             src_dir = "eq"
             self.recipe["relax%d" % const] =\
@@ -340,8 +343,7 @@ class BasicRelax(object):
               "options": {"const": const,
                           "src_dir": src_dir,
                           "tgt_dir": tgt_dir,
-                          "mdp": "eq.mdp",
-                          "posres": ["posre.itp"]}}
+                          "mdp": "eq.mdp"}}
             self.recipe["grompp%d" % const] =\
              {"gromacs": "grompp", #1, 4, 7, 10
               "options": {"src": os.path.join(tgt_dir, "eq.mdp"),
@@ -380,7 +382,7 @@ class LigandAlostericRelax(LigandRelax):
 #                    Alpha Chains Relaxation                             #
 ##########################################################################
 
-class BasicCAEquilibrate(object):
+class BasicCARelax(object):
     def __init__(self, **kwargs):
         self.steps = ["set_stage_init", "genrestr", "grompp", "mdrun"]
         self.recipe = {
@@ -496,9 +498,9 @@ class BasicCollectResults(object):
             "tar_it": {"command": "tar_out",
                 "options": {"src_dir": "finalOutput",
                     "tgt": "MD_output.tgz"}},
-            "final_clean": {"command": "clean_all",
-                "options": {"target_dir": "",
-                    "exclude": ["MD_output.tgz", "GROMACS.log"]}},
+         #   "final_clean": {"command": "clean_all",
+         #       "options": {"target_dir": "",
+         #           "exclude": ["MD_output.tgz", "GROMACS.log"]}},
         }
 
         options = {"tot_ener": "13\n", "temp": "14\n", "pressure": "15\n",

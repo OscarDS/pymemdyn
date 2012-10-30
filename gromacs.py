@@ -1,5 +1,6 @@
 import broker
 import groerrors
+import protein
 import recipes
 import settings
 import utils
@@ -122,10 +123,20 @@ class Gromacs(object):
         input += "1 || r LIG || r ALO\n"
         input += "name {0} protlig\n".format(n_group)
 
-        #And this makes the membrane group as membr
+        #This makes the membrane group as membr
         n_group += 1
         input += "r POP || r CHO || r LIP\n"
         input += "name {0} membr\n".format(n_group)
+
+        #This make a separate group for each chain (if more than one)
+        if type(self.membrane_complex.complex.monomer) == protein.Dimer:
+            for chain in self.membrane_complex.complex.monomer.chains:
+                #points = {'A': [1, 4530], 'B': [4532, 9061]}
+                n_group += 1
+                input += "a {0}-{1}\n".format(
+                    self.membrane_complex.complex.monomer.points[chain][0],
+                    self.membrane_complex.complex.monomer.points[chain][1])
+                input += "name {0} protein_{1}\n".format(n_group, chain)
 
         if hasattr(self.membrane_complex.membrane, "ions"):
             #This makes the group ions TODO
@@ -178,17 +189,22 @@ class Gromacs(object):
 
         if not os.path.isdir(kwargs["tgt_dir"]): os.makedirs(kwargs["tgt_dir"])
 
+        if type(self.membrane_complex.complex.monomer) == protein.Monomer:
+            posres = ["posre.itp"]
+        elif type(self.membrane_complex.complex.monomer) == protein.Dimer:
+            posres = ["posre_A.itp", "posre_B.itp"]
+
         if hasattr(self.membrane_complex.complex, "waters") and\
             self.membrane_complex.complex.waters:
-            kwargs["posres"].append("posre_hoh.itp")
+            posres.append("posre_hoh.itp")
         if hasattr(self.membrane_complex.complex, "ions") and\
             self.membrane_complex.complex.ions:
-            kwargs["posres"].append("posre_ion.itp")
+            posres.append("posre_ion.itp")
         if hasattr(self.membrane_complex.complex, "cho") and\
             self.membrane_complex.complex.cho:
-            kwargs["posres"].append("posre_cho.itp")
-
-        for posre in kwargs["posres"]:
+            posres.append("posre_cho.itp")
+        
+        for posre in posres:
             new_posre = open(os.path.join(kwargs["tgt_dir"], posre), "w")
 
             for line in open(os.path.join(kwargs["src_dir"], posre), "r"):
@@ -309,6 +325,28 @@ class Gromacs(object):
             [str(self.membrane_complex.complex.gmx_prot_xy),
              str(self.membrane_complex.complex.gmx_prot_xy),
              str(self.membrane_complex.complex.gmx_prot_z)]
+
+        return True
+
+    def set_chains(self, **kwargs):
+        '''Set the REAL points of a dimer after the protonation'''
+        src = kwargs.get("src")
+
+        if type(self.membrane_complex.complex.monomer == protein.Dimer):
+            points = self.membrane_complex.complex.monomer.points
+            with open(src, "r") as pdb_fp:
+                for line in pdb_fp:
+                    if len(line) > 21 and line.startswith(("ATOM", "HETATM")):
+                        atom_serial = int(line[6:11])
+                        chain_id = line[21]
+                        if points[chain_id]:
+                            points[chain_id] = [
+                                min(atom_serial, points[chain_id][0]),
+                                max(atom_serial, points[chain_id][1])]
+                        else:
+                            points[chain_id] = [atom_serial, atom_serial]
+
+            self.membrane_complex.complex.monomer.points = points
 
         return True
 

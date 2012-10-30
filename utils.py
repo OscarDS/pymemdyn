@@ -195,10 +195,12 @@ def make_topol(template_dir = \
     complex = None): # The MembraneComplex object to deal
     '''Make the topol starting from our topol.top template'''
 
-    protein = lig = hoh = na = cho = alo = 0
+    protein = dimer = lig = hoh = na = cho = alo = 0
     lig_name = hoh_name = ions_name = cho_name = alosteric_name = ""
     if hasattr(complex, "monomer"):
         protein = 1
+        if getattr(complex, "monomer").__class__.__name__ == "Dimer":
+            dimer = 1
     if hasattr(complex, "ligand"):
         if complex.ligand:
             lig = 1
@@ -220,10 +222,14 @@ def make_topol(template_dir = \
             alo = 1
             alosteric_name = complex.alosteric.itp
 
-    order = ("protein", "hoh", "lig", "na", "cho", "alo")
+    order = ("protein", "dimer", "hoh", "lig", "na", "cho", "alo")
     comps = {"protein": {"itp_name": "protein.itp",
                  "ifdef_name": "POSRES",
                  "posre_name": "posre.itp"},
+             "dimer": {"name": "protein_B",
+                 "itp_name": "protein_B.itp",
+                 "ifdef_name": "POSRES",
+                 "posre_name": "posre_B.itp"},
              "lig": {"itp_name": lig_name,
                  "ifdef_name": "POSRESLIG",
                  "posre_name": "posre_lig.itp"},
@@ -240,6 +246,12 @@ def make_topol(template_dir = \
                  "ifdef_name": "POSRESALO",
                  "posre_name": "posre_alo.itp"},
              }
+
+    if dimer:
+        comps["protein"] = {"name": "protein_A",
+            "itp_name": "protein_A.itp",
+            "ifdef_name": "POSRES",
+            "posre_name": "posre_A.itp"}
 
     src = open(os.path.join(template_dir, "topol.top"), "r")
     tgt = open(os.path.join(target_dir, "topol.top"), "w")
@@ -261,7 +273,11 @@ def make_topol(template_dir = \
                     comps[c]["posre_name"])),
                 '#endif'])
 
-            comps[c]["line"] = "{0} {1}".format(c, locals()[c])
+            if comps[c].has_key("name"):
+                comps[c]["line"] = "{0} {1}".format(
+                    comps[c]["name"], locals()[c])
+            else:
+                comps[c]["line"] = "{0} {1}".format(c, locals()[c])
         else:
             comps[c]["line"] = ";"
 
@@ -269,6 +285,7 @@ def make_topol(template_dir = \
 
     tgt.write(t.substitute(working_dir = working_dir,
                            protein = comps["protein"]["line"],
+                           dimer = comps["dimer"]["line"],
                            lig = comps["lig"]["line"],
                            hoh = comps["hoh"]["line"],
                            na = comps["na"]["line"],

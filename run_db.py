@@ -176,7 +176,7 @@ class Run(object):
         '''Runs all the dynamics'''
 
         steps = ["Init", "Minimization", "Equilibration",
-            "Relax", "CAEquilibrate", "CollectResults"]
+            "Relax", "CARelax", "CollectResults"]
 
         for step in steps:
             self.g.select_recipe(stage = step, debug = self.debug)
