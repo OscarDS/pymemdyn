@@ -435,8 +435,8 @@ class BasicCollectResults(object):
         self.breaks = {}
         self.steps = ["trjcat", "eneconv", "g_rms", "tot_ener", "temp",
             "pressure", "volume", "set_end", "clean_topol", "set_end_2",
-            "set_end_3", "set_end_4", "set_end_5", "set_end_6", "tar_it",
-            "final_clean"]
+            "set_end_3", "set_end_4", "set_end_5", "set_end_6", "tar_it"]#,
+            #"final_clean"]
         self.recipe = {"trjcat":
             {"gromacs": "trjcat", #1
                 "options": {"dir1": "eq",
