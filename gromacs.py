@@ -332,7 +332,7 @@ class Gromacs(object):
         '''Set the REAL points of a dimer after the protonation'''
         src = kwargs.get("src")
 
-        if type(self.membrane_complex.complex.monomer == protein.Dimer):
+        if type(self.membrane_complex.complex.monomer) == protein.Dimer:
             points = self.membrane_complex.complex.monomer.points
             with open(src, "r") as pdb_fp:
                 for line in pdb_fp:
