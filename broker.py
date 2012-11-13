@@ -4,13 +4,6 @@
 # Depending on the broker, the messages may be just printed or something else
 
 import datetime
-from django.core.management import setup_environ
-import http_settings
-
-setup_environ(http_settings)
-
-from http_settings import *
-from http_models import *
 
 class Printing(object):
     def __init__(self):
@@ -24,6 +17,13 @@ class Printing(object):
 class DjangoDB(object):
     def __init__(self, *args, **kwargs):
         '''This is a proxy to save a message to a Database using Django ORM'''
+        from django.core.management import setup_environ
+        import http_settings
+
+        setup_environ(http_settings)
+
+        from http_settings import *
+        from http_models import *
 
         self.pk = kwargs.get("pk")
         self.queue_task = QueueTask.objects.get(pk = self.pk)
