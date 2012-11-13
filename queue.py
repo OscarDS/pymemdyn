@@ -3,8 +3,9 @@ import settings
 
 class Queue(object):
     def __init__(self, *args, **kwargs):
-        self.num_proc = 8 #Default number of processors to be used
-        self.max_time = "50:00:00"
+        #Default number of processors to be used
+        self.num_proc = getattr(settings, "QUEUE_NUM_PROCS") or 8 
+        self.max_time = getattr(settings, "QUEUE_MAX_TIME") or "50:00:00"
         self.sh = "./mdrun.sh"
 
     def set_mdrun(self, value):

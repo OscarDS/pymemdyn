@@ -16,3 +16,5 @@ QUEUE = "slurm"
 #QUEUE = "pbs"
 #QUEUE = "pbs_ib"
 #QUEUE = "svgd"
+QUEUE_NUM_PROCS = 8
+QUEUE_MAX_TIME = "50:00:00"
