@@ -66,7 +66,7 @@ class PBS(Queue):
         # Calling file run.sh should resemble this lines               #
         self.num_nodes = 5                                             #
         self.proc_per_node = 8                                         #
-        self.max_time = "36:00:00"                                     #
+        self.max_time = getattr(settings, "QUEUE_MAX_TIME") or "36:00:00"#
         self.max_cpu_time = "1440:00:00"                               #
         self.max_mem = "12gb"                                          #
         self.command = ["qsub",                                        #
@@ -101,7 +101,7 @@ class PBS_IB(Queue):
         # USELESS, see class PBS for explanation                            #
         self.num_nodes = 10                                                 #
         self.proc_per_node = 4                                              #
-        self.max_time = "08:00:00"                                          #
+        self.max_time = getattr(settings, "QUEUE_MAX_TIME") or "08:00:00"   #
         self.max_cpu_time = "320:00:00"                                     #
         self.max_mem = "12gb"                                               #
                                                                             #
@@ -134,7 +134,7 @@ class PBS_IB(Queue):
 class Svgd(Queue):
     '''Queue for the PBS system at svgd.cesga.es'''
     def __init__(self, *args, **kwargs):
-        super(PBS, self).__init__(self, *args, **kwargs)
+        super(Svgd, self).__init__(self, *args, **kwargs)
         '''Setting the command to run mdrun in pbs queue with mpi'''
         self._mdrun=os.path.join(settings.GROMACS_PATH, "mdrun")
         self.command = [self.sh]
