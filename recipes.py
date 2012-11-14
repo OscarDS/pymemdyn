@@ -465,7 +465,7 @@ class BasicCollectResults(object):
                 "options": {"src_dir": "eqCA",
                     "src_files": ["traj.xtc", "confout.gro", "topol.tpr"],
                     "repo_files": ["popc.itp", "README.txt",
-                        "prod_example.mdp"],
+                        "prod.mdp"],
                     "tgt_dir": "finalOutput"}},
             "clean_topol": {"command": "clean_topol",
                 "options": {"src": "topol.top",
