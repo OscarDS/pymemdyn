@@ -145,9 +145,21 @@ class Svgd(Queue):
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
         sh.write("cd %s\n" % os.path.join(os.getcwd(), workdir))
-        sh.write("module load acml\n")
+        # Somehow impi is loaded, and conflicts with the (see down) tricky way
+        # of SVGD of dealing with parallel runnings of mdrun through mpich2
+        sh.write("module unload impi\n")
+        sh.write("module load mpich2\n")
         sh.write("module load gromacs/4.0.7\n")
-        sh.write("%s %s -v &>mdrun.log\n" \
+        # CESGA SVGD has its own tweaks. The mdrun binary "jumps" to mpiexec,
+        # and call back mdrun with as much nslots (~cores) as reserved in the
+        # command line calling the whole pipeline, this way:
+        #  qsub -l num_proc=1,s_rt=01:00:00,s_vmem=1G,h_fsize=1G,arch=amd \
+        #    -pe mpi 4 run.sh
+        # That "-pe mpi 4" tells the queue system to allocate 4 cores to run.sh
+        # and it's responsability of run.sh (aka the next line) to pass $NSLOTS
+        # Note that this SVGD uses THE SAME queue system than PBS and PBS_IB,
+        # but lacks of mpirun executable. Always a pleasure to adjust a queue.
+        sh.write("%s -np $NSLOTS %s -v &>mdrun.log\n" \
             % (self.mdrun, " ".join(options)))
         sh.close()
         os.chmod(self.sh, 0755)
