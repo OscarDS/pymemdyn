@@ -1,9 +1,17 @@
 #import pymoldyn
+import os
 
 #SCRIPT_DIR = os.path.dirname(os.path.realpath(pymoldyn.__file__))
-#ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
-REPO_DIR = "templates"
+# This is the dir where pymoldyn git repo has been deployed,
+# or to be more specific, this file settings.py
+ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
+
+#This dir now has to be the absolute path to the source of templates
+# You can refer it relatively like this:
+REPO_DIR = os.path.join(ROOT_DIR, "templates")
+# Or absolutely like this:
+# REPO_DIR = "/path/to/your/templates"
 
 #GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/ib/bin/"
 #GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/gige/bin/"

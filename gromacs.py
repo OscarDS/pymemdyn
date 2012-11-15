@@ -491,10 +491,8 @@ class Wrapper(object):
         self.work_dir = os.getcwd()
         #The gromacs to be used
         self.gromacs_dir = settings.GROMACS_PATH
-        #And this is our directory to refer the "fixed" files
-        self.own_dir = os.path.dirname(os.path.abspath(__file__))
-        #Repo dir is under pymoldyn file directory
-        self.repo_dir = os.path.join(self.own_dir, "templates")
+        #The directory where all the files live
+        self.repo_dir = settings.REPO_DIR
 
     def _common_io(self, src, tgt):
         '''Autoexpand many Gromacs commands that uses -f for the input
