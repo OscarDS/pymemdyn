@@ -302,7 +302,11 @@ class Gromacs(object):
         recipe += stage #This kwarg carries the proper recipe:
                         #Init, Minimization, Equilibration...
 
-        self.recipe = getattr(recipes, recipe)(debug = debug)
+        if hasattr(recipes, recipe):
+            self.recipe = getattr(recipes, recipe)(debug = debug)
+        elif hasattr(recipes, "Basic" + stage):
+            # Fall back to Basic recipe if no specific where found
+            self.recipe = getattr(recipes, "Basic" + stage)(debug = debug)
 
         return True
 

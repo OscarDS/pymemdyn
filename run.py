@@ -136,15 +136,10 @@ class Run(object):
         for step in steps:
             self.g.select_recipe(stage = step, debug = self.debug)
             self.g.run_recipe(debug = self.debug)
-        
-        #self.g.recipe = recipes.CARelax(debug = self.debug)
-        #self.g.run_recipe()
 
     def light_moldyn(self):
         '''This is a function to debug a run in steps'''
         steps = ["Init", "Minimization", "Equilibration", "Relax", "CARelax"]
-        #steps = ["CARelax"]
-        #steps = ["CollectResults"]
         for step in steps:
             self.g.select_recipe(stage = step, debug = self.debug)
             self.g.run_recipe(debug = self.debug)
