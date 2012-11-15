@@ -5,12 +5,12 @@ define		    =  -DPOSRES ; Restraint heavy atoms of the protein (all except H's)
 
 integrator          =  md        ; leap-frog integrator
 dt                  =  0.002     ; in ps !  = 2 fs
-nsteps              =  2500    ; total 0.5 ns
+nsteps              =  1000    ; total 20 ps
 
-nstxout             =  250     ; save coordinates every 50 ps
-nstvout             =  2500    ; save velocities every 500 ps
-nstenergy           =  100     ; save energies every 20 ps
-nstxtcout           =  250     ; save xtc trajectory every 50 ps
+nstxout             =  1000     ; save coordinates every 20 ps
+nstvout             =  1000    ; save velocities every 20 ps
+nstenergy           =  100     ; save energies every 2 ps
+nstxtcout           =  1000     ; save xtc trajectory every 50 ps
 
 nstlist             =  5         ; update the neighbor list every 10 fs
 				 ; This works with twin-cutoff (if rlist < rcoulomb)

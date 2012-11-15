@@ -1,4 +1,4 @@
 #!/bin/bash
 # 
 # Launcher to sbatch
-python /home/slurm/pymoldyn/run.py $*
+python /home/hteran/pymoldyn/run.py $*
