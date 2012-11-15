@@ -188,11 +188,12 @@ class Gromacs(object):
         '''Relax a protein'''
 
         if not os.path.isdir(kwargs["tgt_dir"]): os.makedirs(kwargs["tgt_dir"])
+        posres = kwargs.get("posres", [])
 
         if type(self.membrane_complex.complex.monomer) == protein.Monomer:
-            posres = ["posre.itp"]
+            posres.append("posre.itp")
         elif type(self.membrane_complex.complex.monomer) == protein.Dimer:
-            posres = ["posre_A.itp", "posre_B.itp"]
+            posres.extend(["posre_A.itp", "posre_B.itp"])
 
         if hasattr(self.membrane_complex.complex, "waters") and\
             self.membrane_complex.complex.waters:

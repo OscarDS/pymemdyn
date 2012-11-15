@@ -343,6 +343,7 @@ class BasicRelax(object):
               "options": {"const": const,
                           "src_dir": src_dir,
                           "tgt_dir": tgt_dir,
+                          "posres": [],
                           "mdp": "eq.mdp"}}
             self.recipe["grompp%d" % const] =\
              {"gromacs": "grompp", #1, 4, 7, 10
