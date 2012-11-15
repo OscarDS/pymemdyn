@@ -22,11 +22,9 @@ class DjangoDB(object):
 
         setup_environ(http_settings)
 
-        from http_settings import *
-        from http_models import *
-
         self.pk = kwargs.get("pk")
-        self.queue_task = QueueTask.objects.get(pk = self.pk)
+        #TODO Test this, as importing * seems to not work
+        self.queue_task = http_models.QueueTask.objects.get(pk = self.pk)
 
     def dispatch(self, msg):
         '''Put a message in the "last_message" column of the table'''
