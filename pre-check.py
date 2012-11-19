@@ -8,12 +8,15 @@ def gromacs_check():
         print "Invalid GROMACS_PATH: '%s'" % settings.GROMACS_PATH
         return False
 
+    return True
+
 def queue_check():
     '''Verify the usability of the queue'''
     queues = {"": "NoQueue",
               "slurm": "Slurm",
               "pbs": "PBS",
-              "pbs_ib": "PBS_IB"}
+              "pbs_ib": "PBS_IB",
+              "svgd": "Svgd"}
 
     if settings.QUEUE in queues.keys():
         if hasattr(queue, queues[settings.QUEUE]):
@@ -27,8 +30,10 @@ def queue_check():
             print "Bad defined queue: '%s'" % settings.QUEUE
             return False
     else:
-        print "1ad defined queue: '%s'" % settings.QUEUE
+        print "Bad defined queue: '%s'" % settings.QUEUE
         return False
+
+    return True
 
 def repo_dir():
     '''Verify the validity of the repo dir defined'''
@@ -50,8 +55,6 @@ def repo_dir():
 
     return True
 
-
 if __name__ == "__main__":
-    repo_dir()
-    gromacs_check()
-    queue_check()
+    if repo_dir() and gromacs_check() and queue_check():
+        print 'All checks passed OK!'
