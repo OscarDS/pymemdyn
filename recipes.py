@@ -434,10 +434,11 @@ class BasicCollectResults(object):
         dict "recipe" as the variables to pass to funcions.
         dict "breaks" as points where objects calling can put their vars.'''
         self.breaks = {}
-        self.steps = ["trjcat", "eneconv", "g_rms", "tot_ener", "temp",
-            "pressure", "volume", "set_end", "clean_topol", "set_end_2",
-            "set_end_3", "set_end_4", "set_end_5", "set_end_6", "tar_it"]#,
-            #"final_clean"]
+        self.steps = ["trjcat", "trjconv", "eneconv", "g_rms", "tot_ener",
+            "temp", "pressure", "volume", "set_end", "clean_topol",
+            "set_end_2", "set_end_3", "set_end_4", "set_end_5", "set_end_6",
+            "tar_it"]#,
+            #"final_clean"] This is dangerous, could delete undesired files
         self.recipe = {"trjcat":
             {"gromacs": "trjcat", #1
                 "options": {"dir1": "eq",
@@ -445,6 +446,13 @@ class BasicCollectResults(object):
                     "name": "traj.xtc",
                     "tgt": "traj_EQ.xtc"},
                 "input": "c\n" * 6},
+            "trjconv": {"gromacs": "trjconv", #27
+                "options": {"src": "traj_EQ.xtc",
+                     "src2": "topol.tpr",
+                     "tgt": "hexagon.pdb",
+                     "ur": "compact",
+                     "pbc": "mol"},
+                "input": "1\n0\n"},
             "eneconv": {"gromacs": "eneconv", #2
                 "options": {"dir1": "eq",
                     "dir2": "eqCA",
