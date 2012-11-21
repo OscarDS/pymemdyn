@@ -22,6 +22,8 @@ class DjangoDB(object):
 
         setup_environ(http_settings)
 
+        import http_models
+
         self.pk = kwargs.get("pk")
         #TODO Test this, as importing * seems to not work
         self.queue_task = http_models.QueueTask.objects.get(pk = self.pk)
