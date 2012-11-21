@@ -1,10 +1,5 @@
 #!/usr/bin/env python
-from django.core.management import setup_environ
 import http_settings
-
-setup_environ(http_settings)
-
-from http_settings import *
 from http_models import *
 
 import argparse
@@ -48,12 +43,13 @@ class Run(object):
         else:
             self.broker = broker.Printing()
 
-        self.pdb = os.path.join(CUELEBRE_ROOT, self.dynamic.pdb.file_path)
+        self.pdb = os.path.join(http_settings.CUELEBRE_ROOT,
+            self.dynamic.pdb.file_path)
 
         user = str(self.dynamic.pdb.project.user_id.username)
         project = str(self.dynamic.pdb.project.name)
         id_ = str(self.dynamic.pk)
-        self.own_dir = os.path.join(CUELEBRE_ROOT,
+        self.own_dir = os.path.join(http_settings.CUELEBRE_ROOT,
             user, project, "dynamic", id_)
 
         if not (os.path.isdir(self.own_dir)):
@@ -163,7 +159,7 @@ class Run(object):
                     #If there was a file uploaded, set the absolute path
                     if kwargs[type]:
                         kwargs[type] = os.path.join(
-                            CUELEBRE_ROOT, kwargs[type])
+                            http_settings.CUELEBRE_ROOT, kwargs[type])
 
                 # And now we set all these files to the compound Class
                 # The constructor should complain it it need the file,
