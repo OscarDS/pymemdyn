@@ -54,7 +54,8 @@ class Run(object):
 
         if not (os.path.isdir(self.own_dir)):
             os.makedirs(self.own_dir)
-            self.broker.dispatch("Created working dir {0}".format(self.own_dir))
+            self.broker.dispatch(
+                "Created working dir {0}".format(self.own_dir))
 
         os.chdir(self.own_dir)
 
@@ -178,6 +179,27 @@ class Run(object):
             self.g.select_recipe(stage = step, debug = self.debug)
             self.g.run_recipe(debug = self.debug)
 
+    def send_email(self):
+        '''Send an email to the user who launched the dynamic'''
+        from django.core.mail import send_mail
+        email_addr = self.dynamic.pdb.project.user_id.email
+
+        body_msg = ["You can check this dynamic at http://gpcr.usc.es/",
+                    "v2/dynamic/{0}".format(self.dynamic.pk)]
+        
+        send_mail("GPCR-ModSim ended a Molecular Dynamic",
+            "".join(body_msg),
+            http_settings.EMAIL_HOST_USER, [email_addr])
+
+    def set_file_path(self):
+        '''If all the dynamic run fine, update the file_path in the DB'''
+        self.dynamic.file_path = os.path.join(
+            os.path.relpath(
+                self.own_dir, http_settings.CUELEBRE_ROOT),
+                "MD_output.tgz")
+        self.dynamic.save()
+        return True
+
 def update_queue(queue_obj, status, timefield):
       '''Update a queue_obj (a DB Table) with current status (Started, Running,
       ...) in the timefield appropiate (started, ended)'''
@@ -243,8 +265,9 @@ if __name__ == "__main__":
         run.moldyn()
         if args.queue_pk:
             update_queue(queue_task, "Finished", "ended")
+        run.set_file_path()
+        run.send_email()
     except:
         if args.queue_pk:
             update_queue(queue_task, "Failed", "ended")
         raise
-    #TODO: Send emails when all is done
