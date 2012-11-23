@@ -449,7 +449,7 @@ class BasicCollectResults(object):
             "trjconv": {"gromacs": "trjconv", #27
                 "options": {"src": "traj_EQ.xtc",
                      "src2": "topol.tpr",
-                     "tgt": "hexagon.pdb",
+                     "tgt": "traj_out.xtc",
                      "ur": "compact",
                      "pbc": "mol"},
                 "input": "1\n0\n"},
@@ -483,7 +483,8 @@ class BasicCollectResults(object):
                 "options": {"src_dir": "",
                     "src_files": ["ffoplsaa_mod.itp", "ffoplsaabon_mod.itp",
                         "ffoplsaanb_mod.itp", "hexagon.pdb", "protein.itp",
-                        "index.ndx", "traj_EQ.xtc", "ener_EQ.edr", "rmsd.xvg"],
+                        "index.ndx", "traj_EQ.xtc", "ener_EQ.edr", "rmsd.xvg",
+                        "traj_out.xtc"],
                     "tgt_dir": "finalOutput"}},
             "set_end_3": {"command": "set_stage_init", #9
                 "options": {"src_dir": "",
