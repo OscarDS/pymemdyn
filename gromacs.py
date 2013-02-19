@@ -49,7 +49,8 @@ class Gromacs(object):
 
         for line in src:
             if len(line.split()) > 2:
-                if line.split()[2] == "N4": #Lipid marker
+                #This N4 and POP are the lipid markers
+                if line.split()[2] == "N4" and line.split()[3] == "POP":
                     tgt.write(line)
                     if(float(line.split()[7]) >= half):
                         self.membrane_complex.membrane.lipids_up += 1
