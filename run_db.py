@@ -185,7 +185,7 @@ class Run(object):
         email_addr = self.dynamic.pdb.project.user_id.email
 
         body_msg = ["You can check this dynamic at http://gpcr.usc.es/",
-                    "v2/dynamic/{0}".format(self.dynamic.pk)]
+                    "/dynamic/{0}".format(self.dynamic.pk)]
         
         send_mail("GPCR-ModSim ended a Molecular Dynamic",
             "".join(body_msg),
@@ -270,4 +270,5 @@ if __name__ == "__main__":
     except:
         if args.queue_pk:
             update_queue(queue_task, "Failed", "ended")
+        run.send_email()
         raise
