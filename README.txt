@@ -1,4 +1,5 @@
-# Libreria ad-hoc para manejo de gromacs.
+# Pymoldyn Version 1.0
+# Pymoldyn is a python library to communicate between gromacs and the GPCR's modeling webserver.
 
 # Objetos de modelado. Estos tres archivos definen los objetos que se van a modelar.
 - protein.py. Define los objetos Monomer, Ligand, Dimer y ProteinComplex. Estos objetos se inicializan con los archivos necesarios, y luego se pasan a otros objetos.
