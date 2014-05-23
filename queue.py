@@ -43,7 +43,8 @@ class Slurm(Queue):
             "-t", self.max_time,
             self.sh]
 
-        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_slurm")
+#        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_slurm") #FOR CUELEBRE
+        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun") # FOR CSB
 
     def make_script(self, workdir, options):
         '''binary is the executable

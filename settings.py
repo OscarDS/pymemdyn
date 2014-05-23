@@ -17,7 +17,8 @@ REPO_DIR = os.path.join(ROOT_DIR, "templates")
 #GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/ib/bin/"
 #GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/gige/bin/"
 #GROMACS_PATH = "/opt/cesga/gromacs-4.0.7/bin/"
-GROMACS_PATH = "/opt/gromacs405/bin/"
+#GROMACS_PATH = "/opt/gromacs405/bin/"
+GROMACS_PATH = "/home/apps/gromacs-4.6.5/bin/"
 
 #Set the queue to use. Look inside queue.py.
 #QUEUE = ""
