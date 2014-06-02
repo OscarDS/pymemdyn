@@ -2,25 +2,35 @@
 Pymemdyn Version 1.0
 ================================================================================
 
-# Pymoldyn is a standalone python library to setup calculations of membrane molecular
-dynamics using a combination of multiple sequence alignments via clustal omega, homology 
-modelling via modeller, and molecular dynamics via gromacs.
+Pymoldyn  is a  standalone  python library  to  setup calculations  of
+membrane molecular  dynamics using a combination  of multiple sequence
+alignments  via clustal  omega, homology  modelling via  modeller, and
+molecular dynamics via gromacs.
 
 
-# Objetos de modelado. Estos tres archivos definen los objetos que se van a modelar.
-- protein.py. Define los objetos Monomer, Ligand, Dimer y ProteinComplex. Estos objetos se inicializan con los archivos necesarios, y luego se pasan a otros objetos.
-- membrane.py. Define la membrana.
-- complex.py. Define el todo el complejo de proteina + membrana, y puede incluir cualquiera de los anteriores.
+### Modeling Objects
 
-# Objetos auxiliares.
-- queue.py. Sera el manejador de la cola al que se le pasaran los objetos de ejecucion. TODO.
-- recipes.py. Lleva los pasos necesarios para ejecutar un modelado.
-- utils.py. Lleva las funciones que los objetos anteriores utilizan a demanda. Por ejemplo, manipular archivos, copiar directorios, etc.
+The following three files define the objects to be modelled.
 
-# Objeto de ejecucion.
-- gromacs.py. Define los objetos Gromacs y Wrapper.
- * Gromacs carga los objetos de modelado, carga una receta de modelado y la ejecuta.
- * Wrapper es un proxy para los comandos gromacs. Se le pasa una entrada de la receta, y devuelve el comando a ejecutar.
+- protein.py. Includes   the  definition   of  the   Monomer,  Ligand,   Dimer,  and
+  ProteinComplex objects.  These objects  are started with  the required
+  files, and then are passed to other objects.
+- membrane.py. Defines the cellular membrane.
+- complex.py. Defines the full object, protein + membrane. I can include any of the previous objects.
 
-# Archivo de ejemplo.
-- example.py muestra como se utilizan las librerias anteriores.
+### Auxiliary Objects
+
+- queue.py. Manages the queues. That is, it receives objects to be executed. TODO
+- recipes.py. Applies step by step instructions for carrying a modeling step.
+- utils.py. Puts the functions done by the previous objects on demand. For example, manipulate files, copy folders, etc.
+
+### Execution Objects
+
+- gromacs.py. Defines the Gromacs and Wrapper objects.
+    * Gromacs will load the objects to be modeled, the modeling recipe and runs it.
+    * Wrapper is a proxy for gromacs commands. When a recipe entry is sent to it returns the command to be run.
+
+### Examples
+
+- example.py An example showing how to use the previously defined libraries.
+
