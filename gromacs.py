@@ -664,8 +664,8 @@ class Wrapper(object):
         '''Wraps the pdb2gmx command options'''
         return ["-p", self._setDir(kwargs["top"]),
                 "-i", self._setDir("posre.itp"),
-                "-ignh", "-ff", "oplsaa"]
-
+                "-ignh", "-ff", "oplsaa", "-water", "tip3p"]
+    
     def _mode_tpbconv(self, kwargs):
         '''Wraps the tpbconv command options'''
         return ["-s", self._setDir(kwargs["src"]),
