@@ -616,12 +616,14 @@ class Wrapper(object):
         command = ["-s", kwargs["src"],
                    "-o", kwargs["tgt"],
                    "-p", self._setDir(kwargs["src2"]),
-                   "-g", self._setDir("genion.log"),
+#                  In version 4.6.5 of gromacs the log is generated
+#                  by default and the -g option doesn't exist anymore.
+#                   "-g", self._setDir("genion.log"),
                    "-np", str(kwargs["np"]),
                    "-nn", str(kwargs["nn"]),
                    "-pname", "NA+",
                    "-nname", "CL-"]
-
+        
         return command
 
     def _mode_genrest(self, kwargs):
@@ -664,7 +666,7 @@ class Wrapper(object):
         '''Wraps the pdb2gmx command options'''
         return ["-p", self._setDir(kwargs["top"]),
                 "-i", self._setDir("posre.itp"),
-                "-ignh", "-ff", "oplsaa", "-water", "tip3p"]
+                "-ignh", "-ff", "oplsaa", "-water", "spc"]
     
     def _mode_tpbconv(self, kwargs):
         '''Wraps the tpbconv command options'''
