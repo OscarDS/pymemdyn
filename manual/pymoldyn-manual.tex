@@ -2,6 +2,7 @@
 %  Preamble
 %===============================================================================
 \documentclass[10pt, oneside, pdftex]{article}
+\usepackage[pdftex]{graphicx}
 \usepackage[T1]{fontenc}
 \usepackage[bitstream-charter]{mathdesign}
 \usepackage[latin1]{inputenc}			% Input encoding
@@ -82,46 +83,59 @@ hugo.gutierrez@icm.uu.se \\
 \printauthor
 
 \begin{abstract}
-\noindent \textbf{py-MEMdyn}  is a python library  written to automate
+\noindent \textbf{py-MEMdyn} is a python library developed to automate
 the process of setting up the simulation, via Molecular Dynamics (MD),
 of G-protein  Coupled Receptors (GPCR's) embedded in  a cell membrane.
 The protocol  can be adapted  to insert other  transmembrane proteins,
 not only GPCR's.  The protocol has been adapted from that described in
-Guti\'{e}rrez de  Ter\'{a}n et al.  (2011) \cite{rodriguez2011}, and is  implemented in
-the web-based service for  modeling and simulation of GPCR's available
-at \url{http://gpcr-modsim.org}.
+Guti\'{e}rrez de Ter\'{a}n et al.  (2011) \cite{rodriguez2011}, and is
+implemented in  the web-based service  for modeling and  simulation of
+GPCR's available at \url{http://gpcr-modsim.org}.
+\end{abstract}
 
-This  fully automated  pipeline allows  any researcher,  without prior
-experience in computational chemistry, to perform an otherwise tedious
-and   complex  process   of   membrane  insertion   and  thorough   MD
-equilibration, as outlined  in Fig. 1. In the  simplest scenario, only
-the  receptor structure  is  considered.  This  will be  automatically
-surrounded by a  pre-equilibrated POPC membrane model in  a way that the
-TM bundle  is parallel  to the membrane  vertical axis. The  system is
-then soaked with bulk water and inserted into a hexagonal-prism shaped
-box,  which  is energy-minimized  and  carefully  equilibrated in  the
-framework of periodic boundary conditions (PBC). It follows a thorough
-MD equilibration protocol that lasts  2.5 ns. But the simulation of an
+\section*{ - Description}
+The  fully automated  pipeline available  by  using \textbf{py-MEMdyn}
+allows  any  researcher,  without  prior experience  in  computational
+chemistry,  to perform  an otherwise  tedious and  complex  process of
+membrane  insertion  and thorough  MD  equilibration,  as outlined  in
+Figure \ref{fig:pipeline}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.6]{pipeline.png}
+\caption{Pipeline of the process followed to embed a G-protein Coupled
+  Receptor    into    a   cell    membrane    made    of   a   POPC
+  (Palmitoyl-Oleoyl-Phosphatidyl-Choline) phospholipid bilayer.}
+\label{fig:pipeline}
+\end{figure} 
+
+In   the   simplest  scenario,   only   the   receptor  structure   is
+considered. In  such case  the GPCR is  automatically surrounded  by a
+pre-equilibrated POPC (Palmitoyl-Oleoyl-Phosphatidyl-Choline) membrane
+model in a way that the  TM (Trans-Membrane) bundle is parallel to the
+vertical axis  of the  membrane. The system  is then soaked  with bulk
+water  and  inserted  into  an hexagonal prism-shaped  box,  which  is
+energy-minimized  and  carefully  equilibrated  in  the  framework  of
+periodic  boundary  conditions  (PBC).    It  follows  a  thorough  MD
+equilibration protocol  that lasts 2.5  ns.  But the simulation  of an
 isolated receptor  can only account for  one part of  the problem, and
 the influence  of different non-protein elements  in receptor dynamics
-such  as the  orthosteric ligand,  an allosteric modulator,  or even
+such  as the  orthosteric (primary)  ligand, an  allosteric  modulator, or  even
 specific cholesterol, lipid, water or  ion molecules is key for a more
-comprehensive characterization of GPCR's. To allow a broader use of MD
-simulations  to  researchers  in  the  field,  \textbf{py-MEMdyn}  can
+comprehensive characterization  of GPCR's.  To allow a  broader use of
+MD  simulations to  researchers in  the field,  \textbf{py-MEMdyn} can
 explicitly handle these elements.  Each molecule should be uploaded as
 docked to the original PDB file  of the receptor, so they are properly
 integrated  into  the  membrane  insertion protocol  described  above,
 together with  the force-field associated  files (which can  be either
-generated  with external  software like  Macromodel, either  by manual
+generated  with external  software like  Macromodel, or  by manual
 parameterization).   In addition, it  is also  possible to  perform MD
 simulations of  receptor dimers,  provided that a  proper dimerization
-model  exists,  i.e., coming  from  X-ray  crystallography  or from  a
-protein-protein docking  protocol.  The  ease of use,  flexibility and
+model  exists (i.e., coming  from  X-ray  crystallography  or from  a
+protein-protein docking  protocol).  The  ease of use,  flexibility and
 public  availability  of the  \textbf{py-MEMdyn}  library  makes it  a
 unique tool for researchers in  the GPCR field interested in exploring
 dynamic processes of these receptors.
-\end{abstract}
-
 
 \section*{ - Installation}
 \textbf{py-MEMdyn} is a python library thaht can be used in  any unix
@@ -132,18 +146,29 @@ platform provided that the following dependencies are installed:
 \item {git (repository access).}
 \item {Python (required >= 2.7).}
 \item {Gromacs 4.0.5, 4.6.5 supported.}
-\item {Queuing  system:  although  not  strictly  required,  this  is  highly
-advisable since  a 5 ns MD  simulation will be  performed. However, if
-only  membrane insertion  and energy  minimization is  requested, this
-requirement can  be avoided. Currently, the  queuing systems supported
-include Slurm, PBS.}
+\item {Queuing system: although  not strictly required, this is highly
+  advisable since a 5 ns  MD simulation will be performed. However, if
+  only membrane  insertion and energy minimization  is requested, this
+  requirement can be avoided. Currently, the queuing systems supported
+  include Slurm, PBS.}
 \end{itemize}
+
+The latest version of pymemdyn is located at bitbucket.
+
+
+You will need to create a free personal account at bitbucket and send 
+and e-mail to: gpcruser@gmail.com to access the free repository.
+
 
 In  order to  install the  last version,  the user  must  have granted
 access  to  the  repository,  located  at the  cluster  ``Cuelebre''  at
 USC. The following steps are  needed though. It is assumed a unix-like
 terminal and  that the ssh  protocol for communications is  enabled in
 the  user  computer.  
+
+
+
+
 
 \begin{enumerate}
 \item{Have  a user  created  in  a machine  called
@@ -365,16 +390,16 @@ The  performed equilibration includes the following stages:
 \begin{table}[htbp]
 \centering
 \small\addtolength{\tabcolsep}{-2pt}
-\begin{tabular}{p{1.6cm}|c|c|p{2.2cm}}
+\begin{tabular}{p{1.8cm}|c|p{1.9cm}|p{2.0cm}}
 \hline
-\textbf{STAGE} & CONSTRAINED ATOMS & FORCE CONSTANTS & TIME (ns)  \\ \hline
-Minimization   &	 	   &                 & (Max. 500 steps)\\
-Eq1            & Protein Heavy Atoms & 1000	     & 0.5\\
-Eq2            & Protein Heavy Atoms & 800	     & 0.5\\
-Eq3            & Protein Heavy Atoms & 600	     & 0.5\\
-Eq4            & Protein Heavy Atoms & 400	     & 0.5\\
-Eq5            & Protein Heavy Atoms & 200	     & 0.5\\
-Eq6            & Protein Heavy Atoms & 200	     & 2.5\\
+\textbf{STAGE} & \textbf{RESTRAINTS} & \textbf{FORCE CONSTANTS} & \textbf{TIME} (ns)  \\ \hline
+Minimization   &	 	   &                 & ( $\approx$ 500 steps)\\ \hline
+Equilibration  & Protein Heavy Atoms & 1000	     & 0.5\\
+               &  & 800	     & 0.5\\
+               &  & 600	     & 0.5\\
+               &  & 400	     & 0.5\\
+               &  & 200	     & 0.5\\
+               &  & 200	     & 2.5\\ \hline
 \end{tabular}
 \parbox{5.8in}{\caption{\footnotesize{Simulation steps performed by default using pyMEMdyn}}}
 \label{tab:equilibration}
