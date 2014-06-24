@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 import http_settings
 from http_models import *
 
@@ -22,20 +22,20 @@ class Run(object):
     #This is a dummy
     def __init__(self, dynamic_pk, *args, **kwargs):
         '''
-        This is an specialized version of run.py, but it's able to interact
+        This is and specialized version of run.py, but it's able to interact
         with the remote DB to get the values without being explicitly provided
 
         A "Run()" of molecular dynamics MUST be provided with a "pdb"
         
-        This class tries to initiate a full complex and send it to simulation. Given
+        This class try to init a full complex to send to simulation. Given
         a bunch of molecules (protein, ligand, other ligand, waters, ...), 
-        this class builds a full embedded-in-membrane complex.
+        this class would try to build a full embedded-in-membrane complex.
 
-        These complexes are stored in self.g (A "Gromacs" object), and thus
-        can be 'runned' through g.recipe and g.run_recipe procedures. See
-        gromacs.py for more information.
+        This complex are stored in self.g (it is a "Gromacs" object), and thus
+        can be 'runned' through g.recipe and g.run_recipe procedure. See
+        gromacs.py for more on this.
 
-        Here, the queue system is also created for use in certain steps.'''
+        Here is also created the queue system to use in certain steps.'''
 
         self.dynamic = DynamicDynamic.objects.get(pk = dynamic_pk)
         if kwargs.get("broker_pk"):
