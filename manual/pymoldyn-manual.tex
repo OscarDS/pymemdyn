@@ -87,7 +87,7 @@ hugo.gutierrez@icm.uu.se \\
 the process of setting up the simulation, via Molecular Dynamics (MD),
 of G-protein  Coupled Receptors (GPCR's) embedded in  a cell membrane.
 The protocol  can be adapted  to insert other  transmembrane proteins,
-not only GPCR's.  The protocol has been adapted from that described in
+not only GPCR's.  The library  has been adapted from that described in
 Guti\'{e}rrez de Ter\'{a}n et al.  (2011) \cite{rodriguez2011}, and is
 implemented in  the web-based service  for modeling and  simulation of
 GPCR's available at \url{http://gpcr-modsim.org}.
@@ -114,59 +114,49 @@ considered. In  such case  the GPCR is  automatically surrounded  by a
 pre-equilibrated POPC (Palmitoyl-Oleoyl-Phosphatidyl-Choline) membrane
 model in a way that the  TM (Trans-Membrane) bundle is parallel to the
 vertical axis  of the  membrane. The system  is then soaked  with bulk
-water  and  inserted  into  an hexagonal prism-shaped  box,  which  is
+water  and  inserted into  an  hexagonal  prism-shaped  box, which  is
 energy-minimized  and  carefully  equilibrated  in  the  framework  of
-periodic  boundary  conditions  (PBC).    It  follows  a  thorough  MD
-equilibration protocol  that lasts 2.5  ns.  But the simulation  of an
-isolated receptor  can only account for  one part of  the problem, and
-the influence  of different non-protein elements  in receptor dynamics
-such  as the  orthosteric (primary)  ligand, an  allosteric  modulator, or  even
-specific cholesterol, lipid, water or  ion molecules is key for a more
-comprehensive characterization  of GPCR's.  To allow a  broader use of
-MD  simulations to  researchers in  the field,  \textbf{py-MEMdyn} can
-explicitly handle these elements.  Each molecule should be uploaded as
-docked to the original PDB file  of the receptor, so they are properly
-integrated  into  the  membrane  insertion protocol  described  above,
-together with  the force-field associated  files (which can  be either
-generated  with external  software like  Macromodel, or  by manual
-parameterization).   In addition, it  is also  possible to  perform MD
-simulations of  receptor dimers,  provided that a  proper dimerization
-model  exists (i.e., coming  from  X-ray  crystallography  or from  a
-protein-protein docking  protocol).  The  ease of use,  flexibility and
-public  availability  of the  \textbf{py-MEMdyn}  library  makes it  a
-unique tool for researchers in  the GPCR field interested in exploring
-dynamic processes of these receptors.
+periodic  boundary  conditions  (PBC).  A  thorough  MD  equilibration
+protocol lasting 2.5 ns follows.
+
+But the  simulation of an isolated  receptor can only  account for one
+part  of  the problem,  and  the  influence  of different  non-protein
+elements  in  receptor  dynamics  such as  the  orthosteric  (primary)
+ligand,  allosteric modulator,  or even  specific  cholesterol, lipid,
+water   or  ion   molecules   are  key   for   a  more   comprehensive
+characterization of GPCR's.   \textbf{py-MEMdyn} can explicitly handle
+these elements allowing  a broader audience in the  field of GPCR's to
+use molecular dynamics simulations. These molecules should be uploaded
+in  the same  way they're  present  in the  original PDB  file of  the
+receptor, so they are  properly integrated into the membrane insertion
+protocol described  above, together with  force-field associated files
+(which can be either generated with external software like Macromodel,
+or by manual  parameterization).  In addition, it is  also possible to
+perform  MD simulations  of receptor  dimers, provided  that  a proper
+dimerization model exists (i.e.,  coming from X-ray crystallography or
+from  a   protein-protein  docking   protocol).   The  ease   of  use,
+flexibility and public  availability of the \textbf{py-MEMdyn} library
+makes it a unique tool for researchers in the GPCR field interested in
+exploring dynamic processes of these receptors.
 
 \section*{ - Installation}
-\textbf{py-MEMdyn} is a python library thaht can be used in  any unix
+\textbf{py-MEMdyn} is a python library that can be used in  any unix
 platform provided that the following dependencies are installed:
 \begin{itemize}\itemsep0em
-\item {A unix-line text terminal.}
-\item {ssh for secure-shell connection.}
-\item {git (repository access).}
-\item {Python (required >= 2.7).}
-\item {Gromacs 4.0.5, 4.6.5 supported.}
-\item {Queuing system: although  not strictly required, this is highly
-  advisable since a 5 ns  MD simulation will be performed. However, if
+\item {git (for downloading)}
+\item {Python 2.7}
+\item {Gromacs 4.0.5 or 4.6.5}
+\item {A queuing system: although  not strictly required, this is highly
+  advisable since a 2.5 ns  MD simulation will be performed. However, if
   only membrane  insertion and energy minimization  is requested, this
   requirement can be avoided. Currently, the queuing systems supported
-  include Slurm, PBS.}
+  include Slurm and PBS.}
 \end{itemize}
 
 The latest version of pymemdyn is located at bitbucket.
 
-
 You will need to create a free personal account at bitbucket and send 
 and e-mail to: gpcruser@gmail.com to access the free repository.
-
-
-In  order to  install the  last version,  the user  must  have granted
-access  to  the  repository,  located  at the  cluster  ``Cuelebre''  at
-USC. The following steps are  needed though. It is assumed a unix-like
-terminal and  that the ssh  protocol for communications is  enabled in
-the  user  computer.  
-
-
 
 
 
