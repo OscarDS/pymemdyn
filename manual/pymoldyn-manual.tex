@@ -145,7 +145,8 @@ platform provided that the following dependencies are installed:
 \begin{itemize}\itemsep0em
 \item {git (for downloading)}
 \item {Python 2.7}
-\item {Gromacs 4.0.5 or 4.6.5}
+\item {Gromacs 4.0.5 for version 1.0}
+\item {Gromacs 4.6.5 for version 1.1}
 \item {A queuing system: although  not strictly required, this is highly
   advisable since a 2.5 ns  MD simulation will be performed. However, if
   only membrane  insertion and energy minimization  is requested, this
@@ -153,32 +154,21 @@ platform provided that the following dependencies are installed:
   include Slurm and PBS.}
 \end{itemize}
 
-The latest version of pymemdyn is located at bitbucket.
+\textbf{py-MEMdyn} is hosted at a bitbucket repository at:
+\url{https://esguerra@bitbucket.org/gpcrmodsim/pymemdyn.git}
 
-You will need to create a free personal account at bitbucket and send 
-and e-mail to: gpcruser@gmail.com to access the free repository.
+You can download any version  of pymemdyn by cloning the repository to
+your local machine using git.
 
+You will need to create a  free personal account at bitbucket and send
+and e-mail to: \url{gpcruser@gmail.com} and  you will be given access 
+to the free repository.
 
-
+To install \textbf{py-MEMdyn} follow these steps:
 \begin{enumerate}
-\item{Have  a user  created  in  a machine  called
-``grupomaside'' at USC, which is used  as a tunel to access our cluster,
-Cuelebre.  You also  need a  user un  Cuelebre (from  now on,  we will
-assume that both are the same username).}
-
-\item{Create a  tunnel through  grupomaside: 
+\item{
 \begin{Verbatim}
-ssh  -f -N  -l  username -L 7777:cuelebre.inv.usc.es:22 grupomaside.usc.es -p922 
-\end{Verbatim}
-(Adding  the -f -N  flags to  that line  will force  the tunnel  to go
-background)}
-
-\item{(This  step  only needed  the  first  time  that we  download  the
-py-MEMdyn program) Create a local  copy of the repository: Situate the
-cursor  in  the local  directory  where you  want  the  program to  be
-installed  (we  will  assume  /home/localuser)  and  type:
-\begin{Verbatim}
-git  clone ssh://username@localhost:7777/home/slurm/pymoldyn/share  pymoldyn/  
+git clone 
 \end{Verbatim}
 If your  local  user  is  different  from the  trasgu  user,  adding  the
 ``username@'' is mandatory,  as Git is working through  the tunnel using
