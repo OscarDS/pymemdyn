@@ -231,7 +231,7 @@ optional arguments:
   --ions IONS      Crystalized ions file name without extension.
   --cho CHO        Crystalized cholesterol molecules file name without
                    extension.
-  -q QUEUE         Queueing system to use (slurm, pbs, pbs_ib and svgd
+  -q QUEUE         Queuing system to use (slurm, pbs, pbs_ib and svgd
                    supported)
   --debug
 \end{Verbatim}
@@ -271,19 +271,20 @@ accordingly.
 \item{Similarly, in that file you specify which queuing system you are
   using.  We will assume that you  will use ``slurm'', but you can use
   any of the possible options by  uncommenting the one that best suits
-  your system.}
+  your system.  You can also choose  not to use any  queuing system to
+  run pymemdyn for testing in standalone in your desktop.}
 \end{enumerate}
 
 \begin{itemize}
-\item{COMPULSORY! Option -p:  In the simplest case, \textbf{py-MEMdyn}
+\item{COMPULSORY! Option -p: In  the simplest case, \textbf{py-MEMdyn}
   only needs a pdb file with the receptor.  This should be readable by
-  Gromacs (i.e., accomplish the  PDB standards, see the GROMACS manual
-  for details)  and accessed  from the working  directory. And  as the
-  error says, this is the bare minimum to perform an MD simulation! we
-  will assume that the file is called gpcr.pdb Thus run.sh -p gpcr.pdb
-  should work!  Accesory options: The common user should not take care
-  of the -b,  -r or --debug options: The  working directory (OWN\_DIR)
-  is set  by default  to that  where the program  is invoked,  and the
+  Gromacs (i.e., comply  to PDB standards, see the  GROMACS manual for
+  details) and accessed  from the working directory. And  as the error
+  says, this is the bare minimum  to perform an MD simulation! we will
+  assume  that the  file is  called gpcr.pdb  Thus run.py  -p gpcr.pdb
+  should work!  Accesory options: A common user shouldn't need the -b,
+  -r or  --debug options: The  working directory (OWN\_DIR) is  set by
+  default  to  that  where  the  program has  been  invoked,  and  the
   repository  (REPO\_DIR) is  specified  in the  settings.py file  (by
   default,   templates/   subdirectory   in   the   \textbf{py-MEMdyn}
   instalation).}
@@ -309,12 +310,12 @@ nomenclature. For  the users used  to Gromacs, this file  is generally
 non-existing  and  the parameters  listed  here  are  merged onto  the
 standard forcefield  file in gromacs  (i.e. ffoplsaa.itp). But  in our
 protocol, this  is needed as a  separate file.}
-run.sh  -p gpcr.pdb -l lig
+run.py  -p gpcr.pdb -l lig
 \end{itemize}
 \item{Option --alo  (specifying an allosteric ligand):  This should be
   treated exactly the same as  the ligand: if the allosteric modulator
   is  called allo,  we  need  to have  alo.pdb,  alo.itp and  alo.ff.}
-  run.sh -p gpcr.pdb --alo alo 
+  run.py -p gpcr.pdb --alo alo 
 \item{Option --water (specifying structural
   waters):  If structural  waters are  present (i.e.,  coming  from an
   x-ray structure)  these should  be included as  a separate  pdb file
@@ -334,19 +335,19 @@ run.sh  -p gpcr.pdb -l lig
   should be indicated  in the option. Possibilities are  listed in the
   settings.py  file:}
 \begin{itemize}
-\item{slurm  as  implemented in  cuelebre}
-\item{pbs  as  implemented  in   garibaldi.scripps.edu}
-\item{pbs\_ib   infiniband,  as implemented  in  garibaldi.scripps.edu}
-\item{svgd, as  implemented  in svgd.cesga.es}
+\item{slurm}
+\item{pbs}
+\item{pbs\_ib   infiniband}
+\item{svgd}
 \end{itemize}
 \end{itemize}
 \end{itemize}
 
-To summarize, the following command should work in the most complex case,
-run.sh -p gpcr.pdb -l lig --waters hoh --alo alo --cho cho
+To summarize, the following command should work for the most complex case,
+run.py -p gpcr.pdb -l lig --waters hoh --alo alo --cho cho
 
 \section*{Running with queues}
-$\approx$ 90\% of the time you will  want to use some queueing system. We
+$\approx$ 90\% of the time you will  want to use some queuing system. We
 deal with queue systems tweaks as we stumble into them and it's out of
 our scope to  cover them all.  If  you take a look at  the source code
 dir, you'll found some  files called ``run\_pbs.sh'', ``run\_svgd.sh''
@@ -380,7 +381,7 @@ clashes and so on exist on your system).
 
 To do this, use the --debug option, like:
 \begin{Verbatim}
-run.sh -p gpcr.pdb -l lig --waters hoh --debug 
+run.py -p gpcr.pdb -l lig --waters hoh --debug 
 \end{Verbatim}
 
 If everythings works fine, you will see the list of output directories
@@ -454,8 +455,6 @@ Equilibration  & Protein Heavy Atoms & 1000	     & 0.5\\
 \label{tab:equilibration}
 \end{table}
 % $ kJ *mol^{-1}*nm^{-2}$	ns
-
-
 
 In this folder you will find several files related to this simulation:
 
