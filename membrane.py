@@ -1,5 +1,4 @@
 import gromacs
-
 import os
 
 class Membrane(object):
@@ -12,10 +11,10 @@ class Membrane(object):
         else:
             self.pdb = kwargs["pdb"]
 
-        self.bilayer_x = 61.842 # xbilayer
-        self.bilayer_y = 61.842 # ybilayer
+        self.bilayer_x  =  61.842 # xbilayer
+        self.bilayer_y  =  61.842 # ybilayer
         self.bilayer_zw = 154.053 # hbilayerw i.e. with waters
-        self.bilayer_z = 57.78 # zbilayer i.e. without waters
+        self.bilayer_z  =  57.78  # zbilayer i.e. without waters
         self.set_nanom()
 
     def set_nanom(self):

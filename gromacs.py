@@ -28,6 +28,7 @@ class Gromacs(object):
     def set_membrane_complex(self, value):
         '''Sets the monomer object'''
         self._membrane_complex = value
+
     def get_membrane_complex(self):
         return self._membrane_complex
     membrane_complex = property(get_membrane_complex, set_membrane_complex)
@@ -76,7 +77,10 @@ class Gromacs(object):
         charge = 0
         for line in err.split("\n"):
             if "total charge" in line:
-                charge = abs(int(float(line.split()[-1])))
+#In gromacs 4.6.5 the charge is not displayed in scientific notation.
+# so this will result in giving a charge of 5, for a charge of 5.99999
+#                charge = abs(int(float(line.split()[-1])))
+                charge = abs(int(round(float(line.split()[-1]))))
                 break
 
         self.membrane_complex.complex.negative_charge = 0

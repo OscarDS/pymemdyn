@@ -191,6 +191,9 @@ if __name__ == "__main__":
         default = settings.QUEUE)
     parser.add_argument('--debug',
         action="store_true")
+#    parser.add_argument('--clean',
+#                        )
+    
     args = parser.parse_args()
 
     if not (os.path.isdir(args.own_dir)):
