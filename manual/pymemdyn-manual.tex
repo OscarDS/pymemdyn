@@ -30,7 +30,7 @@
 \makeatother						% End definition
 
 \title{py-MEMdyn \\ 
-\large \vspace*{-10pt}Python Membrane Dynamics\vspace*{10pt}}
+\large \vspace*{-10pt}python MEMbrane dynamics\vspace*{10pt}}
 
 % Define a new command that prints the author(s) only
 \makeatletter						% Begin definition
@@ -39,7 +39,6 @@
 \makeatother						% End definition
 
 \author{%
-\textit{Python - Membrane Dynamics} \\
 A Python library for Molecular Dynamics simulations in biological membranes\\
 Manual V. 1.1 \\
 Xabier Bello, Mauricio Esguerra, David Rodriguez, Hugo Guti\'{e}rrez de Ter\'{a}n \\
@@ -262,17 +261,22 @@ accordingly.
   Gromacs is  installed in your  system. To do  this you will  need to
   edit the settings.py file with any text editor (``vi'' and ``emacs''
   are common options in the unix environment). Make sure that only one
-  line    is    uncommented,    looking    like:    GROMACS\_PATH    =
-  /opt/gromacs405/bin Provided that in  your case gromacs is installed
-  in /opt. The  program will prepend this line to  the binaries names,
-  so  calling  ``/opt/gromacs405/bin/grompp''  should  point  to  that
-  binary.}
+  line    is    uncommented, it should look  like:
+\lstset{language=python, frame=single}
+\fvset{frame=single, fontfamily=courier, fontsize=\small}
+\begin{Verbatim}
+GROMACS_PATH  = /opt/gromacs4.6.5/bin 
+\end{Verbatim}
+Provided that in  your case gromacs is installed in  /opt. The program
+will   prepend  this   line  to   the  binaries   names,  so   calling
+``/opt/gromacs4.6.5/bin/grompp'' should point to that binary.}
 
 \item{Similarly, in that file you specify which queuing system you are
-  using.  We will assume that you  will use ``slurm'', but you can use
-  any of the possible options by  uncommenting the one that best suits
-  your system.  You can also choose  not to use any  queuing system to
-  run pymemdyn for testing in standalone in your desktop.}
+  going  to submit  your dynamics  runs to.   We assume  you will  use
+  ``slurm'',  but  you  can  use   any  of  the  possible  options  by
+  uncommenting  the one  that best  suits your  system.  You  can also
+  choose not to  use any queuing system to  run \textbf{py-MEMdyn} for
+  testing in standalone in your desktop.}
 \end{enumerate}
 
 \begin{itemize}
@@ -343,10 +347,13 @@ run.py  -p gpcr.pdb -l lig
 \end{itemize}
 \end{itemize}
 
-To summarize, the following command should work for the most complex case,
+\noindent To summarize, the following command should work for the most complex case:
+\begin{Verbatim}
 run.py -p gpcr.pdb -l lig --waters hoh --alo alo --cho cho
+\end{Verbatim}
 
-\section*{Running with queues}
+
+\section*{ - Running with queues}
 $\approx$ 90\% of the time you will  want to use some queuing system. We
 deal with queue systems tweaks as we stumble into them and it's out of
 our scope to  cover them all.  If  you take a look at  the source code
@@ -491,7 +498,7 @@ In the "logs" subfolder, you will find the log files of mdrun:
 - eqCA.log                   # log of the stage with restrained C-alfa atoms of the receptor
 \end{Verbatim}
 
-\section*{ - TIPS}
+\section*{ - Tips \& Tricks}
 \begin{itemize}
 \item{If you want to configure a .tpr input file for production phase, you
 can use the  template 'prod.mdp' file by introducing  the number steps
@@ -503,8 +510,10 @@ grompp -f prod.mdp -c confout.gro -p topol.top -n index.ndx -o topol_prod.tpr
 }
 
 \item{If  you  want  to  create  a  PDB file  of  your  system  after  the
-equilibration, with the receptor centered in the box, type: echo 1 0 |
-trjconv  -pbc mol -center  -ur compact  -f confout.gro  -o confout.pdb
+equilibration, with the receptor centered in the box, type: 
+\begin{Verbatim}
+echo 1 0 | trjconv  -pbc mol -center  -ur compact  -f confout.gro  -o confout.pdb
+\end{Verbatim}
 NOTE: these tips work for GROMACS version 4.0.5.}
 \end{itemize}
 

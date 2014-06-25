@@ -27,16 +27,15 @@ ewald_rtol          =  1e-5      ; relative accuracy of direct/reciprocal space
 optimize_fft        =  yes
 
 Tcoupl              =  nose-hoover ; thermostat
-tau_t               =  0.5   0.5
-tc-grps             =  Protein Non-Protein
-ref_t               =  310   310  
+tau_t               =  0.1   0.1  0.1      
+tc-grps             =  membr  wation protlig
+ref_t               =  310   310   310     
 
 Pcoupl              =  Parrinello-Rahman ; barostat
 tau_p               =  2.0          2.0
 compressibility     =  4.5e-5       4.5e-5
 ref_p               =  1.0          1.0
 pcoupltype          =  semiisotropic 
-refcoord_scaling    = com
 
 gen_vel             =  yes
 gen_temp            =  310
