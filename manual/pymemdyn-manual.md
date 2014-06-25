@@ -7,7 +7,7 @@ al. (2011) @rodriguez2011, and is implemented in the web-based service
 for modeling and simulation of GPCR’s available at
 <http://gpcr-modsim.org>.
 
- - Description {#description .unnumbered}
+ - Description 
 ==============
 
 The fully automated pipeline available by using **py-MEMdyn** allows any
@@ -50,7 +50,7 @@ The ease of use, flexibility and public availability of the
 **py-MEMdyn** library makes it a unique tool for researchers in the GPCR
 field interested in exploring dynamic processes of these receptors.
 
- - Installation {#installation .unnumbered}
+ - Installation 
 ===============
 
 **py-MEMdyn** is a python library that can be used in any unix platform
@@ -262,7 +262,7 @@ To install **py-MEMdyn** follow these steps:
 To summarize, the following command should work in the most complex
 case, run.sh -p gpcr.pdb -l lig –waters hoh –alo alo –cho cho
 
-Running with queues {#running-with-queues .unnumbered}
+Running with queues 
 ===================
 
 $\approx$ 90% of the time you will want to use some queueing system. We
@@ -288,7 +288,7 @@ Now we just launch this script with:
 and wait for the results. Note that we launch 1 process, but flag the
 run as mpi with reservation of 8 cores in SVGD queue.
 
- - Debugging {#debugging .unnumbered}
+ - Debugging 
 ============
 
 If you are to set up a new system, it is a good idea to just run a few
@@ -350,7 +350,7 @@ The last assignment is the one that runs. NOTE that you must know what
 you do, otherwise you might have crashes in the code if needed files to
 run intermediate stages are missing!
 
- - Output {#output .unnumbered}
+ - Output 
 =========
 
 The performed equilibration includes the following stages:
@@ -400,7 +400,7 @@ In this folder you will find several files related to this simulation:
     - eq_{force_constant}.log    # log of stages with restrained heavy atoms of the receptor
     - eqCA.log                   # log of the stage with restrained C-alfa atoms of the receptor
 
- - TIPS {#tips .unnumbered}
+ - TIPS 
 =======
 
 -   If you want to configure a .tpr input file for production phase, you
