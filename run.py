@@ -19,17 +19,17 @@ class Run(object):
     #This is a dummy
     def __init__(self, pdb, *args, **kwargs):
         '''
-        A "Run()" of molecular dynamics MUST be provided with a "pdb"
+        A molecular dynamics "Run()"  MUST be given a "pdb"
         
-        This class try to init a full complex to send to simulation. Given
-        a bunch of molecules (protein, ligand, other ligand, waters, ...), 
+        This class tries to initialize a full complex to send to simulation. Given
+        a set of molecules (protein, ligand, other ligand, waters, ...), 
         this class would try to build a full embedded-in-membrane complex.
 
-        This complex are stored in self.g (it is a "Gromacs" object), and thus
+        The complex is stored in self.g (a "Gromacs" object), and thus
         can be 'runned' through g.recipe and g.run_recipe procedure. See
-        gromacs.py for more on this.
+        gromacs.py for more information.
 
-        Here is also created the queue system to use in certain steps.'''
+        The queueing system is also created here to be used in certain steps.'''
 
         self.pdb = pdb
         self.own_dir = kwargs.get("own_dir") or ""
@@ -80,7 +80,7 @@ class Run(object):
 
         self.g = gromacs.Gromacs(membrane_complex = full_complex)
 
-        # Note that if not provided in command line, self.queue is set in
+        # NOTE: If it's not provided in command line, self.queue is set in
         # settings.py
         if self.queue:
             if self.queue == "slurm":
