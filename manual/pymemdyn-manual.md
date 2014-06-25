@@ -18,7 +18,7 @@ and thorough MD equilibration, as outlined in Figure [fig:pipeline].
 ![Pipeline of the process followed to embed a G-protein Coupled Receptor
 into a cell membrane made of a POPC
 (Palmitoyl-Oleoyl-Phosphatidyl-Choline) phospholipid
-bilayer.](pipeline.png)
+bilayer.](raw/master/manual/pipeline.png)
 
 [fig:pipeline]
 
