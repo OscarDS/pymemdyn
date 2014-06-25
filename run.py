@@ -149,7 +149,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description = textwrap.dedent('''\
-    == This script runs a Molecular Dynamic with a PDB. ==
+    == Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
     '''))
 
     parser.add_argument('-b',
@@ -177,17 +177,17 @@ if __name__ == "__main__":
             its itp and its force field.")
     parser.add_argument('--waters',
         dest="waters",
-        help = "Crystalized water molecules file name without extensions.")
+        help = "Crystalized water molecules. File name without extension.")
     parser.add_argument('--ions',
         dest="ions",
-        help = "Crystalized ions file name without extensions.")
+        help = "Crystalized ions file name without extension.")
     parser.add_argument('--cho',
         dest="cho",
         help = "Crystalized cholesterol molecules file name\
-            without extensions.")
+            without extension.")
     parser.add_argument('-q',
         dest = "queue",
-        help = "Queue system to use (slurm, pbs, pbs_ib and svgd supported)",
+        help = "Queueing system to use (slurm, pbs, pbs_ib and svgd supported)",
         default = settings.QUEUE)
     parser.add_argument('--debug',
         action="store_true")
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     f.close()
 
     if args.debug:
-        logging.basicConfig(filename='GROMACS.log', level=logging.DEBUG)
+        logging.basicConfig(filename='GROMACS_debug.log', level=logging.DEBUG)
     else:
         logging.basicConfig(filename='GROMACS.log',
             format='%(asctime)s %(message)s',

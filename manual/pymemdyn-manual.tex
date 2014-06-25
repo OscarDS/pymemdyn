@@ -175,22 +175,31 @@ git clone https://username@bitbucket.org/gpcrmodsim/pymemdyn.git
 Make sure to change \textit{username} to the one you have created 
 at bitbucket.}
 
-\item{The previous  command will create a  \textit{pymemdyn} directory
-  which you will  have to tell your operating system  how to find. You
-  achieve this by declaring the location of the directory in a .bashrc 
-file or .cshrc file in your home folder. An example of what you will 
-have to include in your .bashrc file follows:
+\item{The previous  command will create a  \textit{pymemdyn} directory.
+You now have to tell your operating system how to find that folder. You
+achieve this by declaring the location of the directory in a .bashrc 
+file or .cshrc file in your home folder. 
+An example of what you will  have to include in your .bashrc file follows:
 \begin{Verbatim}
 export PYMEMDYN=/home/username/software/pymemdyn
 export PATH=$PYMEMDYN:$PATH
 \end{Verbatim}
-}
+or if your shell is csh then in your .cshrc file you can add:
+\begin{Verbatim}
+setenv PYMEMDYN /home/username/software/pymemdyn
+set path = ($path $PYMEMDYN)
+\end{Verbatim}
+
+Notice that I have cloned \textit{pymemdyn} in the software folder in 
+my home folder, you will have to adapt this to wherever it is that you downloaded
+your \textit{pymemdyn} to.
+
 After including the route to your \textit{pymemdyn} directory in your
 .bashrc file make sure to issue the command:
 \begin{Verbatim}
 source .bashrc
 \end{Verbatim}
-or open a new terminal.
+or open a new terminal.\\
 
 To check if you have defined the route to the \textit{pymemdyn} 
 directory correctly try to run the main program called run.py in
@@ -204,7 +213,7 @@ usage: run.py [-h] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
               [--alo ALOSTERIC] [--waters WATERS] [--ions IONS] [--cho CHO]
               [-q QUEUE] [--debug]
 
-== This script runs a Molecular Dynamic with a PDB. ==
+== Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
 
 optional arguments:
   -h, --help       show this help message and exit
@@ -218,13 +227,15 @@ optional arguments:
   --alo ALOSTERIC  Name of the alosteric interaction, without extension. Three
                    files must be present along with the molecule pdb: the
                    alosteric, its itp and its force field.
-  --waters WATERS  Crystalized water molecules file name without extensions.
-  --ions IONS      Crystalized ions file name without extensions.
+  --waters WATERS  Crystalized water molecules. File name without extension.
+  --ions IONS      Crystalized ions file name without extension.
   --cho CHO        Crystalized cholesterol molecules file name without
-                   extensions.
-  -q QUEUE         Queue system to use (slurm, pbs, pbs_ib and svgd supported)
+                   extension.
+  -q QUEUE         Queueing system to use (slurm, pbs, pbs_ib and svgd
+                   supported)
   --debug
 \end{Verbatim}
+}
 
 \item{Updates are very easy thanks to the git versioning system. Once \textbf{py-MEMdyn} 
 has been downloaded into its own \textit{pymemdyn} folder you just have to 
@@ -235,32 +246,32 @@ git pull
 \end{Verbatim}
 }
 
-\item{Make sure  that your gromacs  installation is understood  by the
-  program. To specify the path of  Gromacs, edit the file (with a text
-  editor, i.e..  the Unix program  ``vi'') settings.py, and  make sure
-  that  only one line  is uncommented,  looking like:  GROMACS\_PATH =
+\item{You can also clone older stable versions of \textbf{py-MEMdyn}. For example
+the stable version 1.0 which works well and has been tested extensively again gromacs
+version 4.0.5 can be cloned with:
+\begin{Verbatim}
+git clone https://username@bitbucket.org/gpcrmodsim/pymemdyn \
+--branch stable/1.0 --single-branch pymemdyn-1.0
+\end{Verbatim}
+Now you will have to change your .bashrc or .cshrc files in your home folder 
+accordingly.
+}
+
+\item{To make  sure that  your gromacs  installation is  understood by
+  \textbf{py-MEMdyn}  you  will need  to  specify  the path  to  where
+  Gromacs is  installed in your  system. To do  this you will  need to
+  edit the settings.py file with any text editor (``vi'' and ``emacs''
+  are common options in the unix environment). Make sure that only one
+  line    is    uncommented,    looking    like:    GROMACS\_PATH    =
   /opt/gromacs405/bin Provided that in  your case gromacs is installed
-  in /opt. The  program will prepend this line  to the binaries names,
+  in /opt. The  program will prepend this line to  the binaries names,
   so  calling  ``/opt/gromacs405/bin/grompp''  should  point  to  that
   binary.}
 
 \item{Similarly, in that file you specify which queuing system you are
-  using.  We will  assume that you will use  ``slurm'' at the cuelebre
-  cluster. In this case, you  will login there through the tunel. This
-  is a  2 stepwise process,  the first one  is only done ONCE  in your
-  session, since  it opens a tunel  that will only be  closed when you
-  disconect your  workstation from  the computer, which  is STEP  2 in
-  this  guide.  The second  is  justy an  ssh  through  this tunel  to
-  Cuelebre: ssh -l  username -p 7777 localhost Indeed  I have an alias
-  in my  .bash\_profile to make  this connection from  my workstation:
-  alias  tunel1='ssh -f  -N -l  hteran  -L 7777:cuelebre.inv.usc.es:22
-  grupomaside.usc.es  -p9222' alias  tunel2='ssh -l  username  -p 7777
-  localhost'
-
-And I simply run the commands ``tunel1'' (it will prompt for my passwd
-in grupomaside)  and thereafter  tunel2 (again it  will prompt  for my
-passwd in Cuelebre). It is a good idea to have both passwd the same to
-avoid confusions}
+  using.  We will assume that you  will use ``slurm'', but you can use
+  any of the possible options by  uncommenting the one that best suits
+  your system.}
 \end{enumerate}
 
 \begin{itemize}
@@ -350,12 +361,14 @@ looks like: . .. A2a.pdb run\_svgd.sh And run\_svgd.sh looks like:
 module   load  python/2.7.3
 module   load gromacs/4.0.7
 python ~/bin/pymoldyn/run.py  -p  a2a.pdb 
+\end{Verbatim}
 
 Now  we  just launch this script with: 
-qsub -l arch=amd,num_proc=1,s_rt=50:00:00,s_vmem=1G,h_fsize=1G -pe mpi 8
-run_svgd.sh and wait  for the results. Note that  we launch 1 process,
-but flag the run as mpi with reservation of 8 cores in SVGD queue.
+\begin{Verbatim}
+qsub -l arch=amd,num_proc=1,s_rt=50:00:00,s_vmem=1G,h_fsize=1G -pe mpi 8 run_svgd.sh 
 \end{Verbatim}
+and wait  for the results. Note that  we launch 1 process,
+but flag the run as mpi with reservation of 8 cores in SVGD queue.
 
 \section*{ - Debugging} 
 If you are to set up a new system, it is a good idea to just
