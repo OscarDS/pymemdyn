@@ -125,7 +125,8 @@ class Gromacs(object):
 
         #This makes the group protlig
         n_group += 1
-        input += "1 || r LIG || r ALO\n"
+#        input += "1 || r LIG || r ALO\n"
+        input += "r PROTEIN || r LIG || r ALO\n"
         input += "name {0} protlig\n".format(n_group)
 
         #This makes the membrane group as membr
