@@ -1,7 +1,7 @@
 CONGRATULATIONS!!
 
- You have performed a MD equilibration of your receptor, including lipids, water molecules and counterions.
-If you want more technical details see the reference [1].
+You have performed a MD equilibration of your receptor, including lipids, water molecules and counterions.
+If you want more technical details see reference [1].
 
 The performed equilibration includes the following stages:
 

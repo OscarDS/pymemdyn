@@ -105,9 +105,23 @@ class Gromacs(object):
                                              "options": kwargs,
                                              "input": "q\n"})
 
+#        for line in out.split("\n"):
+#            if "atoms" in line:
+#                return [line for line in out.split('\n') if line.strip()]
+#                systemparts = [line]
+#                print len(systemparts)
+#                return True
+#        return False
+
+
+# This part of the code works but it's dependent on having the
+# group Water_and_ions as the last one in the list.
+# A permament "fix" would be to count how many split lines have the "atoms"
+# word on it and assign it to self.n_groups
         for line in out.split("\n"):
-            if "Other" in line and "atoms" in line:
+            if "Water_and_ions" in line and "atoms" in line:
                 self.n_groups = int(line.split()[0])
+                print line.split()[-5]
                 return True
         return False
 
@@ -117,24 +131,28 @@ class Gromacs(object):
 
         if not (self.get_ndx_groups(**kwargs)): return False
 
-        n_group = self.n_groups + 1
+        n_group = self.n_groups + 1 
 
-        #This makes the (always present) group wation
-        input =  "r SOL || r HOH || atom Cl* || atom Na*\n"
+        #Create the "wation" group (always present)
+        input =  " \"SOL\" | \"HOH\" | r Cl* | r Na* \n"
         input += "name {0} wation\n".format(n_group)
+#        print n_group
+#        print "{0}".format(input)
 
-        #This makes the group protlig
+        #Create the "protlig" group
         n_group += 1
-#        input += "1 || r LIG || r ALO\n"
-        input += "r PROTEIN || r LIG || r ALO\n"
+#        input += "1 || r LIG || r ALO\n"                # LEGACY CODE for gromacs 4.0.5
+        input += " \"Protein\" | r LIG | r ALO \n"
         input += "name {0} protlig\n".format(n_group)
+#        print "{0}".format(input)
 
-        #This makes the membrane group as membr
+        #Create the "membr" group
         n_group += 1
-        input += "r POP || r CHO || r LIP\n"
+        input += " r POP | r CHO | r LIP \n"
         input += "name {0} membr\n".format(n_group)
+#        print "{0}".format(input)
 
-        #This make a separate group for each chain (if more than one)
+        #This makes a separate group for each chain (if more than one)
         if type(self.membrane_complex.complex.monomer) == protein.Dimer:
             for chain in self.membrane_complex.complex.monomer.chains:
                 #points = {'A': [1, 4530], 'B': [4532, 9061]}
@@ -151,7 +169,7 @@ class Gromacs(object):
             pass
         input += "q\n"
 
-        #Now the wrap itself
+        #Now the wrapper itself
         out, err = self.wrapper.run_command({"gromacs": "make_ndx",
                                              "options": kwargs,
                                              "input": input})
