@@ -28,6 +28,6 @@ QUEUE = ""
 #QUEUE = "pbs_ib"
 #QUEUE = "svgd"
 
-QUEUE_NUM_PROCS = 8
+QUEUE_NUM_PROCS = 16
 
 QUEUE_MAX_TIME = "5:00:00"
