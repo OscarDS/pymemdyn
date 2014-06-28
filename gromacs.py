@@ -647,7 +647,8 @@ class Wrapper(object):
 
     def _mode_grompp(self, kwargs):
         '''_mode_grompp: Wrap the grompp command options'''
-        command = ["-c", self._setDir(kwargs["src2"]),
+        command = ["-maxwarn", " 2",
+                   "-c", self._setDir(kwargs["src2"]),
                    "-p", self._setDir(kwargs["top"]),
                    "-po", self._setDir("mdout.mdp")]
         if "index" in kwargs.keys():
