@@ -1,5 +1,8 @@
 import os
 
+##########################################################################
+#                 Initialization                                         #
+##########################################################################
 class BasicInit(object):
     def __init__(self, **kwargs):
         # First we have to make a list of ordered steps
