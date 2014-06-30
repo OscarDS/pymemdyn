@@ -3,7 +3,7 @@ setting up the simulation, via Molecular Dynamics (MD), of G-protein
 Coupled Receptors (GPCR’s) embedded in a cell membrane. The protocol can
 be adapted to insert other transmembrane proteins, not only GPCR’s. The
 library has been adapted from that described in Gutiérrez de Terán et
-al. (2011) @rodriguez2011, and is implemented in the web-based service
+al. (2011) [1], and is implemented in the web-based service
 for modeling and simulation of GPCR’s available at
 <http://gpcr-modsim.org>.
 
@@ -13,14 +13,12 @@ for modeling and simulation of GPCR’s available at
 The fully automated pipeline available by using **py-MEMdyn** allows any
 researcher, without prior experience in computational chemistry, to
 perform an otherwise tedious and complex process of membrane insertion
-and thorough MD equilibration, as outlined in Figure [fig:pipeline].
+and thorough MD equilibration, as outlined in Figure 1.
 
 ![Pipeline of the process followed to embed a G-protein Coupled Receptor
 into a cell membrane made of a POPC
 (Palmitoyl-Oleoyl-Phosphatidyl-Choline) phospholipid
 bilayer.](raw/master/manual/pipeline.png)
-
-[fig:pipeline]
 
 In the simplest scenario, only the receptor structure is considered. In
 such case the GPCR is automatically surrounded by a pre-equilibrated
@@ -56,31 +54,31 @@ field interested in exploring dynamic processes of these receptors.
 **py-MEMdyn** is a python library that can be used in any unix platform
 provided that the following dependencies are installed:
 
--   <span>git (for downloading)</span>
+-   git (for downloading)
 
--   <span>Python 2.7</span>
+-   Python 2.7
 
--   <span>Gromacs 4.0.5 for version 1.0</span>
+-   Gromacs 4.0.5 for version 1.0
 
--   <span>Gromacs 4.6.5 for version 1.1</span>
+-   Gromacs 4.6.5 for version 1.1
 
--   <span>A queuing system: although not strictly required, this is
+-   A queuing system: although not strictly required, this is
     highly advisable since an MD simulation of 2.5 nanoseconds will be
     performed. However, if only membrane insertion and energy
     minimization is requested, this requirement can be avoided.
     Currently, the queuing systems supported include Slurm and
-    PBS.</span>
+    PBS.
 
-**py-MEMdyn** is hosted in a bitbucket repository at:\
+**py-MEMdyn** is hosted in a bitbucket repository at:
 
-<https://bitbucket.org/gpcrmodsim/pymemdyn.git>\
+<https://bitbucket.org/gpcrmodsim/pymemdyn.git>
 
 You can download any version of **py-MEMdyn** by cloning the repository
-to your local machine using git.\
+to your local machine using git.
 
 You will need to create a free personal account at bitbucket and send
 and e-mail to: [gpcruser@gmail.com](gpcruser@gmail.com) and you will be
-given access to the free repository.\
+given access to the free repository.
 
 To install **py-MEMdyn** follow these steps:
 
@@ -166,7 +164,7 @@ To install **py-MEMdyn** follow these steps:
     Now you will have to change your .bashrc or .cshrc files in your
     home folder accordingly.
 
-5.  <span>To make sure that your gromacs installation is understood by
+5.  To make sure that your gromacs installation is understood by
     **py-MEMdyn** you will need to specify the path to where Gromacs is
     installed in your system. To do this you will need to edit the
     settings.py file with any text editor (“vi” and “emacs” are common
@@ -174,14 +172,14 @@ To install **py-MEMdyn** follow these steps:
     uncommented, looking like: GROMACS\_PATH = /opt/gromacs405/bin
     Provided that in your case gromacs is installed in /opt. The program
     will prepend this line to the binaries names, so calling
-    “/opt/gromacs405/bin/grompp” should point to that binary.</span>
+    “/opt/gromacs405/bin/grompp” should point to that binary.
 
-6.  <span>Similarly, in that file you specify which queuing system you
+6.  Similarly, in that file you specify which queuing system you
     are using. We will assume that you will use “slurm”, but you can use
     any of the possible options by uncommenting the one that best suits
-    your system.</span>
+    your system.
 
--   <span>COMPULSORY! Option -p: In the simplest case, **py-MEMdyn**
+-   COMPULSORY! Option -p: In the simplest case, **py-MEMdyn**
     only needs a pdb file with the receptor. This should be readable by
     Gromacs (i.e., accomplish the PDB standards, see the GROMACS manual
     for details) and accessed from the working directory. And as the
@@ -192,72 +190,72 @@ To install **py-MEMdyn** follow these steps:
     set by default to that where the program is invoked, and the
     repository (REPO\_DIR) is specified in the settings.py file (by
     default, templates/ subdirectory in the **py-MEMdyn**
-    instalation).</span>
+    instalation).
 
--   <span>Considering non-protein elements: ligand(s), structural
+-   Considering non-protein elements: ligand(s), structural
     waters, structural lipids, cholesterol molecules, explicit
-    ions.</span>
+    ions.
 
-    -   <span>Option -l (specifying an orthosteric ligand). Lets assume
+    -   Option -l (specifying an orthosteric ligand). Lets assume
         that we have docked a ligand in the orthosteric binding site. We
         can include this in the simulation as long as we have generated
         the requested library and parameter files in gromacs. Thus, 3
         files are needed, that should share a root name (i.e.,
-        lig):</span>
+        lig):
 
-        -   <span>lig.pdb: a standard pdb file where the atom names are
+        -   lig.pdb: a standard pdb file where the atom names are
             explicitly considered in the itp and ff files (see
-            bellow)</span>
+            bellow)
 
-        -   <span>lig.itp: we refer to as the library file, and collects
+        -   lig.itp: we refer to as the library file, and collects
             the atom charges and the bonded parameters (i.e., bonds,
             angles, dihedrals and torsions) as derived with the OPLS
-            forcefield in the Gromacs standard nomenclature.</span>
+            forcefield in the Gromacs standard nomenclature.
 
-        -   <span>lig.ff: we will refer to as the “force-field file”,
+        -   lig.ff: we will refer to as the “force-field file”,
             which collects the OPLS2005 atom types and non-bonded
             parameters in the Gromacs standard nomenclature. For the
             users used to Gromacs, this file is generally non-existing
             and the parameters listed here are merged onto the standard
             forcefield file in gromacs (i.e. ffoplsaa.itp). But in our
-            protocol, this is needed as a separate file.</span> run.sh
-            -p gpcr.pdb -l lig
+            protocol, this is needed as a separate file.
+            run.py -p gpcr.pdb -l lig
 
-    -   <span>Option –alo (specifying an allosteric ligand): This should
+    -   Option –alo (specifying an allosteric ligand): This should
         be treated exactly the same as the ligand: if the allosteric
         modulator is called allo, we need to have alo.pdb, alo.itp and
-        alo.ff.</span> run.sh -p gpcr.pdb –alo alo
+        alo.ff. run.sh -p gpcr.pdb –alo alo
 
-    -   <span>Option –water (specifying structural waters): If
+    -   Option –water (specifying structural waters): If
         structural waters are present (i.e., coming from an x-ray
         structure) these should be included as a separate pdb file (i.e.
         hoh.pdb). The corresponding itp file (hoh.itp) is also needed,
         but in this case the ff file is avoided as the parameters are in
-        the standard forcefield.</span>
+        the standard forcefield.
 
-    -   <span>Option –ions (specifying structural ions) If we want to
+    -   Option –ions (specifying structural ions) If we want to
         consider structural ions (i.e., the sodium ion in the A2A high
         resolution structure 4EIY), we should name the needed files i.e.
         ion-local and provide the same information as in the case of
-        structural waters: ion-local.pdb and ion-local.itp.</span>
+        structural waters: ion-local.pdb and ion-local.itp.
 
-    -   <span>Option –cho (specifying cholesterol molecules): As in the
+    -   Option –cho (specifying cholesterol molecules): As in the
         previous case, the pdb and itp files are needed (i.e., cho.pdb
-        and cho.itp).</span>
+        and cho.itp).
 
-    -   <span>Option –queue: if other queue than the default one,
+    -   Option –queue: if other queue than the default one,
         indicated in the settings.py, is needed (in our example, slurm
         in cuelebre) this should be indicated in the option.
-        Possibilities are listed in the settings.py file:</span>
+        Possibilities are listed in the settings.py file:
 
-        -   <span>slurm as implemented in cuelebre</span>
+        -   slurm as implemented in cuelebre
 
-        -   <span>pbs as implemented in garibaldi.scripps.edu</span>
+        -   pbs as implemented in garibaldi.scripps.edu
 
-        -   <span>pbs\_ib infiniband, as implemented in
-            garibaldi.scripps.edu</span>
+        -   pbs\_ib infiniband, as implemented in
+            garibaldi.scripps.edu
 
-        -   <span>svgd, as implemented in svgd.cesga.es</span>
+        -   svgd, as implemented in svgd.cesga.es
 
 To summarize, the following command should work in the most complex
 case, run.sh -p gpcr.pdb -l lig –waters hoh –alo alo –cho cho
@@ -318,19 +316,19 @@ was written in your output (generally eq/mdrun.log and look for “LINCS
 WARNING”). What if you want to check partial functions of pymoldyn? In
 order to do this you must edit the file run.py and change:
 
-1.  <span>Line 211 comment with “\#” this line [that states:
+1.  Line 211 comment with “\#” this line [that states:
     run.clean()], which is the one that deletes all the output files
-    present in the working directory.</span>
+    present in the working directory.
 
-2.  <span>In the last two lines of this file, comment (add a “\#”) the
-    line: run.moldyn()</span>
+2.  In the last two lines of this file, comment (add a “\#”) the
+    line: run.moldyn()
 
-3.  <span>And uncomment (remove the “\#”) the line:
-    run.light\_moldyn()</span>
+3.  And uncomment (remove the “\#”) the line:
+    run.light\_moldyn()
 
-4.  <span>In the line 140 and within that block (ligh\_moldyn) change
+4.  In the line 140 and within that block (ligh\_moldyn) change
     the lines stating steps = [“xxxx”] and include only those steps that
-    you want to test, which should be within a list of strings.</span>
+    you want to test, which should be within a list of strings.
 
 For the sake of clarity, these have been subdivided in two lines:
 
@@ -410,12 +408,12 @@ In this folder you will find several files related to this simulation:
 
         grompp -f prod.mdp -c confout.gro -p topol.top -n index.ndx -o topol_prod.tpr
 
--   <span>If you want to create a PDB file of your system after the
+-   If you want to create a PDB file of your system after the
     equilibration, with the receptor centered in the box, type: echo 1 0
     | trjconv -pbc mol -center -ur compact -f confout.gro -o confout.pdb
-    NOTE: these tips work for GROMACS version 4.0.5.</span>
+    NOTE: these tips work for GROMACS version 4.0.5.
 
-<span>10</span> D. Rodríguez, A. Piñeiro, and H. Gutiérrez-de-Terán.
+1. D. Rodríguez, A. Piñeiro, and H. Gutiérrez-de-Terán.
 2011, Molecular dynamics simulations reveal insights into key structural
 elements of adenosine receptors. *Biochemistry*, **50**, 4194-4208.
 
