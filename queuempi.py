@@ -21,7 +21,7 @@ class NoQueue(Queue):
         super(NoQueue, self).__init__(self, *args, **kwargs)
         self.command = [self.sh]
 
-        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun")
+        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi")
 
     def make_script(self, workdir, options):
         '''binary is the executable
