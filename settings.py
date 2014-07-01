@@ -19,16 +19,16 @@ REPO_DIR = os.path.join(ROOT_DIR, "templates")
 #GROMACS_PATH = "/opt/cesga/gromacs-4.0.7/bin/"
 #GROMACS_PATH = "/opt/gromacs405/bin/"
 #GROMACS_PATH = "/home/apps/gromacs-4.6.5/bin/"
-GROMACS_PATH = "/software/apps/gromacs/4.6.3/g472/bin/"
-#GROMACS_PATH = "/sw/bin/"
+#GROMACS_PATH = "/software/apps/gromacs/4.6.3/g472/bin/"
+GROMACS_PATH = "/sw/bin/"
 
 #Set the queue to use. Look inside queue.py.
-#QUEUE = ""
-QUEUE = "slurm"
+QUEUE = ""
+#QUEUE = "slurm"
 #QUEUE = "pbs"
 #QUEUE = "pbs_ib"
 #QUEUE = "svgd"
 
-QUEUE_NUM_PROCS = 16
+QUEUE_NUM_PROCS = 8
 
 QUEUE_MAX_TIME = "23:50:00"

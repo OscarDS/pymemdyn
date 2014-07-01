@@ -69,7 +69,7 @@ class Gromacs(object):
         '''get_charge: Gets the total charge of a system using gromacs grompp command'''
         #wrapper = Wrapper()
 
-        out, err = self.wrapper.run_command({"gromacs": "grompp_mpi",
+        out, err = self.wrapper.run_command({"gromacs": "grompp",
                                              "options": kwargs})
 
         # Now we are looking for this line:
@@ -101,7 +101,7 @@ class Gromacs(object):
         '''get_ndx_groups: Run make_ndx and set the total number of groups found'''
         #wrapper = Wrapper()
 
-        out, err = self.wrapper.run_command({"gromacs": "make_ndx_mpi",
+        out, err = self.wrapper.run_command({"gromacs": "make_ndx",
                                              "options": kwargs,
                                              "input": "q\n"})
 
@@ -157,7 +157,7 @@ class Gromacs(object):
         input += "q\n"
 
         #Now the wrapper itself
-        out, err = self.wrapper.run_command({"gromacs": "make_ndx_mpi",
+        out, err = self.wrapper.run_command({"gromacs": "make_ndx",
                                              "options": kwargs,
                                              "input": input})
 
@@ -534,40 +534,39 @@ class Wrapper(object):
                    options = self._mode_mdrun(options))
             
         # Standard -f input -o output
-        if mode in ["pdb2gmx_mpi", "editconf_mpi", "grompp_mpi", "trjconv_mpi",
-                    "make_ndx_mpi", "genrestr_mpi", "g_energy_mpi"]:
+        if mode in ["pdb2gmx", "editconf", "grompp", "trjconv",
+                    "make_ndx", "genrestr", "g_energy"]:
             command.extend(self._common_io(src, tgt))
 
-            if (mode == "pdb2gmx_mpi"): #PDB2GMX
+            if (mode == "pdb2gmx"): #PDB2GMX
                 command.extend(self._mode_pdb2gmx(options))
-            if (mode == "editconf_mpi"): #EDITCONF
+            if (mode == "editconf"): #EDITCONF
                 command.extend(self._mode_editconf(options))
-            if (mode == "grompp_mpi"): #GROMPP
+            if (mode == "grompp"): #GROMPP
                 command.extend(self._mode_grompp(options))
-            if (mode == "trjconv_mpi"): #TRJCONV
+            if (mode == "trjconv"): #TRJCONV
                 command.extend(self._mode_trjconv(options))
-            if (mode == "make_ndx_mpi"): #MAKE_NDX
+            if (mode == "make_ndx"): #MAKE_NDX
                 pass
-            if (mode == "genrestr_mpi"): #GENRSTR
+            if (mode == "genrestr"): #GENRSTR
                 command.extend(self._mode_genrest(options))
-            if (mode == "g_energy_mpi"): #G_ENERGY
+            if (mode == "g_energy"): #G_ENERGY
                 pass
 
         else:
-            if (mode == "eneconv_mpi"): #ENECONV
+            if (mode == "eneconv"): #ENECONV
                 command.extend(self._mode_eneconv(options))
-            if (mode == "genbox_mpi"): #GENBOX
+            if (mode == "genbox"): #GENBOX
                 command.extend(self._mode_genbox(options))
-            if (mode == "genion_mpi"): #GENION
+            if (mode == "genion"): #GENION
                 command.extend(self._mode_genion(options))
-            if (mode == "g_rms_mpi"): #G_RMS
+            if (mode == "g_rms"): #G_RMS
                 command.extend(self._mode_g_rms(options))
-            if (mode == "tpbconv_mpi"): #TPBCONV
+            if (mode == "tpbconv"): #TPBCONV
                 command.extend(self._mode_tpbconv(options))
-            if (mode == "trjcat_mpi"): #TRJCAT
+            if (mode == "trjcat"): #TRJCAT
                 command.extend(self._mode_trjcat(options)) 
-            if (mode == "mdrun_mpi"): #MDRUN_SLURM
-#                command.extend(self._mode_mdrun(options))
+            if (mode == "mdrun"): #MDRUN_SLURM
                 pass
                 #command.extend(self._mode_mdrun(options))
 
@@ -679,7 +678,7 @@ class Wrapper(object):
         return ["-p", self._setDir(kwargs["top"]),
                 "-i", self._setDir("posre.itp"),
                 "-ignh", "-ff", "oplsaa", "-water", "spc"]
-
+    
     def _mode_tpbconv(self, kwargs):
         '''_mode_tpbconv: Wrap the tpbconv command options'''
         return ["-s", self._setDir(kwargs["src"]),
