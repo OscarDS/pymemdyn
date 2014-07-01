@@ -1,5 +1,8 @@
 import os
 
+##########################################################################
+#                 Initialization                                         #
+##########################################################################
 class BasicInit(object):
     def __init__(self, **kwargs):
         # First we have to make a list of ordered steps
@@ -14,7 +17,7 @@ class BasicInit(object):
 
         # And then we have to define each step
         self.recipe = \
-        {"pdb2gmx": {"gromacs": "pdb2gmx", #0
+        {"pdb2gmx": {"gromacs": "pdb2gmx_mpi", #0
           "options": {"src": "",
                       "tgt": "proteinopls.pdb",
                       "top": "protein.top"}},
@@ -24,14 +27,14 @@ class BasicInit(object):
          "concat": {"command": "concat",
           "options": {"src": "proteinopls.pdb",
                       "tgt": ""}},
-         "editconf": {"gromacs": "editconf", #2
+         "editconf": {"gromacs": "editconf_mpi", #2
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
                       "dist": ""}},
          "set_protein_size": {"command": "set_protein_size", #3
           "options": {"src": "proteinopls.pdb",
                       "dir": "xy"}},
-         "editconf2": {"gromacs": "editconf", #4
+         "editconf2": {"gromacs": "editconf_mpi", #4
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
                       "dist": ""}},
@@ -40,40 +43,40 @@ class BasicInit(object):
                       "dir": "z"}},
          "set_popc": {"command": "set_popc", #6
           "options": {"tgt": "popc.pdb"}},
-         "editconf3": {"gromacs": "editconf", #7
+         "editconf3": {"gromacs": "editconf_mpi", #7
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
                       "box": "",
                       "angles": ["90", "90", "120"],
                       "bt": "tric"}},
-         "editconf4": {"gromacs": "editconf", #8
+         "editconf4": {"gromacs": "editconf_mpi", #8
           "options": {"src": "popc.pdb",
                       "tgt": "popc.pdb",
                       "box": ""}},
          "make_topol": {"command": "make_topol",
           "options": {}}, #9
-         "editconf5": {"gromacs": "editconf", #10
+         "editconf5": {"gromacs": "editconf_mpi", #10
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
                       "translate": ["0", "0", "0"]}},
-         "genbox": {"gromacs": "genbox", #11
+         "genbox": {"gromacs": "genbox_mpi", #11
           "options": {"cp": "proteinopls.pdb",
                       "cs": "popc.pdb",
                       "tgt": "protpopc.pdb",
                       "top": "topol.top"}},
          "set_water": {"command": "set_water", #12
           "options": {"tgt": "water.pdb"}},
-         "editconf6": {"gromacs": "editconf", #13
+         "editconf6": {"gromacs": "editconf_mpi", #13
           "options": {"src": "water.pdb",
                       "tgt": "water.pdb",
                        "box": ""}},
-         "editconf7":{"gromacs": "editconf", #14
+         "editconf7":{"gromacs": "editconf_mpi", #14
           "options": {"src": "protpopc.pdb",
                        "tgt": "protpopc.pdb",
                        "box": "",
                        "angles": ["90", "90", "120"],
                        "bt": "tric"}},
-         "genbox2": {"gromacs": "genbox", #15
+         "genbox2": {"gromacs": "genbox_mpi", #15
           "options": {"cp": "protpopc.pdb",
                        "cs": "water.pdb",
                        "tgt": "tmp.pdb",
@@ -92,12 +95,12 @@ class BasicInit(object):
                        #"ffoplsaanb_mod.itp": "ffoplsaanb_mod.itp",
                        "ffoplsaabon_mod.itp": "ffoplsaabon_mod.itp",
                        "ffoplsaa_mod.itp": "ffoplsaa_mod.itp"}},
-         "grompp": {"gromacs": "grompp", #20
+         "grompp": {"gromacs": "grompp_mpi", #20
           "options": {"src": "steep.mdp",
                        "src2": "tmp.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}},
-         "trjconv": {"gromacs": "trjconv", #21
+         "trjconv": {"gromacs": "trjconv_mpi", #21
           "options": {"src": "tmp.pdb",
                        "src2": "topol.tpr",
                        "tgt": "tmp.pdb",
@@ -108,31 +111,31 @@ class BasicInit(object):
                        "src2": "tmp.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}}, #22
-         "genion": {"gromacs": "genion", #23
+         "genion": {"gromacs": "genion_mpi", #23
           "options": {"src": "topol.tpr",
                        "src2": "topol.top",
                        "tgt": "output.pdb",
                        "np": "",
                        "nn": ""},
           "input": "SOL\n"},
-         "grompp2": {"gromacs": "grompp", #24
+         "grompp2": {"gromacs": "grompp_mpi", #24
           "options": {"src": "steep.mdp",
                        "src2": "output.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}},
-         "trjconv2": {"gromacs": "trjconv", #25
+         "trjconv2": {"gromacs": "trjconv_mpi", #25
           "options": {"src": "output.pdb",
                        "src2": "topol.tpr",
                        "tgt": "output.pdb",
                        "trans": [],
                        "pbc": "mol"},
           "input": "0\n"},
-         "grompp3": {"gromacs": "grompp", #26
+         "grompp3": {"gromacs": "grompp_mpi", #26
           "options": {"src": "steep.mdp",
                        "src2": "output.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}},
-         "trjconv3": {"gromacs": "trjconv", #27
+         "trjconv3": {"gromacs": "trjconv_mpi", #27
           "options": {"src": "output.pdb",
                        "src2": "topol.tpr",
                        "tgt": "hexagon.pdb",
@@ -170,7 +173,7 @@ class LigandInit(BasicInit):
 
         self.steps.insert(9, "genrestr_lig")
         self.recipe["genrestr_lig"] =\
-            {"gromacs": "genrestr",
+            {"gromacs": "genrestr_mpi",
              "options": {"src": "",
                          "tgt": "posre_lig.itp",
                          "index": "ligand_ha.ndx",
@@ -179,7 +182,7 @@ class LigandInit(BasicInit):
 
         self.steps.insert(9, "make_ndx_lig")
         self.recipe["make_ndx_lig"] =\
-            {"gromacs": "make_ndx",
+            {"gromacs": "make_ndx_mpi",
              "options": {"src": "",
                          "tgt": "ligand_ha.ndx",
                          "ligand": True},
@@ -197,7 +200,7 @@ class LigandAlostericInit(LigandInit):
 
         self.steps.insert(9, "genrestr_alo")
         self.recipe["genrestr_alo"] =\
-            {"gromacs": "genrestr",
+            {"gromacs": "genrestr_mpi",
              "options": {"src": "",
                          "tgt": "posre_alo.itp",
                          "index": "alosteric_ha.ndx",
@@ -206,7 +209,7 @@ class LigandAlostericInit(LigandInit):
 
         self.steps.insert(9, "make_ndx_alo")
         self.recipe["make_ndx_alo"] =\
-            {"gromacs": "make_ndx",
+            {"gromacs": "make_ndx_mpi",
              "options": {"src": "",
                          "tgt": "alosteric_ha.ndx",
                          "alosteric": True},
@@ -261,13 +264,13 @@ class BasicEquilibration(object):
         self.steps = ["editconf", "make_ndx", "grompp", "set_stage_init",
                       "set_stage_init2", "mdrun"]
         self.recipe = {
-         "editconf": {"gromacs": "editconf", #0
+         "editconf": {"gromacs": "editconf_mpi", #0
           "options": {"src": "Rmin/confout.gro",
                       "tgt": "min.pdb"}},
          "make_ndx": {"command": "make_ndx", #1
           "options": {"src": "min.pdb",
                       "tgt": "index.ndx"}},
-         "grompp": {"gromacs": "grompp", #2
+         "grompp": {"gromacs": "grompp_mpi", #2
           "options": {"src": "Rmin/eq.mdp",
                       "src2": "min.pdb",
                       "top": "topol.top",
@@ -305,7 +308,7 @@ class LigandEquilibration(BasicEquilibration):
         super(LigandEquilibration, self).__init__(**kwargs)
         self.steps.insert(2, "genrestr")
         self.recipe["genrestr"] = \
-            {"gromacs": "genrestr",
+            {"gromacs": "genrestr_mpi",
              "options": {"src": "Rmin/topol.tpr",
                          "tgt": "protein_ca200.itp",
                          "index": "index.ndx",
@@ -317,7 +320,7 @@ class LigandAlostericEquilibration(LigandEquilibration):
         super(LigandAlostericEquilibration, self).__init__(**kwargs)
         self.steps.insert(2, "genrestr")
         self.recipe["genrestr"] = \
-            {"gromacs": "genrestr",
+            {"gromacs": "genrestr_mpi",
              "options": {"src": "Rmin/topol.tpr",
                          "tgt": "protein_ca200.itp",
                          "index": "index.ndx",
@@ -346,7 +349,7 @@ class BasicRelax(object):
                           "posres": [],
                           "mdp": "eq.mdp"}}
             self.recipe["grompp%d" % const] =\
-             {"gromacs": "grompp", #1, 4, 7, 10
+             {"gromacs": "grompp_mpi", #1, 4, 7, 10
               "options": {"src": os.path.join(tgt_dir, "eq.mdp"),
                           "src2": os.path.join(src_dir, "confout.gro"),
                           #top": os.path.join(tgt_dir, "topol.top"),
@@ -392,13 +395,13 @@ class BasicCARelax(object):
                           "tgt_dir": "eqCA",
                           "src_files": ["confout.gro"],
                           "repo_files": ["eqCA.mdp"]}},
-             "genrestr": {"gromacs": "genrestr", #1
+             "genrestr": {"gromacs": "genrestr_mpi", #1
               "options": {"src": "Rmin/topol.tpr",
                           "tgt": "posre.itp",
                           "index": "index.ndx",
                           "forces": ["200"] * 3},
               "input": "3\n"},
-             "grompp": {"gromacs": "grompp", #2
+             "grompp": {"gromacs": "grompp_mpi", #2
               "options": {"src": "eqCA/eqCA.mdp",
                           "src2": "eqCA/confout.gro",
                           "top": "topol.top",
@@ -440,31 +443,31 @@ class BasicCollectResults(object):
             "tar_it"]#,
             #"final_clean"] This is dangerous, could delete undesired files
         self.recipe = {"trjcat":
-            {"gromacs": "trjcat", #1
+            {"gromacs": "trjcat_mpi", #1
                 "options": {"dir1": "eq",
                     "dir2": "eqCA",
                     "name": "traj.xtc",
                     "tgt": "traj_EQ.xtc"},
                 "input": "c\n" * 6},
-            "trjconv": {"gromacs": "trjconv", #27
+            "trjconv": {"gromacs": "trjconv_mpi", #27
                 "options": {"src": "traj_EQ.xtc",
                      "src2": "topol.tpr",
                      "tgt": "traj_out.xtc",
                      "ur": "compact",
                      "pbc": "mol"},
                 "input": "1\n0\n"},
-            "eneconv": {"gromacs": "eneconv", #2
+            "eneconv": {"gromacs": "eneconv_mpi", #2
                 "options": {"dir1": "eq",
                     "dir2": "eqCA",
                     "name": "ener.edr",
                     "tgt": "ener_EQ.edr"},
                 "input": "c\n" * 6},
-            "g_rms": {"gromacs": "g_rms", #3
+            "g_rms": {"gromacs": "g_rms_mpi", #3
                 "options": {"src": "eq/topol.tpr",
                     "src2": "traj_EQ.xtc",
                     "tgt": "rmsd.xvg"},
                 "input": "4\n" * 2},
-            "eneconv": {"gromacs": "eneconv", #4
+            "eneconv": {"gromacs": "eneconv_mpi", #4
                 "options": {"dir1": "eq",
                     "dir2": "eqCA",
                     "name": "ener.edr",
@@ -517,7 +520,7 @@ class BasicCollectResults(object):
             "volume": "20\n"}
         for option, gro_key in options.iteritems():
             self.recipe[option] =\
-                {"gromacs": "g_energy",
+                {"gromacs": "g_energy_mpi",
                     "options": {"src": "ener_EQ.edr",
                         "tgt": "{0}.xvg".format(option),
                         "log": "{0}.log".format(option)},

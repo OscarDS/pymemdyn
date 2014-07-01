@@ -21,7 +21,7 @@ class NoQueue(Queue):
         super(NoQueue, self).__init__(self, *args, **kwargs)
         self.command = [self.sh]
 
-        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi")
+        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun")
 
     def make_script(self, workdir, options):
         '''binary is the executable
@@ -45,7 +45,8 @@ class Slurm(Queue):
             self.sh]
 
 #        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_slurm") #FOR CUELEBRE
-        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun") # FOR CSB
+#        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun") # FOR CSB
+        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") # FOR TRIOLITH
 
     def make_script(self, workdir, options):
         '''binary is the executable
@@ -55,8 +56,14 @@ class Slurm(Queue):
 #        sh.write("source /home/apps/gromacs-4.6.5/bin/GMXRC\n")
 #        sh.write("source /home/apps/bin/apps.sh\n")
 #        sh.write("module load openmpi-x86_64\n")
+
+# FOR TRIOLITH CLUSTER        
+#        sh.write("module load gromacs/4.6.3 \n")
+#        sh.write("module load python/2.7.6 \n")
+#        sh.write("module load openmpi/1.6.4-build1 \n")
         sh.write("cd %s\n" % workdir)
-        sh.write("%s -ntmpi 16 -ntomp 1  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
+#        sh.write("%s -ntmpi 16 -ntomp 1  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
+        sh.write("%s  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))        
         sh.close()
         os.chmod(self.sh, 0755)
 

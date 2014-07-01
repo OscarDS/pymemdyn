@@ -233,7 +233,7 @@ class BasicMinimization(object):
                       "src_files": ["topol.tpr"],
                       "tgt_dir": "Rmin",
                       "repo_files": ["eq.mdp"]}},
-         "mdrun": {"gromacs": "mdrun_mpi", #1
+         "mdrun": {"gromacs": "mdrun", #1
           "options": {"dir": "Rmin",
                       "src": "topol.tpr",
                       "tgt": "traj.trj",
@@ -287,7 +287,7 @@ class BasicEquilibration(object):
                                    "posre_ion.itp", "posre_lig.itp",
                                    "posre_alo.itp", "posre_cho.itp"],
                       "tgt_dir": "eq"}},
-         "mdrun": {"gromacs": "mdrun_mpi", #5
+         "mdrun": {"gromacs": "mdrun", #5
           "options": {"dir": "eq",
                       "src": "topol.tpr",
                       "tgt": "traj.trr",
@@ -358,7 +358,7 @@ class BasicRelax(object):
                           "index": "index.ndx"}}
             #TODO ese confout.gro de abaixo hai que copialo, non vale asi
             self.recipe["mdrun%d" % const] =\
-             {"gromacs": "mdrun_mpi", #2, 5, 8, 11
+             {"gromacs": "mdrun", #2, 5, 8, 11
               "options": {"dir": tgt_dir,
                           "src": "topol.tpr",
                           "tgt": "traj.trr",
@@ -407,7 +407,7 @@ class BasicCARelax(object):
                           "top": "topol.top",
                           "tgt": "eqCA/topol.tpr",
                           "index": "index.ndx"}},
-             "mdrun": {"gromacs": "mdrun_mpi", #3
+             "mdrun": {"gromacs": "mdrun", #3
               "options": {"dir": "eqCA",
                           "src": "topol.tpr",
                           "tgt": "traj.trr",
