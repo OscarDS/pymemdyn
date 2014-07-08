@@ -56,7 +56,8 @@ class Slurm(Queue):
 #        sh.write("source /home/apps/bin/apps.sh\n")
 #        sh.write("module load openmpi-x86_64\n")
         sh.write("cd %s\n" % workdir)
-        sh.write("%s -ntmpi 16 -ntomp 1  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
+#        sh.write("%s -ntmpi 16 -ntomp 1  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
+        sh.write("%s  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))        
         sh.close()
         os.chmod(self.sh, 0755)
 
