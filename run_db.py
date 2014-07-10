@@ -151,7 +151,7 @@ class Run(object):
             if getattr(self, sugar_type):
                 #Get the molecule to be added to the mix
                 base_model = getattr(self, sugar_type)
-                # Some molecules doesn't need itp nor ff (water and ions),
+                # Some molecules don't need itp nor ff (water and ions),
                 # Their constructors fill in with default if not provided.
                 # Here we check if the user provided the fields
                 kwargs = {"pdb": None, "itp": None, "ff": None}

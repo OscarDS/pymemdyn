@@ -2,7 +2,7 @@ import os
 
 class BasicInit(object):
     def __init__(self, **kwargs):
-        # First we have to make a list of ordered steps
+        # First we make a list of ordered steps
         self.steps = ["pdb2gmx", "set_itp", "concat", "editconf",
                       "set_protein_size", "editconf2", "set_protein_size2",
                       "set_popc", "editconf3", "editconf4", "make_topol",
@@ -12,92 +12,92 @@ class BasicInit(object):
                       "grompp", "trjconv", "get_charge", "genion", "grompp2",
                       "trjconv2", "grompp3", "trjconv3", "set_chains"]
 
-        # And then we have to define each step
+        # And then we define each step
         self.recipe = \
-        {"pdb2gmx": {"gromacs": "pdb2gmx", #0
+        {"pdb2gmx": {"gromacs": "pdb2gmx", #1
           "options": {"src": "",
                       "tgt": "proteinopls.pdb",
                       "top": "protein.top"}},
-         "set_itp": {"command": "set_itp", #1
+         "set_itp": {"command": "set_itp", #2
           "options": {"src": "protein.top",
                       "tgt": "protein.itp"}},
-         "concat": {"command": "concat",
+         "concat": {"command": "concat", #3
           "options": {"src": "proteinopls.pdb",
                       "tgt": ""}},
-         "editconf": {"gromacs": "editconf", #2
+         "editconf": {"gromacs": "editconf", #4
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
                       "dist": ""}},
-         "set_protein_size": {"command": "set_protein_size", #3
+         "set_protein_size": {"command": "set_protein_size", #5
           "options": {"src": "proteinopls.pdb",
                       "dir": "xy"}},
-         "editconf2": {"gromacs": "editconf", #4
+         "editconf2": {"gromacs": "editconf", #6
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
                       "dist": ""}},
-         "set_protein_size2": {"command": "set_protein_size", #5
+         "set_protein_size2": {"command": "set_protein_size", #7
           "options": {"src": "proteinopls.pdb",
                       "dir": "z"}},
-         "set_popc": {"command": "set_popc", #6
+         "set_popc": {"command": "set_popc", #8
           "options": {"tgt": "popc.pdb"}},
-         "editconf3": {"gromacs": "editconf", #7
+         "editconf3": {"gromacs": "editconf", #9
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
                       "box": "",
                       "angles": ["90", "90", "120"],
                       "bt": "tric"}},
-         "editconf4": {"gromacs": "editconf", #8
+         "editconf4": {"gromacs": "editconf", #10
           "options": {"src": "popc.pdb",
                       "tgt": "popc.pdb",
                       "box": ""}},
          "make_topol": {"command": "make_topol",
-          "options": {}}, #9
-         "editconf5": {"gromacs": "editconf", #10
+          "options": {}}, #11
+         "editconf5": {"gromacs": "editconf", #12
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
                       "translate": ["0", "0", "0"]}},
-         "genbox": {"gromacs": "genbox", #11
+         "genbox": {"gromacs": "genbox", #13
           "options": {"cp": "proteinopls.pdb",
                       "cs": "popc.pdb",
                       "tgt": "protpopc.pdb",
                       "top": "topol.top"}},
-         "set_water": {"command": "set_water", #12
+         "set_water": {"command": "set_water", #14
           "options": {"tgt": "water.pdb"}},
-         "editconf6": {"gromacs": "editconf", #13
+         "editconf6": {"gromacs": "editconf", #15
           "options": {"src": "water.pdb",
                       "tgt": "water.pdb",
                        "box": ""}},
-         "editconf7":{"gromacs": "editconf", #14
+         "editconf7":{"gromacs": "editconf", #16
           "options": {"src": "protpopc.pdb",
                        "tgt": "protpopc.pdb",
                        "box": "",
                        "angles": ["90", "90", "120"],
                        "bt": "tric"}},
-         "genbox2": {"gromacs": "genbox", #15
+         "genbox2": {"gromacs": "genbox", #17
           "options": {"cp": "protpopc.pdb",
                        "cs": "water.pdb",
                        "tgt": "tmp.pdb",
                        "top": "topol.top"}},
-         "count_lipids": {"command": "count_lipids", #16
+         "count_lipids": {"command": "count_lipids", #18
           "options": {"src": "tmp.pdb",
                        "tgt": "popc.pdb"}},
-         "make_topol2": {"command": "make_topol",#17
+         "make_topol2": {"command": "make_topol",#19
           "options": {}},
-         "make_topol_lipids": {"command": "make_topol_lipids"}, #18
-         "make_ffoplsaanb": {"command": "make_ffoplsaanb",
+         "make_topol_lipids": {"command": "make_topol_lipids"}, #20
+         "make_ffoplsaanb": {"command": "make_ffoplsaanb", #21
           "options": {}},
-         "set_grompp": {"command": "set_grompp", #19
+         "set_grompp": {"command": "set_grompp", #22
           "options": {"steep.mdp": "steep.mdp",
                        "popc.itp": "popc.itp",
                        #"ffoplsaanb_mod.itp": "ffoplsaanb_mod.itp",
                        "ffoplsaabon_mod.itp": "ffoplsaabon_mod.itp",
                        "ffoplsaa_mod.itp": "ffoplsaa_mod.itp"}},
-         "grompp": {"gromacs": "grompp", #20
+         "grompp": {"gromacs": "grompp", #23
           "options": {"src": "steep.mdp",
                        "src2": "tmp.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}},
-         "trjconv": {"gromacs": "trjconv", #21
+         "trjconv": {"gromacs": "trjconv", #24
           "options": {"src": "tmp.pdb",
                        "src2": "topol.tpr",
                        "tgt": "tmp.pdb",
@@ -107,39 +107,39 @@ class BasicInit(object):
           "options": {"src": "steep.mdp",
                        "src2": "tmp.pdb",
                        "tgt": "topol.tpr",
-                       "top": "topol.top"}}, #22
-         "genion": {"gromacs": "genion", #23
+                       "top": "topol.top"}}, #25
+         "genion": {"gromacs": "genion", #26
           "options": {"src": "topol.tpr",
                        "src2": "topol.top",
                        "tgt": "output.pdb",
                        "np": "",
                        "nn": ""},
           "input": "SOL\n"},
-         "grompp2": {"gromacs": "grompp", #24
+         "grompp2": {"gromacs": "grompp", #27
           "options": {"src": "steep.mdp",
                        "src2": "output.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}},
-         "trjconv2": {"gromacs": "trjconv", #25
+         "trjconv2": {"gromacs": "trjconv", #28
           "options": {"src": "output.pdb",
                        "src2": "topol.tpr",
                        "tgt": "output.pdb",
                        "trans": [],
                        "pbc": "mol"},
           "input": "0\n"},
-         "grompp3": {"gromacs": "grompp", #26
+         "grompp3": {"gromacs": "grompp", #29
           "options": {"src": "steep.mdp",
                        "src2": "output.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}},
-         "trjconv3": {"gromacs": "trjconv", #27
+         "trjconv3": {"gromacs": "trjconv", #30
           "options": {"src": "output.pdb",
                        "src2": "topol.tpr",
                        "tgt": "hexagon.pdb",
                        "ur": "compact",
                        "pbc": "mol"},
           "input": "1\n0\n"},
-         "set_chains": {"command": "set_chains",#28
+         "set_chains": {"command": "set_chains",#31
           "options": {"src": "proteinopls.pdb"}},
            }
 
@@ -190,7 +190,7 @@ class LigandInit(BasicInit):
         self.breaks["genrestr_lig"] =\
             {"src": "membrane_complex.complex.ligand.pdb"}
 
-# This recipe modifies the previous one taking an alosteric into account
+# This recipe modifies the previous one taking an alosteric ligand into account
 class LigandAlostericInit(LigandInit):
     def __init__(self, **kwargs):
         super(LigandAlostericInit, self).__init__(**kwargs)
@@ -225,12 +225,12 @@ class BasicMinimization(object):
     def __init__(self, **kwargs):
         self.steps = ["set_stage_init", "mdrun"]
         self.recipe = {
-         "set_stage_init": {"command": "set_stage_init", #0
+         "set_stage_init": {"command": "set_stage_init", #1
           "options": {"src_dir": "",
                       "src_files": ["topol.tpr"],
                       "tgt_dir": "Rmin",
                       "repo_files": ["eq.mdp"]}},
-         "mdrun": {"gromacs": "mdrun", #1
+         "mdrun": {"gromacs": "mdrun", #2
           "options": {"dir": "Rmin",
                       "src": "topol.tpr",
                       "tgt": "traj.trj",
@@ -261,30 +261,30 @@ class BasicEquilibration(object):
         self.steps = ["editconf", "make_ndx", "grompp", "set_stage_init",
                       "set_stage_init2", "mdrun"]
         self.recipe = {
-         "editconf": {"gromacs": "editconf", #0
+         "editconf": {"gromacs": "editconf", #1
           "options": {"src": "Rmin/confout.gro",
                       "tgt": "min.pdb"}},
-         "make_ndx": {"command": "make_ndx", #1
+         "make_ndx": {"command": "make_ndx", #2
           "options": {"src": "min.pdb",
                       "tgt": "index.ndx"}},
-         "grompp": {"gromacs": "grompp", #2
+         "grompp": {"gromacs": "grompp", #3
           "options": {"src": "Rmin/eq.mdp",
                       "src2": "min.pdb",
                       "top": "topol.top",
                       "tgt": "topol.tpr",
                       "index":"index.ndx"}},
-         "set_stage_init": {"command": "set_stage_init", #3
+         "set_stage_init": {"command": "set_stage_init", #4
           "options": {"src_dir": "Rmin",
                       "src_files": ["eq.mdp"],
                       "tgt_dir": "eq"}},
-         "set_stage_init2": {"command": "set_stage_init", #4
+         "set_stage_init2": {"command": "set_stage_init", #5
           "options": {"src_dir": "",
                       "src_files": ["topol.tpr", "posre.itp", "posre_A.itp",
                                    "posre_B.itp", "posre_hoh.itp",
                                    "posre_ion.itp", "posre_lig.itp",
                                    "posre_alo.itp", "posre_cho.itp"],
                       "tgt_dir": "eq"}},
-         "mdrun": {"gromacs": "mdrun", #5
+         "mdrun": {"gromacs": "mdrun", #6
           "options": {"dir": "eq",
                       "src": "topol.tpr",
                       "tgt": "traj.trr",
@@ -339,14 +339,14 @@ class BasicRelax(object):
             tgt_dir = "eq/{0}".format(const)
             src_dir = "eq"
             self.recipe["relax%d" % const] =\
-             {"command": "relax", #0, 3, 6, 9
+             {"command": "relax", #1, 4, 7, 10
               "options": {"const": const,
                           "src_dir": src_dir,
                           "tgt_dir": tgt_dir,
                           "posres": [],
                           "mdp": "eq.mdp"}}
             self.recipe["grompp%d" % const] =\
-             {"gromacs": "grompp", #1, 4, 7, 10
+             {"gromacs": "grompp", #2, 5, 8, 11
               "options": {"src": os.path.join(tgt_dir, "eq.mdp"),
                           "src2": os.path.join(src_dir, "confout.gro"),
                           #top": os.path.join(tgt_dir, "topol.top"),
@@ -355,7 +355,7 @@ class BasicRelax(object):
                           "index": "index.ndx"}}
             #TODO ese confout.gro de abaixo hai que copialo, non vale asi
             self.recipe["mdrun%d" % const] =\
-             {"gromacs": "mdrun", #2, 5, 8, 11
+             {"gromacs": "mdrun", #3, 6, 9, 12
               "options": {"dir": tgt_dir,
                           "src": "topol.tpr",
                           "tgt": "traj.trr",
@@ -387,24 +387,24 @@ class BasicCARelax(object):
     def __init__(self, **kwargs):
         self.steps = ["set_stage_init", "genrestr", "grompp", "mdrun"]
         self.recipe = {
-             "set_stage_init": {"command": "set_stage_init", #0
+             "set_stage_init": {"command": "set_stage_init", #1
               "options": {"src_dir": "eq",
                           "tgt_dir": "eqCA",
                           "src_files": ["confout.gro"],
                           "repo_files": ["eqCA.mdp"]}},
-             "genrestr": {"gromacs": "genrestr", #1
+             "genrestr": {"gromacs": "genrestr", #2
               "options": {"src": "Rmin/topol.tpr",
                           "tgt": "posre.itp",
                           "index": "index.ndx",
                           "forces": ["200"] * 3},
               "input": "3\n"},
-             "grompp": {"gromacs": "grompp", #2
+             "grompp": {"gromacs": "grompp", #3
               "options": {"src": "eqCA/eqCA.mdp",
                           "src2": "eqCA/confout.gro",
                           "top": "topol.top",
                           "tgt": "eqCA/topol.tpr",
                           "index": "index.ndx"}},
-             "mdrun": {"gromacs": "mdrun", #3
+             "mdrun": {"gromacs": "mdrun", #4
               "options": {"dir": "eqCA",
                           "src": "topol.tpr",
                           "tgt": "traj.trr",

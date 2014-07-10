@@ -121,7 +121,7 @@ class Gromacs(object):
         n_group = self.n_groups + 1
 
         #Create the "wation" group (always present)
-        input =  " \"SOL\" | \"HOH\" | r Cl* | r Na* \n"
+        input =  " r SOL | r HOH | r Cl* | r Na* \n"
         input += "name {0} wation\n".format(n_group)
 #        print n_group
 #        print "{0}".format(input)

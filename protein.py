@@ -133,16 +133,16 @@ class Monomer(object):
         return True
 
     def _setHist(self):
-        '''Touch the Histidine in the source protein, generating a new PDB'''
+        '''Change Histidines in pdb to the format preferred by gromacs'''
         tgt = open(self.pdb.replace(".pdb", "-his.pdb"), "w")
         self.pdb_his = tgt.name
 
         for line in open(self.pdb, "r"):
             if len(line.split()) > 3:
                 if line.split()[3] == "HIE":
-                    tgt.write(line.replace('HIE ','HISB'))
+                    tgt.write(line.replace('HIE ','HISE'))
                 elif line.split()[3] == "HID":
-                    tgt.write(line.replace('HID ','HISA'))
+                    tgt.write(line.replace('HID ','HISD'))
                 elif line.split()[3] == "HIP":
                     tgt.write(line.replace('HIP ','HISH'))
                 else:
@@ -254,7 +254,7 @@ class CrystalWaters(Compound):
     number = property(getWaters, setWaters)
 
     def count_waters(self):
-       '''Count and set the number of waters in the pdb'''
+       '''Count and set the number of crystal waters in the pdb'''
        return len([x for x in open(self.pdb, "r") if "OW" in x])
 
     def _setITP(self):
