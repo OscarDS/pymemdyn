@@ -2,47 +2,50 @@
 pyMEMdyn Version 1.1
 ================================================================================
 
-pyMEMdyn  is a  standalone  python library  to  setup calculations  of
-membrane molecular dynamics with the gromacs set of programs either in
-a desktop environment or in a cluster using popular queuing systems 
-such as Torque or Slurm.
+pyMEMdyn  is a  standalone  python package  to  setup calculations  of
+membrane molecular dynamics using the gromacs set of programs. The package
+can be used either in a desktop environment, or in a cluster with popular 
+queuing systems such as Torque or Slurm.
 
 
-### Modeling Objects
+### Modeling Modules 
 
-The following three files define the objects to be modelled.
+The following modules define the objects to be modelled.
 
-- protein.py. Includes  the definition of the  Monomer, Ligand, Dimer,
-  and  ProteinComplex objects.   These  objects are  started with  the
-  required  files,   and  then  are   passed  to  other   objects.   
-- membrane.py.  Defines the cellular membrane.  
-- complex.py.  Defines   the  full object, protein  + membrane.   
+- **protein.py**.  This module defines the ProteinComplex, Protein, Monomer,
+Dimer, Compound, Ligand, CrystalWaters, Ions, Cholesterol, Lipids, 
+and Alosteric objects. These  objects are  started with  the required files, 
+and can then be passed  to other objects.   
+- **membrane.py**. Defines the cellular membrane.  
+- **complex.py**.  Defines the full complex, protein + membrane.   
   It can  include any  of the previous objects.
 
-### Auxiliary Objects
+### Auxiliary Modules
 
-- queue.py.   Queue  manager.  That  is,  it  receives  objects to  be
+- **queue.py**.   Queue  manager.  That  is,  it  receives  objects to  be
   executed.   
-- recipes.py.   Applies  step by  step instructions  for  carrying a 
+- **recipes.py**.   Applies  step by  step instructions  for  carrying a 
   modeling  step.  
-- utils.py.  Puts the  functions done by the previous objects on demand.
+- **utils.py**.  Puts the  functions done by the previous objects on demand.
   For example, manipulate files, copy  folders, etc.
 
-### Execution Objects
+### Execution Modules
 
-- gromacs.py. Defines the Gromacs and Wrapper objects.  * Gromacs will
+- **gromacs.py**. Defines the Gromacs and Wrapper objects.  * Gromacs will
   load the  objects to be modeled,  the modeling recipe, and  run it.  *
   Wrapper is a  proxy for gromacs commands. When a  recipe entry is sent
-  to it returns the command to be run.
+  to it this returns the command to be run.
 
 ### Examples
 
-- example.py  An example  showing how  to use  the  previously defined
+- **example.py**  An example  showing how  to use  the  previously defined
   libraries.
 
 
 Changelog
 --------------------------------------------------------------------------------
+
+### Changes from version 1.0 to 1.1
 
 - Wednesday, July 9, 2014
 

@@ -18,96 +18,121 @@ class BasicInit(object):
           "options": {"src": "",
                       "tgt": "proteinopls.pdb",
                       "top": "protein.top"}},
+
          "set_itp": {"command": "set_itp", #2
           "options": {"src": "protein.top",
                       "tgt": "protein.itp"}},
+
          "concat": {"command": "concat", #3
           "options": {"src": "proteinopls.pdb",
                       "tgt": ""}},
+
          "editconf": {"gromacs": "editconf", #4
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
                       "dist": ""}},
+
          "set_protein_size": {"command": "set_protein_size", #5
           "options": {"src": "proteinopls.pdb",
                       "dir": "xy"}},
+
          "editconf2": {"gromacs": "editconf", #6
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
                       "dist": ""}},
+
          "set_protein_size2": {"command": "set_protein_size", #7
           "options": {"src": "proteinopls.pdb",
                       "dir": "z"}},
+
          "set_popc": {"command": "set_popc", #8
           "options": {"tgt": "popc.pdb"}},
+
          "editconf3": {"gromacs": "editconf", #9
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
                       "box": "",
                       "angles": ["90", "90", "120"],
                       "bt": "tric"}},
+
          "editconf4": {"gromacs": "editconf", #10
           "options": {"src": "popc.pdb",
                       "tgt": "popc.pdb",
                       "box": ""}},
-         "make_topol": {"command": "make_topol",
-          "options": {}}, #11
+
+         "make_topol": {"command": "make_topol", #11
+          "options": {}},
+
          "editconf5": {"gromacs": "editconf", #12
           "options": {"src": "proteinopls.pdb",
                       "tgt": "proteinopls.pdb",
                       "translate": ["0", "0", "0"]}},
+
          "genbox": {"gromacs": "genbox", #13
           "options": {"cp": "proteinopls.pdb",
                       "cs": "popc.pdb",
                       "tgt": "protpopc.pdb",
                       "top": "topol.top"}},
+
          "set_water": {"command": "set_water", #14
           "options": {"tgt": "water.pdb"}},
+
          "editconf6": {"gromacs": "editconf", #15
           "options": {"src": "water.pdb",
                       "tgt": "water.pdb",
                        "box": ""}},
+
          "editconf7":{"gromacs": "editconf", #16
           "options": {"src": "protpopc.pdb",
                        "tgt": "protpopc.pdb",
                        "box": "",
                        "angles": ["90", "90", "120"],
                        "bt": "tric"}},
+
          "genbox2": {"gromacs": "genbox", #17
           "options": {"cp": "protpopc.pdb",
                        "cs": "water.pdb",
                        "tgt": "tmp.pdb",
                        "top": "topol.top"}},
+
          "count_lipids": {"command": "count_lipids", #18
           "options": {"src": "tmp.pdb",
                        "tgt": "popc.pdb"}},
+
          "make_topol2": {"command": "make_topol",#19
           "options": {}},
+
          "make_topol_lipids": {"command": "make_topol_lipids"}, #20
+
          "make_ffoplsaanb": {"command": "make_ffoplsaanb", #21
           "options": {}},
+
          "set_grompp": {"command": "set_grompp", #22
           "options": {"steep.mdp": "steep.mdp",
                        "popc.itp": "popc.itp",
                        #"ffoplsaanb_mod.itp": "ffoplsaanb_mod.itp",
                        "ffoplsaabon_mod.itp": "ffoplsaabon_mod.itp",
                        "ffoplsaa_mod.itp": "ffoplsaa_mod.itp"}},
+
          "grompp": {"gromacs": "grompp", #23
           "options": {"src": "steep.mdp",
                        "src2": "tmp.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}},
+
          "trjconv": {"gromacs": "trjconv", #24
           "options": {"src": "tmp.pdb",
                        "src2": "topol.tpr",
                        "tgt": "tmp.pdb",
                        "pbc": "mol"},
           "input": "1\n0\n"},
-         "get_charge": {"command": "get_charge",
+
+         "get_charge": {"command": "get_charge", #25
           "options": {"src": "steep.mdp",
                        "src2": "tmp.pdb",
                        "tgt": "topol.tpr",
-                       "top": "topol.top"}}, #25
+                       "top": "topol.top"}},
+
          "genion": {"gromacs": "genion", #26
           "options": {"src": "topol.tpr",
                        "src2": "topol.top",
@@ -115,11 +140,13 @@ class BasicInit(object):
                        "np": "",
                        "nn": ""},
           "input": "SOL\n"},
+
          "grompp2": {"gromacs": "grompp", #27
           "options": {"src": "steep.mdp",
                        "src2": "output.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}},
+
          "trjconv2": {"gromacs": "trjconv", #28
           "options": {"src": "output.pdb",
                        "src2": "topol.tpr",
@@ -127,11 +154,13 @@ class BasicInit(object):
                        "trans": [],
                        "pbc": "mol"},
           "input": "0\n"},
+
          "grompp3": {"gromacs": "grompp", #29
           "options": {"src": "steep.mdp",
                        "src2": "output.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}},
+
          "trjconv3": {"gromacs": "trjconv", #30
           "options": {"src": "output.pdb",
                        "src2": "topol.tpr",
@@ -139,6 +168,7 @@ class BasicInit(object):
                        "ur": "compact",
                        "pbc": "mol"},
           "input": "1\n0\n"},
+
          "set_chains": {"command": "set_chains",#31
           "options": {"src": "proteinopls.pdb"}},
            }

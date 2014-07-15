@@ -10,8 +10,8 @@ Membrane protein
 ; Compound  #mols
 $protein
 $dimer
-$hoh
 $lig
+$hoh
 $na
 $cho
 $alosteric

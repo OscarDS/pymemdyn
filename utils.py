@@ -118,7 +118,7 @@ def clean_topol(src = [], tgt = []):
 
 def concat(**kwargs):
     '''Make a whole pdb file with all the pdb provided'''
-    for compound_class in ["waters", "ligand", "ions", "cho", "alosteric"]:
+    for compound_class in ["ligand", "waters", "ions", "cho", "alosteric"]:
         #Does the complex carry the group?
         if hasattr(kwargs["tgt"], compound_class):
             if getattr(kwargs["tgt"], compound_class):
@@ -190,9 +190,9 @@ def make_ffoplsaanb(complex = None):
 
 def make_topol(template_dir = \
         os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates"),
-    target_dir = "", #Dir where topol.top should land
+    target_dir = "",  #Dir where topol.top should land
     working_dir = "", #Dir where script is working
-    complex = None): # The MembraneComplex object to deal
+    complex = None):  # The MembraneComplex object to deal
     '''Make the topol starting from our topol.top template'''
 
     protein = dimer = lig = hoh = na = cho = alo = 0
@@ -222,7 +222,7 @@ def make_topol(template_dir = \
             alo = 1
             alosteric_name = complex.alosteric.itp
 
-    order = ("protein", "dimer", "hoh", "lig", "na", "cho", "alo")
+    order = ("protein", "dimer", "lig", "hoh", "na", "cho", "alo")
     comps = {"protein": {"itp_name": "protein.itp",
                  "ifdef_name": "POSRES",
                  "posre_name": "posre.itp"},
