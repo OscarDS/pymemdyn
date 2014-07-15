@@ -3,14 +3,16 @@ import os
 class BasicInit(object):
     def __init__(self, **kwargs):
         # First we make a list of ordered steps
-        self.steps = ["pdb2gmx", "set_itp", "concat", "editconf",
+        self.steps = ["pdb2gmx", "set_itp",  "concat", "editconf",
                       "set_protein_size", "editconf2", "set_protein_size2",
-                      "set_popc", "editconf3", "editconf4", "make_topol",
-                      "editconf5", "genbox", "set_water", "editconf6",
+                      "set_popc",  "editconf3", "editconf4", "make_topol",
+                      "editconf5", "genbox",  "set_water", "editconf6",
                       "editconf7", "genbox2", "count_lipids", "make_topol2",
                       "make_topol_lipids", "make_ffoplsaanb", "set_grompp",
-                      "grompp", "trjconv", "get_charge", "genion", "grompp2",
+                      "grompp",  "trjconv", "get_charge", "genion", "grompp2",
                       "trjconv2", "grompp3", "trjconv3", "set_chains"]
+
+
 
         # And then we define each step
         self.recipe = \
@@ -115,7 +117,7 @@ class BasicInit(object):
                        "ffoplsaa_mod.itp": "ffoplsaa_mod.itp"}},
 
          "grompp": {"gromacs": "grompp", #23
-          "options": {"src": "steep.mdp",
+          "options": {"src": "steep.mdp", # src defined in generate_command of gromacs.py
                        "src2": "tmp.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}},
@@ -135,11 +137,11 @@ class BasicInit(object):
 
          "genion": {"gromacs": "genion", #26
           "options": {"src": "topol.tpr",
-                       "src2": "topol.top",
                        "tgt": "output.pdb",
+                       "src2": "topol.top",
                        "np": "",
                        "nn": ""},
-          "input": "SOL\n"},
+          "input": " sol \n"},
 
          "grompp2": {"gromacs": "grompp", #27
           "options": {"src": "steep.mdp",

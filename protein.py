@@ -370,8 +370,8 @@ class Lipids(Compound):
 
         self.group = "membr"
 
-        #self.posre_itp = "posre_lip.itp"
-        #self._setITP()
+#        self.posre_itp = "posre_lip.itp"
+#        self._setITP()
 
         self._n_lip = self.count_lip()
 
@@ -398,7 +398,7 @@ class Lipids(Compound):
     def _setITP(self):
         '''Create the itp to this structure'''
         s = "\n".join([
-            "; position restraints for cholesterol (resn CHO)",
+            "; position restraints for lipids (resn LIP)",
             "[ position_restraints ]",
             ";  i funct       fcx        fcy        fcz",
             "   1    1       1000       1000       1000"])

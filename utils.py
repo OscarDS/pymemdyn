@@ -118,7 +118,8 @@ def clean_topol(src = [], tgt = []):
 
 def concat(**kwargs):
     '''Make a whole pdb file with all the pdb provided'''
-    for compound_class in ["ligand", "waters", "ions", "cho", "alosteric"]:
+#    for compound_class in ["ligand", "waters", "ions", "cho", "alosteric"]:
+    for compound_class in ["ligand", "ions", "cho", "alosteric"]:
         #Does the complex carry the group?
         if hasattr(kwargs["tgt"], compound_class):
             if getattr(kwargs["tgt"], compound_class):

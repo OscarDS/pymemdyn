@@ -2,10 +2,10 @@
 pyMEMdyn Version 1.1
 ================================================================================
 
-pyMEMdyn  is a  standalone  python package  to  setup calculations  of
-membrane molecular dynamics using the gromacs set of programs. The package
-can be used either in a desktop environment, or in a cluster with popular 
-queuing systems such as Torque or Slurm.
+pyMEMdyn  is a  standalone  python package  to  setup membrane molecular dynamics
+calculations using the gromacs set of programs. The package can be used either 
+in a desktop environment, or in a cluster with popular queuing systems such 
+as Torque or Slurm.
 
 
 ### Modeling Modules 
@@ -53,6 +53,17 @@ Among many changes to get pyMEMdyn up an running with gromacs 4.6.5 instead of
 4.0.5 a new substitution for HIE, HID, and HIP is done. Previously the 
 substitution was HIE:HISB, HID:HISA, HIP:HISH, now it's HIE:HISE, HID:HISD,
 HIP:HISH
+
+- Tuesday, July 15, 2014
+
+Gromacs 4.6.X internally makes HOH residues belong to both the Water and SOL groups.
+This creates a problem with crystal waters which are not recognized as a separate
+entity just as, for example, ligands. One fix is to modify the gromacs 
+residuetypes.dat file so that the association is forgotten (erased), or, as we 
+have done, make sure that HOH and SOL groups generated in pdb's and topologies 
+remain continuous. This has forced us to take the waters 
+group (which defines crystal waters)  away from the default concat function in 
+the **utils.py** module.
 
 
 

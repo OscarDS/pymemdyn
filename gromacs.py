@@ -177,6 +177,8 @@ class Gromacs(object):
         topol.write("POPC " + str(self.membrane_complex.membrane.lipids_up))
         topol.write("\n; Number of POPC molecules with lower z-coord value:\n")
         topol.write("POPC " + str(self.membrane_complex.membrane.lipids_down))
+        topol.write("\n; Total number of crystal waters:\n")
+        topol.write("HOH " + str(self.membrane_complex.complex.waters.number))
         topol.write("\n; Total number of water molecules:\n")
         topol.write("SOL " + str(self.membrane_complex.membrane.n_wats) + "\n")
         topol.close()
@@ -629,6 +631,7 @@ class Wrapper(object):
 #                  In version 4.6.5 of gromacs the log is generated
 #                  by default and the -g option doesn't exist anymore.
 #                   "-g", self._setDir("genion.log"),
+#                   "-n", kwargs["ndx"],
                    "-np", str(kwargs["np"]),
                    "-nn", str(kwargs["nn"]),
                    "-pname", "NA+",
