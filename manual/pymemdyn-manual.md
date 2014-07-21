@@ -1,4 +1,6 @@
-**py-MEMdyn** is a python library developed to automate the process of
+# - Introduction
+
+**py-MEMdyn** is a python package developed to automate the process of
 setting up the simulation, via Molecular Dynamics (MD), of G-protein
 Coupled Receptors (GPCR’s) embedded in a cell membrane. The protocol can
 be adapted to insert other transmembrane proteins, not only GPCR’s. The
@@ -355,7 +357,7 @@ The performed equilibration includes the following stages:
 
   **STAGE**       |   **RESTRAINTS**      | **FORCE CONSTANTS**   | **TIME** (ns)
   --------------- | --------------------- | --------------------- | ------------------------
-  Minimization    |                       |                       | ( $\approx$ 500 steps)
+  Minimization    |                       |                       | ( \~ 500 steps)
   Equilibration   |  Protein Heavy Atoms  | 1000                  | 0.5
                   |                       | 800                   | 0.5
                   |                       | 600                   | 0.5
