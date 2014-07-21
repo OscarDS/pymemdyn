@@ -379,7 +379,7 @@ class Lipids(Compound):
         '''Sets the crystal lipids'''
         self._n_lip = value
     def getLip(self):
-        '''Get the crystal lipidss'''
+        '''Get the crystal lipids'''
         return self._n_lip
     number = property(getLip, setLip)
 

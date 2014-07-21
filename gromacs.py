@@ -128,7 +128,7 @@ class Gromacs(object):
 
         #Create the "protlig" group
         n_group += 1
-#        input += "1 || r LIG || r ALO\n"                # LEGACY CODE for gromacs 4.0.5
+#        input += "1 || r LIG || r ALO\n"           # LEGACY CODE gromacs 4.0.5
         input += " \"Protein\" | r LIG | r ALO \n"
         input += "name {0} protlig\n".format(n_group)
 #        print "{0}".format(input)
@@ -177,9 +177,7 @@ class Gromacs(object):
         topol.write("POPC " + str(self.membrane_complex.membrane.lipids_up))
         topol.write("\n; Number of POPC molecules with lower z-coord value:\n")
         topol.write("POPC " + str(self.membrane_complex.membrane.lipids_down))
-        topol.write("\n; Total number of crystal waters:\n")
-        topol.write("HOH " + str(self.membrane_complex.complex.waters.number))
-        topol.write("\n; Total number of water molecules:\n")
+        topol.write("\n; Total number of SOL molecules:\n")
         topol.write("SOL " + str(self.membrane_complex.membrane.n_wats) + "\n")
         topol.close()
 
@@ -513,8 +511,9 @@ class Wrapper(object):
         return ["-f", src, "-o", tgt]
 
     def generate_command(self, kwargs):
-        '''generate_command: Receive some variables in kwargs, generate the appropiate command 
-        to be run. Return a set in the form of a string "command -with flags"'''
+        '''generate_command: Receive some variables in kwargs, generate
+        the appropriate command to be run. Return a set in the form of
+        a string "command -with flags"'''
         try:
             mode = kwargs["gromacs"]
         except KeyError:

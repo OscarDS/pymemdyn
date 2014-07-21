@@ -3,7 +3,7 @@ import os
 class BasicInit(object):
     def __init__(self, **kwargs):
         # First we make a list of ordered steps
-        self.steps = ["pdb2gmx", "set_itp",  "concat", "editconf",
+        self.steps = ["pdb2gmx", "set_itp", "concat", "editconf",
                       "set_protein_size", "editconf2", "set_protein_size2",
                       "set_popc",  "editconf3", "editconf4", "make_topol",
                       "editconf5", "genbox",  "set_water", "editconf6",

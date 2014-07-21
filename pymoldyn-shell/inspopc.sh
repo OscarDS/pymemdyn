@@ -2,16 +2,29 @@
 #
 # This script was designed to work with GROMACS 4.0.3
 #
-# It introduces a membrane protein dimer into a water-solvated POPC-bilayer, all inside of a hexagonal prism. It considers the total charge of the protein and add ions to neutralize it. In addition to the ions necessary to neutralize the system, it adds 0 Cl- and 0 Na+ to allow their interaction with the system (change accordingly if you want salt concentration, i.e. 28 for 0.1M). The OPLS-topology for the protein is generated and the script prepares the tpr-binary to minimize the whole system. The topol.top file specifies the number of POPC molecules in each leaflet of the bilayer.
+# It introduces a membrane protein dimer into a water-solvated POPC-bilayer,
+# all inside of a hexagonal prism. It considers the total charge of the protein
+# and adds ions to neutralize it. In addition to the ions necessary to neutralize
+# the system, it adds 0 Cl- and 0 Na+ to allow their interaction with the
+# system (change accordingly if you want salt concentration, i.e. 28 for 0.1M).
+# The OPLS-topology for the protein is generated and the script prepares the tpr-binary
+# to minimize the whole system. The topol.top file specifies the number of POPC molecules
+# in each leaflet of the bilayer.
 #
-# In order to see the final system BEFORE minimization open hexagon.pdb with a molecular viewer. If you want to minimize the system just execute "mdrun -s topol.tpr", preferibly in another directory.
+# In order to see the final system BEFORE minimization open hexagon.pdb with a molecular viewer.
+# If you want to minimize the system just execute "mdrun -s topol.tpr", preferibly in another directory.
 #
 #
-# Please, contact to Angel Pineiro at angel.pineiro@usc.es for any question or comment
+# Please, contact Angel Pineiro at angel.pineiro@usc.es for any question or comment
 # Version: June 10, 2009
 #
 #
-# This script NEEDS THE FOLLOWING FILES IN THE SAME DIRECTORY: x4bilayer.pdb (a bilayer of POPC equilibrated at 260 K), ffoplsaabon_mod.itp, ffoplsaa_mod.itp and ffoplsaanb_mod.itp (opls ff modified following instructions provided by Chris Neale in the GROMACS mailing list), and hoh.pdb (and hoh.itp, which is copied from the .itp file of your preferred water model, making a sed 's/SOL/HOH') with the selected crystallographic waters (keep atom names as in itp file).
+# This script NEEDS THE FOLLOWING FILES IN THE SAME DIRECTORY: x4bilayer.pdb
+# (a bilayer of POPC equilibrated at 260 K), ffoplsaabon_mod.itp, ffoplsaa_mod.itp
+# and ffoplsaanb_mod.itp (opls ff modified following instructions provided by Chris Neale
+# in the GROMACS mailing list), and hoh.pdb (and hoh.itp, which is copied from the .itp file
+# of your preferred water model, making a sed 's/SOL/HOH') with the selected crystallographic
+# waters (keep atom names as in itp file).
 #
 #
 # INPUTS:

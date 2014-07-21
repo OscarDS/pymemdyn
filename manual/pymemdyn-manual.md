@@ -89,7 +89,7 @@ To install **py-MEMdyn** follow these steps:
     Make sure to change *username* to the one you have created at
     bitbucket.
 
-2.  The previous command will create a *pymemdyn* directory. You now
+2.  The previous command will create a *pymemdyn* directory. Now you
     have to tell your operating system how to find that folder. You
     achieve this by declaring the location of the directory in a .bashrc
     file or .cshrc file in your home folder. An example of what you will
@@ -361,7 +361,7 @@ The performed equilibration includes the following stages:
                                         600                   0.5
                                         400                   0.5
                                         200                   0.5
-                                        200                   2.5
+                   C-alpha Atoms        200                   2.5
 
 [tab:equilibration]
 
