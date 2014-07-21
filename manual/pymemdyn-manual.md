@@ -353,15 +353,15 @@ run intermediate stages are missing!
 
 The performed equilibration includes the following stages:
 
-  **STAGE**          **RESTRAINTS**     **FORCE CONSTANTS**   **TIME** (ns)
-  --------------- --------------------- --------------------- ------------------------
-  Minimization                                                ( $\approx$ 500 steps)
-  Equilibration    Protein Heavy Atoms  1000                  0.5
-                                        800                   0.5
-                                        600                   0.5
-                                        400                   0.5
-                                        200                   0.5
-                   C-alpha Atoms        200                   2.5
+  **STAGE**       |   **RESTRAINTS**      | **FORCE CONSTANTS**   | **TIME** (ns)
+  --------------- | --------------------- | --------------------- | ------------------------
+  Minimization    |                       |                       | ( $\approx$ 500 steps)
+  Equilibration   |  Protein Heavy Atoms  | 1000                  | 0.5
+                  |                       | 800                   | 0.5
+                  |                       | 600                   | 0.5
+                  |                       | 400                   | 0.5
+                  |                       | 200                   | 0.5
+                  |  C-alpha Atoms        | 200                   | 2.5
 
 [tab:equilibration]
 
@@ -409,9 +409,11 @@ In this folder you will find several files related to this simulation:
         grompp -f prod.mdp -c confout.gro -p topol.top -n index.ndx -o topol_prod.tpr
 
 -   If you want to create a PDB file of your system after the
-    equilibration, with the receptor centered in the box, type: echo 1 0
-    | trjconv -pbc mol -center -ur compact -f confout.gro -o confout.pdb
-    NOTE: these tips work for GROMACS version 4.0.5.
+    equilibration, with the receptor centered in the box, type: 
+
+echo 1 0  | trjconv -pbc mol -center -ur compact -f confout.gro -o confout.pdb
+
+    NOTE: these tips work for GROMACS version 4.0.5. Not yet tested for 4.6.X
 
 1. D. Rodríguez, A. Piñeiro, and H. Gutiérrez-de-Terán.
 2011, Molecular dynamics simulations reveal insights into key structural
