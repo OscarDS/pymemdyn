@@ -177,6 +177,8 @@ class Gromacs(object):
         topol.write("POPC " + str(self.membrane_complex.membrane.lipids_up))
         topol.write("\n; Number of POPC molecules with lower z-coord value:\n")
         topol.write("POPC " + str(self.membrane_complex.membrane.lipids_down))
+#        topol.write("\n; Total number of HOH molecules:\n")
+#        topol.write("HOH " + str(self.membrane_complex.complex.waters.number))
         topol.write("\n; Total number of SOL molecules:\n")
         topol.write("SOL " + str(self.membrane_complex.membrane.n_wats) + "\n")
         topol.close()

@@ -20,7 +20,7 @@ and thorough MD equilibration, as outlined in Figure 1.
 ![Pipeline of the process followed to embed a G-protein Coupled Receptor
 into a cell membrane made of a POPC
 (Palmitoyl-Oleoyl-Phosphatidyl-Choline) phospholipid
-bilayer.](raw/master/manual/pipeline.png)
+bilayer.](pipeline.png)
 
 In the simplest scenario, only the receptor structure is considered. In
 such case the GPCR is automatically surrounded by a pre-equilibrated
@@ -114,7 +114,7 @@ To install **py-MEMdyn** follow these steps:
 
         source .bashrc
 
-    or open a new terminal.\
+    or open a new terminal.
 
     To check if you have defined the route to the *pymemdyn* directory
     correctly try to run the main program called run.py in a terminal:
@@ -357,7 +357,7 @@ The performed equilibration includes the following stages:
 
   **STAGE**       |   **RESTRAINTS**      | **FORCE CONSTANTS**   | **TIME** (ns)
   --------------- | --------------------- | --------------------- | ------------------------
-  Minimization    |                       |                       | ( \~ 500 steps)
+  Minimization    |                       |                       | ( ~ 500 steps)
   Equilibration   |  Protein Heavy Atoms  | 1000                  | 0.5
                   |                       | 800                   | 0.5
                   |                       | 600                   | 0.5

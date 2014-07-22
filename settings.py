@@ -35,6 +35,9 @@ QUEUE = ""
 #QUEUE = "pbs_ib"
 #QUEUE = "svgd"
 
+# Choose how many nodes to use in parallel
+QUEUE_NUM_NODES = 1
+
 # Choose how many processor to use in parallel
 QUEUE_NUM_PROCS = 8
 

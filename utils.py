@@ -92,7 +92,7 @@ def clean_all(target_dir = "", exclude = []):
                 #Deleting subdirs
                 if os.path.isdir(target): shutil.rmtree(target)
             else:
-                #Changing remaining files to be dowloadable by web user
+                #Changing remaining files to be downloadable by web user
                 os.chmod(target, 0775)
                 os.chown(target, -1, 8)
 
@@ -119,7 +119,7 @@ def clean_topol(src = [], tgt = []):
 def concat(**kwargs):
     '''Make a whole pdb file with all the pdb provided'''
 #    for compound_class in ["ligand", "waters", "ions", "cho", "alosteric"]:
-    for compound_class in ["waters","ligand", "ions", "cho", "alosteric"]:
+    for compound_class in ["ligand", "ions", "cho", "alosteric"]:
         #Does the complex carry the group?
         if hasattr(kwargs["tgt"], compound_class):
             if getattr(kwargs["tgt"], compound_class):
@@ -196,8 +196,10 @@ def make_topol(template_dir = \
     complex = None):  # The MembraneComplex object to deal
     '''Make the topol starting from our topol.top template'''
 
-    protein = dimer = lig = hoh = na = cho = alo = 0
-    lig_name = hoh_name = ions_name = cho_name = alosteric_name = ""
+#    protein = dimer = lig = hoh = na = cho = alo = 0
+#    lig_name = hoh_name = ions_name = cho_name = alosteric_name = ""
+    protein = dimer = lig = na = cho = alo = 0
+    lig_name = ions_name = cho_name = alosteric_name = ""
     if hasattr(complex, "monomer"):
         protein = 1
         if getattr(complex, "monomer").__class__.__name__ == "Dimer":
@@ -206,10 +208,10 @@ def make_topol(template_dir = \
         if complex.ligand:
             lig = 1
             lig_name = complex.ligand.itp
-    if hasattr(complex, "waters"):
-        if hasattr(complex.waters, "number"):
-            hoh = complex.waters.number
-            hoh_name = complex.waters.itp
+#    if hasattr(complex, "waters"):
+#        if hasattr(complex.waters, "number"):
+#            hoh = complex.waters.number
+#            hoh_name = complex.waters.itp
     if hasattr(complex, "ions"):
         if hasattr(complex.ions, "number"):
             na = complex.ions.number
@@ -223,7 +225,8 @@ def make_topol(template_dir = \
             alo = 1
             alosteric_name = complex.alosteric.itp
 
-    order = ("protein", "dimer", "lig", "hoh", "na", "cho", "alo")
+#    order = ("protein", "dimer", "lig", "hoh", "na", "cho", "alo")
+    order = ("protein", "dimer", "lig", "na", "cho", "alo")
     comps = {"protein": {"itp_name": "protein.itp",
                  "ifdef_name": "POSRES",
                  "posre_name": "posre.itp"},
@@ -234,9 +237,9 @@ def make_topol(template_dir = \
              "lig": {"itp_name": lig_name,
                  "ifdef_name": "POSRESLIG",
                  "posre_name": "posre_lig.itp"},
-             "hoh": {"itp_name": hoh_name,
-                 "ifdef_name": "POSRESHOH",
-                 "posre_name": "posre_hoh.itp"},
+#             "hoh": {"itp_name": hoh_name,
+#                 "ifdef_name": "POSRESHOH",
+#                 "posre_name": "posre_hoh.itp"},
              "na": {"itp_name": ions_name,
                  "ifdef_name": "POSRESION",
                  "posre_name": "posre_ion.itp"},
@@ -288,7 +291,7 @@ def make_topol(template_dir = \
                            protein = comps["protein"]["line"],
                            dimer = comps["dimer"]["line"],
                            lig = comps["lig"]["line"],
-                           hoh = comps["hoh"]["line"],
+#                           hoh = comps["hoh"]["line"],
                            na = comps["na"]["line"],
                            cho = comps["cho"]["line"],
                            alosteric = comps["alo"]["line"],
