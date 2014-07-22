@@ -16,7 +16,6 @@ import recipes
 import settings
 
 class Run(object):
-    #This is a dummy
     def __init__(self, pdb, *args, **kwargs):
         '''
         A molecular dynamics "Run()"  MUST be given a "pdb"
@@ -166,7 +165,7 @@ if __name__ == "__main__":
         dest = "pdb",
         required = True,
         help = "Name of the pdb to insert into MD (mandatory)")
-    parser.add_argument('-l',
+    parser.add_argument('--lig',
         dest = "ligand",
         help = "Name of the ligand, without extension. Three files must be \
             present along with the molecule pdb: the ligand, its itp and \

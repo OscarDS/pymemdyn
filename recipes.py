@@ -8,10 +8,9 @@ class BasicInit(object):
                       "set_popc",  "editconf3", "editconf4", "make_topol",
                       "editconf5", "genbox",  "set_water", "editconf6",
                       "editconf7", "genbox2", "count_lipids", "make_topol2",
-                      "make_topol_lipids", "make_ffoplsaanb", "set_grompp",
+                      "make_topol_lipids", "make_ffoplsaanb", "set_grompp", "make_ndx",
                       "grompp",  "trjconv", "get_charge", "genion", "grompp2",
                       "trjconv2", "grompp3", "trjconv3", "set_chains"]
-
 
 
         # And then we define each step
@@ -116,32 +115,40 @@ class BasicInit(object):
                        "ffoplsaabon_mod.itp": "ffoplsaabon_mod.itp",
                        "ffoplsaa_mod.itp": "ffoplsaa_mod.itp"}},
 
+         "make_ndx": {"command": "make_ndx", #2
+          "options": {"src": "tmp.pdb",
+                      "tgt": "index.ndx"}},
+
          "grompp": {"gromacs": "grompp", #23
           "options": {"src": "steep.mdp", # src defined in generate_command of gromacs.py
                        "src2": "tmp.pdb",
                        "tgt": "topol.tpr",
-                       "top": "topol.top"}},
+                       "top": "topol.top",
+                       "index":"index.ndx"}},
 
          "trjconv": {"gromacs": "trjconv", #24
           "options": {"src": "tmp.pdb",
                        "src2": "topol.tpr",
                        "tgt": "tmp.pdb",
-                       "pbc": "mol"},
+                       "pbc": "mol",
+                       "index": "index.ndx"},
           "input": "1\n0\n"},
 
          "get_charge": {"command": "get_charge", #25
           "options": {"src": "steep.mdp",
                        "src2": "tmp.pdb",
                        "tgt": "topol.tpr",
-                       "top": "topol.top"}},
+                       "top": "topol.top",
+                       "index": "index.ndx"}},
 
          "genion": {"gromacs": "genion", #26
           "options": {"src": "topol.tpr",
                        "tgt": "output.pdb",
                        "src2": "topol.top",
+                       "index": "index.ndx",
                        "np": "",
                        "nn": ""},
-          "input": " sol \n"},
+          "input": " SOL \n"},
 
          "grompp2": {"gromacs": "grompp", #27
           "options": {"src": "steep.mdp",
@@ -456,8 +463,6 @@ class BasicCARelax(object):
 ##########################################################################
 #                Inter-helical Restraints Relaxation                     #
 ##########################################################################
-
-
 
 ##########################################################################
 #                    Collect all results & outputs                       #

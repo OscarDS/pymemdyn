@@ -3,9 +3,10 @@ import settings
 
 class Queue(object):
     def __init__(self, *args, **kwargs):
-        #Default number of processors to be used
+        #Default number of processors, nodes and time alloted in cluster.
         self.num_proc = getattr(settings, "QUEUE_NUM_PROCS") or 8
-        self.max_time = getattr(settings, "QUEUE_MAX_TIME") or "50:00:00"
+        self.num_node = getattr(settings, "QUEUE_NUM_NODES") or 1
+        self.max_time = getattr(settings, "QUEUE_MAX_TIME") or "48:00:00"
         self.sh = "./mdrun.sh"
 
     def set_mdrun(self, value):
@@ -56,7 +57,7 @@ class Slurm(Queue):
 #        sh.write("source /home/apps/bin/apps.sh\n")
 #        sh.write("module load openmpi-x86_64\n")
         sh.write("cd %s\n" % workdir)
-#        sh.write("%s -ntmpi 12 -ntomp 1  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
+#        sh.write("%s -ntmpi 16 -ntomp 1  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
         sh.write("%s  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))        
         sh.close()
         os.chmod(self.sh, 0755)

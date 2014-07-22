@@ -255,7 +255,8 @@ class CrystalWaters(Compound):
 
     def count_waters(self):
        '''Count and set the number of crystal waters in the pdb'''
-       return len([x for x in open(self.pdb, "r") if "OW" in x])
+#       return len([x for x in open(self.pdb, "r") if "OW" in x])
+       return len([x for x in open(self.pdb, "r") if "HOH" in x])/3
 
     def _setITP(self):
         '''Create the itp to this structure'''
@@ -474,4 +475,3 @@ class Alosteric(Compound):
         itp_out.close()
   
         return True
-

@@ -28,6 +28,8 @@ and can then be passed  to other objects.
   modeling  step.  
 - **utils.py**.  Puts the  functions done by the previous objects on demand.
   For example, manipulate files, copy  folders, etc.
+- **settings.py** This modules sets up the main environment variables needed
+  to run the calculation, for example, the path to the gromacs binaries.
 
 ### Execution Modules
 
@@ -40,6 +42,8 @@ and can then be passed  to other objects.
 
 - **example.py**  An example  showing how  to use  the  previously defined
   libraries.
+
+- **run.py** The main program to call which sends the run to a cluster.
 
 
 Changelog

@@ -118,10 +118,20 @@ class Gromacs(object):
         characteristics of the complex'''
 
         if not (self.get_ndx_groups(**kwargs)): return False
-        n_group = self.n_groups + 1
+        n_group = self.n_groups
+        n_sol = self.n_groups - 2
+
+        #Create the solution with no crystal water, crossing fingers.
+#        n_group += 1
+        input =  "r SOL \n"
+        input += "name {0} SOL\n".format(n_sol)
+        input += "del {0}\n".format(n_sol)
+#        print n_group
+#        print "{0}".format(input)
 
         #Create the "wation" group (always present)
-        input =  " r SOL | r HOH | r Cl* | r Na* \n"
+        n_group += 1
+        input +=  " r SOL | r HOH | r Cl* | r Na* \n"
         input += "name {0} wation\n".format(n_group)
 #        print n_group
 #        print "{0}".format(input)
@@ -138,6 +148,7 @@ class Gromacs(object):
         input += " r POP | r CHO | r LIP \n"
         input += "name {0} membr\n".format(n_group)
 #        print "{0}".format(input)
+
 
         #This makes a separate group for each chain (if more than one)
         if type(self.membrane_complex.complex.monomer) == protein.Dimer:
@@ -177,8 +188,6 @@ class Gromacs(object):
         topol.write("POPC " + str(self.membrane_complex.membrane.lipids_up))
         topol.write("\n; Number of POPC molecules with lower z-coord value:\n")
         topol.write("POPC " + str(self.membrane_complex.membrane.lipids_down))
-#        topol.write("\n; Total number of HOH molecules:\n")
-#        topol.write("HOH " + str(self.membrane_complex.complex.waters.number))
         topol.write("\n; Total number of SOL molecules:\n")
         topol.write("SOL " + str(self.membrane_complex.membrane.n_wats) + "\n")
         topol.close()
@@ -632,7 +641,7 @@ class Wrapper(object):
 #                  In version 4.6.5 of gromacs the log is generated
 #                  by default and the -g option doesn't exist anymore.
 #                   "-g", self._setDir("genion.log"),
-#                   "-n", kwargs["ndx"],
+                   "-n", kwargs["index"],
                    "-np", str(kwargs["np"]),
                    "-nn", str(kwargs["nn"]),
                    "-pname", "NA+",
