@@ -17,11 +17,16 @@ class Printing(object):
 class DjangoDB(object):
     def __init__(self, *args, **kwargs):
         '''This is a proxy to save a message to a Database using Django ORM'''
-        from django.core.management import setup_environ
+#        from django.core.management import setup_environ
         import http_settings
+#        setup_environ(http_settings)
 
-        setup_environ(http_settings)
+        import os
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "http_settings")
+#        from http_settings import *
+#        from http_models import *
 
+        import http_settings
         import http_models
 
         self.pk = kwargs.get("pk")
