@@ -2,10 +2,16 @@
 import argparse
 import datetime
 import logging
-import os
 import shutil
 import sys
 import textwrap
+import os
+
+import clustersettings as s
+sys.path.append(s.BINDIR)
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "http_settings")
+import http_settings
+from http_models import *
 
 import complex
 import gromacs
@@ -15,14 +21,9 @@ import queue
 import recipes
 import clustersettings
 
-import clustersettings as s
-sys.path.append(s.BINDIR)
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "http_settings")
-import http_settings
-from http_models import *
-
 from subprocess import call
 import broker
+
 
 
 class Run(object):

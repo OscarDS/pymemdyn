@@ -24,7 +24,6 @@ TEMPLATE_PDB = "/home/gpcruser/gpcr_modsim/templates/3eml.pdb"
 MOLPROBITY_PATH = "/home/apps/molprobity/lib/"
 
 
-
 #SCRIPT_DIR = os.path.dirname(os.path.realpath(pymoldyn.__file__))
 
 # This is the dir where pymoldyn git repo has been deployed,
@@ -52,8 +51,8 @@ GROMACS_PATH = "/home/apps/gromacs-4.6.5/bin/"                      #csb.bmc.uu.
 #GROMACS_PATH = "/lap/gromacs/4.6.5/bin"                             #Abisko
 
 # Choose which queuing system to use. Look inside queue.py.
-QUEUE = ""
-#QUEUE = "slurm"
+#QUEUE = ""
+QUEUE = "slurm"
 #QUEUE = "pbs"
 #QUEUE = "pbs_ib"
 #QUEUE = "svgd"
