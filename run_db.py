@@ -1,11 +1,8 @@
-#!/usr/bin/env python2.7
-import http_settings
-from http_models import *
+#!/home/apps/bin/python2.7
 
 import argparse
 import datetime
 import logging
-import os
 import shutil
 import textwrap
 
@@ -16,7 +13,18 @@ import membrane
 import protein
 import queue
 import recipes
-import settings
+import clustersettings
+
+
+import sys
+import os
+import clustersettings as s
+sys.path.append(s.BINDIR)
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "http_settings")
+import http_settings
+from http_models import *
+
+
 
 class Run(object):
     #This is a dummy
@@ -184,10 +192,10 @@ class Run(object):
         from django.core.mail import send_mail
         email_addr = self.dynamic.pdb.project.user_id.email
 
-        body_msg = ["You can check this dynamic at http://gpcr.usc.es/",
+        body_msg = ["You can check this dynamic at http://130.238.41.200/",
                     "/dynamic/{0}".format(self.dynamic.pk)]
         
-        send_mail("GPCR-ModSim ended a Molecular Dynamic",
+        send_mail("GPCR-ModSim ended a Molecular Dynamics Run",
             "".join(body_msg),
             http_settings.EMAIL_HOST_USER, [email_addr])
 
@@ -221,7 +229,7 @@ if __name__ == "__main__":
         dest = "repo_dir",
         help = "Path to templates of fixed files. If not \
             provided, take the value from settings.REPO_DIR.",
-        default = settings.REPO_DIR)
+        default = clustersettings.REPO_DIR)
     parser.add_argument('-d',
         dest = "dynamic_pk",
         required = True,
@@ -229,7 +237,7 @@ if __name__ == "__main__":
     parser.add_argument('-q',
         dest = "queue",
         help = "Queue system to use (slurm, pbs, pbs_ib and svgd supported)",
-        default = settings.QUEUE)
+        default = clustersettings.QUEUE)
     parser.add_argument('--queue_pk',
         dest = "queue_pk",
         help = "Provide a queue pk to interface with a db",

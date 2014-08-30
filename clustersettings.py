@@ -1,6 +1,29 @@
 #import pymoldyn
 import os
 
+PID_FILE = "/home/gpcruser/gpcr_modsim/run/PyroDaemon.pid"
+LOG_FILE = "/home/gpcruser/gpcr_modsim/log/PyroDaemon.log"
+MODEL_LOG_FILE = "/home/gpcruser/gpcr_modsim/log/model_file.log"
+PYTHON_BIN = "/home/apps/bin/python2.7"
+JAVA_PATH = "/usr/java/latest/bin/java"
+BINDIR = "/home/gpcruser/gpcr_modsim/lib/"
+REPO_DIR = "/home/gpcruser/gpcr_modsim/templates/"
+
+# Used in pyro_objects.py
+SLURMOUT = "/home/gpcruser/gpcr_modsim/slurm-out/"
+PYMEMPATH = "/home/gpcruser/gpcr_modsim/pymemdyn/"
+
+# STAMP related fields (used in stamp.py)
+STAMP_BIN = "/home/apps/stamp.4.4/bin/linux/"
+STAMP_DIR =  "/home/apps/stamp.4.4/defs/"
+STAMP_TMPDIR = "/opt/tmp/"
+CLUSTAL_BIN = "/home/apps/clustalo"
+TEMPLATE_PDB = "/home/gpcruser/gpcr_modsim/templates/3eml.pdb"
+
+# MOLPROBITY
+MOLPROBITY_PATH = "/home/apps/molprobity/lib/"
+
+
 #SCRIPT_DIR = os.path.dirname(os.path.realpath(pymoldyn.__file__))
 
 # This is the dir where pymoldyn git repo has been deployed,

@@ -4,6 +4,7 @@
 # Depending on the broker, the messages may be just printed or something else
 
 import datetime
+import os
 
 class Printing(object):
     def __init__(self):
@@ -17,11 +18,8 @@ class Printing(object):
 class DjangoDB(object):
     def __init__(self, *args, **kwargs):
         '''This is a proxy to save a message to a Database using Django ORM'''
-        from django.core.management import setup_environ
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "http_settings")
         import http_settings
-
-        setup_environ(http_settings)
-
         import http_models
 
         self.pk = kwargs.get("pk")
