@@ -148,7 +148,8 @@ class BasicInit(object):
                        "index": "index.ndx",
                        "np": "",
                        "nn": ""},
-          "input": " SOL \n"},
+          "input": " 14 \n"},
+#THE PREVIOUS LINE NEEDS A FIXIN!!!
 
          "grompp2": {"gromacs": "grompp", #27
           "options": {"src": "steep.mdp",
