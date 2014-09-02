@@ -40,7 +40,7 @@ class Slurm(Queue):
     def __init__(self, *args, **kwargs):
         super(Slurm, self).__init__(self, *args, **kwargs)
         self.command = ["srun",
-#            "-n", str(self.num_proc),
+            "-n", str(self.num_node),
             "-c", str(self.num_proc),
             "-t", self.max_time,
             self.sh]
