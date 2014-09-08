@@ -148,7 +148,7 @@ class BasicInit(object):
                        "index": "index.ndx",
                        "np": "",
                        "nn": ""},
-          "input": " 14 \n"},
+          "input": " SOL \n"},
 #THE PREVIOUS LINE NEEDS A FIXIN!!!
 
          "grompp2": {"gromacs": "grompp", #27

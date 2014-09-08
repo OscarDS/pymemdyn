@@ -20,17 +20,17 @@ REPO_DIR = os.path.join(ROOT_DIR, "templates")
 #GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/gige/bin/"
 #GROMACS_PATH = "/opt/cesga/gromacs-4.0.7/bin/"
 #GROMACS_PATH = "/opt/gromacs405/bin/"                               #cuelebre.inv.usc.es
-GROMACS_PATH = "/home/apps/gromacs-4.6.5/bin/"                      #csb.bmc.uu.se
+#GROMACS_PATH = "/home/apps/gromacs-4.6.5/bin/"                      #csb.bmc.uu.se
 #GROMACS_PATH = "/software/apps/gromacs/4.6.3/g472/bin/"             #Triolith
 #GROMACS_PATH = "/sw/bin/"                                           #Standalone in Mac Fink
-#GROMACS_PATH = "/Users/esguerra/software/gromacs-4.6.5/bin/"        #Standalone in Mac
+GROMACS_PATH = "/Users/esguerra/software/gromacs-4.6.5/bin/"        #Standalone in Mac
 #GROMACS_PATH = "/c3se/apps/Glenn/gromacs/4.6.3-p20130821-gcc48/bin" #Glenn at Chalmers
 #GROMACS_PATH = "/sw/apps/gromacs/4.6.3/tintin/bin"                  #Tintin
 #GROMACS_PATH = "/lap/gromacs/4.6.5/bin"                             #Abisko
 
 # Choose which queuing system to use. Look inside queue.py.
-#QUEUE = ""
-QUEUE = "slurm"
+QUEUE = ""
+#QUEUE = "slurm"
 #QUEUE = "pbs"
 #QUEUE = "pbs_ib"
 #QUEUE = "svgd"

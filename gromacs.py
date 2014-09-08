@@ -113,13 +113,31 @@ class Gromacs(object):
 #                return False
         return True
 
+    def get_ndx_sol(self, **kwargs):
+        '''get_ndx_sol: Run make_ndx and set the total number of SOL found'''
+
+        out, err = self.wrapper.run_command({"gromacs": "make_ndx",
+                                             "options": kwargs,
+                                             "input": "q\n"})
+
+        for line in out.split("\n"):
+            if "SOL" in line:
+                self.n_sol = int(line.split()[0])
+        return True
+
     def make_ndx(self, **kwargs):
         '''make_ndx: Wraps the make_ndx command tweaking the input to reflect the
         characteristics of the complex'''
 
         if not (self.get_ndx_groups(**kwargs)): return False
         n_group = self.n_groups
-        n_sol = self.n_groups - 2
+#        n_sol = self.n_groups - 1
+
+        if not (self.get_ndx_sol(**kwargs)): return False
+        n_sol = self.n_sol
+        print n_sol
+
+#        n_sol = self.n_sol
 
         #Create the solution with no crystal water, crossing fingers.
 #        n_group += 1

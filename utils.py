@@ -57,13 +57,13 @@ def check_forces(pdb, itp, ffield):
                 #{"TC1": "C1"}
                 atoms[line.split()[0]] = line.split()[1]
             
-    #The pdb have the name of the atom in the third position.
+    #The pdb has the name of the atom in the third position.
     #Here we cross-check all three files to match their harvested values
     for line in open(pdb, "r"):
         data = line.split()
         if len(data) > 6:
             if molecules[data[3]][data[2]] not in atoms.keys():
-                #Some atoms in the pdb has no definition in force field
+                #Some atoms in the pdb have no definition in force field
                 # TODO : add a guessing function
                 print "Atom {0} have no field definition".format(data[1])
                 #return False
@@ -78,7 +78,7 @@ def clean_all(target_dir = "", exclude = []):
         '''Remove all intermediate files from "target_dir"  except that files in "exclude"'''
         to_unlink_dir = os.path.join(os.getcwd(), target_dir)
         #First a security checkout to not delete up a certain point
-        minimum = "/home/slurm/cuelebre_media/"
+        minimum = "/home/gpcruser/public"
         if not to_unlink_dir.startswith(minimum): return False
         if not "dynamic" in to_unlink_dir: return False
 
