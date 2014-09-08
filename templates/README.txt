@@ -6,7 +6,7 @@ If you want more technical details see reference [1].
 
 The performed equilibration includes the following stages:
 
-STAGE           CONSTRAINED ATOMS       FORCE CONSTANT          TIME
+STAGE           RESTRAINED ATOMS       FORCE CONSTANT          TIME
                     kJ·mol^(-1)·nm^(-2) ns
 Minimization    -                       -                       (Max. 500 steps)
 Eq1             Protein Heavy Atoms     1000                    0.5
