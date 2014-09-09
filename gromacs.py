@@ -114,7 +114,7 @@ class Gromacs(object):
         return True
 
     def get_ndx_sol(self, **kwargs):
-        '''get_ndx_sol: Run make_ndx and set the total number of SOL found'''
+        '''get_ndx_sol: Run make_ndx and set the last number id for SOL found'''
 
         out, err = self.wrapper.run_command({"gromacs": "make_ndx",
                                              "options": kwargs,
