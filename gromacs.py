@@ -135,7 +135,7 @@ class Gromacs(object):
 
         if not (self.get_ndx_sol(**kwargs)): return False
         n_sol = self.n_sol
-        print n_sol
+#        print n_sol
 
 #        n_sol = self.n_sol
 
@@ -165,19 +165,26 @@ class Gromacs(object):
         n_group += 1
         input += " r POP | r CHO | r LIP \n"
         input += "name {0} membr\n".format(n_group)
-#        print "{0}".format(input)
-
-
+        print "{0}".format(input)
+        #test points
+        for chain in self.membrane_complex.complex.monomer.chains:
+            print "cadena"
+        
         #This makes a separate group for each chain (if more than one)
         if type(self.membrane_complex.complex.monomer) == protein.Dimer:
+#           input +="a 1-4842\n"
+#           input +="name 20 protein_A\n"
+#           input +="a 4843-5428\n"
+#           input +="name 21 protein_B\n"
+            
             for chain in self.membrane_complex.complex.monomer.chains:
-                #points = {'A': [1, 4530], 'B': [4532, 9061]}
+                #points = {'A': [1, 4842], 'B': [4843, 5428]}
                 n_group += 1
                 input += "a {0}-{1}\n".format(
                     self.membrane_complex.complex.monomer.points[chain][0],
                     self.membrane_complex.complex.monomer.points[chain][1])
                 input += "name {0} protein_{1}\n".format(n_group, chain)
-
+                
         if hasattr(self.membrane_complex.membrane, "ions"):
             #This makes the group ions TODO
             #n_group += 1
@@ -233,7 +240,7 @@ class Gromacs(object):
         if type(self.membrane_complex.complex.monomer) == protein.Monomer:
             posres.append("posre.itp")
         elif type(self.membrane_complex.complex.monomer) == protein.Dimer:
-            posres.extend(["posre_A.itp", "posre_B.itp"])
+            posres.extend(["posre_Protein_chain_A.itp", "posre_Protein_chain_B.itp"])
 
         if hasattr(self.membrane_complex.complex, "waters") and\
             self.membrane_complex.complex.waters:

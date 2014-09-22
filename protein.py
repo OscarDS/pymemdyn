@@ -158,7 +158,9 @@ class Dimer(Monomer):
         super(Dimer, self).__init__(self, *args, **kwargs)
 
         self.chains = kwargs.get("chains")
+        print self.chains
         self.points = dict.fromkeys(self.chains, [])
+
 
     def delete_chain(self):
         '''Overload the delete_chain method from Monomer'''
