@@ -125,6 +125,18 @@ class Gromacs(object):
                 self.n_sol = int(line.split()[0])
         return True
 
+#    def get_ndx_chains(self, **kwargs):
+#        '''get_ndx_chains: Run make_ndx and set the last number id for Proteins found'''
+
+#        out, err = self.wrapper.run_command({"gromacs": "make_ndx",
+#                                             "options": kwargs,
+#                                             "input": "q\n"})
+
+#        for line in out.split("\n"):
+#            if "Protein" in line:
+#                self.n_chains = int(line.split()[0])
+#        return True
+
     def make_ndx(self, **kwargs):
         '''make_ndx: Wraps the make_ndx command tweaking the input to reflect the
         characteristics of the complex'''
@@ -132,10 +144,16 @@ class Gromacs(object):
         if not (self.get_ndx_groups(**kwargs)): return False
         n_group = self.n_groups
 #        n_sol = self.n_groups - 1
+#        print n_group
 
         if not (self.get_ndx_sol(**kwargs)): return False
         n_sol = self.n_sol
-        print n_sol
+#        print n_sol
+#        print n_group
+
+#        if not (self.get_ndx_chains(**kwargs)): return False
+#        n_chains = self.n_chains
+#        print n_chains
 
 #        n_sol = self.n_sol
 
@@ -159,13 +177,14 @@ class Gromacs(object):
 #        input += "1 || r LIG || r ALO\n"           # LEGACY CODE gromacs 4.0.5
         input += " \"Protein\" | r LIG | r ALO \n"
         input += "name {0} protlig\n".format(n_group)
+#        print n_group
 #        print "{0}".format(input)
 
         #Create the "membr" group
         n_group += 1
         input += " r POP | r CHO | r LIP \n"
         input += "name {0} membr\n".format(n_group)
-#        print "{0}".format(input)
+#        print n_group
 
 
         #This makes a separate group for each chain (if more than one)
@@ -173,10 +192,14 @@ class Gromacs(object):
             for chain in self.membrane_complex.complex.monomer.chains:
                 #points = {'A': [1, 4530], 'B': [4532, 9061]}
                 n_group += 1
+#                print n_group
+                #print "{0}".format(input)
+#                print self.membrane_complex.complex.monomer.chains
+#                print self.membrane_complex.complex.monomer.points
                 input += "a {0}-{1}\n".format(
-                    self.membrane_complex.complex.monomer.points[chain][0],
-                    self.membrane_complex.complex.monomer.points[chain][1])
-                input += "name {0} protein_{1}\n".format(n_group, chain)
+                    self.membrane_complex.complex.monomer.points[chain][0], #points of chain A
+                    self.membrane_complex.complex.monomer.points[chain][1]) #points of chain B
+                input += "name {0} Protein_chain_{1}\n".format(n_group, chain)
 
         if hasattr(self.membrane_complex.membrane, "ions"):
             #This makes the group ions TODO
@@ -233,7 +256,7 @@ class Gromacs(object):
         if type(self.membrane_complex.complex.monomer) == protein.Monomer:
             posres.append("posre.itp")
         elif type(self.membrane_complex.complex.monomer) == protein.Dimer:
-            posres.extend(["posre_A.itp", "posre_B.itp"])
+            posres.extend(["posre_Protein_chain_A.itp", "posre_Protein_chain_B.itp"])
 
         if hasattr(self.membrane_complex.complex, "waters") and\
             self.membrane_complex.complex.waters:

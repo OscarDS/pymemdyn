@@ -103,7 +103,7 @@ class Monomer(object):
         self._setHist()
 
     def delete_chain(self):
-        '''PDBs that has a chain column messes with the pdb2gmx, creating
+        '''PDBs which have a chain column mess up with pdb2gmx, creating
         an unsuitable protein.itp file by naming the protein ie "Protein_A".
         Here we remove the chain value
 
@@ -118,7 +118,7 @@ class Monomer(object):
         for line in pdb:
             new_line = line
             if len(line.split()) > 2:
-                #Remove the chain id
+                #Remove chain id
                 if line[21] != " ":
                     replacing = True
                     new_line = list(line) #Transform the line into a list...
