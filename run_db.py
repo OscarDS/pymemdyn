@@ -192,7 +192,7 @@ class Run(object):
         from django.core.mail import send_mail
         email_addr = self.dynamic.pdb.project.user_id.email
 
-        body_msg = ["You can check this dynamic at http://130.238.41.200/",
+        body_msg = ["You can check this dynamic at http://gpcr-modsim.org",
                     "/dynamic/{0}".format(self.dynamic.pk)]
         
         send_mail("GPCR-ModSim ended a Molecular Dynamics Run",

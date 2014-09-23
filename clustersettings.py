@@ -1,8 +1,8 @@
 #import pymoldyn
 import os
 
-PID_FILE = "/home/gpcruser/gpcr_modsim/run/PyroDaemon.pid"
-LOG_FILE = "/home/gpcruser/gpcr_modsim/log/PyroDaemon.log"
+PID_FILE = "/home/gpcruser/gpcr_modsim/run/PyroDaemon2.pid"
+LOG_FILE = "/home/gpcruser/gpcr_modsim/log/PyroDaemon2.log"
 MODEL_LOG_FILE = "/home/gpcruser/gpcr_modsim/log/model_file.log"
 PYTHON_BIN = "/home/apps/bin/python2.7"
 JAVA_PATH = "/usr/java/latest/bin/java"

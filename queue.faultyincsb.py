@@ -4,11 +4,9 @@ import settings
 class Queue(object):
     def __init__(self, *args, **kwargs):
         #Default number of processors, nodes and time alloted in cluster.
-        self.num_proc   = getattr(settings, "QUEUE_NUM_PROCS") or 8
-        self.num_node   = getattr(settings, "QUEUE_NUM_NODES") or 1
-        self.max_time   = getattr(settings, "QUEUE_MAX_TIME") or "72:00:00"
-        self.ntasks     = getattr(settings, "QUEUE_NUM_TASK") or 8
-        self.ntaskpern  = getattr(settings, "QUEUE_NTS_NODE") or 8
+        self.num_proc = getattr(settings, "QUEUE_NUM_PROCS") or 8
+        self.num_node = getattr(settings, "QUEUE_NUM_NODES") or 1
+        self.max_time = getattr(settings, "QUEUE_MAX_TIME") or "72:00:00"
         self.sh = "./mdrun.sh"
 
     def set_mdrun(self, value):
@@ -41,11 +39,9 @@ class NoQueue(Queue):
 class Slurm(Queue):
     def __init__(self, *args, **kwargs):
         super(Slurm, self).__init__(self, *args, **kwargs)
-        self.command = ["srun",
-#            "--ntasks=%s" % str(self.ntasks),
-#            "--ntasks-per-node=%s" % str(self.ntaskpern),
+        self.command = ["sbatch",
 #        self.command = ["srun",
-#            "-n", str(self.num_node),
+#            "-N", str(self.num_node),
             "-c", str(self.num_proc),
             "-t", self.max_time,
             self.sh]
