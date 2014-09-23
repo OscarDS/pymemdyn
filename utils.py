@@ -234,7 +234,7 @@ def make_topol(template_dir = \
              "dimer": {"name": "Protein_chain_B",
                  "itp_name": "protein_Protein_chain_B.itp",
                  "ifdef_name": "POSRES",
-                 "posre_name": "posre_Protein_chain_B.itp"},
+                 "posre_name": "posre_B.itp"},
              "lig": {"itp_name": lig_name,
                  "ifdef_name": "POSRESLIG",
                  "posre_name": "posre_lig.itp"},
@@ -256,7 +256,7 @@ def make_topol(template_dir = \
         comps["protein"] = {"name": "Protein_chain_A",
             "itp_name": "protein_Protein_chain_A.itp",
             "ifdef_name": "POSRES",
-            "posre_name": "posre_Protein_chain_A.itp"}
+            "posre_name": "posre_A.itp"}
 
     src = open(os.path.join(template_dir, "topol.top"), "r")
     tgt = open(os.path.join(target_dir, "topol.top"), "w")

@@ -8,10 +8,9 @@ class BasicInit(object):
                       "set_popc",  "editconf3", "editconf4", "make_topol",
                       "editconf5", "genbox",  "set_water", "editconf6",
                       "editconf7", "genbox2", "count_lipids", "make_topol2",
-                      "make_topol_lipids", "make_ffoplsaanb", "set_grompp", "make_ndx",
+                      "make_topol_lipids", "make_ffoplsaanb", "set_grompp", "set_chains", "make_ndx",
                       "grompp",  "trjconv", "get_charge", "genion", "grompp2",
-                      "trjconv2", "grompp3", "trjconv3", "set_chains"]
-
+                      "trjconv2", "grompp3", "trjconv3"]
 
         # And then we define each step
         self.recipe = \
