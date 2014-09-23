@@ -8,9 +8,10 @@ class BasicInit(object):
                       "set_popc",  "editconf3", "editconf4", "make_topol",
                       "editconf5", "genbox",  "set_water", "editconf6",
                       "editconf7", "genbox2", "count_lipids", "make_topol2",
-                      "make_topol_lipids", "make_ffoplsaanb", "set_grompp", "set_chains", "make_ndx",
-                      "grompp",  "trjconv", "get_charge", "genion", "grompp2",
-                      "trjconv2", "grompp3", "trjconv3"]
+                      "make_topol_lipids", "make_ffoplsaanb", "set_grompp",
+                      "set_chains", "make_ndx", "grompp",  "trjconv",
+                      "get_charge", "genion", "grompp2", "trjconv2",
+                      "grompp3", "trjconv3"]
 
         # And then we define each step
         self.recipe = \
@@ -114,18 +115,21 @@ class BasicInit(object):
                        "ffoplsaabon_mod.itp": "ffoplsaabon_mod.itp",
                        "ffoplsaa_mod.itp": "ffoplsaa_mod.itp"}},
 
-         "make_ndx": {"command": "make_ndx", #2
+         "set_chains": {"command": "set_chains",#23
+          "options": {"src": "proteinopls.pdb"}},
+
+         "make_ndx": {"command": "make_ndx", #24
           "options": {"src": "tmp.pdb",
                       "tgt": "index.ndx"}},
 
-         "grompp": {"gromacs": "grompp", #23
+         "grompp": {"gromacs": "grompp", #25
           "options": {"src": "steep.mdp", # src defined in generate_command of gromacs.py
                        "src2": "tmp.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top",
                        "index":"index.ndx"}},
 
-         "trjconv": {"gromacs": "trjconv", #24
+         "trjconv": {"gromacs": "trjconv", #26
           "options": {"src": "tmp.pdb",
                        "src2": "topol.tpr",
                        "tgt": "tmp.pdb",
@@ -133,14 +137,14 @@ class BasicInit(object):
                        "index": "index.ndx"},
           "input": "1\n0\n"},
 
-         "get_charge": {"command": "get_charge", #25
+         "get_charge": {"command": "get_charge", #27
           "options": {"src": "steep.mdp",
                        "src2": "tmp.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top",
                        "index": "index.ndx"}},
 
-         "genion": {"gromacs": "genion", #26
+         "genion": {"gromacs": "genion", #28
           "options": {"src": "topol.tpr",
                        "tgt": "output.pdb",
                        "src2": "topol.top",
@@ -148,15 +152,14 @@ class BasicInit(object):
                        "np": "",
                        "nn": ""},
           "input": " SOL \n"},
-#THE PREVIOUS LINE NEEDS A FIXIN!!!
 
-         "grompp2": {"gromacs": "grompp", #27
+         "grompp2": {"gromacs": "grompp", #29
           "options": {"src": "steep.mdp",
                        "src2": "output.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}},
 
-         "trjconv2": {"gromacs": "trjconv", #28
+         "trjconv2": {"gromacs": "trjconv", #30
           "options": {"src": "output.pdb",
                        "src2": "topol.tpr",
                        "tgt": "output.pdb",
@@ -164,22 +167,19 @@ class BasicInit(object):
                        "pbc": "mol"},
           "input": "0\n"},
 
-         "grompp3": {"gromacs": "grompp", #29
+         "grompp3": {"gromacs": "grompp", #31
           "options": {"src": "steep.mdp",
                        "src2": "output.pdb",
                        "tgt": "topol.tpr",
                        "top": "topol.top"}},
 
-         "trjconv3": {"gromacs": "trjconv", #30
+         "trjconv3": {"gromacs": "trjconv", #32
           "options": {"src": "output.pdb",
                        "src2": "topol.tpr",
                        "tgt": "hexagon.pdb",
                        "ur": "compact",
                        "pbc": "mol"},
           "input": "1\n0\n"},
-
-         "set_chains": {"command": "set_chains",#31
-          "options": {"src": "proteinopls.pdb"}},
            }
 
         self.breaks = \
@@ -318,8 +318,8 @@ class BasicEquilibration(object):
                       "tgt_dir": "eq"}},
          "set_stage_init2": {"command": "set_stage_init", #5
           "options": {"src_dir": "",
-                      "src_files": ["topol.tpr", "posre.itp", "posre_A.itp",
-                                   "posre_B.itp", "posre_hoh.itp",
+                      "src_files": ["topol.tpr", "posre.itp", "posre_Protein_chain_A.itp",
+                                   "posre_Protein_chain_B.itp", "posre_hoh.itp",
                                    "posre_ion.itp", "posre_lig.itp",
                                    "posre_alo.itp", "posre_cho.itp"],
                       "tgt_dir": "eq"}},
