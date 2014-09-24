@@ -61,7 +61,7 @@ receptor centered in the box, type:
 
 echo 1 0 | trjconv -pbc mol -center -ur compact -f confout.gro -o confout.pdb
 
-NOTE: these tips work for GROMACS version 4.0.5.
+NOTE: these tips work for GROMACS version 4.6.5.
 
 [1] Rodríguez D., Piñeiro Á. and Gutiérrez-de-Terán H.: Molecular Dynamics Simulations Reveal Insights into Key Structural
 Elements of Adenosine Receptors (2011) Biochemistry. 50(19):4194-208
