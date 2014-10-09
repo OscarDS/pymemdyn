@@ -47,8 +47,8 @@ pcoupltype          =  semiisotropic
 refcoord_scaling    =  com
 
 ; Generation of Velocities
-gen_vel             =  yes
-gen_temp            =  310
-gen_seed            =  -1
+;gen_vel             =  yes
+;gen_temp            =  310
+;gen_seed            =  -1
 
 

@@ -116,7 +116,7 @@ vertical axis  of the  membrane. The system  is then soaked  with bulk
 water  and  inserted into  an  hexagonal  prism-shaped  box, which  is
 energy-minimized  and  carefully  equilibrated  in  the  framework  of
 periodic  boundary  conditions  (PBC).  A  thorough  MD  equilibration
-protocol lasting 2.5 ns follows.
+protocol lasting 5.0 ns follows.
 
 But the  simulation of an isolated  receptor can only  account for one
 part  of  the problem,  and  the  influence  of different  non-protein
@@ -147,10 +147,10 @@ platform provided that the following dependencies are installed:
 \item {Gromacs 4.0.5 for version 1.0}
 \item {Gromacs 4.6.5 for version 1.1}
 \item  {A queuing  system:  although not  strictly  required, this  is
-  highly advisable since  an MD simulation of 2.5  nanoseconds will be
+  highly advisable since  an MD simulation of 5.0  nanoseconds will be
   performed.   However,  if   only  membrane   insertion   and  energy
   minimization    is    requested,    this    requirement    can    be
-  avoided. Currently, the queuing  systems supported include Slurm and
+  avoided. Currently, the queuing  systems supported include SLURM and
   PBS.}
 \end{itemize}
 
@@ -201,14 +201,14 @@ source .bashrc
 or open a new terminal.\\
 
 To check if you have defined the route to the \textit{pymemdyn} 
-directory correctly try to run the main program called run.py in
+directory correctly try to run the main program called pymemdyn in
 a terminal:
 \begin{Verbatim}
-run.py --help
+pymemdyn --help
 \end{Verbatim}
 You should obtain the following help output:
 \begin{Verbatim}
-usage: run.py [-h] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
+usage: pymemdyn [-h] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
               [--alo ALOSTERIC] [--waters WATERS] [--ions IONS] [--cho CHO]
               [-q QUEUE] [--debug]
 
@@ -281,17 +281,20 @@ will   prepend  this line to the names of the binaries.  So   calling
   testing in standalone in your desktop.}
 \end{enumerate}
 
-\begin{itemize}
-\item{COMPULSORY! -p option: 
+\section*{ - Use}
 
-In  the simplest case, \textbf{py-MEMdyn}
-  only needs a pdb file with the receptor.  This should be readable by
-  Gromacs (i.e., comply  to PDB standards, see the  GROMACS manual for
-  details) and accessed  from the working directory. And  as the error
-  says, this is the bare minimum  to perform an MD simulation! we will
-  assume  that the  file is  called gpcr.pdb.  Thus:
+\begin{itemize}
+\item{COMPULSORY! -p option:
+
+In the  simplest case, \textbf{py-MEMdyn}  only needs a pdb  file with
+the receptor.  This should be readable by Gromacs (i.e., comply to PDB
+standards, see the  GROMACS manual for details) and  accessed from the
+working  directory. If  the  -p  switch is  missing  an error  message
+informs you that this is the bare minimum you need to tell the program
+to perform  an MD simulation. We  will assume that the  file is called
+gpcr.pdb.  Thus:
 \begin{Verbatim}
-run.py -p gpcr.pdb
+pymemdyn -p gpcr.pdb
 \end{Verbatim}
   should work!}
 
@@ -324,12 +327,12 @@ with  the  OPLS  forcefield  in  the  Gromacs  standard  nomenclature.}
   file is  generally non-existing and  the parameters listed  here are
   merged   onto    the   standard    forcefield   file    in   gromacs
   (i.e.  ffoplsaa.itp). But  in  our  protocol, this  is  needed as  a
-  separate file.}  run.py -p gpcr.pdb -l lig
+  separate file.}  pymemdyn -p gpcr.pdb -l lig
 \end{itemize}
 \item{Option --alo  (specifying an allosteric ligand):  This should be
   treated exactly the same as  the ligand: if the allosteric modulator
   is  called allo,  we  need  to have  alo.pdb,  alo.itp and  alo.ff.}
-  run.py -p gpcr.pdb --alo alo 
+  pymemdyn -p gpcr.pdb --alo alo 
 \item{Option --water (specifying structural
   waters):  If structural  waters are  present (i.e.,  coming  from an
   x-ray structure)  these should  be included as  a separate  pdb file
@@ -360,7 +363,7 @@ with  the  OPLS  forcefield  in  the  Gromacs  standard  nomenclature.}
 \noindent To summarize, the following command should work for the most 
 complex scenario:
 \begin{Verbatim}
-run.py -p gpcr.pdb --lig lig --waters hoh --alo alo --cho cho
+pymemdyn -p gpcr.pdb --lig lig --waters hoh --alo alo --cho cho
 \end{Verbatim}
 
 \section*{ - Running with queues}
@@ -372,15 +375,15 @@ the scripts folder  of the source code, you'll find  some files called
 queue objects  in the source file  queue.py we have to  tweak for each
 queue.  If you want to run  your simulation in a supported queue, copy
 the  ``run\_queuename.sh'' file  to your  working directory,  and edit
-it. e.g.   the workdir to  run an a2a.pdb simulation  in csb.bmc.uu.se
-looks like:
+it. e.g.  the script to submit an a2a.pdb simulation to csb queue look
+like so:
 \begin{Verbatim}
 \$!/bin/bash   
 #!/bin/bash
 echo "#!/bin/bash -l
 source /home/apps/gromacs-4.6.5/bin/GMXRC.bash
 source /home/apps/bin/apps.sh
-run.py -p a2a_ag.pdb -l lig  --cho cho
+pymemdyn -p a2a_ag.pdb -l lig  --cho cho
 " > temp.sh
 chmod +x temp.sh
 sbatch -n 8 -t 47:59:00 -J pymemdyn temp.sh
@@ -398,12 +401,12 @@ If you are to set up a new system, it is a good idea to just run a few
 steps of  each stage in the  equilibration protocol just to  test that
 the pdb  file is  read correctly  and the  membrane-insertion protocol
 works fine  and the system can  be minimized and does  not ``explode''
-during the equilibration protocol (i.e., detect if atom clashes and so
-on exist on your system).
+during the equilibration protocol (i.e., detect atom clashes and if other 
+issues exist in your system).
 
 To do this, use the --debug option, like:
 \begin{Verbatim}
-run.py -p gpcr.pdb --lig lig --waters hoh --debug
+pymemdyn -p gpcr.pdb --lig lig --waters hoh --debug
 \end{Verbatim}
 
 If everythings works fine, you will see the list of output directories
@@ -421,7 +424,7 @@ debugging option, or  ii) identify the hot atoms  (check the mdrun.log
 file  in  the  last  subdirectory  that was  written  in  your  output
 (generally eq/mdrun.log  and look for  ``LINCS WARNING'').  What  if you
 want to check partial functions of  pymoldyn?  In order to do this you
-must edit  the file run.py  and change: 
+must edit  the file pymemdyn  and change: 
 \begin{enumerate}
 \item{Line 211 comment  with ``\#''
 this line  [that states: run.clean()],  which is the one  that deletes
