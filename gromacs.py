@@ -702,7 +702,7 @@ class Wrapper(object):
         return ["-p", self._setDir(kwargs["top"]),
                 "-i", self._setDir("posre.itp"),
                 "-ignh", "-ff", "oplsaa", "-water", "spc"]
-    
+   #                "-ignh", "-ff", "oplsaa", "-water", "spc", "-ter"] #addition for the NPY-NH2 capping 
     def _mode_tpbconv(self, kwargs):
         '''_mode_tpbconv: Wrap the tpbconv command options'''
         return ["-s", self._setDir(kwargs["src"]),
