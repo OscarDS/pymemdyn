@@ -702,7 +702,8 @@ class Wrapper(object):
         return ["-p", self._setDir(kwargs["top"]),
                 "-i", self._setDir("posre.itp"),
                 "-ignh", "-ff", "oplsaa", "-water", "spc"]
-   #                "-ignh", "-ff", "oplsaa", "-water", "spc", "-ter"] #addition for the NPY-NH2 capping 
+   #                "-ignh", "-ff", "oplsaa", "-water", "spc", "-ter"] #addition for the NPY-NH2 capping
+
     def _mode_tpbconv(self, kwargs):
         '''_mode_tpbconv: Wrap the tpbconv command options'''
         return ["-s", self._setDir(kwargs["src"]),
@@ -722,11 +723,13 @@ class Wrapper(object):
         return command
 
     def _mode_trjconv(self, kwargs):
-        '''_mode_trjconv: Wrap the trjconf command options'''
+        '''_mode_trjconv: Wrap the trjconv command options'''
         command = ["-s", self._setDir(kwargs["src2"]),
                    "-pbc", kwargs["pbc"]]
         if "ur" in kwargs.keys():
             command.extend(["-ur", kwargs["ur"]])
+        if "skip" in kwargs.keys():
+            command.extend(["-skip", kwargs["skip"]])
         if "trans" in kwargs.keys():
             command.extend(["-trans"])
             command.extend([str(x) for x in kwargs["trans"]])

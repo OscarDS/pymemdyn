@@ -492,8 +492,9 @@ class BasicCollectResults(object):
             "trjconv": {"gromacs": "trjconv", #27
                 "options": {"src": "traj_EQ.xtc",
                      "src2": "topol.tpr",
-                     "tgt": "traj_out.xtc",
+                     "tgt": "traj_pymol.xtc",
                      "ur": "compact",
+                     "skip": "2",
                      "pbc": "mol"},
                 "input": "1\n0\n"},
             "eneconv": {"gromacs": "eneconv", #2
@@ -515,9 +516,10 @@ class BasicCollectResults(object):
                 "input": "c\n" * 6},
             "set_end": {"command": "set_stage_init", #9
                 "options": {"src_dir": "eqCA",
-                    "src_files": ["traj.xtc", "confout.gro", "topol.tpr"],
+#                    "src_files": ["traj.xtc", "confout.gro", "topol.tpr"],
+                    "src_files": ["confout.gro", "topol.tpr"],
                     "repo_files": ["popc.itp", "README.txt",
-                        "prod.mdp"],
+                        "prod.mdp", "load_gpcr.pml"],
                     "tgt_dir": "finalOutput"}},
             "clean_topol": {"command": "clean_topol",
                 "options": {"src": "topol.top",
@@ -527,7 +529,7 @@ class BasicCollectResults(object):
                     "src_files": ["ffoplsaa_mod.itp", "ffoplsaabon_mod.itp",
                         "ffoplsaanb_mod.itp", "hexagon.pdb", "protein.itp",
                         "index.ndx", "traj_EQ.xtc", "ener_EQ.edr", "rmsd.xvg",
-                        "traj_out.xtc"],
+                        "traj_pymol.xtc"],
                     "tgt_dir": "finalOutput"}},
             "set_end_3": {"command": "set_stage_init", #9
                 "options": {"src_dir": "",
