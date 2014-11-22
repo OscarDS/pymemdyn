@@ -277,7 +277,7 @@ class Gromacs(object):
 
                 # Some commands are unable to log via flag, so we catch and
                 # redirect stdout and stderr
-                if command["gromacs"] in ["g_energy"]:
+                if command["gromacs"] in ["g_energy_mpi"]:
                     self.manual_log(command, out)
                 
             else:

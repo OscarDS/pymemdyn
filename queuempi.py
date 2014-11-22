@@ -3,9 +3,13 @@ import settings
 
 class Queue(object):
     def __init__(self, *args, **kwargs):
-        #Default number of processors to be used
-        self.num_proc = getattr(settings, "QUEUE_NUM_PROCS") or 8
-        self.max_time = getattr(settings, "QUEUE_MAX_TIME") or "50:00:00"
+        #Default number of processors, nodes and time alloted in cluster.
+        self.num_proc   = getattr(settings, "QUEUE_NUM_PROCS") or 8  # c
+        self.num_node   = getattr(settings, "QUEUE_NUM_NODES") or 1  # N
+        self.ntasks     = getattr(settings, "QUEUE_NUM_TASK") or 8   # n
+        self.max_time   = getattr(settings, "QUEUE_MAX_TIME") or "72:00:00"
+        self.projnum    = getattr(settings, "PROJECT_NUM") or  snic2014-1-262 
+#        self.ntaskpern  = getattr(settings, "QUEUE_NTS_NODE") or 8
         self.sh = "./mdrun.sh"
 
     def set_mdrun(self, value):
@@ -21,7 +25,8 @@ class NoQueue(Queue):
         super(NoQueue, self).__init__(self, *args, **kwargs)
         self.command = [self.sh]
 
-        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun")
+#        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun")
+        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") #For triolith
 
     def make_script(self, workdir, options):
         '''binary is the executable
@@ -29,7 +34,7 @@ class NoQueue(Queue):
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
         sh.write("cd %s\n" % workdir)
-        sh.write("%s %s\n" % (self.mdrun, " ".join(options)))
+        sh.write("mpprun %s %s\n" % (self.mdrun, " ".join(options)))
         sh.close()
         os.chmod(self.sh, 0755)
 
@@ -38,15 +43,18 @@ class NoQueue(Queue):
 class Slurm(Queue):
     def __init__(self, *args, **kwargs):
         super(Slurm, self).__init__(self, *args, **kwargs)
-        self.command = ["srun",
-#            "-n", str(self.num_proc),
-            "-c", str(self.num_proc),
+        self.command = ["sbatch",
+#        self.command = ["srun",
+            "-n", str(self.ntasks),
+#            "-N", str(self.num_node),
+#            "-c", str(self.num_proc),
+            "-A", str(self.projnum),
             "-t", self.max_time,
             self.sh]
 
 #        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_slurm") #FOR CUELEBRE
 #        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun") # FOR CSB
-        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") # FOR TRIOLITH
+        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") # FOR triolith
 
     def make_script(self, workdir, options):
         '''binary is the executable
@@ -56,14 +64,11 @@ class Slurm(Queue):
 #        sh.write("source /home/apps/gromacs-4.6.5/bin/GMXRC\n")
 #        sh.write("source /home/apps/bin/apps.sh\n")
 #        sh.write("module load openmpi-x86_64\n")
-
-# FOR TRIOLITH CLUSTER        
-#        sh.write("module load gromacs/4.6.3 \n")
-#        sh.write("module load python/2.7.6 \n")
-#        sh.write("module load openmpi/1.6.4-build1 \n")
-        sh.write("cd %s\n" % workdir)
+        sh.write("cd %s  \n" % workdir)
 #        sh.write("%s -ntmpi 16 -ntomp 1  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
-        sh.write("%s  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))        
+#        sh.write("%s -nt 8 %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))        
+#        sh.write("%s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))        
+        sh.write("mpprun %s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options))) # Triolith needs mpprun
         sh.close()
         os.chmod(self.sh, 0755)
 
@@ -76,10 +81,10 @@ class PBS(Queue):
         '''Setting the command to run mdrun in pbs queue with mpi'''
         # These values are here for reference, doesn't do NOTHING      #
         # Calling file run.sh should resemble this lines               #
-        self.num_nodes = 5                                             #
+        self.num_nodes = 1                                             #
         self.proc_per_node = 8                                         #
-        self.max_time = getattr(settings, "QUEUE_MAX_TIME") or "36:00:00"#
-        self.max_cpu_time = "1440:00:00"                               #
+        self.max_time = getattr(settings, "QUEUE_MAX_TIME") or "72:00:00"#
+        self.max_cpu_time = "72:00:00"                                 #
         self.max_mem = "12gb"                                          #
         self.command = ["qsub",                                        #
             "-nodes=%d:ppn=%d" % (self.num_nodes, self.proc_per_node), #
@@ -90,7 +95,8 @@ class PBS(Queue):
                                                                        #
         # XXX ##########################################################
 
-        self._mdrun=os.path.join(settings.GROMACS_PATH, "mdrun_mpi")
+#        self._mdrun=os.path.join(settings.GROMACS_PATH, "mdrun_mpi")
+        self._mdrun=os.path.join(settings.GROMACS_PATH, "mdrun_")
         self.command = [self.sh]
 
     def make_script(self, workdir, options):
