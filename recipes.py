@@ -464,6 +464,44 @@ class BasicCARelax(object):
 #                Inter-helical Restraints Relaxation                     #
 ##########################################################################
 
+class BasicBWRelax(object):
+    def __init__(self, **kwargs):
+        self.steps = ["set_stage_init", "genrestr", "grompp", "mdrun"]
+        self.recipe = {
+             "set_stage_init": {"command": "set_stage_init", #1
+              "options": {"src_dir": "eq",
+                          "tgt_dir": "eqBW",
+                          "src_files": ["confout.gro"],
+                          "repo_files": ["eqBW.mdp"]}},
+             "genrestr": {"gromacs": "genrestr", #2
+              "options": {"src": "Rmin/topol.tpr",
+                          "tgt": "posre.itp",
+                          "index": "index.ndx",
+                          "forces": ["200"] * 3},
+              "input": "3\n"},
+             "grompp": {"gromacs": "grompp", #3
+              "options": {"src": "eqBW/eqBW.mdp",
+                          "src2": "eqBW/confout.gro",
+                          "top": "topol.top",
+                          "tgt": "eqBW/topol.tpr",
+                          "index": "index.ndx"}},
+             "mdrun": {"gromacs": "mdrun", #4
+              "options": {"dir": "eqBW",
+                          "src": "topol.tpr",
+                          "tgt": "traj.trr",
+                          "energy": "ener.edr",
+                          "conf": "confout.gro",
+                          "traj": "traj.xtc",
+                          "log": "md_eqBW.log"}},
+        }
+
+        self.breaks = {}
+
+        if kwargs["debug"] or False:
+            self.recipe["set_stage_init"]["options"]["src_files"] =\
+                ["confout.gro", "eqDEBUG.mdp"]
+            self.recipe["grompp"]["options"]["src"] = "eqBW/eqDEBUG.mdp"
+
 ##########################################################################
 #                    Collect all results & outputs                       #
 ##########################################################################

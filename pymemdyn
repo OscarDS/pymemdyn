@@ -147,10 +147,11 @@ class Run(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
+        prog='pymemdyn',
+        version='1.1',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        description = textwrap.dedent('''\
-    == Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
-    '''))
+        description = ' == Setup Molecular Dynamics for Membrane Proteins given a PDB. == ')
+#        description = textwrap.dedent('''\ == Setup Molecular Dynamics for Membrane Proteins given a PDB. == '''))
 
     parser.add_argument('-b',
         dest = "own_dir",
@@ -170,6 +171,8 @@ if __name__ == "__main__":
         help = "Name of the ligand, without extension. Three files must be \
             present along with the molecule pdb: the ligand, its itp and \
             its force field.")
+    parser.add_argument('-l',
+        dest = "ligand")    
     parser.add_argument("--alo",
         dest = "alosteric",
         help = "Name of the alosteric interaction, without extension. Three \
@@ -191,7 +194,11 @@ if __name__ == "__main__":
         default = settings.QUEUE)
     parser.add_argument('--debug',
         action="store_true")
+#    parser.add_argument('--version',
+#        action='version',
+#        version="1.1")
 #    parser.add_argument('--clean',
+#        action=Run.clean)    
 #                        )
     
     args = parser.parse_args()

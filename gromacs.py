@@ -77,7 +77,7 @@ class Gromacs(object):
         charge = 0
         for line in err.split("\n"):
             if "total charge" in line:
-#In gromacs 4.6.5 the charge is not displayed in scientific notation.
+# In gromacs 4.6.5 the charge is not displayed in scientific notation.
 # so this will result in giving a charge of 5, for a charge of 5.99999
 #                charge = abs(int(float(line.split()[-1])))
                 charge = abs(int(round(float(line.split()[-1]))))
@@ -702,7 +702,8 @@ class Wrapper(object):
         return ["-p", self._setDir(kwargs["top"]),
                 "-i", self._setDir("posre.itp"),
                 "-ignh", "-ff", "oplsaa", "-water", "spc"]
-   #                "-ignh", "-ff", "oplsaa", "-water", "spc", "-ter"] #addition for the NPY-NH2 capping
+#                "-ignh", "-ff", "oplsaa", "-water", "spc", "-chainsep", "id_or_ter", "-merge", "all"]
+#                "-ignh", "-ff", "oplsaa", "-water", "spc", "-ter"] #addition for the NPY-NH2 capping
 
     def _mode_tpbconv(self, kwargs):
         '''_mode_tpbconv: Wrap the tpbconv command options'''
