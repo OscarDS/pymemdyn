@@ -63,9 +63,9 @@ particle mesh  Ewald method.  We  use a Nose-Hoover thermostat  with a
 tau_t of 0.5 picoseconds and  a Parinello-Rahman barostat with a tau_p
 of 2.0.   The pressure  coupling is  semiisotropic, meaning  that it's
 isotropic in the x and y  directions but different in the z direction.
-Since  we are  using  pressure  coupling we  are  working  with a  NPT
+Since  we are  using  pressure coupling  we are  working  with an  NPT
 ensemble. This  is done both in  the all-atom restrained steps  and in
-the alpha-carbon  atom restrained part.  All of this details  are more
+the alpha-carbon atom restrained part.   All of these details are more
 explicitly stated in the Rodriguez et al. [1] publication.
 
 
@@ -77,12 +77,12 @@ of steps (nsteps), and thus the simulation time, you want to run.
 
 After that, you just have to type:
 
-grompp -f prod.mdp -c confout.gro -p topol.top -n index.ndx -o topol_prod.tpr
+    grompp -f prod.mdp -c confout.gro -p topol.top -n index.ndx -o topol_prod.tpr
 
 - If  you  want  to  create  a  PDB file  of  your  system  after  the
 equilibration, with the receptor centered in the box, type:
 
-echo 1 0 | trjconv -pbc mol -center -ur compact -f confout.gro -o confout.pdb
+    echo 1 0 | trjconv -pbc mol -center -ur compact -f confout.gro -o confout.pdb
 
 NOTE: these tips work for GROMACS version >= 4.5
 
