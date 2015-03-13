@@ -165,30 +165,29 @@ if __name__ == "__main__":
     parser.add_argument('-p',
         dest = "pdb",
         required = True,
-        help = "Name of the pdb to insert into MD (mandatory)")
-    parser.add_argument('--lig',
+        help = "Name of the pdb to insert into membrane for MD (mandatory). \
+	    Use the pdb extension. (e.g. -p myprot.pdb)")
+    parser.add_argument('-l', '--lig',
         dest = "ligand",
         help = "Name of the ligand, without extension. Three files must be \
             present along with the molecule pdb: the ligand, its itp and \
             its force field.")
-    parser.add_argument('-l',
-        dest = "ligand")    
-    parser.add_argument("--alo",
+    parser.add_argument('-a', "--alo",
         dest = "alosteric",
         help = "Name of the alosteric interaction, without extension. Three \
             files must be present along with the molecule pdb: the alosteric, \
             its itp and its force field.")
-    parser.add_argument('--waters',
+    parser.add_argument('-w','--waters',
         dest="waters",
         help = "Crystalized water molecules. File name without extension.")
-    parser.add_argument('--ions',
+    parser.add_argument('-i', '--ions',
         dest="ions",
         help = "Crystalized ions file name without extension.")
-    parser.add_argument('--cho',
+    parser.add_argument('-c', '--cho',
         dest="cho",
         help = "Crystalized cholesterol molecules file name\
             without extension.")
-    parser.add_argument('-q',
+    parser.add_argument('-q', '--queue',
         dest = "queue",
         help = "Queueing system to use (slurm, pbs, pbs_ib and svgd supported)",
         default = settings.QUEUE)
