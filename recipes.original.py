@@ -473,7 +473,7 @@ class BasicCollectResults(object):
             "set_end": {"command": "set_stage_init", #9
                 "options": {"src_dir": "eqCA",
                     "src_files": ["traj.xtc", "confout.gro", "topol.tpr"],
-                    "repo_files": ["popc.itp", "README.txt",
+                    "repo_files": ["popc.itp", "README.md",
                         "prod.mdp"],
                     "tgt_dir": "finalOutput"}},
             "clean_topol": {"command": "clean_topol",
