@@ -53,13 +53,13 @@ To install **py-MEMdyn** follow these steps:
     or open a new terminal.
 
     To check if you have defined the route to the *pymemdyn* directory
-    correctly try to run the main program called run.py in a terminal:
+    correctly try to run the main program called pymemdyn in a terminal:
 
-        run.py --help
+        pymemdyn --help
 
     You should obtain the following help output:
 
-        usage: run.py [-h] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
+        usage: pymemdyn [-h] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
                       [--alo ALOSTERIC] [--waters WATERS] [--ions IONS] [--cho CHO]
                       [-q QUEUE] [--debug]
 
@@ -148,17 +148,13 @@ and can then be passed  to other objects.
 - **example.py**  An example  showing how  to use  the  previously defined
   libraries.
 
-- **run.py** The main program to call which sends the run to a cluster.
+- **pymemdyn** The main program to call which sends the run to a cluster.
 
 
 Changelog
 --------------------------------------------------------------------------------
 
 ### Changes from version 1.0 to 1.1
-
-- Thursday, March 12, 2015
-
-
 
 - Tuesday, July 15, 2014
 
