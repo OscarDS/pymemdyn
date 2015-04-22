@@ -4,28 +4,28 @@ pyMEMdyn Version 1.1
 pyMEMdyn is  a standalone python  package to setup  membrane molecular
 dynamics  calculations  using the  **GROMACS**  set  of programs.  The
 package can be  used either in a desktop environment,  or in a cluster
-with popular queuing systems such as Torque or Slurm.
+with popular queuing systems such as Torque or Slurm.  
 
 
-**py-MEMdyn** is hosted in a bitbucket repository at:
+**py-MEMdyn** is hosted in a bitbucket repository at:  
 
-<https://bitbucket.org/gpcrmodsim/pymemdyn.git>
+<https://bitbucket.org/gpcrmodsim/pymemdyn.git>  
 
 You can download any version of **py-MEMdyn** by cloning the repository
-to your local machine using git.
+to your local machine using git.  
 
 You will need to create a free personal account at bitbucket and send
 and e-mail to: [gpcruser@gmail.com](gpcruser@gmail.com) and you will be
-given access to the free repository.
+given access to the free repository.  
 
-To install **py-MEMdyn** follow these steps:
+To install **py-MEMdyn** follow these steps:  
 
 1.  Clone the current version of **py-MEMdyn**
 
         git clone https://username@bitbucket.org/gpcrmodsim/pymemdyn.git
 
     Make sure to change *username* to the one you have created at
-    bitbucket.
+    bitbucket.  
 
 2.  The previous command will create a *pymemdyn* directory. Now you
     have to tell your operating system how to find that folder. You
@@ -83,14 +83,14 @@ To install **py-MEMdyn** follow these steps:
                            extension.
           -q QUEUE         Queueing system to use (slurm, pbs, pbs_ib and svgd
                            supported)
-          --debug
+          --debug  
 
 3.  Updates are very easy thanks to the git versioning system. Once
     **py-MEMdyn** has been downloaded into its own *pymemdyn* folder you
     just have to move to it and pull the newest changes:
 
         cd /home/username/software/pymemdyn
-        git pull 
+        git pull   
 
 4.  You can also clone older stable versions of **py-MEMdyn**. For
     example the stable version 1.0 which works well and has been tested
@@ -100,7 +100,7 @@ To install **py-MEMdyn** follow these steps:
         --branch stable/1.0 --single-branch pymemdyn-1.0
 
     Now you will have to change your .bashrc or .cshrc files in your
-    home folder accordingly.
+    home folder accordingly.  
 
 5.  To make sure that your gromacs installation is understood by
     **py-MEMdyn** you will need to specify the path to where Gromacs is
@@ -110,7 +110,7 @@ To install **py-MEMdyn** follow these steps:
     uncommented, looking like: GROMACS\_PATH = /opt/gromacs405/bin
     Provided that in your case gromacs is installed in /opt. The program
     will prepend this line to the binaries names, so calling
-    “/opt/gromacs405/bin/grompp” should point to that binary.
+    “/opt/gromacs405/bin/grompp” should point to that binary.  
 
 
 ### Modeling Modules 
