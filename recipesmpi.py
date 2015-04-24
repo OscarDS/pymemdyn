@@ -1,5 +1,8 @@
 import os
 
+##########################################################################
+#                 Initialization                                         #
+##########################################################################
 class BasicInit(object):
     def __init__(self, **kwargs):
         # First we make a list of ordered steps
@@ -151,7 +154,7 @@ class BasicInit(object):
                        "index": "index.ndx",
                        "np": "",
                        "nn": ""},
-          "input": " SOL \n"},
+          "input": "SOL\n"},
 
          "grompp2": {"gromacs": "grompp_mpi", #29
           "options": {"src": "steep.mdp",
@@ -269,7 +272,7 @@ class BasicMinimization(object):
                       "src_files": ["topol.tpr"],
                       "tgt_dir": "Rmin",
                       "repo_files": ["eq.mdp"]}},
-         "mdrun": {"gromacs": "mdrun_mpi", #2
+         "mdrun": {"gromacs": "mdrun", #2
           "options": {"dir": "Rmin",
                       "src": "topol.tpr",
                       "tgt": "traj.trj",
@@ -300,30 +303,30 @@ class BasicEquilibration(object):
         self.steps = ["editconf", "make_ndx", "grompp", "set_stage_init",
                       "set_stage_init2", "mdrun"]
         self.recipe = {
-         "editconf": {"gromacs": "editconf_mpi", #1
+         "editconf": {"gromacs": "editconf_mpi", #0
           "options": {"src": "Rmin/confout.gro",
                       "tgt": "min.pdb"}},
-         "make_ndx": {"command": "make_ndx", #2
+         "make_ndx": {"command": "make_ndx", #1
           "options": {"src": "min.pdb",
                       "tgt": "index.ndx"}},
-         "grompp": {"gromacs": "grompp_mpi", #3
+         "grompp": {"gromacs": "grompp_mpi", #2
           "options": {"src": "Rmin/eq.mdp",
                       "src2": "min.pdb",
                       "top": "topol.top",
                       "tgt": "topol.tpr",
                       "index":"index.ndx"}},
-         "set_stage_init": {"command": "set_stage_init", #4
+         "set_stage_init": {"command": "set_stage_init", #3
           "options": {"src_dir": "Rmin",
                       "src_files": ["eq.mdp"],
                       "tgt_dir": "eq"}},
-         "set_stage_init2": {"command": "set_stage_init", #5
+         "set_stage_init2": {"command": "set_stage_init", #4
           "options": {"src_dir": "",
                       "src_files": ["topol.tpr", "posre.itp", "posre_Protein_chain_A.itp",
                                    "posre_Protein_chain_B.itp", "posre_hoh.itp",
                                    "posre_ion.itp", "posre_lig.itp",
                                    "posre_alo.itp", "posre_cho.itp"],
                       "tgt_dir": "eq"}},
-         "mdrun": {"gromacs": "mdrun_mpi", #6
+         "mdrun": {"gromacs": "mdrun", #5
           "options": {"dir": "eq",
                       "src": "topol.tpr",
                       "tgt": "traj.trr",
@@ -394,7 +397,7 @@ class BasicRelax(object):
                           "index": "index.ndx"}}
             #TODO ese confout.gro de abaixo hai que copialo, non vale asi
             self.recipe["mdrun%d" % const] =\
-             {"gromacs": "mdrun_mpi", #3, 6, 9, 12
+             {"gromacs": "mdrun", #3, 6, 9, 12
               "options": {"dir": tgt_dir,
                           "src": "topol.tpr",
                           "tgt": "traj.trr",
@@ -443,7 +446,7 @@ class BasicCARelax(object):
                           "top": "topol.top",
                           "tgt": "eqCA/topol.tpr",
                           "index": "index.ndx"}},
-             "mdrun": {"gromacs": "mdrun_mpi", #4
+             "mdrun": {"gromacs": "mdrun", #4
               "options": {"dir": "eqCA",
                           "src": "topol.tpr",
                           "tgt": "traj.trr",
@@ -459,48 +462,6 @@ class BasicCARelax(object):
             self.recipe["set_stage_init"]["options"]["src_files"] =\
                 ["confout.gro", "eqDEBUG.mdp"]
             self.recipe["grompp"]["options"]["src"] = "eqCA/eqDEBUG.mdp"
-
-##########################################################################
-#                Inter-helical Restraints Relaxation                     #
-##########################################################################
-
-class BasicBWRelax(object):
-    def __init__(self, **kwargs):
-        self.steps = ["set_stage_init", "genrestr", "grompp", "mdrun"]
-        self.recipe = {
-             "set_stage_init": {"command": "set_stage_init", #1
-              "options": {"src_dir": "eq",
-                          "tgt_dir": "eqBW",
-                          "src_files": ["confout.gro"],
-                          "repo_files": ["eqBW.mdp"]}},
-             "genrestr": {"gromacs": "genrestr_mpi", #2
-              "options": {"src": "Rmin/topol.tpr",
-                          "tgt": "posre.itp",
-                          "index": "index.ndx",
-                          "forces": ["200"] * 3},
-              "input": "3\n"},
-             "grompp": {"gromacs": "grompp_mpi", #3
-              "options": {"src": "eqBW/eqBW.mdp",
-                          "src2": "eqBW/confout.gro",
-                          "top": "topol.top",
-                          "tgt": "eqBW/topol.tpr",
-                          "index": "index.ndx"}},
-             "mdrun": {"gromacs": "mdrun_mpi", #4
-              "options": {"dir": "eqBW",
-                          "src": "topol.tpr",
-                          "tgt": "traj.trr",
-                          "energy": "ener.edr",
-                          "conf": "confout.gro",
-                          "traj": "traj.xtc",
-                          "log": "md_eqBW.log"}},
-        }
-
-        self.breaks = {}
-
-        if kwargs["debug"] or False:
-            self.recipe["set_stage_init"]["options"]["src_files"] =\
-                ["confout.gro", "eqDEBUG.mdp"]
-            self.recipe["grompp"]["options"]["src"] = "eqBW/eqDEBUG.mdp"
 
 ##########################################################################
 #                    Collect all results & outputs                       #
@@ -527,6 +488,7 @@ class BasicCollectResults(object):
                     "name": "traj.xtc",
                     "tgt": "traj_EQ.xtc"},
                 "input": "c\n" * 6},
+
             "trjconv": {"gromacs": "trjconv_mpi", #27
                 "options": {"src": "traj_EQ.xtc",
                      "src2": "topol.tpr",
@@ -535,59 +497,71 @@ class BasicCollectResults(object):
                      "skip": "2",
                      "pbc": "mol"},
                 "input": "1\n0\n"},
+
             "eneconv": {"gromacs": "eneconv_mpi", #2
                 "options": {"dir1": "eq",
                     "dir2": "eqCA",
                     "name": "ener.edr",
                     "tgt": "ener_EQ.edr"},
                 "input": "c\n" * 6},
+
             "g_rms": {"gromacs": "g_rms_mpi", #3
                 "options": {"src": "eq/topol.tpr",
                     "src2": "traj_EQ.xtc",
                     "tgt": "rmsd.xvg"},
                 "input": "4\n" * 2},
+
             "eneconv": {"gromacs": "eneconv_mpi", #4
                 "options": {"dir1": "eq",
                     "dir2": "eqCA",
                     "name": "ener.edr",
                     "tgt": "ener_EQ.edr"},
                 "input": "c\n" * 6},
+
             "set_end": {"command": "set_stage_init", #9
                 "options": {"src_dir": "eqCA",
 #                    "src_files": ["traj.xtc", "confout.gro", "topol.tpr"],
                     "src_files": ["confout.gro", "topol.tpr"],
                     "repo_files": ["popc.itp", "README.md",
-                        "prod.mdp", "load_gpcr.pml"],
+                        "prod.mdp", "prod_example.mdp", "load_gpcr.pml", "inmembrane.pml"],
                     "tgt_dir": "finalOutput"}},
+
             "clean_topol": {"command": "clean_topol",
                 "options": {"src": "topol.top",
                     "tgt": "finalOutput/topol.top"}},
+
             "set_end_2": {"command": "set_stage_init", #9
                 "options": {"src_dir": "",
                     "src_files": ["ffoplsaa_mod.itp", "ffoplsaabon_mod.itp",
                         "ffoplsaanb_mod.itp", "hexagon.pdb", "protein.itp",
+                        "lig.itp","hoh.itp","cho.itp",
                         "index.ndx", "traj_EQ.xtc", "ener_EQ.edr", "rmsd.xvg",
                         "traj_pymol.xtc"],
                     "tgt_dir": "finalOutput"}},
+
             "set_end_3": {"command": "set_stage_init", #9
                 "options": {"src_dir": "",
                     "src_files": ["tot_ener.xvg", "tot_ener.log", "temp.xvg",
                         "temp.log", "pressure.xvg", "pressure.log",
                         "volume.xvg", "volume.log"],
                     "tgt_dir": "finalOutput/reports"}},
+
             "set_end_4": {"command": "set_stage_init", #9
                 "options": {"src_dir": "eq",
                     "src_files": ["md_eq1000.log"],
                     "tgt_dir": "finalOutput/logs"}},
+
             "set_end_5": {"command": "set_stage_init", #9
                 "options": {"src_dir": "eq",
                     "src_files": ["{0}/md_eq{0}.log".format(const)
                         for const in range(800, 0, -200)],
                     "tgt_dir": "finalOutput/logs"}},
+
             "set_end_6": {"command": "set_stage_init", #9
                 "options": {"src_dir": "eqCA",
                     "src_files": ["md_eqCA.log"],
                     "tgt_dir": "finalOutput/logs"}},
+
             "tar_it": {"command": "tar_out",
                 "options": {"src_dir": "finalOutput",
                     "tgt": "MD_output.tgz"}},

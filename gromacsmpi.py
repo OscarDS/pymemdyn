@@ -77,7 +77,7 @@ class Gromacs(object):
         charge = 0
         for line in err.split("\n"):
             if "total charge" in line:
-# In gromacs 4.6.5 the charge is not displayed in scientific notation.
+#In gromacs 4.6.5 the charge is not displayed in scientific notation.
 # so this will result in giving a charge of 5, for a charge of 5.99999
 #                charge = abs(int(float(line.split()[-1])))
                 charge = abs(int(round(float(line.split()[-1]))))
@@ -116,7 +116,7 @@ class Gromacs(object):
     def get_ndx_sol(self, **kwargs):
         '''get_ndx_sol: Run make_ndx and set the last number id for SOL found'''
 
-        out, err = self.wrapper.run_command({"gromacs": "make_ndx",
+        out, err = self.wrapper.run_command({"gromacs": "make_ndx_mpi",
                                              "options": kwargs,
                                              "input": "q\n"})
 
