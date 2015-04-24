@@ -77,7 +77,7 @@ class Gromacs(object):
         charge = 0
         for line in err.split("\n"):
             if "total charge" in line:
-#In gromacs 4.6.5 the charge is not displayed in scientific notation.
+# In gromacs 4.6.5 the charge is not displayed in scientific notation.
 # so this will result in giving a charge of 5, for a charge of 5.99999
 #                charge = abs(int(float(line.split()[-1])))
                 charge = abs(int(round(float(line.split()[-1]))))
@@ -113,31 +113,53 @@ class Gromacs(object):
 #                return False
         return True
 
+    def get_ndx_sol(self, **kwargs):
+        '''get_ndx_sol: Run make_ndx and set the last number id for SOL found'''
+
+        out, err = self.wrapper.run_command({"gromacs": "make_ndx",
+                                             "options": kwargs,
+                                             "input": "q\n"})
+
+        for line in out.split("\n"):
+            if "SOL" in line:
+                self.n_sol = int(line.split()[0])
+        return True
+
     def make_ndx(self, **kwargs):
         '''make_ndx: Wraps the make_ndx command tweaking the input to reflect the
         characteristics of the complex'''
 
         if not (self.get_ndx_groups(**kwargs)): return False
-        n_group = self.n_groups + 1
+        n_group = self.n_groups
 
-        #Create the "wation" group (always present)
-        input =  " \"SOL\" | \"HOH\" | r Cl* | r Na* \n"
-        input += "name {0} wation\n".format(n_group)
+        if not (self.get_ndx_sol(**kwargs)): return False
+        n_sol = self.n_sol
+
+        #Create the solution with no crystal water, crossing fingers.
+#        n_group += 1
+        input =  "r SOL \n"
+        input += "name {0} SOL\n".format(n_sol)
+        input += "del {0}\n".format(n_sol)
 #        print n_group
 #        print "{0}".format(input)
 
+        #Create the "wation" group (always present)
+        n_group += 1
+        input +=  " r SOL | r HOH | r Cl* | r Na* \n"
+        input += "name {0} wation\n".format(n_group)
+
         #Create the "protlig" group
         n_group += 1
-#        input += "1 || r LIG || r ALO\n"                # LEGACY CODE for gromacs 4.0.5
+#        input += "1 || r LIG || r ALO\n"           # LEGACY CODE gromacs 4.0.5
         input += " \"Protein\" | r LIG | r ALO \n"
         input += "name {0} protlig\n".format(n_group)
-#        print "{0}".format(input)
 
         #Create the "membr" group
         n_group += 1
         input += " r POP | r CHO | r LIP \n"
         input += "name {0} membr\n".format(n_group)
-#        print "{0}".format(input)
+
+
 
         #This makes a separate group for each chain (if more than one)
         if type(self.membrane_complex.complex.monomer) == protein.Dimer:
@@ -145,9 +167,9 @@ class Gromacs(object):
                 #points = {'A': [1, 4530], 'B': [4532, 9061]}
                 n_group += 1
                 input += "a {0}-{1}\n".format(
-                    self.membrane_complex.complex.monomer.points[chain][0],
-                    self.membrane_complex.complex.monomer.points[chain][1])
-                input += "name {0} protein_{1}\n".format(n_group, chain)
+                    self.membrane_complex.complex.monomer.points[chain][0], #points of chain A
+                    self.membrane_complex.complex.monomer.points[chain][1]) #points of chain B
+                input += "name {0} Protein_chain_{1}\n".format(n_group, chain)
 
         if hasattr(self.membrane_complex.membrane, "ions"):
             #This makes the group ions TODO
@@ -177,7 +199,7 @@ class Gromacs(object):
         topol.write("POPC " + str(self.membrane_complex.membrane.lipids_up))
         topol.write("\n; Number of POPC molecules with lower z-coord value:\n")
         topol.write("POPC " + str(self.membrane_complex.membrane.lipids_down))
-        topol.write("\n; Total number of water molecules:\n")
+        topol.write("\n; Total number of SOL molecules:\n")
         topol.write("SOL " + str(self.membrane_complex.membrane.n_wats) + "\n")
         topol.close()
 
@@ -204,7 +226,7 @@ class Gromacs(object):
         if type(self.membrane_complex.complex.monomer) == protein.Monomer:
             posres.append("posre.itp")
         elif type(self.membrane_complex.complex.monomer) == protein.Dimer:
-            posres.extend(["posre_A.itp", "posre_B.itp"])
+            posres.extend(["posre_Protein_chain_A.itp", "posre_Protein_chain_B.itp"])
 
         if hasattr(self.membrane_complex.complex, "waters") and\
             self.membrane_complex.complex.waters:
@@ -511,8 +533,9 @@ class Wrapper(object):
         return ["-f", src, "-o", tgt]
 
     def generate_command(self, kwargs):
-        '''generate_command: Receive some variables in kwargs, generate the appropiate command 
-        to be run. Return a set in the form of a string "command -with flags"'''
+        '''generate_command: Receive some variables in kwargs, generate
+        the appropriate command to be run. Return a set in the form of
+        a string "command -with flags"'''
         try:
             mode = kwargs["gromacs"]
         except KeyError:
@@ -567,7 +590,6 @@ class Wrapper(object):
             if (mode == "trjcat_mpi"): #TRJCAT
                 command.extend(self._mode_trjcat(options)) 
             if (mode == "mdrun_mpi"): #MDRUN_SLURM
-#                command.extend(self._mode_mdrun(options))
                 pass
                 #command.extend(self._mode_mdrun(options))
 
@@ -630,6 +652,7 @@ class Wrapper(object):
 #                  In version 4.6.5 of gromacs the log is generated
 #                  by default and the -g option doesn't exist anymore.
 #                   "-g", self._setDir("genion.log"),
+                   "-n", kwargs["index"],
                    "-np", str(kwargs["np"]),
                    "-nn", str(kwargs["nn"]),
                    "-pname", "NA+",
@@ -679,6 +702,8 @@ class Wrapper(object):
         return ["-p", self._setDir(kwargs["top"]),
                 "-i", self._setDir("posre.itp"),
                 "-ignh", "-ff", "oplsaa", "-water", "spc"]
+#                "-ignh", "-ff", "oplsaa", "-water", "spc", "-chainsep", "id_or_ter", "-merge", "all"]
+#                "-ignh", "-ff", "oplsaa", "-water", "spc", "-ter"] #addition for the NPY-NH2 capping
 
     def _mode_tpbconv(self, kwargs):
         '''_mode_tpbconv: Wrap the tpbconv command options'''
@@ -699,11 +724,13 @@ class Wrapper(object):
         return command
 
     def _mode_trjconv(self, kwargs):
-        '''_mode_trjconv: Wrap the trjconf command options'''
+        '''_mode_trjconv: Wrap the trjconv command options'''
         command = ["-s", self._setDir(kwargs["src2"]),
                    "-pbc", kwargs["pbc"]]
         if "ur" in kwargs.keys():
             command.extend(["-ur", kwargs["ur"]])
+        if "skip" in kwargs.keys():
+            command.extend(["-skip", kwargs["skip"]])
         if "trans" in kwargs.keys():
             command.extend(["-trans"])
             command.extend([str(x) for x in kwargs["trans"]])
