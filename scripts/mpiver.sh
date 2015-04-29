@@ -4,6 +4,9 @@
 # be added to define as variables all of the executables in the gromacs
 # binaries folder so it's easier to modify them when a new cluster facility
 # decides to change to non-standard gromacs names.
+# NOTICE that these are not the only changes in recipes.py. Others like
+# make_ndx also have to be changed to make_ndx_mpi. In addition to this
+# settings.py, gromacs.py, and queue.py also need to be changed.
 # Mauricio Esguerra: April 24, 2015
 cp recipes.py recipesmpi.py
 sed -i '' 's/"gromacs": "pdb2gmx"/"gromacs": "pdb2gmx_mpi"/g' recipesmpi.py
