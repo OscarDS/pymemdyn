@@ -5,20 +5,20 @@
 ; Run Parameters
 integrator          =  md        ; leap-frog integrator
 dt                  =  0.002     ; in ps !  = 2 fs
-nsteps              =  1250000   ; total 2.5 ns 
+nsteps              =  5000000   ; total 10 ns 
 
 ; Bond Parameters
 constraints         =  all-bonds ; constraint all bonds using LINCS ; SETTLE for water
 
 ; Output Parameters
-nstxout             =  25000     ; save coordinates every 50 ps
-nstvout             =  250000    ; save velocities every 500 ps
-nstenergy           =  10000     ; save energies every 20 ps
-nstxtcout           =  25000     ; save xtc trajectory every 50 ps
+nstxout             =  50000     ; save coordinates every 100 ps
+nstvout             =  25000     ; save velocities every 50 ps
+nstenergy           =  25000     ; save energies every 50 ps
+nstxtcout           =  50000     ; save xtc trajectory every 100 ps
 
 ; Neighbor Searching Parameters
 nstlist             =  5         ; update the neighbor list every 10 fs
-                 ; This works with twin-cutoff (if rlist < rcoulomb)
+                                 ; This works with twin-cutoff (if rlist < rcoulomb)
 ns_type             =  grid      ; It makes a grid in the box for neighbor list searching
 rlist               =  1.2       ; = rcoulomb with PME
 rcoulomb            =  1.2       ; real-space cutoff 
