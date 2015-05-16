@@ -84,8 +84,8 @@ equilibration, with the receptor centered in the box, type:
 
     echo 1 0 | trjconv -pbc mol -center -ur compact -f confout.gro -o confout.pdb
 
-NOTE: these tips work for GROMACS version >= 4.5
-
+NOTE: these tips work for GROMACS version >= 4.5 and < 5.0
+l
 
 ##References
 

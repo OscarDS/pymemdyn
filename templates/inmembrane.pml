@@ -1,11 +1,12 @@
 #!/usr/bin/python
 load hexagon.pdb, initial
 load hexagon.pdb, hexagon
-load_traj traj_out.xtc, hexagon
+load_traj traj_pymol.xtc, hexagon
 select waters, resn SOL
 select popc, resn POP and hexagon
 select gpcr, chain A and hexagon
 select initialgpcr, (chain A or resn POP) and initial
+select ligand, resn LIG
 #select tm1, resi     6-34 and chain A
 #select tm2, resi    41-68 and chain A
 #select tm3, resi   75-108 and chain A
@@ -28,6 +29,7 @@ set cartoon_transparency, 0.5
 show ribbon, initialgpcr
 show lines, popc
 show cartoon, gpcr
+show sticks, ligand
 
 turn x, -90
 
