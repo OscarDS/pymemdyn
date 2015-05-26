@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 load hexagon.pdb, initial
 load hexagon.pdb, hexagon
 load_traj traj_pymol.xtc, hexagon

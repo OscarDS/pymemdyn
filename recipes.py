@@ -472,10 +472,10 @@ class BasicBWRelax(object):
               "options": {"src_dir": "eq",
                           "tgt_dir": "eqBW",
                           "src_files": ["confout.gro"],
-                          "repo_files": ["eqBW.mdp"]}},
+                          "repo_files": ["dres.mdp"]}},
              "genrestr": {"gromacs": "genrestr", #2
               "options": {"src": "Rmin/topol.tpr",
-                          "tgt": "posre.itp",
+                          "tgt": "disre.itp",
                           "index": "index.ndx",
                           "forces": ["200"] * 3},
               "input": "3\n"},

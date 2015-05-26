@@ -4,7 +4,7 @@ pyMEMdyn Version 1.1
 pyMEMdyn is  a standalone python  package to setup  membrane molecular
 dynamics  calculations  using the  **GROMACS**  set  of programs.  The
 package can be  used either in a desktop environment,  or in a cluster
-with popular queuing systems such as Torque or Slurm.  
+with popular queuing systems such as Torque/PBS or Slurm.  
 
 
 **py-MEMdyn** is hosted in a bitbucket repository at:  

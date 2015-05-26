@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 set defer_builds_mode, 3
 load hexagon.pdb, ini-state
 cmd.color("grey70","ini-state")
