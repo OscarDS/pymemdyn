@@ -461,7 +461,7 @@ class BasicCARelax(object):
             self.recipe["grompp"]["options"]["src"] = "eqCA/eqDEBUG.mdp"
 
 ##########################################################################
-#                Inter-helical Restraints Relaxation                     #
+#                Ballesteros-Weinstein Restrained Relaxation             #
 ##########################################################################
 
 class BasicBWRelax(object):
@@ -473,12 +473,15 @@ class BasicBWRelax(object):
                           "tgt_dir": "eqBW",
                           "src_files": ["confout.gro"],
                           "repo_files": ["dres.mdp"]}},
-             "genrestr": {"gromacs": "genrestr", #2
-              "options": {"src": "Rmin/topol.tpr",
-                          "tgt": "disre.itp",
-                          "index": "index.ndx",
-                          "forces": ["200"] * 3},
-              "input": "3\n"},
+#The genrestr gromacs function work for restraining all-atoms or c-alpha atoms
+# but not the b.w. residues we want to define univocally in this case.
+#A more sophisticated procedure is required based on knowledge-based base-pairs.
+#             "genrestr": {"gromacs": "genrestr", #2
+#              "options": {"src": "Rmin/topol.tpr",
+#                          "tgt": "disre.itp",
+#                          "index": "index.ndx",
+#                          "forces": ["200"] * 3},
+#              "input": "3\n"},
              "grompp": {"gromacs": "grompp", #3
               "options": {"src": "eqBW/eqBW.mdp",
                           "src2": "eqBW/confout.gro",

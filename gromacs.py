@@ -533,9 +533,9 @@ class Wrapper(object):
         return ["-f", src, "-o", tgt]
 
     def generate_command(self, kwargs):
-        '''generate_command: Receive some variables in kwargs, generate
+        """generate_command: Receive some variables in kwargs, generate
         the appropriate command to be run. Return a set in the form of
-        a string "command -with flags"'''
+        a string "command -with flags" """
         try:
             mode = kwargs["gromacs"]
         except KeyError:
