@@ -503,7 +503,7 @@ class Wrapper(object):
         #The gromacs to be used
         self.gromacs_dir = settings.GROMACS_PATH
         #The directory where all the files live
-        self.repo_dir = settings.REPO_DIR
+        self.repo_dir = settings.TEMPLATES_DIR
 
     def _common_io(self, src, tgt):
         '''_common_io: Autoexpand many Gromacs commands that use -f for input

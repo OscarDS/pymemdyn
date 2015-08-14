@@ -43,14 +43,14 @@ def repo_dir():
         "eq.mdp", "ffoplsaanb_cho.itp", "steepDEBUG.mdp",
         "ffoplsaabon_mod.itp", "ffoplsaanb_lip.itp", "steep.mdp"]
 
-    if not os.path.isdir(settings.REPO_DIR):
-        print "Invalid REPO_DIR: '%s'" % settings.REPO_DIR
+    if not os.path.isdir(settings.TEMPLATES_DIR):
+        print "Invalid TEMPLATES_DIR: '%s'" % settings.TEMPLATES_DIR
         return False
 
-    current_files = os.listdir(settings.REPO_DIR)
+    current_files = os.listdir(settings.TEMPLATES_DIR)
     for f in repo_files:
         if f not in current_files:
-            print "'%s' expected to be in %s" % (f, settings.REPO_DIR)
+            print "'%s' expected to be in %s" % (f, settings.TEMPLATES_DIR)
             return False
 
     return True

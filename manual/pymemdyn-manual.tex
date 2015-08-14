@@ -209,7 +209,7 @@ pymemdyn --help
 \end{Verbatim}
 You should obtain the following help output:
 \begin{Verbatim}
-usage: pymemdyn [-h] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
+usage: pymemdyn [-h] [-b OWN_DIR] [-r TEMPLATES_DIR] -p PDB [-l LIGAND]
               [--alo ALOSTERIC] [--waters WATERS] [--ions IONS] [--cho CHO]
               [-q QUEUE] [--debug]
 
@@ -218,8 +218,8 @@ usage: pymemdyn [-h] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
 optional arguments:
   -h, --help       show this help message and exit
   -b OWN_DIR       Working dir if different from actual dir
-  -r REPO_DIR      Path to templates of fixed files. If not provided, take the
-                   value from settings.REPO_DIR.
+  -r TEMPLATES_DIR      Path to templates of fixed files. If not provided, take the
+                   value from settings.TEMPLATES_DIR.
   -p PDB           Name of the pdb to insert into MD (mandatory)
   --lig LIGAND     Name of the ligand, without extension. Three files must be
                    present along with the molecule pdb: the ligand, its itp
@@ -303,7 +303,7 @@ pymemdyn -p gpcr.pdb
 A common user shouldn't need the -b,
   -r or  --debug options: The  working directory (OWN\_DIR) is  set by
   default  to  that  where  the  program has  been  invoked,  and  the
-  repository  (REPO\_DIR) is  specified  in the  settings.py file  (by
+  repository  (TEMPLATES\_DIR) is  specified  in the  settings.py file  (by
   default,   templates/   subdirectory   in   the   \textbf{py-MEMdyn}
   instalation).}
   

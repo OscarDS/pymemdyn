@@ -65,11 +65,11 @@ def check_forces(pdb, itp, ffield):
             if molecules[data[3]][data[2]] not in atoms.keys():
                 #Some atoms in the pdb have no definition in force field
                 # TODO : add a guessing function
-                print "Atom {0} have no field definition".format(data[1])
+                print "Atom {0} has no field definition".format(data[1])
                 #return False
             if atoms[molecules[data[3]][data[2]]] not in\
                 molecules[data[3]].keys():
-                print "Atom {0} have a wrong field definition".format(data[1])
+                print "Atom {0} has a wrong field definition".format(data[1])
                 #return False
 
     return True

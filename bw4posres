@@ -1,0 +1,166 @@
+#!/usr/bin/env python
+"""
+================================================================================
+ File:        bw4posres.py
+ Authors:     Mauricio Esguerra
+ Date:        June 23, 2015
+ Email:       mauricio.esguerra@gmail.com
+
+ Description:
+ With this code we wish to do various task in one script:
+ 1. translate pdb to fasta
+ 2. align fasta with MSA and B.W. Marks.
+ clustalo --profile1=GPCR_inactive_BWtags.aln --profile2=mod1.fasta \
+    -o withbwtags.aln --outfmt=clustal --wrap=1000 --force -v -v -v
+ 3. Match PDB numbering
+ grep -e "bw" -e "mod1" withbwtags.aln > match1
+================================================================================
+"""
+import sys
+import argparse
+import os
+import string
+import re
+import settings as s
+import subprocess
+import tempfile
+
+#A larger dictionary of three to one letters can be used. See Biopython.
+protein_letters_3to1 = {'ALA':'A','ARG':'R','ASN':'N','ASP':'D','CYS':'C','GLU':'E','GLN':'Q',
+           'GLY':'G','HIS':'H','ILE':'I','LEU':'L','LYS':'K','MET':'M','PHE':'F',
+           'PRO':'P','SER':'S','THR':'T','TRP':'W','TYR':'Y','VAL':'V'}
+
+class Run(object):
+    """
+    A pdb file is given as input to convert into one letter sequence
+    and then align to curated multiple sequence alignment and then
+    assign Ballesteros-Weinstein numbering to special positions.
+    """
+
+    def __init__(self, pdb, *args, **kwargs):
+        """
+        The init method is a kind of constructor, called when an instance
+        of the class is created. The method serves to initialize what you
+        want to do with the object.
+        """
+        self.pdb = pdb
+        self.own_dir = kwargs.get("own_dir") or ""
+        self.clustal_bin = s.CLUSTAL_BIN
+        self.repo_dir = s.TEMPLATES_DIR
+
+        
+    def pdb2fas(self):
+        """
+        From pdb file convert to fasta sequence format without the use of dependecies
+        such as BioPython.
+        """
+        
+        prev = '-1'
+        fastaseq = open(os.path.join(self.pdb.split(".")[0] + ".fasta"), "w")
+        fastaseq.write(">")
+        fastaseq.write("{0}\n".format(self.pdb))
+        result = []
+        for line in open(self.pdb, "r"):
+            fields = line.split()
+            if len(fields)<1: continue
+            if fields[0] != 'ATOM': continue
+            if fields[4] != prev:
+                seq = protein_letters_3to1[fields[3]]
+                seq = string.join(seq,'')
+                result.append(seq)
+                prev = fields[4]
+        lines = []
+        numcol = 70
+        resultasstr =''.join(result)
+        for i in xrange(0, len(resultasstr), numcol):
+            lines.append(resultasstr[i:i+numcol])
+ 
+        fastaseq.write("{0}".format("\n".join(lines)))
+        fastaseq.write("\n")
+        fastaseq.close()
+
+    def clustalalign(self):
+        """
+        Align the produced fasta sequence with clustalw to assing
+        Ballesteros-Weinstein marks.
+        """        
+        profile1 =  self.repo_dir + "/GPCR_inactive_BWtags.aln"
+        profile2 = os.path.join(self.pdb.split(".")[0] + ".fasta")
+        bwtagged = os.path.join(self.pdb.split(".")[0] + "_bw" + ".aln")
+        
+        command = [
+            os.path.join(os.path.dirname(__file__), ".bin", "clustalw"),
+            "-profile1=" + profile1, 
+            "-profile2=" + profile2,
+            "-outfile=" + bwtagged,
+            "-output=clustal"]
+
+        proc = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        proc.communicate()
+
+        return True
+
+    def makedisre(self):
+#        disre = open(os.path.join(os.path.dirname(__file__), "disre.itp"), 'w')        
+        disre = open('disre.itp', 'w')
+        readdisre =  open(self.repo_dir + "/disre.itp", 'r')
+        disre.write("; This file provides distance restraints based on an online example\n")
+        disre.write("; by David Van der Spoel for alpha-helices.\n")
+        disre.write("; Notice that for now we are using a fixed value for up2 of 1.2.\n")
+        disre.write("; low is the average pair distance for the set of 19 inactive structures\n")
+        disre.write("; of Ramakrishnan et al. minus one sd, up1 is the average plus one sd.\n")
+        disre.write("; ai aj type index type' low up1 up2 fac\n")
+        disre.write("[ distance_restraints ]\n")
+#        print disre
+        
+        #resultat = []
+        for line in readdisre:
+            fields = line.split()
+            fields.insert(0, '111')
+            fields.insert(0, '000')
+            #It would be better to have first 9 fields be float
+            #instead of str.
+            #fields = [float(i) for i in fields]            
+            fields.insert(9, '\n')
+            disre.write('{0}'.format('   '.join(fields)))
+        disre.close()
+        return True
+
+
+        
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog='bw4posres',
+        version='1.0',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description = ' == Get network of Ballesteros-Weinstein for NMR-style restraints == ')
+
+    parser.add_argument('-p',
+                        dest = "pdb",
+                        required = True,
+                        help = "Name of the pdb to insert into membrane for MD (mandatory). \
+                        Use the pdb extension. (e.g. -p myprot.pdb)")
+
+    parser.add_argument('-b',
+                        dest = "own_dir",
+                        help = "Working dir if different from actual dir",
+                        default = os.getcwd())
+
+
+    args = parser.parse_args()
+
+    if not (os.path.isdir(args.own_dir)):
+        os.makedirs(args.own_dir)
+        print "Created working dir {0}".format(args.own_dir)
+
+    os.chdir(args.own_dir)
+
+    run = Run(pdb = args.pdb)
+
+    run.pdb2fas()
+    run.clustalalign()
+    run.makedisre()

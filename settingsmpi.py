@@ -9,10 +9,10 @@ ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 #This dir now has to be the absolute path to the source of templates
 # You can refer it relatively like this:
-REPO_DIR = os.path.join(ROOT_DIR, "templates")
+TEMPLATES_DIR = os.path.join(ROOT_DIR, "templates")
 # Or absolutely like this:
-# REPO_DIR = "/path/to/your/templates"
-# But this WILL FAIL: * REPO_DIR = "templates" *
+# TEMPLATES_DIR = "/path/to/your/templates"
+# But this WILL FAIL: * TEMPLATES_DIR = "templates" *
 
 
 # Choose a path to the gromacs binaries.

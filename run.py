@@ -159,8 +159,8 @@ if __name__ == "__main__":
     parser.add_argument('-r',
         dest = "repo_dir",
         help = "Path to templates of fixed files. If not \
-            provided, take the value from settings.REPO_DIR.",
-        default = settings.REPO_DIR)
+            provided, take the value from settings.TEMPLATES_DIR.",
+        default = settings.TEMPLATES_DIR)
     parser.add_argument('-p',
         dest = "pdb",
         required = True,

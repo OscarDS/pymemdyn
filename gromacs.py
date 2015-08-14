@@ -26,7 +26,9 @@ class Gromacs(object):
                     ".tpr")
 
     def set_membrane_complex(self, value):
-        '''set_membrane_complex: Sets the monomer object'''
+        """
+        set_membrane_complex: Sets the monomer object
+        """
         self._membrane_complex = value
 
     def get_membrane_complex(self):
@@ -34,7 +36,9 @@ class Gromacs(object):
     membrane_complex = property(get_membrane_complex, set_membrane_complex)
 
     def count_lipids(self, **kwargs):
-        '''count_lipids: Counts the lipids in source and writes a target with N4 tags'''
+        """
+        count_lipids: Counts the lipids in source and writes a target with N4 tags
+        """
         src = open(kwargs["src"], "r")
         tgt = open(kwargs["tgt"], "w")
 
@@ -66,7 +70,9 @@ class Gromacs(object):
         return True
 
     def get_charge(self, **kwargs):
-        '''get_charge: Gets the total charge of a system using gromacs grompp command'''
+        """
+        get_charge: Gets the total charge of a system using gromacs grompp command
+        """
         #wrapper = Wrapper()
 
         out, err = self.wrapper.run_command({"gromacs": "grompp",
@@ -98,7 +104,9 @@ class Gromacs(object):
         return True
 
     def get_ndx_groups(self, **kwargs):
-        '''get_ndx_groups: Run make_ndx and set the total number of groups found'''
+        """
+        get_ndx_groups: Run make_ndx and set the total number of groups found
+        """
         #wrapper = Wrapper()
 
         out, err = self.wrapper.run_command({"gromacs": "make_ndx",
@@ -114,7 +122,9 @@ class Gromacs(object):
         return True
 
     def get_ndx_sol(self, **kwargs):
-        '''get_ndx_sol: Run make_ndx and set the last number id for SOL found'''
+        """
+        get_ndx_sol: Run make_ndx and set the last number id for SOL found
+        """
 
         out, err = self.wrapper.run_command({"gromacs": "make_ndx",
                                              "options": kwargs,
@@ -126,8 +136,10 @@ class Gromacs(object):
         return True
 
     def make_ndx(self, **kwargs):
-        '''make_ndx: Wraps the make_ndx command tweaking the input to reflect the
-        characteristics of the complex'''
+        """
+        make_ndx: Wraps the make_ndx command tweaking the input to reflect the
+        characteristics of the complex
+        """
 
         if not (self.get_ndx_groups(**kwargs)): return False
         n_group = self.n_groups
@@ -193,7 +205,9 @@ class Gromacs(object):
         return True
 
     def make_topol_lipids(self, **kwargs):
-        '''make_topol_lipids: Add lipid positions to topol.top'''
+        """
+        make_topol_lipids: Add lipid positions to topol.top
+        """
         topol = open("topol.top", "a")
         topol.write("; Number of POPC molecules with higher z-coord value:\n")
         topol.write("POPC " + str(self.membrane_complex.membrane.lipids_up))
@@ -206,7 +220,9 @@ class Gromacs(object):
         return True
 
     def manual_log(self, command, output):
-        '''manual_log: Redirect the output to file in command["options"]["log"]'''
+        """
+        manual_log: Redirect the output to file in command["options"]["log"]
+        """
         log = open(command["options"]["log"], "w")
         log.writelines(output)
         log.close()
@@ -214,11 +230,15 @@ class Gromacs(object):
         return True
 
     def passing(self):
-        '''passing: Do nothing, to respect some orders'''
+        """
+        passing: Do nothing, to respect some orders
+        """
         return True
 
     def relax(self, **kwargs):
-        '''relax: Relax a protein'''
+        """
+        relax: Relax a protein
+        """
 
         if not os.path.isdir(kwargs["tgt_dir"]): os.makedirs(kwargs["tgt_dir"])
         posres = kwargs.get("posres", [])
@@ -266,7 +286,9 @@ class Gromacs(object):
             complex = self.membrane_complex.complex)
 
     def run_recipe(self, debug = False):
-        '''run_recipe: Run recipe for the complex'''
+        """
+        run_recipe: Run recipe for the complex
+        """
         if not hasattr(self, "recipe"):
             self.select_recipe(debug = debug)
 
@@ -318,7 +340,9 @@ class Gromacs(object):
         return True
 
     def select_recipe(self, stage = "", debug = False):
-        '''select_recipe: Select the appropiate recipe for the complex'''
+        """
+        select_recipe: Select the appropiate recipe for the complex
+        """
         recipe = ""
         stage = stage or "Init"
 
@@ -344,7 +368,9 @@ class Gromacs(object):
         return True
 
     def set_box_sizes(self):
-        '''set_box_sizes: Set length values for different boxes'''
+        """
+        set_box_sizes: Set length values for different boxes
+        """
 
         self.membrane_complex.complex.set_nanom()
         self.membrane_complex.trans_box_size = \
@@ -367,7 +393,9 @@ class Gromacs(object):
         return True
 
     def set_chains(self, **kwargs):
-        '''set_chains: Set the REAL points of a dimer after protonation'''
+        """
+        set_chains: Set the REAL points of a dimer after protonation
+        """
         src = kwargs.get("src")
 
         if type(self.membrane_complex.complex.monomer) == protein.Dimer:
@@ -389,7 +417,9 @@ class Gromacs(object):
         return True
 
     def set_grompp(self, **kwargs):
-        '''set_grompp: Copy template files to working dir'''
+        """
+        set_grompp: Copy template files to working dir
+        """
         for repo_src in kwargs.keys():
             shutil.copy(os.path.join(
                 self.repo_dir, kwargs[repo_src]),
@@ -398,7 +428,9 @@ class Gromacs(object):
         return True
  
     def set_itp(self, **kwargs):
-        '''set_itp: Cut a top file to be usable later as itp'''
+        """
+        set_itp: Cut a top file to be usable later as itp
+        """
         src = open(kwargs["src"], "r")
         tgt = open(kwargs["tgt"], "w")
 
@@ -425,7 +457,9 @@ class Gromacs(object):
         return True
 
     def set_options(self, options, breaks):
-        '''set_options: Set break options from recipe'''
+        """
+        set_options: Set break options from recipe
+        """
         for option, value in breaks.iteritems():
             # This is a hack to get the attribute recursively,
             # feeding getattr with dot-splitted string thanks to reduce
@@ -438,8 +472,10 @@ class Gromacs(object):
         return options
 
     def set_popc(self, tgt = ""):
-        '''set_popc: Create a pdb file only with the lipid bilayer (POP), no waters.
-        Set some measures on the fly (height of the bilayer)'''
+        """
+        set_popc: Create a pdb file only with the lipid bilayer (POP), no waters.
+        Set some measures on the fly (height of the bilayer)
+        """
         tgt = open(tgt, "w")
         pops = []
 
@@ -455,7 +491,9 @@ class Gromacs(object):
         return True
 
     def set_protein_size(self, **kwargs):
-        '''set_protein_size: Get the protein maximum base width from a pdb file'''
+        """
+        set_protein_size: Get the protein maximum base width from a pdb file
+        """
         for line in open(kwargs["src"], "r"):
             if line.startswith("CRYST1"):
                 if kwargs["dir"] == "xy":
@@ -472,7 +510,9 @@ class Gromacs(object):
         return True
 
     def set_stage_init(self, **kwargs):
-        '''set_stage_init: Copy a set of files from source to target dir'''
+        """
+        set_stage_init: Copy a set of files from source to target dir
+        """
         if not os.path.isdir(kwargs["tgt_dir"]): os.mkdir(kwargs["tgt_dir"])
 
         for src_file in kwargs["src_files"]:
@@ -489,13 +529,17 @@ class Gromacs(object):
         return True
 
     def set_steep(self, **kwargs):
-        '''set_steep: Copy the template steep.mdp to target dir'''
+        """
+        set_steep: Copy the template steep.mdp to target dir
+        """
         shutil.copy(os.path.join(self.repo_dir, "steep.mdp"),
                     "steep.mdp")
         return True
 
     def set_water(self, **kwargs):
-        '''set_water: Create a water layer for a box'''
+        """
+        set_water: Create a water layer for a box
+        """
         start = (self.membrane_complex.membrane.bilayer_zw - \
                  self.membrane_complex.complex.prot_z) / 2
         end = start + self.membrane_complex.complex.prot_z
@@ -525,17 +569,21 @@ class Wrapper(object):
         #The gromacs to be used
         self.gromacs_dir = settings.GROMACS_PATH
         #The directory where all the files live
-        self.repo_dir = settings.REPO_DIR
+        self.repo_dir = settings.TEMPLATES_DIR
 
     def _common_io(self, src, tgt):
-        '''_common_io: Autoexpand many Gromacs commands that use -f for input
-        and -o for the output file'''
+        """
+        _common_io: Autoexpand many Gromacs commands that use -f for input
+        and -o for the output file
+        """
         return ["-f", src, "-o", tgt]
 
     def generate_command(self, kwargs):
-        """generate_command: Receive some variables in kwargs, generate
+        """
+        generate_command: Receive some variables in kwargs, generate
         the appropriate command to be run. Return a set in the form of
-        a string "command -with flags" """
+        a string "command -with flags"
+        """
         try:
             mode = kwargs["gromacs"]
         except KeyError:
@@ -596,7 +644,9 @@ class Wrapper(object):
         return command
 
     def _mode_editconf(self, kwargs):
-        '''_mode_editconf: Wrap the editconf command options'''
+        """
+        _mode_editconf: Wrap the editconf command options
+        """
         command = []
 
         if "dist" in kwargs.keys():
@@ -615,7 +665,9 @@ class Wrapper(object):
         return command
 
     def _mode_eneconv(self, kwargs):
-        '''mode_eneconv: Wrap the eneconv command options'''
+        """
+        mode_eneconv: Wrap the eneconv command options
+        """
         src_files = utils.make_cat(kwargs["dir1"],
                                    kwargs["dir2"],
                                    kwargs["name"])
@@ -627,7 +679,9 @@ class Wrapper(object):
         return command
 
     def _mode_g_rms(self, kwargs):
-        '''_mode_g_rms: Wrap the g_rms command options'''
+        """
+        _mode_g_rms: Wrap the g_rms command options
+        """
         return ["-s", self._setDir(kwargs["src"]),
                 "-f", self._setDir(kwargs["src2"]),
                 "-o", self._setDir(kwargs["tgt"])]
@@ -640,7 +694,9 @@ class Wrapper(object):
                 "-o", self._setDir(kwargs["tgt"])]
 
     def _mode_genion(self, kwargs):
-        '''_mode_genion: Wrap the genion command options'''
+        """
+        _mode_genion: Wrap the genion command options
+        """
         if (kwargs["np"]) == 0 and (kwargs["nn"] == 0):
             #Genion refuses to run at all if no ion are provided, so provide
             #one of each
@@ -661,7 +717,9 @@ class Wrapper(object):
         return command
 
     def _mode_genrest(self, kwargs):
-        '''_mode_genrest: Wrap the genrest command options'''
+        """
+        _mode_genrest: Wrap the genrest command options
+        """
         command = ["-fc"] + kwargs["forces"]
 
         if "index" in kwargs.keys():
@@ -670,7 +728,9 @@ class Wrapper(object):
         return command
 
     def _mode_grompp(self, kwargs):
-        '''_mode_grompp: Wrap the grompp command options'''
+        """
+        _mode_grompp: Wrap the grompp command options
+        """
         command = ["-maxwarn", " 2",
                    "-c", self._setDir(kwargs["src2"]),
                    "-p", self._setDir(kwargs["top"]),
@@ -681,7 +741,9 @@ class Wrapper(object):
         return command
 
     def _mode_mdrun(self, kwargs):
-        '''_mode_mdrun: Wrap the mdrun command options'''
+        """
+        _mode_mdrun: Wrap the mdrun command options
+        """
 
         command = ["-s", kwargs["src"],
                    "-o", kwargs["tgt"],
@@ -698,7 +760,9 @@ class Wrapper(object):
         return command
 
     def _mode_pdb2gmx(self, kwargs):
-        '''_mode_pdb2gmx: Wrap the pdb2gmx command options'''
+        """
+        _mode_pdb2gmx: Wrap the pdb2gmx command options
+        """
         return ["-p", self._setDir(kwargs["top"]),
                 "-i", self._setDir("posre.itp"),
                 "-ignh", "-ff", "oplsaa", "-water", "spc"]
@@ -706,13 +770,17 @@ class Wrapper(object):
 #                "-ignh", "-ff", "oplsaa", "-water", "spc", "-ter"] #addition for the NPY-NH2 capping
 
     def _mode_tpbconv(self, kwargs):
-        '''_mode_tpbconv: Wrap the tpbconv command options'''
+        """
+        _mode_tpbconv: Wrap the tpbconv command options
+        """
         return ["-s", self._setDir(kwargs["src"]),
                 "-o", self._setDir(kwargs["tgt"]),
                 "-extend", kwargs["extend"]]
 
     def _mode_trjcat(self, kwargs):
-        '''_mode_trjcat: Wrap the trjcat command options'''
+        """
+        _mode_trjcat: Wrap the trjcat command options
+        """
         src_files = utils.make_cat(kwargs["dir1"],
                                    kwargs["dir2"],
                                    kwargs["name"])
@@ -724,7 +792,9 @@ class Wrapper(object):
         return command
 
     def _mode_trjconv(self, kwargs):
-        '''_mode_trjconv: Wrap the trjconv command options'''
+        """
+        _mode_trjconv: Wrap the trjconv command options
+        """
         command = ["-s", self._setDir(kwargs["src2"]),
                    "-pbc", kwargs["pbc"]]
         if "ur" in kwargs.keys():
@@ -740,8 +810,10 @@ class Wrapper(object):
         return command
 
     def run_command(self, kwargs):
-        '''run_command: Run a command that comes in kwargs in a subprocess, and return
-        the output as (output, errors)'''
+        """
+        run_command: Run a command that comes in kwargs in a subprocess, and return
+        the output as (output, errors)
+        """
 
         command = self.generate_command(kwargs)
 
@@ -769,5 +841,8 @@ class Wrapper(object):
         return gro_out, gro_errs
 
     def _setDir(self, filename):
-        '''_setDir: Expand a filename with the work dir to save code space'''
+        """
+        _setDir: Expand a filename with the work dir to save code space
+        """
         return os.path.join(self.work_dir, filename)
+

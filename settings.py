@@ -1,21 +1,17 @@
-#import pymoldyn
 import os
 
-#SCRIPT_DIR = os.path.dirname(os.path.realpath(pymoldyn.__file__))
-
-# This is the dir where pymoldyn git repo has been deployed,
-# or to be more specific, this file settings.py is located
+# This is the folder where pymemdyn git repo has been deployed,
+# or to be more specific, where the settings.py file is located at.
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
-#This dir now has to be the absolute path to the source of templates
-# You can refer it relatively like this:
-REPO_DIR = os.path.join(ROOT_DIR, "templates")
-# Or absolutely like this:
-# REPO_DIR = "/path/to/your/templates"
-# But this WILL FAIL: * REPO_DIR = "templates" *
+# The following variable can be given as a full path to the place where
+# the templates reside or it can also use a relative path to the previously
+# defined ROOT_DIR.
+TEMPLATE_DIR = os.path.join(ROOT_DIR, "templates")
+# Or using the full path like so:
+# TEMPLATE_DIR = "/path/to/your/templates"
 
-
-# Choose a path to the gromacs binaries.
+# Define a path to the gromacs binaries.
 #GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/ib/bin/"
 #GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/gige/bin/"
 #GROMACS_PATH = "/opt/cesga/gromacs-4.0.7/bin/"
@@ -28,6 +24,9 @@ GROMACS_PATH = "/Users/esguerra/software/gromacs-4.6.5/bin/"        #Standalone 
 #GROMACS_PATH = "/c3se/apps/Glenn/gromacs/5.0.4-gcc48-cuda/bin/"     #Glenn GPU at Chalmers
 #GROMACS_PATH = "/sw/apps/gromacs/4.6.3/tintin/bin"                  #Tintin
 #GROMACS_PATH = "/lap/gromacs/4.6.5/bin"                             #Abisko
+
+# Define a path to the clustalw binary.
+CLUSTAL_BIN = os.path.join(ROOT_DIR, ".bin/clustalw")
 
 # Choose which queuing system to use. Look inside queue.py.
 QUEUE = ""
@@ -44,7 +43,6 @@ QUEUE_NUM_PROCS = 8
 
 # Choose the maximum alloted time for your run.
 QUEUE_MAX_TIME = "60:00:00"
-
 
 QUEUE_NUM_TASK = 8
 QUEUE_NTS_NODE = 8

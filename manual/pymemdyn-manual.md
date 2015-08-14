@@ -123,7 +123,7 @@ To install **py-MEMdyn** follow these steps:
 
     You should obtain the following help output:
 
-        usage: run.py [-h] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
+        usage: run.py [-h] [-b OWN_DIR] [-r TEMPLATES_DIR] -p PDB [-l LIGAND]
                       [--alo ALOSTERIC] [--waters WATERS] [--ions IONS] [--cho CHO]
                       [-q QUEUE] [--debug]
 
@@ -132,8 +132,8 @@ To install **py-MEMdyn** follow these steps:
         optional arguments:
           -h, --help       show this help message and exit
           -b OWN_DIR       Working dir if different from actual dir
-          -r REPO_DIR      Path to templates of fixed files. If not provided, take the
-                           value from settings.REPO_DIR.
+          -r TEMPLATES_DIR      Path to templates of fixed files. If not provided, take the
+                           value from settings.TEMPLATES_DIR.
           -p PDB           Name of the pdb to insert into MD (mandatory)
           -l LIGAND        Name of the ligand, without extension. Three files must be
                            present along with the molecule pdb: the ligand, its itp
@@ -190,7 +190,7 @@ To install **py-MEMdyn** follow these steps:
     should work! Accesory options: The common user should not take care
     of the -b, -r or –debug options: The working directory (OWN\_DIR) is
     set by default to that where the program is invoked, and the
-    repository (REPO\_DIR) is specified in the settings.py file (by
+    repository (TEMPLATES\_DIR) is specified in the settings.py file (by
     default, templates/ subdirectory in the **py-MEMdyn**
     instalation).
 

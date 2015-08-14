@@ -7,7 +7,7 @@ MODEL_LOG_FILE = "/home/gpcruser/gpcr_modsim/log/model_file.log"
 PYTHON_BIN = "/home/apps/bin/python2.7"
 JAVA_PATH = "/usr/java/latest/bin/java"
 BINDIR = "/home/gpcruser/gpcr_modsim/lib/"
-REPO_DIR = "/home/gpcruser/gpcr_modsim/templates/"
+TEMPLATES_DIR = "/home/gpcruser/gpcr_modsim/templates/"
 
 # Used in pyro_objects.py
 SLURMOUT = "/home/gpcruser/gpcr_modsim/slurm-out/"
@@ -32,10 +32,10 @@ ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 #This dir now has to be the absolute path to the source of templates
 # You can refer it relatively like this:
-REPO_DIR = os.path.join(ROOT_DIR, "templates")
+TEMPLATES_DIR = os.path.join(ROOT_DIR, "templates")
 # Or absolutely like this:
-# REPO_DIR = "/path/to/your/templates"
-# But this WILL FAIL: * REPO_DIR = "templates" *
+# TEMPLATES_DIR = "/path/to/your/templates"
+# But this WILL FAIL: * TEMPLATES_DIR = "templates" *
 
 # Choose a path to the gromacs binaries.
 #GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/ib/bin/"

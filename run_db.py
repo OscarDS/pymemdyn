@@ -228,8 +228,8 @@ if __name__ == "__main__":
     parser.add_argument('-r',
         dest = "repo_dir",
         help = "Path to templates of fixed files. If not \
-            provided, take the value from settings.REPO_DIR.",
-        default = clustersettings.REPO_DIR)
+            provided, take the value from settings.TEMPLATES_DIR.",
+        default = clustersettings.TEMPLATES_DIR)
     parser.add_argument('-d',
         dest = "dynamic_pk",
         required = True,
