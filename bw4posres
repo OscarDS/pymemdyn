@@ -57,6 +57,7 @@ class Run(object):
         The init method is a kind of constructor, called when an instance
         of the class is created. The method serves to initialize what you
         want to do with the object.
+        :rtype : object
         """
         self.pdb = pdb
         self.own_dir = kwargs.get("own_dir") or ""
@@ -160,10 +161,10 @@ class Run(object):
             disre.write('{0}'.format('   '.join(fields)))
         disre.close()
         
-#This part pulls out the two last lines from the alignment each in a list.
-# list1 has the Ballesteros-Weinstein positions for the restraints.
-# list2 has the final alignment of the sequence, corresponding to the
-# pdb that was given.
+        # This part pulls out the two last lines from the alignment each in a list.
+        # list1 has the Ballesteros-Weinstein positions for the restraints.
+        # list2 has the final alignment of the sequence, corresponding to the
+        # pdb that was given.
         list1 = []
         list2 = []
         bwtagged = os.path.join(self.pdb.split(".")[0] + "_bw" + ".aln")
@@ -181,10 +182,10 @@ class Run(object):
         list2s = ''.join(list2)
         list2l = list(list2s)
 
-# The two lists are combined into a list of tuples using the zip builtin
-# and then the dashes (sequence gaps) are parsed out of the correspoding
-# well aligned sequence to be able to count without gaps.
-# Finally the residue numbers correspoding to the A mask are returned.
+        # The two lists are combined into a list of tuples using the zip builtin
+        # and then the dashes (sequence gaps) are parsed out of the correspoding
+        # well aligned sequence to be able to count without gaps.
+        # Finally the residue numbers correspoding to the A mask are returned.
         ziplist = zip(list1l,list2l)
         nodash = []
         for index, string in enumerate(ziplist):
@@ -194,7 +195,7 @@ class Run(object):
         resid = []
         for index, string in enumerate(nodash):
             if nodash[index][0] == 'A':
-#                print index+1, string                
+        #        print index+1, string                
                 resid.append(index+1)
 
         print resid
@@ -204,9 +205,6 @@ class Run(object):
         for line in open(os.path.join(self.pdb.split(".")[0] + "_CA.pdb"), "r"):
             if int(''.join(line[22:26])) in resid:
                 print int(''.join(line[22:26])), ''.join(line[7:11])
-
-
-
                 
         return True
 
@@ -240,12 +238,8 @@ if __name__ == "__main__":
     os.chdir(args.own_dir)
 
     run = Run(pdb = args.pdb)
-
     run.pdb2fas()
     run.clustalalign()
     run.getcalphas()    
     run.makedisre()
-
-
-
 
