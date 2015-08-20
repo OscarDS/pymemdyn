@@ -7,9 +7,9 @@ ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 # The following variable can be given as a full path to the place where
 # the templates reside or it can also use a relative path to the previously
 # defined ROOT_DIR.
-TEMPLATE_DIR = os.path.join(ROOT_DIR, "templates")
+TEMPLATES_DIR = os.path.join(ROOT_DIR, "templates")
 # Or using the full path like so:
-# TEMPLATE_DIR = "/path/to/your/templates"
+# TEMPLATES_DIR = "/path/to/your/templates"
 
 # Define a path to the gromacs binaries.
 #GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/ib/bin/"

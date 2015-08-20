@@ -12,7 +12,9 @@
  2. align fasta with MSA and B.W. Marks.
  clustalo --profile1=GPCR_inactive_BWtags.aln --profile2=mod1.fasta \
     -o withbwtags.aln --outfmt=clustal --wrap=1000 --force -v -v -v
- 3. Match PDB numbering
+ 3. 
+
+Match PDB numbering. It has to match atom numbers of C-alphas
  grep -e "bw" -e "mod1" withbwtags.aln > match1
 ================================================================================
 """
@@ -25,10 +27,23 @@ import settings as s
 import subprocess
 import tempfile
 
-#A larger dictionary of three to one letters can be used. See Biopython.
+# A larger dictionary of three to one letters can be used.
+# For example the dictionary contained at Data/SCOPData.py in a Biopython distribution
+# Usually the path where biopython is installed will look something like
+# the following path: /lib/python2.7/site-packages/Bio
+# For now we are just extending the dictionary to the various possible cases for Histidines,
+# that is, HIA, HIC, HIP, HIQ 
 protein_letters_3to1 = {'ALA':'A','ARG':'R','ASN':'N','ASP':'D','CYS':'C','GLU':'E','GLN':'Q',
-           'GLY':'G','HIS':'H','ILE':'I','LEU':'L','LYS':'K','MET':'M','PHE':'F',
-           'PRO':'P','SER':'S','THR':'T','TRP':'W','TYR':'Y','VAL':'V'}
+           'GLY':'G','HIA':'H','HIC':'H','HIP':'H','HIQ':'H','HIS':'H','ILE':'I','LEU':'L',
+           'LYS':'K','MET':'M','PHE':'F','PRO':'P','SER':'S','THR':'T','TRP':'W','TYR':'Y',
+           'VAL':'V'}
+
+bwpairs = {'1.46':'7.47','1.49':'7.50','1.50':'2.47','1.50':'2.50','1.50':'7.46',
+           '1.53':'2.47','1.57':'2.44','2.42':'3.46','2.43':'7.53','2.50':'7.46',
+           '3.34':'4.53','3.34':'4.57','3.36':'6.48','3.38':'4.50','3.38':'4.53',
+           '3.40':'6.44','3.44':'5.54','3.47':'5.57','3.51':'5.57','3.51':'5.60',
+           '5.54':'6.41','6.47':'7.45','6.51':'7.38','6.51':'7.39'}
+
 
 class Run(object):
     """
@@ -54,7 +69,6 @@ class Run(object):
         From pdb file convert to fasta sequence format without the use of dependecies
         such as BioPython.
         """
-        
         prev = '-1'
         fastaseq = open(os.path.join(self.pdb.split(".")[0] + ".fasta"), "w")
         fastaseq.write(">")
@@ -79,6 +93,7 @@ class Run(object):
         fastaseq.write("\n")
         fastaseq.close()
 
+        
     def clustalalign(self):
         """
         Align the produced fasta sequence with clustalw to assing
@@ -104,8 +119,25 @@ class Run(object):
 
         return True
 
+        
+    def getcalphas(self):
+        """
+        Pulls out the atom numbers of c-alpha atoms. Restraints are
+        placed on c-alpha atoms.
+        """
+        calphaspdb = open(os.path.join(self.pdb.split(".")[0] + "_CA.pdb"), "w")
+        for line in open(self.pdb, "r"):
+            atoms = [a for a in line if line[0:6] == "ATOM  " and line[13:16] == "CA "]
+            atomnum = atoms[7:10]
+            calphaspdb.write("{0}".format("".join(atoms)))
+            
+
     def makedisre(self):
-#        disre = open(os.path.join(os.path.dirname(__file__), "disre.itp"), 'w')        
+        """
+        Creates a disre.itp file with atom-pair id's to be restrained
+        using and NMR-style Heaviside function based on
+        Ballesteros-Weinstein tagging.
+        """
         disre = open('disre.itp', 'w')
         readdisre =  open(self.repo_dir + "/disre.itp", 'r')
         disre.write("; This file provides distance restraints based on an online example\n")
@@ -115,19 +147,67 @@ class Run(object):
         disre.write("; of Ramakrishnan et al. minus one sd, up1 is the average plus one sd.\n")
         disre.write("; ai aj type index type' low up1 up2 fac\n")
         disre.write("[ distance_restraints ]\n")
-#        print disre
         
-        #resultat = []
+
         for line in readdisre:
             fields = line.split()
             fields.insert(0, '111')
             fields.insert(0, '000')
             #It would be better to have first 9 fields be float
             #instead of str.
-            #fields = [float(i) for i in fields]            
+            #fields = [float(i) for i in fields]
             fields.insert(9, '\n')
             disre.write('{0}'.format('   '.join(fields)))
         disre.close()
+        
+#This part pulls out the two last lines from the alignment each in a list.
+# list1 has the Ballesteros-Weinstein positions for the restraints.
+# list2 has the final alignment of the sequence, corresponding to the
+# pdb that was given.
+        list1 = []
+        list2 = []
+        bwtagged = os.path.join(self.pdb.split(".")[0] + "_bw" + ".aln")
+        for line in open(bwtagged, "r"):
+            fields = line.split()
+            try:
+                if fields[0] == 'bw':
+                    list1.append(fields[1])
+                if fields[0] == self.pdb:
+                    list2.append(fields[1])
+            except IndexError:
+                continue
+        list1s = ''.join(list1)
+        list1l = list(list1s)
+        list2s = ''.join(list2)
+        list2l = list(list2s)
+
+# The two lists are combined into a list of tuples using the zip builtin
+# and then the dashes (sequence gaps) are parsed out of the correspoding
+# well aligned sequence to be able to count without gaps.
+# Finally the residue numbers correspoding to the A mask are returned.
+        ziplist = zip(list1l,list2l)
+        nodash = []
+        for index, string in enumerate(ziplist):
+            if ziplist[index][1].isalpha():
+                nodash.append(ziplist[index])
+                
+        resid = []
+        for index, string in enumerate(nodash):
+            if nodash[index][0] == 'A':
+#                print index+1, string                
+                resid.append(index+1)
+
+        print resid
+        
+        # To map residue id's to c-alpha atom numbers I open the parsed
+        # pdb which contains only c-alphas.
+        for line in open(os.path.join(self.pdb.split(".")[0] + "_CA.pdb"), "r"):
+            if int(''.join(line[22:26])) in resid:
+                print int(''.join(line[22:26])), ''.join(line[7:11])
+
+
+
+                
         return True
 
 
@@ -163,4 +243,9 @@ if __name__ == "__main__":
 
     run.pdb2fas()
     run.clustalalign()
+    run.getcalphas()    
     run.makedisre()
+
+
+
+
