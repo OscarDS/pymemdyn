@@ -71,28 +71,22 @@ class Run(object):
         
     def pdb2fas(self):
         """
-        From pdb file convert to fasta sequence format without the use of dependecies
-        such as BioPython.
+        From pdb file convert to fasta sequence format without the use of
+        dependencies such as BioPython. This pdb to fasta translator
+        checks for the existance of c-alpha residues and it is
+        based on their 3-letter sequence id.
         """
-        prev = '-1'
         fastaseq = open(os.path.join(self.pdb.split(".")[0] + ".fasta"), "w")
         fastaseq.write(">")
         fastaseq.write("{0}\n".format(self.pdb))
-        result = []
-#        atoms = [l for l in self.pdb if l[0:6] == "ATOM  " and l[13:16] == "CA "]
+        result = []        
         for line in open(self.pdb, "r"):
-            fields = line.split()
-            if len(fields)<1: continue
-            if fields[0] != 'ATOM': continue
-            # The following is a problem when there is a chainid
-            # better to change to a fixed column such as in the CA
-            # part. Also has the issue when spaces disappear when
-            # residue numbers take longer than three spaces.
-            if fields[5] != prev:
-                seq = protein_letters_3to1[fields[3]]
-                seq = string.join(seq,'')
+            atoms = [a for a in line if line[0:6] == "ATOM  " and line[13:16] == "CA "]
+            seqnam = ''.join(atoms[17:20])            
+            if seqnam != '':
+                seq = protein_letters_3to1[seqnam]
                 result.append(seq)
-                prev = fields[5]
+
         lines = []
         numcol = 70
         resultasstr =''.join(result)
@@ -102,7 +96,7 @@ class Run(object):
         fastaseq.write("{0}".format("\n".join(lines)))
         fastaseq.write("\n")
         fastaseq.close()
-
+        
         
     def clustalalign(self):
         """
@@ -159,16 +153,6 @@ class Run(object):
         disre.write("[ distance_restraints ]\n")
         
 
-        for line in readdisre:
-            fields = line.split()
-            fields.insert(0, '111')
-            fields.insert(0, '000')
-            #It would be better to have first 9 fields be float
-            #instead of str.
-            #fields = [float(i) for i in fields]
-            fields.insert(9, '\n')
-            disre.write('{0}'.format('   '.join(fields)))
-        disre.close()
         
         # This part pulls out the two last lines from the alignment each in a list.
         # list1 has the Ballesteros-Weinstein positions for the restraints.
@@ -186,6 +170,7 @@ class Run(object):
                     list2.append(fields[1])
             except IndexError:
                 continue
+                
         list1s = ''.join(list1)
         list1l = list(list1s)
         list2s = ''.join(list2)
@@ -204,15 +189,15 @@ class Run(object):
         resid = []
         for index, string in enumerate(nodash):
             if nodash[index][0] == 'A':
-        #        print index+1, string
+#                print index+1, string
                 resid.append(index+1)
 
-        for indx, stri in enumerate(resid):
-            print indx, stri
+#        for indx, stri in enumerate(resid):
+#            print indx, stri
 
         resandbw = zip(resid,bwtags)
 #        seq = bwpairs[fields[3]]
-        print resandbw
+#        print resandbw
 
 
         
@@ -222,10 +207,36 @@ class Run(object):
         onlyca = open(os.path.join(self.pdb.split(".")[0] + "_CA.pdb"), "r")
         for line in onlyca:
             if int(''.join(line[22:26])) in resid:
-                caid.append(line)
+                caid.append(line[7:11])                
 #                print int(''.join(line[22:26])), ''.join(line[7:11])
+#                print caid
                 continue
-                
+
+        print caid
+#        print len(caid)
+
+
+        # This part finally writes to the disre.itp file all the information it needs
+        # for the atom pairs after they have been mapped from Ballesteros-Weinstein
+        # into c-alpha atom numbers in the original pdb given as input.
+#        for line in readdisre:
+        for index, string in enumerate(readdisre):            
+            fields = string.split()
+#        for index, string in enumerate(caid):
+#            print caid[0]
+            print fields
+#            fields.insert(0, '111')
+            fields.insert(0, caid[index])
+            fields.insert(0, '000')
+            #It would be better to have first 9 fields be float
+            #instead of str.
+            #fields = [float(i) for i in fields]
+            fields.insert(9, '\n')
+            disre.write('{0}'.format('   '.join(fields)))
+        disre.close()
+
+
+
         return True
 
 
