@@ -1,18 +1,15 @@
 #!/usr/bin/env python2.7
 import argparse
-import datetime
 import logging
 import os
 import shutil
-import sys
-import textwrap
 
 import complex
 import gromacs
 import membrane
 import protein
 import queue
-import recipes
+#import recipes Does not ever call it. gromacs.py calls it.
 import settings
 
 class Run(object):
@@ -98,23 +95,25 @@ class Run(object):
     def clean(self):
         '''Removes all previously generated files'''
         to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
-            "#mdout.mdp.2#", "#mdout.mdp.3#", "#mdout.mdp.4#", "#mdout.mdp.5#",
-            "#mdout.mdp.6#", "#mdout.mdp.7#", "#mdout.mdp.8#", "#mdout.mdp.9#",
-            "#output.pdb.1#", "#output.tpr.1#", "#popc.pdb.1#",
-            "#posre.itp.1#", "#proteinopls.pdb.1#", "#proteinopls.pdb.2#",
-            "#proteinopls.pdb.3#", "#proteinopls.pdb.4#","#protein.top.1#",
-            "#protpopc.pdb.1#", "#protpopc.pdb.2#", "#tmp.pdb.1#",
-            "#topol.top.1#", "#topol.top.2#", "#topol.top.3#",
-            "#topol.tpr.1#", "#topol.tpr.2#", "#topol.tpr.3#",
-            "#topol.tpr.4#", "#water.pdb.1#", "ener_EQ.edr", 
-            "ffoplsaabon_mod.itp", "ffoplsaa_mod.itp", "ffoplsaanb_mod.itp",
-            "genion.log", "hexagon.pdb", "index.ndx",
-            "ligand_ha.ndx", "mdout.mdp", "min.pdb",
-            "output.pdb", "output.tpr", "popc.pdb", "popc.itp", "posre.itp",
-            "posre_lig.itp", "protein.itp", "protein.top",
-            "protein_ca200.itp", "proteinopls.pdb", "proteinopls-ligand.pdb",
-            "protpopc.pdb", "steep.mdp", "traj.xtc", "traj_EQ.xtc", "tmp.pdb",
-            "topol.top", "topol.tpr", "tmp_proteinopls.pdb", "water.pdb"]
+                     "#mdout.mdp.2#", "#mdout.mdp.3#", "#mdout.mdp.4#",
+                     "#mdout.mdp.5#","#mdout.mdp.6#", "#mdout.mdp.7#",
+                     "#mdout.mdp.8#", "#mdout.mdp.9#", "#output.pdb.1#",
+                     "#output.tpr.1#", "#popc.pdb.1#", "#posre.itp.1#",
+                     "#proteinopls.pdb.1#", "#proteinopls.pdb.2#",
+                     "#proteinopls.pdb.3#", "#proteinopls.pdb.4#",
+                     "#protein.top.1#", "#protpopc.pdb.1#", "#protpopc.pdb.2#",
+                     "#tmp.pdb.1#", "#topol.top.1#", "#topol.top.2#",
+                     "#topol.top.3#", "#topol.tpr.1#", "#topol.tpr.2#",
+                     "#topol.tpr.3#", "#topol.tpr.4#", "#water.pdb.1#",
+                     "ener_EQ.edr", "ffoplsaabon_mod.itp", "ffoplsaa_mod.itp",
+                     "ffoplsaanb_mod.itp", "genion.log", "hexagon.pdb",
+                     "index.ndx", "ligand_ha.ndx", "mdout.mdp", "min.pdb",
+                     "output.pdb", "output.tpr", "popc.pdb", "popc.itp",
+                     "posre.itp", "posre_lig.itp", "protein.itp", "protein.top",
+                     "protein_ca200.itp", "proteinopls.pdb",
+                     "proteinopls-ligand.pdb", "protpopc.pdb", "steep.mdp",
+                     "traj.xtc", "traj_EQ.xtc", "tmp.pdb", "topol.top",
+                     "topol.tpr", "tmp_proteinopls.pdb", "water.pdb"]
 
         dirs_to_unlink = ["Rmin", "eq", "eqCA"]
 
@@ -129,12 +128,15 @@ class Run(object):
     def moldyn(self):
         '''Runs all the dynamics'''
 
-        steps = ["Init", "Minimization", "Equilibration", "Relax", "CARelax",
+#        steps = ["Init", "Minimization", "Equilibration", "Relax", "CARelax",
+#            "CollectResults"]
+
+        steps = ["Init", "Minimization", "Equilibration", "Relax", "BWRelax",
             "CollectResults"]
 
         for step in steps:
-            self.g.select_recipe(stage = step, debug = self.debug)
-            self.g.run_recipe(debug = self.debug)
+            self.g.select_recipe(stage=step, debug=self.debug)
+            self.g.run_recipe(debug=self.debug)
 
     def light_moldyn(self):
         '''This is a function to debug a run in steps'''

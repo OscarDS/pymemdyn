@@ -24,6 +24,7 @@ class ProteinComplex(object):
     def setMonomer(self, value):
         '''Sets the monomer object'''
         self.monomer = value
+
     def getMonomer(self):
         return self.monomer
     property(getMonomer, setMonomer)
@@ -31,6 +32,7 @@ class ProteinComplex(object):
     def setLigand(self, value):
         '''Sets the ligand object'''
         self.ligand = value
+
     def getLigand(self):
         return self.ligand
     property(getLigand, setLigand)
@@ -38,6 +40,7 @@ class ProteinComplex(object):
     def setWaters(self, value):
         '''Sets the crystal waters object'''
         self.waters = value
+
     def getWaters(self):
         return self.waters
     property(getWaters, setWaters)
@@ -45,6 +48,7 @@ class ProteinComplex(object):
     def setIons(self, value):
         '''Sets the ions object'''
         self.ions = value
+
     def getIons(self):
         return self.ions
     property(getIons, setIons)
@@ -52,6 +56,7 @@ class ProteinComplex(object):
     def setCho(self, value):
         '''Sets the cholesterol object'''
         self.cho = value
+
     def getCho(self):
         return self.cho
     property(getCho, setCho)
@@ -59,6 +64,7 @@ class ProteinComplex(object):
     def setAlosteric(self, value):
         '''Sets the alosteric object'''
         self.alosteric = value
+
     def getAlosteric(self):
         return self.alosteric
     property(getAlosteric, setAlosteric)
@@ -68,6 +74,7 @@ class ProteinComplex(object):
         NANOM = 10
         self.gmx_prot_xy = self.prot_xy / NANOM
         self.gmx_prot_z = self.prot_z / NANOM
+
 
 class Protein(object):
     def __init__(self, *args, **kwargs):
@@ -91,6 +98,7 @@ class Protein(object):
             return Monomer(pdb = self.pdb)
         elif len(chains) == 2:
             return Dimer(pdb = self.pdb, chains = chains) 
+
 
 class Monomer(object):
     def __init__(self, *args, **kwargs):
@@ -153,6 +161,7 @@ class Monomer(object):
 
         return True
 
+
 class Dimer(Monomer):
     def __init__(self, *args, **kwargs):
         super(Dimer, self).__init__(self, *args, **kwargs)
@@ -164,6 +173,7 @@ class Dimer(Monomer):
         '''Overload the delete_chain method from Monomer'''
         return True
 
+
 class Compound(object):
     '''This is a super-class to provide common functions to added compounds'''
     def __init__(self, *args, **kwargs):
@@ -174,6 +184,7 @@ class Compound(object):
         for src in files:
             if not os.path.isfile(src):
                 raise IOError("File {0} missing".format(src))
+
 
 class Ligand(Compound):
     def __init__(self, *args, **kwargs):
@@ -239,6 +250,7 @@ class Ligand(Compound):
 
         return True
 
+
 class CrystalWaters(Compound):
     def __init__(self, *args, **kwargs):
         self.pdb = kwargs.get("pdb", "hoh.pdb")
@@ -254,6 +266,7 @@ class CrystalWaters(Compound):
     def setWaters(self, value):
         '''Sets the crystal waters'''
         self._n_wats = value
+
     def getWaters(self):
         '''Get the crystal waters'''
         return self._n_wats
@@ -276,6 +289,7 @@ class CrystalWaters(Compound):
         tgt.writelines(s)
         tgt.close()
 
+
 class Ions(Compound):
     def __init__(self, *args, **kwargs):
         self.pdb = kwargs.get("pdb", "ions_local.pdb")
@@ -292,6 +306,7 @@ class Ions(Compound):
     def setIons(self, value):
         '''Sets the crystal ions'''
         self._n_ions = value
+
     def getIons(self):
         '''Get the crystal ions'''
         return self._n_ions
@@ -319,6 +334,7 @@ class Ions(Compound):
         tgt.writelines(s)
         tgt.close()
 
+
 class Cholesterol(Compound):
     def __init__(self, *args, **kwargs):
         self.pdb = kwargs.get("pdb", "cho.pdb")
@@ -333,6 +349,7 @@ class Cholesterol(Compound):
     def setCho(self, value):
         '''Sets the crystal cholesterol'''
         self._n_cho = value
+
     def getCho(self):
         '''Get the crystal cholesterols'''
         return self._n_cho
@@ -369,6 +386,7 @@ class Cholesterol(Compound):
                    cho_count += 1
        return cho_count / 74 #Each CHO has 74 atoms
 
+
 class Lipids(Compound):
     def __init__(self, *args, **kwargs):
         self.pdb = kwargs.get("pdb", "lip.pdb")
@@ -385,6 +403,7 @@ class Lipids(Compound):
     def setLip(self, value):
         '''Sets the crystal lipids'''
         self._n_lip = value
+
     def getLip(self):
         '''Get the crystal lipids'''
         return self._n_lip
@@ -413,6 +432,7 @@ class Lipids(Compound):
         tgt = open(self.posre_itp, "w")
         tgt.writelines(s)
         tgt.close()
+
 
 class Alosteric(Compound):
     '''This is a compound that goes as a ligand but in other place'''

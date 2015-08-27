@@ -26,9 +26,11 @@ def _arrange_dir(src_dir, new_dir, useful_files=[], useful_fixed=[]):
     return True
 
 def check_forces(pdb, itp, ffield):
-    '''A force field must give a set of forces that matches every atom in
+    """
+    A force field must give a set of forces that matches every atom in
     the pdb file. This showed particularly important to the ligands, as they
-    may vary along a very broad range of atoms'''
+    may vary along a very broad range of atoms
+    """
 
     #The itp matches each residue in the ligand pdb with the force field
     atoms_def = False
@@ -117,7 +119,9 @@ def clean_topol(src = [], tgt = []):
     return True
 
 def concat(**kwargs):
-    '''Make a whole pdb file with all the pdb provided'''
+    """
+    Make a whole pdb file with all the pdb provided
+    """
 #    for compound_class in ["ligand", "waters", "ions", "cho", "alosteric"]:
     for compound_class in ["ligand", "ions", "cho", "alosteric", "waters"]:
         #Does the complex carry the group?
@@ -190,11 +194,13 @@ def make_ffoplsaanb(complex = None):
     return True
 
 def make_topol(template_dir = \
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates"),
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates"),
     target_dir = "",  #Dir where topol.top should land
     working_dir = "", #Dir where script is working
     complex = None):  # The MembraneComplex object to deal
-    '''Make the topol starting from our topol.top template'''
+    """
+    Make the topol starting from our topol.top template
+    """
 
 #    protein = dimer = lig = hoh = na = cho = alo = 0
 #    lig_name = hoh_name = ions_name = cho_name = alosteric_name = ""
@@ -343,4 +349,5 @@ def tune_mdp(groups):
     eq_out.close()
 
     return True
-    
+
+

@@ -466,7 +466,7 @@ class BasicCARelax(object):
 
 class BasicBWRelax(object):
     def __init__(self, **kwargs):
-        self.steps = ["set_stage_init", "genrestr", "grompp", "mdrun"]
+        self.steps = ["set_stage_init", "genrestr", "genbw", "grompp", "mdrun"]
         self.recipe = {
              "set_stage_init": {"command": "set_stage_init", #1
               "options": {"src_dir": "eq",
@@ -476,12 +476,17 @@ class BasicBWRelax(object):
 #The genrestr gromacs function work for restraining all-atoms or c-alpha atoms
 # but not the b.w. residues we want to define univocally in this case.
 #A more sophisticated procedure is required based on knowledge-based base-pairs.
-#             "genrestr": {"gromacs": "genrestr", #2
-#              "options": {"src": "Rmin/topol.tpr",
-#                          "tgt": "disre.itp",
-#                          "index": "index.ndx",
-#                          "forces": ["200"] * 3},
-#              "input": "3\n"},
+
+             "pdb2fas": {"command": "pdb2fas", #3
+             "options": {"src": "proteinopls.pdb",
+                      "tgt": ""}},
+
+             "genrestr": {"gromacs": "genrestr", #2
+              "options": {"src": "Rmin/topol.tpr",
+                          "tgt": "disre.itp",
+                          "index": "index.ndx",
+                          "forces": ["200"] * 3},
+              "input": "3\n"},
              "grompp": {"gromacs": "grompp", #3
               "options": {"src": "eqBW/eqBW.mdp",
                           "src2": "eqBW/confout.gro",

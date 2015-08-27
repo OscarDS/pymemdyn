@@ -8,16 +8,24 @@ import os
 
 class Printing(object):
     def __init__(self):
-        '''This is a proxy to put a message directly to the stdout through
-        "print" command'''
+        """
+        This is a proxy to put a message directly to the stdout through
+        "print" command
+        """
         pass
+
     def dispatch(self, msg):
-        '''Simply print the msg passed'''
+        """
+        Simply print the msg passed
+        """
         print msg
+
 
 class DjangoDB(object):
     def __init__(self, *args, **kwargs):
-        '''This is a proxy to save a message to a Database using Django ORM'''
+        """
+        This is a proxy to save a message to a Database using Django ORM
+        """
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "http_settings")
         import http_settings
         import http_models
@@ -27,7 +35,9 @@ class DjangoDB(object):
         self.queue_task = http_models.QueueTask.objects.get(pk = self.pk)
 
     def dispatch(self, msg):
-        '''Put a message in the "last_message" column of the table'''
+        """
+        Put a message in the "last_message" column of the table
+        """
 
         self.queue_task.last_message = str(msg)
         self.queue_task.save()
