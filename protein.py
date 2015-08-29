@@ -1,6 +1,6 @@
 import os
 import shutil
-import tempfile
+#import tempfile
 
 class ProteinComplex(object):
     def __init__(self, *args, **kwargs):
@@ -22,7 +22,9 @@ class ProteinComplex(object):
             self.setAlosteric(kwargs["alosteric"])
 
     def setMonomer(self, value):
-        '''Sets the monomer object'''
+        """
+        Sets the monomer object.
+        """
         self.monomer = value
 
     def getMonomer(self):
@@ -30,7 +32,9 @@ class ProteinComplex(object):
     property(getMonomer, setMonomer)
 
     def setLigand(self, value):
-        '''Sets the ligand object'''
+        """
+        Sets the ligand object
+        """
         self.ligand = value
 
     def getLigand(self):
@@ -78,14 +82,17 @@ class ProteinComplex(object):
 
 class Protein(object):
     def __init__(self, *args, **kwargs):
-        '''This is a proxy to determine if a protein is a Monomer or a Dimer'''
+        """
+        This is a proxy to determine if a protein is a Monomer or a Dimer
+        """
         self.pdb = kwargs["pdb"]
         if not os.path.isfile(self.pdb):
             raise IOError("File '{0}' missing".format(self.pdb))
 
     def check_number_of_chains(self):
-        '''Determine if a PDB is a Monomer or a Dimer'''
-        
+        """
+        Determine if a PDB is a Monomer or a Dimer
+        """
         chains = []
         with open(self.pdb, "r") as pdb_fp:
             for line in pdb_fp:
@@ -111,13 +118,14 @@ class Monomer(object):
         self._setHist()
 
     def delete_chain(self):
-        '''PDBs which have a chain column mess up with pdb2gmx, creating
+        """
+        PDBs which have a chain column mess up with pdb2gmx, creating
         an unsuitable protein.itp file by naming the protein ie "Protein_A".
         Here we remove the chain value
 
         According to http://www.wwpdb.org/documentation/format33/sect9.html,
-        the chain value is in the column 22'''
-
+        the chain value is in column 22
+        """
         shutil.move(self.pdb, self.pdb + "~")
         pdb = open(self.pdb + "~", "r")
         pdb_out = open(self.pdb, "w")
@@ -141,7 +149,9 @@ class Monomer(object):
         return True
 
     def _setHist(self):
-        '''Change Histidines in pdb to the format preferred by gromacs'''
+        """
+        Change Histidines in pdb to the format preferred by gromacs
+        """
         tgt = open(self.pdb.replace(".pdb", "-his.pdb"), "w")
         self.pdb_his = tgt.name
 
@@ -170,12 +180,16 @@ class Dimer(Monomer):
         self.points = dict.fromkeys(self.chains, [])
 
     def delete_chain(self):
-        '''Overload the delete_chain method from Monomer'''
+        """
+        Overload the delete_chain method from Monomer
+        """
         return True
 
 
 class Compound(object):
-    '''This is a super-class to provide common functions to added compounds'''
+    """
+    This is a super-class to provide common functions to added compounds
+    """
     def __init__(self, *args, **kwargs):
         self.check_files(self.pdb, self.itp)
 
@@ -199,9 +213,11 @@ class Ligand(Compound):
         self.check_forces()
 
     def check_forces(self):
-        '''A force field must give a set of forces that matches every atom in
+        """
+        A force field must give a set of forces that matches every atom in
         the pdb file. This showed particularly important to the ligands, as they
-        may vary along a very broad range of atoms'''
+        may vary along a very broad range of atoms
+        """
 
         #The itp matches each residue in the ligand pdb with the force field
         atoms_def = False
@@ -264,21 +280,29 @@ class CrystalWaters(Compound):
         self._n_wats = self.count_waters()
 
     def setWaters(self, value):
-        '''Sets the crystal waters'''
+        """
+        Sets the crystal waters
+        """
         self._n_wats = value
 
     def getWaters(self):
-        '''Get the crystal waters'''
+        """
+        Get the crystal waters
+        """
         return self._n_wats
     number = property(getWaters, setWaters)
 
     def count_waters(self):
-       '''Count and set the number of crystal waters in the pdb'''
+       """
+       Count and set the number of crystal waters in the pdb
+       """
 #       return len([x for x in open(self.pdb, "r") if "OW" in x])
        return len([x for x in open(self.pdb, "r") if "HOH" in x])/3
 
     def _setITP(self):
-        '''Create the itp to this structure'''
+        """
+        Create the itp to this structure
+        """
         s = "\n".join([
             "; position restraints for crystallographic waters (resn HOH)",
             "[ position_restraints ]",
@@ -304,16 +328,22 @@ class Ions(Compound):
         self._n_ions = self.count_ions()
 
     def setIons(self, value):
-        '''Sets the crystal ions'''
+        """
+        Sets the crystal ions
+        """
         self._n_ions = value
 
     def getIons(self):
-        '''Get the crystal ions'''
+        """
+        Get the crystal ions
+        """
         return self._n_ions
     number = property(getIons, setIons)
 
     def count_ions(self):
-       '''Count and set the number of ions in the pdb'''
+       """
+       Count and set the number of ions in the pdb
+       """
        ions = ["NA", "CA", "MG", "CL", "ZN"]
        ion_count = 0
        for line in open(self.pdb, "r"):
@@ -323,7 +353,9 @@ class Ions(Compound):
        return ion_count
 
     def _setITP(self):
-        '''Create the itp to this structure'''
+        """
+        Create the itp to this structure
+        """
         s = "\n".join([
             "; position restraints for ions (resn HOH)",
             "[ position_restraints ]",
@@ -347,16 +379,22 @@ class Cholesterol(Compound):
         self._n_cho = self.count_cho()
 
     def setCho(self, value):
-        '''Sets the crystal cholesterol'''
+        """
+        Sets the crystal cholesterol
+        """
         self._n_cho = value
 
     def getCho(self):
-        '''Get the crystal cholesterols'''
+        """
+        Get the crystal cholesterols
+        """
         return self._n_cho
     number = property(getCho, setCho)
 
     def check_pdb(self):
-       '''Check the cholesterol file meet some standards'''
+       """
+       Check the cholesterol file meet some standards
+       """
        shutil.move(self.pdb, self.pdb + "~")
        pdb = open(self.pdb + "~", "r")
        pdb_out = open(self.pdb, "w")
@@ -378,7 +416,9 @@ class Cholesterol(Compound):
        return True
 
     def count_cho(self):
-       '''Count and set the number of cho in the pdb'''
+       """
+       Count and set the number of cho in the pdb
+       """
        cho_count = 0
        for line in open(self.pdb, "r"):
            if len(line.split()) > 2:
@@ -401,16 +441,22 @@ class Lipids(Compound):
         self._n_lip = self.count_lip()
 
     def setLip(self, value):
-        '''Sets the crystal lipids'''
+        """
+        Sets the crystal lipids
+        """
         self._n_lip = value
 
     def getLip(self):
-        '''Get the crystal lipids'''
+        """
+        Get the crystal lipids
+        """
         return self._n_lip
     number = property(getLip, setLip)
 
     def count_lip(self):
-       '''Count and set the number of lipids in the pdb'''
+       """
+       Count and set the number of lipids in the pdb
+       """
        lip_count = []
        for line in open(self.pdb, "r"):
            if len(line.split()) > 2:
@@ -422,7 +468,9 @@ class Lipids(Compound):
        return len(lip_count)
 
     def _setITP(self):
-        '''Create the itp to this structure'''
+        """
+        Create the itp to this structure
+        """
         s = "\n".join([
             "; position restraints for lipids (resn LIP)",
             "[ position_restraints ]",
@@ -435,7 +483,9 @@ class Lipids(Compound):
 
 
 class Alosteric(Compound):
-    '''This is a compound that goes as a ligand but in other place'''
+    """
+    This is a compound that goes as a ligand but in other place
+    """
     def __init__(self, *args, **kwargs):
         self.pdb = kwargs["pdb"]
         self.itp = kwargs["itp"]
@@ -449,7 +499,9 @@ class Alosteric(Compound):
         self.group = "protlig"
 
     def check_pdb(self):
-       '''Check the alosteric file meet some standards'''
+       """
+       Check the alosteric file meet some standards
+       """
        shutil.move(self.pdb, self.pdb + "~")
        pdb = open(self.pdb + "~", "r")
        pdb_out = open(self.pdb, "w")
@@ -471,7 +523,9 @@ class Alosteric(Compound):
        return True
 
     def check_itp(self):
-        '''Check the force field is correct'''
+        """
+        Check the force field is correct
+        """
         shutil.move(self.itp, self.itp + "~")
         itp = open(self.itp + "~", "r")
         itp_out = open(self.itp, "w")

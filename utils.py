@@ -1,13 +1,15 @@
-import inspect
+#import inspect
 import os
 import shutil
 from string import Template
 
-import sys
+#import sys
 
 def _arrange_dir(src_dir, new_dir, useful_files=[], useful_fixed=[]):
-    '''Copy the files in useful files from src_dir and
-    fixed files from self.own_dir to new dir, which is created if needed'''
+    """
+    Copy the files in useful files from src_dir and
+    fixed files from self.own_dir to new dir, which is created if needed
+    """
 
     if not os.path.isdir(new_dir):
         os.makedirs(new_dir)
@@ -17,11 +19,10 @@ def _arrange_dir(src_dir, new_dir, useful_files=[], useful_fixed=[]):
         tgt = os.path.join(new_dir, u_f)
         shutil.copy(src, tgt)
 
-    for u_f in [x for x in os.listdir(self.own_dir) if x in useful_fixed]:
-        src = os.path.join(self.own_dir, u_f)
-        tgt = os.path.join(new_dir, u_f)
-
-        shutil.copy(src, tgt)
+#    for u_f in [x for x in os.listdir(self.own_dir) if x in useful_fixed]:
+#        src = os.path.join(self.own_dir, u_f)
+#        tgt = os.path.join(new_dir, u_f)
+#        shutil.copy(src, tgt)
 
     return True
 
@@ -77,7 +78,10 @@ def check_forces(pdb, itp, ffield):
     return True
 
 def clean_all(target_dir = "", exclude = []):
-        '''Remove all intermediate files from "target_dir"  except that files in "exclude"'''
+        """
+        Remove all intermediate files from 'target_dir'  except that files
+         in 'exclude'
+         """
         to_unlink_dir = os.path.join(os.getcwd(), target_dir)
         #First a security checkout to not delete up a certain point
         minimum = "/home/gpcruser/public"
@@ -101,7 +105,9 @@ def clean_all(target_dir = "", exclude = []):
         return True
 
 def clean_topol(src = [], tgt = []):
-    '''Clean the src topol of path specifics, and paste results in target'''
+    """
+    Clean the src topol of path specifics, and paste results in target
+    """
     source = open(src, "r")
     target = open(tgt, "w")
 
@@ -131,7 +137,9 @@ def concat(**kwargs):
                              getattr(kwargs["tgt"], compound_class).pdb)
 
 def _file_append(f_src, f2a):
-    '''Add (concatenate) a f2a pdb file to another src pdb file'''
+    """
+    Add (concatenate) a f2a pdb file to another src pdb file
+    """
     src = open(f_src, "r")
     f2a = open(f2a, "r")
     tgt = open("tmp_" + f_src, "w")
@@ -153,9 +161,10 @@ def _file_append(f_src, f2a):
     return True
 
 def make_cat(dir1, dir2, name):
-    '''Very tight function to make a list of files to inject 
+    """
+    Very tight function to make a list of files to inject
     in some GROMACS suite programs
-    '''
+    """
     traj_src = [os.path.join(dir1, name)]
     traj_src.extend([os.path.join(dir1, "{0}", name).format(x)
                      for x in range(800, 0, -200)])
@@ -164,7 +173,9 @@ def make_cat(dir1, dir2, name):
     return traj_src
 
 def make_ffoplsaanb(complex = None):
-    '''Join all OPLS force fields needed to run the simulation'''
+    """
+    Join all OPLS force fields needed to run the simulation
+    """
     ff = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                       "templates", "ffoplsaanb_")
 
@@ -310,7 +321,9 @@ def make_topol(template_dir = \
 def make_topol_lines(itp_name = "",
     ifdef_name = "",
     posre_name = ""):
-    '''Make the topol lines to be included'''
+    """
+    Make the topol lines to be included
+    """
 
     return "\n".join(['#include "{it}"',
         '; Include Position restraint file',
@@ -321,7 +334,9 @@ def make_topol_lines(itp_name = "",
                           po = posre_name)
 
 def tar_out(src_dir = [], tgt = []):
-    '''Tar everything in a src_dir to the tar_file'''
+    """
+    Tar everything in a src_dir to the tar_file
+    """
     import tarfile
 
     t_f = tarfile.open(tgt, mode="w:gz")
@@ -333,7 +348,9 @@ def tar_out(src_dir = [], tgt = []):
     os.chdir(base_dir)
 
 def tune_mdp(groups):
-    '''Adjust the tc-groups of eq.mdp to be in line with our system'''
+    """
+    Adjust the tc-groups of eq.mdp to be in line with our system
+    """
     shutil.move("Rmin/eq.mdp", "Rmin/eq.mdp~")
     eq = open("Rmin/eq.mdp~", "r")
     eq_out = open("Rmin/eq.mdp", "w")

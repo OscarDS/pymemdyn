@@ -115,7 +115,7 @@ To install **py-MEMdyn** follow these steps:
 
 ### Modeling Modules 
 
-The following modules define the objects to be modelled.
+The following modules define the objects to be modeled.
 
 - **protein.py**.  This module defines the ProteinComplex, Protein, Monomer,
 Dimer, Compound, Ligand, CrystalWaters, Ions, Cholesterol, Lipids, 

@@ -3,7 +3,7 @@ import os
 import shutil
 import subprocess
 
-#import bw4posres
+import bw4posres
 import broker
 import groerrors
 import protein
@@ -349,7 +349,7 @@ class Gromacs(object):
 
     def select_recipe(self, stage="", debug=False):
         """
-        select_recipe: Select the appropiate recipe for the complex
+        select_recipe: Select the appropriate recipe for the complex
         """
         recipe = ""
         stage = stage or "Init"
@@ -478,6 +478,38 @@ class Gromacs(object):
             options[option] = new_option
 
         return options
+
+    def set_pdb2fas(self, **kwargs):
+        """
+        From pdb file convert to fasta sequence format without the use of
+        dependencies such as BioPython. This pdb to fasta translator
+        checks for the existence of c-alpha residues and it's
+        based on their 3-letter sequence id.
+         """
+        pdb = open(self.membrane_complex.membrane.pdb, "r")
+        print pdb
+        fastaseq = open(os.path.join(pdb.split(".")[0] + ".fasta"), "w")
+        fastaseq.write(">")
+        fastaseq.write("{0}\n".format(pdb))
+        result = []
+        for line in open(src, "r"):
+            atoms = [a for a in line if line[0:6] == "ATOM  " and line[13:16] == "CA "]
+            seqnam = ''.join(atoms[17:20])
+            if seqnam != '':
+                seq = bw4posres.protein_letters_3to1[seqnam]
+                result.append(seq)
+
+        lines = []
+        numcol = 70
+        resultasstr =''.join(result)
+        for i in xrange(0, len(resultasstr), numcol):
+            lines.append(resultasstr[i:i+numcol])
+
+        fastaseq.write("{0}".format("\n".join(lines)))
+        fastaseq.write("\n")
+        fastaseq.close()
+
+
 
     def set_popc(self, tgt=""):
         """

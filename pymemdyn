@@ -4,12 +4,12 @@ import logging
 import os
 import shutil
 
+import bw4posres
 import complex
 import gromacs
 import membrane
 import protein
 import queue
-#import recipes Does not ever call it. gromacs.py calls it.
 import settings
 
 class Run(object):
@@ -91,6 +91,12 @@ class Run(object):
             my_queue = queue.NoQueue()
 
         self.g.queue = my_queue
+
+        bw4posres.Run(pdb).pdb2fas()
+        bw4posres.Run(pdb).clustalalign()
+        bw4posres.Run(pdb).getcalphas()
+        bw4posres.Run(pdb).makedisre()
+
 
     def clean(self):
         '''Removes all previously generated files'''
