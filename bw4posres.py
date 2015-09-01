@@ -130,7 +130,8 @@ class Run(object):
         bwtagged = os.path.join(self.pdb.split(".")[0] + "_bw" + ".aln")
         
         command = [
-            os.path.join(os.path.dirname(__file__), ".bin", "clustalw"),
+#            os.path.join(os.path.dirname(__file__), ".bin", "clustalw"),
+            self.clustal_bin,
             "-profile1=" + profile1, 
             "-profile2=" + profile2,
             "-outfile=" + bwtagged,
