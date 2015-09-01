@@ -12,20 +12,22 @@ import protein
 import queue
 import settings
 
+
 class Run(object):
     def __init__(self, pdb, *args, **kwargs):
-        '''
-        A molecular dynamics "Run()"  MUST be given a "pdb"
+        """
+        A molecular dynamics *Run()*  MUST be given a *pdb* file.
         
-        This class tries to initialize a full complex to send to simulation. Given
-        a set of molecules (protein, ligand, other ligand, waters, ...), 
+        This class tries to initialize a full complex to send to simulation.
+        Given a set of molecules (protein, ligand, other ligand, waters, ...),
         this class would try to build a full embedded-in-membrane complex.
 
-        The complex is stored in self.g (a "Gromacs" object), and thus
-        can be 'runned' through g.recipe and g.run_recipe procedure. See
+        The complex is stored in self.g (a *Gromacs* object), and thus
+        can be **runned** through g.recipe and g.run_recipe procedure. See
         gromacs.py for more information.
 
-        The queueing system is also created here to be used in certain steps.'''
+        The queueing system is also created here to be used in certain steps.
+        """
 
         self.pdb = pdb
         self.own_dir = kwargs.get("own_dir") or ""
@@ -66,7 +68,9 @@ class Run(object):
             waters = self.waters or None,
             ions = self.ions or None,
             cho = self.cho or None)
+
         full_complex = complex.MembraneComplex()
+
         if self.pdb.__class__.__name__ == "Dimer":
             '''The box for the dimers is slightly bigger'''
             full_complex.box_height = 3.5
@@ -76,7 +80,7 @@ class Run(object):
 
         self.g = gromacs.Gromacs(membrane_complex = full_complex)
 
-        # NOTE: If it's not provided in command line, self.queue is set in
+        # NOTE: If not provided in command line, self.queue is set in
         # settings.py
         if self.queue:
             if self.queue == "slurm":
@@ -99,7 +103,9 @@ class Run(object):
 
 
     def clean(self):
-        '''Removes all previously generated files'''
+        """
+        Removes all previously generated files
+        """
         to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
                      "#mdout.mdp.2#", "#mdout.mdp.3#", "#mdout.mdp.4#",
                      "#mdout.mdp.5#","#mdout.mdp.6#", "#mdout.mdp.7#",
@@ -132,11 +138,9 @@ class Run(object):
         return True
 
     def moldyn(self):
-        '''Runs all the dynamics'''
-
-#        steps = ["Init", "Minimization", "Equilibration", "Relax", "CARelax",
-#            "CollectResults"]
-
+        """
+        Run all steps in a molecular dynamics simulation of a membrane protein
+        """
         steps = ["Init", "Minimization", "Equilibration", "Relax", "BWRelax",
             "CollectResults"]
 
@@ -145,7 +149,9 @@ class Run(object):
             self.g.run_recipe(debug=self.debug)
 
     def light_moldyn(self):
-        '''This is a function to debug a run in steps'''
+        """
+        This is a function to debug a run in steps
+        """
 #        steps = ["Init", "Minimization", "Equilibration", "Relax", "CARelax"]
 #        steps = ["Equilibration","Relax"]
         steps = ["CollectResults"]
@@ -159,7 +165,6 @@ if __name__ == "__main__":
         version='1.1',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description = ' == Setup Molecular Dynamics for Membrane Proteins given a PDB. == ')
-#        description = textwrap.dedent('''\ == Setup Molecular Dynamics for Membrane Proteins given a PDB. == '''))
 
     parser.add_argument('-b',
         dest = "own_dir",
@@ -174,7 +179,7 @@ if __name__ == "__main__":
         dest = "pdb",
         required = True,
         help = "Name of the pdb to insert into membrane for MD (mandatory). \
-	    Use the pdb extension. (e.g. -p myprot.pdb)")
+        Use the pdb extension. (e.g. -p myprot.pdb)")
     parser.add_argument('-l', '--lig',
         dest = "ligand",
         help = "Name of the ligand, without extension. Three files must be \

@@ -14,20 +14,20 @@ class Membrane(object):
         else:
             self.pdb = kwargs["pdb"]
 
-        self.bilayer_x  =  61.842 # xbilayer
-        self.bilayer_y  =  61.842 # ybilayer
-        self.bilayer_zw = 154.053 # hbilayerw i.e. with waters
-        self.bilayer_z  =  57.78  # zbilayer i.e. without waters
+        self.bilayer_x = 61.842  # xbilayer
+        self.bilayer_y = 61.842  # ybilayer
+        self.bilayer_zw = 154.053  # hbilayerw i.e. with waters
+        self.bilayer_z = 57.78   # zbilayer i.e. without waters
         self.set_nanom()
 
     def set_nanom(self):
         """
         Convert some measurements to nanometers to comply with GROMACS units.
         """
-        NANOM = 10
-        self.gmx_bilayer_x = self.bilayer_x / NANOM
-        self.gmx_bilayer_y = self.bilayer_y / NANOM
-        self.gmx_bilayer_z = self.bilayer_z / (NANOM - 1) #Loose the lipids
-        self.gmx_bilayer_zw = self.bilayer_zw / NANOM
+        nanometer = 10
+        self.gmx_bilayer_x = self.bilayer_x / nanometer
+        self.gmx_bilayer_y = self.bilayer_y / nanometer
+        self.gmx_bilayer_z = self.bilayer_z / (nanometer - 1) #Loose the lipids
+        self.gmx_bilayer_zw = self.bilayer_zw / nanometer
 
         return True

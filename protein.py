@@ -1,12 +1,12 @@
 import os
 import shutil
-#import tempfile
+
 
 class ProteinComplex(object):
     def __init__(self, *args, **kwargs):
-        self.cres = 0 #Central residue
-        self.trans = [0, 0, self.cres] #Module for translating complex
-        self.n_wats = 0 #Number of experimental waters
+        self.cres = 0  # Central residue
+        self.trans = [0, 0, self.cres]  # Module for translating complex
+        self.n_wats = 0  # Number of experimental waters
 
         if "monomer" in kwargs.keys():
             self.setMonomer(kwargs["monomer"])
@@ -42,7 +42,9 @@ class ProteinComplex(object):
     property(getLigand, setLigand)
 
     def setWaters(self, value):
-        '''Sets the crystal waters object'''
+        """
+        Sets the crystal waters object
+        """
         self.waters = value
 
     def getWaters(self):
@@ -50,7 +52,9 @@ class ProteinComplex(object):
     property(getWaters, setWaters)
 
     def setIons(self, value):
-        '''Sets the ions object'''
+        """
+        Sets the ions object
+        """
         self.ions = value
 
     def getIons(self):
@@ -58,7 +62,9 @@ class ProteinComplex(object):
     property(getIons, setIons)
 
     def setCho(self, value):
-        '''Sets the cholesterol object'''
+        """
+        Sets the cholesterol object
+        """
         self.cho = value
 
     def getCho(self):
@@ -66,7 +72,9 @@ class ProteinComplex(object):
     property(getCho, setCho)
 
     def setAlosteric(self, value):
-        '''Sets the alosteric object'''
+        """
+        Sets the alosteric object
+        """
         self.alosteric = value
 
     def getAlosteric(self):
@@ -74,10 +82,12 @@ class ProteinComplex(object):
     property(getAlosteric, setAlosteric)
 
     def set_nanom(self):
-        '''Set some meassurements to nanometers, as GROMACS wants'''
-        NANOM = 10
-        self.gmx_prot_xy = self.prot_xy / NANOM
-        self.gmx_prot_z = self.prot_z / NANOM
+        """
+        Convert dimension measurements to nanometers for GROMACS
+        """
+        nanometer = 10
+        self.gmx_prot_xy = self.prot_xy / nanometer
+        self.gmx_prot_z = self.prot_z / nanometer
 
 
 class Protein(object):
@@ -194,7 +204,9 @@ class Compound(object):
         self.check_files(self.pdb, self.itp)
 
     def check_files(self, *files):
-        '''Check if files passed as *args exist'''
+        """
+        Check if files passed as *args exist
+        """
         for src in files:
             if not os.path.isfile(src):
                 raise IOError("File {0} missing".format(src))
@@ -248,15 +260,18 @@ class Ligand(Compound):
             data = line.split()
             if len(data) > 6:
                 if molecules[data[3]][data[2]] not in atoms.keys():
-                    # Some atoms in the pdb have no definition in the parameters file lig.ff
-                    # TODO : Maybe add a guessing function, although it might just be better to
-                    #        give a better error message stating to check consistency between
-                    #        the pdb file and the .ff (parameters) file
+                    # Some atoms in the pdb have no definition in the parameters
+                    # file lig.ff
+                    # TODO : Maybe add a guessing function, although it might
+                    # just be better to give a better error message stating
+                    # to check consistency between the pdb file and the
+                    # .ff (parameters) file
                     print "Atom {0} has no field definition".format(data[1])
                     #return False
                 if atoms[molecules[data[3]][data[2]]] not in\
                     molecules[data[3]].keys():
-                    print "Atom {0} has a wrong field definition. Check .pdb and .ff files consistency".format(
+                    print "Atom {0} has a wrong field definition. Check .pdb \
+                    and .ff files consistency".format(
                         data[1])
                     print "Atom names in lig.pdb"
                     print molecules[data[3]].keys()
@@ -281,7 +296,7 @@ class CrystalWaters(Compound):
 
     def setWaters(self, value):
         """
-        Sets the crystal waters
+        Set crystal waters
         """
         self._n_wats = value
 
@@ -393,7 +408,7 @@ class Cholesterol(Compound):
 
     def check_pdb(self):
        """
-       Check the cholesterol file meet some standards
+       Check the cholesterol file meets some standards
        """
        shutil.move(self.pdb, self.pdb + "~")
        pdb = open(self.pdb + "~", "r")
@@ -484,7 +499,8 @@ class Lipids(Compound):
 
 class Alosteric(Compound):
     """
-    This is a compound that goes as a ligand but in other place
+    This is a compound that goes as a ligand but it's placed in an alosteric
+    site rather than an orthosteric one.
     """
     def __init__(self, *args, **kwargs):
         self.pdb = kwargs["pdb"]
@@ -500,7 +516,7 @@ class Alosteric(Compound):
 
     def check_pdb(self):
        """
-       Check the alosteric file meet some standards
+       Check the alosteric file meets some standards
        """
        shutil.move(self.pdb, self.pdb + "~")
        pdb = open(self.pdb + "~", "r")

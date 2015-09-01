@@ -32,31 +32,36 @@ import subprocess
 import settings as s
 
 # A larger dictionary of three to one letters can be used.
-# For example the dictionary contained at Data/SCOPData.py in a Biopython distribution
+# For example the dictionary contained at Data/SCOPData.py in a Biopython
+# distribution.
 # Usually the path where biopython is installed will look something like
 # the following path: /lib/python2.7/site-packages/Bio
-# For now we are just extending the dictionary to the various possible cases for Histidines,
-# that is, HIA, HIC, HIP, HIQ 
-protein_letters_3to1 = {'ALA':'A','ARG':'R','ASN':'N','ASP':'D','CYS':'C','GLU':'E','GLN':'Q',
-           'GLY':'G','HIA':'H','HIC':'H','HIP':'H','HIQ':'H','HIS':'H','ILE':'I','LEU':'L',
-           'LYS':'K','MET':'M','PHE':'F','PRO':'P','SER':'S','THR':'T','TRP':'W','TYR':'Y',
-           'VAL':'V'}
+# For now we are just extending the dictionary to the various possible cases
+# for Histidines, that is, HIA, HIC, HID, HIE, HIP, HIQ
+protein_letters_3to1 = {'ALA':'A','ARG':'R','ASN':'N','ASP':'D','CYS':'C',
+                        'GLU':'E','GLN':'Q','GLY':'G','HIA':'H','HIC':'H',
+                        'HID':'H','HIE':'H','HIP':'H','HIQ':'H','HIS':'H',
+                        'ILE':'I','LEU':'L','LYS':'K','MET':'M','PHE':'F',
+                        'PRO':'P','SER':'S','THR':'T','TRP':'W','TYR':'Y',
+                        'VAL':'V'}
 
 bwtags = ['1.46','1.49','1.50','1.53','1.57','2.42','2.43','2.44','2.47','2.50',
           '3.34','3.36','3.38','3.40','3.44','3.46','3.47','3.51','4.50','4.53',
           '4.57','5.54','5.57','5.60','6.41','6.44','6.47','6.48','6.51','7.38',
           '7.39','7.45','7.46','7.47','7.50','7.53']
          
-bwpairs = {'1.46':'7.47','1.49':'7.50','1.50':'2.47','1.50':'2.50','1.50':'7.46',
-           '1.53':'2.47','1.57':'2.44','2.42':'3.46','2.43':'7.53','2.50':'7.46',
-           '3.34':'4.53','3.34':'4.57','3.36':'6.48','3.38':'4.50','3.38':'4.53',
-           '3.40':'6.44','3.44':'5.54','3.47':'5.57','3.51':'5.57','3.51':'5.60',
+bwpairs = {'1.46':'7.47','1.49':'7.50','1.50':'2.47','1.50':'2.50',
+           '1.50':'7.46','1.53':'2.47','1.57':'2.44','2.42':'3.46',
+           '2.43':'7.53','2.50':'7.46','3.34':'4.53','3.34':'4.57',
+           '3.36':'6.48','3.38':'4.50','3.38':'4.53','3.40':'6.44',
+           '3.44':'5.54','3.47':'5.57','3.51':'5.57','3.51':'5.60',
            '5.54':'6.41','6.47':'7.45','6.51':'7.38','6.51':'7.39'}
 
-bwpairs2 = [('1.46','7.47'),('1.49','7.50'),('1.50','2.47'),('1.50','2.50'),('1.50','7.46',),
-            ('1.53','2.47'),('1.57','2.44'),('2.42','3.46'),('2.43','7.53'),('2.50','7.46',),
-            ('3.34','4.53'),('3.34','4.57'),('3.36','6.48'),('3.38','4.50'),('3.38','4.53',),
-            ('3.40','6.44'),('3.44','5.54'),('3.47','5.57'),('3.51','5.57'),('3.51','5.60',),
+bwpairs2 = [('1.46','7.47'),('1.49','7.50'),('1.50','2.47'),('1.50','2.50'),
+            ('1.50','7.46'),('1.53','2.47'),('1.57','2.44'),('2.42','3.46'),
+            ('2.43','7.53'),('2.50','7.46'),('3.34','4.53'),('3.34','4.57'),
+            ('3.36','6.48'),('3.38','4.50'),('3.38','4.53'),('3.40','6.44'),
+            ('3.44','5.54'),('3.47','5.57'),('3.51','5.57'),('3.51','5.60'),
             ('5.54','6.41'),('6.47','7.45'),('6.51','7.38'),('6.51','7.39')]
 
 
@@ -71,7 +76,6 @@ class Run(object):
         The init method is a kind of constructor, called when an instance
         of the class is created. The method serves to initialize what you
         want to do with the object.
-        :rtype : object
         """
         self.pdb = pdb
         self.own_dir = kwargs.get("own_dir") or ""
@@ -86,10 +90,13 @@ class Run(object):
         checks for the existance of c-alpha residues and it is
         based on their 3-letter sequence id.
         """
-        protein_letters_3to1 = {'ALA':'A','ARG':'R','ASN':'N','ASP':'D','CYS':'C','GLU':'E','GLN':'Q',
-           'GLY':'G','HIA':'H','HIC':'H','HIE':'H','HID':'H','HIP':'H','HIQ':'H','HIS':'H','ILE':'I','LEU':'L',
-           'LYS':'K','MET':'M','PHE':'F','PRO':'P','SER':'S','THR':'T','TRP':'W','TYR':'Y',
-           'VAL':'V'}
+#        protein_letters_3to1 = {'ALA':'A','ARG':'R','ASN':'N','ASP':'D',
+#                                'CYS':'C','GLU':'E','GLN':'Q','GLY':'G',
+#                                'HIA':'H','HIC':'H','HIE':'H','HID':'H',
+#                                'HIP':'H','HIQ':'H','HIS':'H','ILE':'I',
+#                                'LEU':'L','LYS':'K','MET':'M','PHE':'F',
+#                                'PRO':'P','SER':'S','THR':'T','TRP':'W',
+#                                'TYR':'Y','VAL':'V'}
 #        print self.pdb
         fastaseq = open(os.path.join(self.pdb.split(".")[0] + ".fasta"), "w")
         fastaseq.write(">")

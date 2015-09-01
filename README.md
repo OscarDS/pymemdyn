@@ -1,7 +1,7 @@
-pyMEMdyn Version 1.1
+pyMEMdyn Version 1.3
 ================================================================================
 
-pyMEMdyn is  a standalone python  package to setup  membrane molecular
+pyMEMdyn is  a standalone *python*  package to setup  membrane molecular
 dynamics  calculations  using the  **GROMACS**  set  of programs.  The
 package can be  used either in a desktop environment,  or in a cluster
 with popular queuing systems such as Torque/PBS or Slurm.  
@@ -14,8 +14,9 @@ with popular queuing systems such as Torque/PBS or Slurm.
 You can download any version of **py-MEMdyn** by cloning the repository
 to your local machine using git.  
 
-You will need to create a free personal account at bitbucket and send
-and e-mail to: [gpcruser@gmail.com](gpcruser@gmail.com) and you will be
+You will need to create a  free personal account at bitbucket and send
+and  e-mail  to:  [gpcruser@gmail.com](gpcruser@gmail.com)  requesting
+access to the code. After request processing from us you will be
 given access to the free repository.  
 
 To install **py-MEMdyn** follow these steps:  
@@ -153,6 +154,14 @@ and can then be passed  to other objects.
 
 Changelog
 --------------------------------------------------------------------------------
+
+### Changes from version 1.2 to 1.3
+
+- Tuesday, June 23, 2015
+
+Implemented Ballesteros-Weinstein based pair-distance restraints using the
+NMR-type heaviside potential function implemente in *GROMACS*.
+
 
 ### Changes from version 1.0 to 1.1
 

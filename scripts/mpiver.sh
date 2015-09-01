@@ -1,5 +1,5 @@
 #!/bin/bash
-# Sorry about this patchy way of getting thing done.
+# Sorry about this patchy way of getting things done.
 # This should later disappear and a new section, probably in settings.py
 # be added to define as variables all of the executables in the gromacs
 # binaries folder so it's easier to modify them when a new cluster facility
