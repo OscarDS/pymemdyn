@@ -576,7 +576,7 @@ class BasicCollectResults(object):
                                                "dir2": "eqBW",
                                                "name": "ener.edr",
                                                "tgt": "ener_EQ.edr"},
-                                   "input": "c\n" * 6},
+                                   "input": "y\n" * 6},
 
                        "g_rms": {"gromacs": "g_rms",  # 3
                                  "options": {"src": "eq/topol.tpr",
@@ -589,7 +589,7 @@ class BasicCollectResults(object):
                                                "dir2": "eqBW",
                                                "name": "ener.edr",
                                                "tgt": "ener_EQ.edr"},
-                                   "input": "c\n" * 6},
+                                   "input": "y\n" * 6},
 
                        "set_end": {"command": "set_stage_init",  # 9
                                    "options": {"src_dir": "eqBW",

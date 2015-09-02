@@ -3,7 +3,6 @@
 #
 # Depending on the broker, the messages may be just printed or something else
 
-import datetime
 import os
 
 class Printing(object):
@@ -27,7 +26,7 @@ class DjangoDB(object):
         This is a proxy to save a message to a Database using Django ORM
         """
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "http_settings")
-        import http_settings
+        import clustersettings
         import http_models
 
         self.pk = kwargs.get("pk")

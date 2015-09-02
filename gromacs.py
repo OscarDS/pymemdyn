@@ -3,7 +3,6 @@ import os
 import shutil
 import subprocess
 
-import bw4posres
 import broker
 import groerrors
 import protein
@@ -23,7 +22,7 @@ class Gromacs(object):
         if "membrane_complex" in kwargs.keys():
             self.set_membrane_complex(kwargs["membrane_complex"])
             self.tpr = \
-                self.membrane_complex.complex.monomer.pdb.replace(".pdb",
+                self.membrane_complex.complex.monomer.pdb.replace(".pdb", 
                                                                   ".tpr")
 
     def set_membrane_complex(self, value):
@@ -34,7 +33,6 @@ class Gromacs(object):
 
     def get_membrane_complex(self):
         return self._membrane_complex
-
     membrane_complex = property(get_membrane_complex, set_membrane_complex)
 
     def count_lipids(self, **kwargs):
@@ -52,7 +50,7 @@ class Gromacs(object):
         if getattr(self.membrane_complex.complex, "waters"):
             # Careful, some waters belong to crystal, not solvent
             self.membrane_complex.membrane.n_wats -= \
-                self.membrane_complex.complex.waters.number
+            self.membrane_complex.complex.waters.number
 
         for line in src:
             if len(line.split()) > 2:
@@ -305,8 +303,7 @@ class Gromacs(object):
 
             if command_name in self.recipe.breaks.keys():
                 command["options"] = self.set_options(command["options"],
-                                                      self.recipe.breaks[
-                                                          command_name])
+                                     self.recipe.breaks[command_name])
 
             # NOW RUN IT !
 

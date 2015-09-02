@@ -230,9 +230,11 @@ if __name__ == "__main__":
         cho = args.cho,
         queue = args.queue,
         debug = args.debug)
+
+
     run.clean()
 
-    #Delete old GROMACS.log if this is a re-run
+    # Deletes old GROMACS.log if this is a re-run    
     f = open("GROMACS.log", "w")
     f.close()
 

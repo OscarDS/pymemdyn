@@ -114,7 +114,11 @@ class Protein(object):
         if len(chains) < 2:
             return Monomer(pdb = self.pdb)
         elif len(chains) == 2:
-            return Dimer(pdb = self.pdb, chains = chains) 
+            return Dimer(pdb = self.pdb, chains = chains)
+        elif len(chains) > 2:
+            print ("\nError: Your file {0} has more than two protein \n"
+                   "chains. This is more than what pymemdyn can handle now.\n"\
+                   .format(self.pdb))
 
 
 class Monomer(object):

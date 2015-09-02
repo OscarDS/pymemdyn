@@ -1,9 +1,7 @@
-#import inspect
 import os
 import shutil
 from string import Template
 
-#import sys
 
 def _arrange_dir(src_dir, new_dir, useful_files=[], useful_fixed=[]):
     """
@@ -30,7 +28,7 @@ def check_forces(pdb, itp, ffield):
     """
     A force field must give a set of forces that matches every atom in
     the pdb file. This showed particularly important to the ligands, as they
-    may vary along a very broad range of atoms
+    may vary along a very broad range of atoms.
     """
 
     #The itp matches each residue in the ligand pdb with the force field
