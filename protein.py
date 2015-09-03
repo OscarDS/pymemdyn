@@ -373,10 +373,10 @@ class Ions(Compound):
 
     def _setITP(self):
         """
-        Create the itp to this structure
+        Create an itp file for this structure
         """
         s = "\n".join([
-            "; position restraints for ions (resn HOH)",
+            "; position restraints for ions (resn NA, CA, MG, CL, ZN)",
             "[ position_restraints ]",
             ";  i funct       fcx        fcy        fcz",
             "   1    1       1000       1000       1000"])
@@ -393,6 +393,9 @@ class Cholesterol(Compound):
         super(Cholesterol, self).__init__(self, *args, **kwargs)
 
         self.group = "membr"
+
+        self.posre_itp = "posre_cho.itp"
+        self._setITP()
 
         self.check_pdb()
         self._n_cho = self.count_cho()
@@ -444,6 +447,20 @@ class Cholesterol(Compound):
                if line.split()[3] in ["CHO", "CLR"]:
                    cho_count += 1
        return cho_count / 74 #Each CHO has 74 atoms
+
+    def _setITP(self):
+        """
+        Create the itp to this structure
+        """
+        s = "\n".join([
+            "; position restraints for ions (resn CHO)",
+            "[ position_restraints ]",
+            ";  i funct       fcx        fcy        fcz",
+            "   1    1       1000       1000       1000"])
+
+        tgt = open(self.posre_itp, "w")
+        tgt.writelines(s)
+        tgt.close()
 
 
 class Lipids(Compound):

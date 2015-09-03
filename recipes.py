@@ -125,7 +125,6 @@ class BasicInit(object):
 
              "grompp": {"gromacs": "grompp",  # 25
                         "options": {"src": "steep.mdp",
-                                    # src defined in generate_command of gromacs.py
                                     "src2": "tmp.pdb",
                                     "tgt": "topol.tpr",
                                     "top": "topol.top",
