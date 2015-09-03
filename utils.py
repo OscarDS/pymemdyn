@@ -259,9 +259,9 @@ def make_topol(template_dir = \
              "na": {"itp_name": ions_name,
                  "ifdef_name": "POSRESION",
                  "posre_name": "posre_ion.itp"},
-             "cho": {"itp_name": cho_name},
-                 #"ifdef_name": "POSRESCHO",
-                 #"posre_name": "posre_cho.itp"}
+             "cho": {"itp_name": cho_name,
+                 "ifdef_name": "POSRESCHO",
+                 "posre_name": "posre_cho.itp"},
              "alo": {"itp_name": alosteric_name,
                  "ifdef_name": "POSRESALO",
                  "posre_name": "posre_alo.itp"},
