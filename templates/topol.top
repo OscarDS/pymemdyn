@@ -1,8 +1,5 @@
 #include "ffoplsaa_mod.itp"
 $itp_includes
-#ifdef DISRE
-#include "disre.itp"
-#endif
 #include "${working_dir}popc.itp"
 #include "spc.itp"
 #include "ions.itp"

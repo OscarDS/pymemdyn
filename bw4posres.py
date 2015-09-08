@@ -90,14 +90,6 @@ class Run(object):
         checks for the existance of c-alpha residues and it is
         based on their 3-letter sequence id.
         """
-#        protein_letters_3to1 = {'ALA':'A','ARG':'R','ASN':'N','ASP':'D',
-#                                'CYS':'C','GLU':'E','GLN':'Q','GLY':'G',
-#                                'HIA':'H','HIC':'H','HIE':'H','HID':'H',
-#                                'HIP':'H','HIQ':'H','HIS':'H','ILE':'I',
-#                                'LEU':'L','LYS':'K','MET':'M','PHE':'F',
-#                                'PRO':'P','SER':'S','THR':'T','TRP':'W',
-#                                'TYR':'Y','VAL':'V'}
-#        print self.pdb
         fastaseq = open(os.path.join(self.pdb.split(".")[0] + ".fasta"), "w")
         fastaseq.write(">")
         fastaseq.write("{0}\n".format(self.pdb))

@@ -213,10 +213,11 @@ def make_topol(template_dir = \
 
 #    protein = dimer = lig = hoh = na = cho = alo = 0
 #    lig_name = hoh_name = ions_name = cho_name = alosteric_name = ""
-    protein = dimer = lig = na = cho = alo = hoh = 0
+    protein = bw =  dimer = lig = na = cho = alo = hoh = 0
     lig_name = ions_name = cho_name = alosteric_name = hoh_name = ""
     if hasattr(complex, "monomer"):
         protein = 1
+        bw = 1
         if getattr(complex, "monomer").__class__.__name__ == "Dimer":
             dimer = 1
     if hasattr(complex, "ligand"):
@@ -242,29 +243,35 @@ def make_topol(template_dir = \
 
 
 #    order = ("protein", "dimer", "lig", "hoh", "na", "cho", "alo")
-    order = ("protein", "dimer", "lig", "na", "cho", "alo", "hoh")
+    order = ("protein", "bw", "dimer", "lig", "na", "cho", "alo", "hoh")
     comps = {"protein": {"itp_name": "protein.itp",
-                 "ifdef_name": "POSRES",
-                 "posre_name": "posre.itp"},
-#             "bw": {"itp_name": "",
-#                 "ifdef_name": "DISRE",
-#                 "posre_name": "disre.itp"},
+                         "ifdef_name": "POSRES",
+                         "posre_name": "posre.itp"},
+
+             "bw": {"ifdef_name": "DISRE",
+                    "posre_name": "disre.itp"},
+
              "dimer": {"name": "Protein_chain_B",
                  "itp_name": "protein_Protein_chain_B.itp",
                  "ifdef_name": "POSRES",
                  "posre_name": "posre_Protein_chain_B.itp"},
+
              "lig": {"itp_name": lig_name,
                  "ifdef_name": "POSRESLIG",
                  "posre_name": "posre_lig.itp"},
+
              "na": {"itp_name": ions_name,
                  "ifdef_name": "POSRESION",
                  "posre_name": "posre_ion.itp"},
+
              "cho": {"itp_name": cho_name,
                  "ifdef_name": "POSRESCHO",
                  "posre_name": "posre_cho.itp"},
+
              "alo": {"itp_name": alosteric_name,
                  "ifdef_name": "POSRESALO",
                  "posre_name": "posre_alo.itp"},
+
              "hoh": {"itp_name": hoh_name,
                  "ifdef_name": "POSRESHOH",
                  "posre_name": "posre_hoh.itp"},
@@ -285,10 +292,12 @@ def make_topol(template_dir = \
     itp_include = []
     for c in order:
         if locals()[c]:
-            itp_name = comps[c]["itp_name"]
-            if "posre_name" in comps[c].keys():
+#            itp_name = comps[c]["itp_name"]
+#            print c
+#            print comps[c].keys()
+            if "itp_name" in comps[c].keys():
                 posre_name = comps[c]["posre_name"]
-            itp_include.append('#include "{0}"'.format(comps[c]["itp_name"]))
+                itp_include.append('#include "{0}"'.format(comps[c]["itp_name"]))
             if "posre_name" in comps[c].keys():
                 itp_include.extend(['; Include Position restraint file',
                 '#ifdef {0}'.format(comps[c]["ifdef_name"]),
