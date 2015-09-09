@@ -41,33 +41,33 @@ class Run(object):
         self.debug = kwargs.get("debug") or False
 
         if self.pdb:
-            self.pdb = protein.Protein(pdb = self.pdb).check_number_of_chains()
+            self.pdb = protein.Protein(pdb=self.pdb).check_number_of_chains()
 
         sugars = {"ligand": "Ligand",
-            "alosteric": "Alosteric",
-            "waters": "CrystalWaters",
-            "ions": "Ions",
-            "cho": "Cholesterol"}
+                  "alosteric": "Alosteric",
+                  "waters": "CrystalWaters",
+                  "ions": "Ions",
+                  "cho": "Cholesterol"}
 
         for sugar_type, class_name in sugars.iteritems():
             if getattr(self, sugar_type):
                 base_name = getattr(self, sugar_type)
                 setattr(self,
-                    sugar_type,
-                    getattr(protein, class_name)(
-                        pdb = base_name + ".pdb",
-                        itp = base_name + ".itp",
-                        ff = base_name + ".ff"))
+                        sugar_type,
+                        getattr(protein, class_name)(
+                            pdb=base_name + ".pdb",
+                            itp=base_name + ".itp",
+                            ff=base_name + ".ff"))
         
         self.membr = membrane.Membrane()
 
         prot_complex = protein.ProteinComplex(
-            monomer = self.pdb,
-            ligand = self.ligand or None,
-            alosteric = self.alosteric or None,
-            waters = self.waters or None,
-            ions = self.ions or None,
-            cho = self.cho or None)
+            monomer=self.pdb,
+            ligand=self.ligand or None,
+            alosteric=self.alosteric or None,
+            waters=self.waters or None,
+            ions=self.ions or None,
+            cho=self.cho or None)
 
         full_complex = complex.MembraneComplex()
 
@@ -78,7 +78,7 @@ class Run(object):
         full_complex.complex = prot_complex
         full_complex.membrane = self.membr
 
-        self.g = gromacs.Gromacs(membrane_complex = full_complex)
+        self.g = gromacs.Gromacs(membrane_complex=full_complex)
 
         # NOTE: If not provided in command line, self.queue is set in
         # settings.py
@@ -106,12 +106,13 @@ class Run(object):
         """
         Removes all previously generated files
         """
-        to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
-                     "#mdout.mdp.2#", "#mdout.mdp.3#", "#mdout.mdp.4#",
-                     "#mdout.mdp.5#","#mdout.mdp.6#", "#mdout.mdp.7#",
-                     "#mdout.mdp.8#", "#mdout.mdp.9#", "#output.pdb.1#",
-                     "#output.tpr.1#", "#popc.pdb.1#", "#posre.itp.1#",
-                     "#proteinopls.pdb.1#", "#proteinopls.pdb.2#",
+        to_unlink = ["*.fasta", "*.aln", "#index.ndx.1#", "#ligand_ha.ndx.1#",
+                     "#mdout.mdp.1#", "#mdout.mdp.2#", "#mdout.mdp.3#",
+                     "#mdout.mdp.4#", "#mdout.mdp.5#", "#mdout.mdp.6#",
+                     "#mdout.mdp.7#", "#mdout.mdp.8#", "#mdout.mdp.9#",
+                     "#output.pdb.1#", "#output.tpr.1#", "#popc.pdb.1#",
+                     "#posre.itp.1#", "#proteinopls.pdb.1#",
+                     "#proteinopls.pdb.2#",
                      "#proteinopls.pdb.3#", "#proteinopls.pdb.4#",
                      "#protein.top.1#", "#protpopc.pdb.1#", "#protpopc.pdb.2#",
                      "#tmp.pdb.1#", "#topol.top.1#", "#topol.top.2#",
@@ -127,7 +128,7 @@ class Run(object):
                      "traj.xtc", "traj_EQ.xtc", "tmp.pdb", "topol.top",
                      "topol.tpr", "tmp_proteinopls.pdb", "water.pdb"]
 
-        dirs_to_unlink = ["Rmin", "eq", "eqCA"]
+        dirs_to_unlink = ["Rmin", "eq", "eqCA", "eqBW"]
 
         for target in to_unlink:
             if os.path.isfile(target): os.unlink(target)
@@ -156,7 +157,7 @@ class Run(object):
 #        steps = ["Equilibration","Relax"]
         steps = ["CollectResults"]
         for step in steps:
-            self.g.select_recipe(stage = step, debug = self.debug)
+            self.g.select_recipe(stage=step, debug=self.debug)
             self.g.run_recipe(debug = self.debug)
 
 if __name__ == "__main__":
@@ -170,48 +171,55 @@ if __name__ == "__main__":
         dest = "own_dir",
         help = "Working dir if different from actual dir",
         default = os.getcwd())
+
     parser.add_argument('-r',
         dest = "repo_dir",
         help = "Path to templates of fixed files. If not \
             provided, take the value from settings.TEMPLATES_DIR.",
         default = settings.TEMPLATES_DIR)
+
     parser.add_argument('-p',
         dest = "pdb",
         required = True,
         help = "Name of the pdb to insert into membrane for MD (mandatory). \
         Use the pdb extension. (e.g. -p myprot.pdb)")
+
     parser.add_argument('-l', '--lig',
         dest = "ligand",
         help = "Name of the ligand, without extension. Three files must be \
             present along with the molecule pdb: the ligand, its itp and \
             its force field.")
+
     parser.add_argument('-a', "--alo",
         dest = "alosteric",
         help = "Name of the alosteric interaction, without extension. Three \
             files must be present along with the molecule pdb: the alosteric, \
             its itp and its force field.")
+
     parser.add_argument('-w','--waters',
         dest="waters",
         help = "Crystalized water molecules. File name without extension.")
+
     parser.add_argument('-i', '--ions',
         dest="ions",
         help = "Crystalized ions file name without extension.")
+
     parser.add_argument('-c', '--cho',
         dest="cho",
         help = "Crystalized cholesterol molecules file name\
             without extension.")
+
     parser.add_argument('-q', '--queue',
         dest = "queue",
         help = "Queueing system to use (slurm, pbs, pbs_ib and svgd supported)",
         default = settings.QUEUE)
-    parser.add_argument('--debug',
+
+    parser.add_argument('-d', '--debug',
         action="store_true")
-#    parser.add_argument('--version',
-#        action='version',
-#        version="1.1")
-#    parser.add_argument('--clean',
-#        action=Run.clean)    
-#                        )
+
+#    parser.add_argument('-cl', '--clean',
+#        default=Run.clean)
+
     
     args = parser.parse_args()
 
@@ -245,6 +253,6 @@ if __name__ == "__main__":
             format='%(asctime)s %(message)s',
             datefmt='%m/%d/%Y %I:%M:%S',
             level=logging.DEBUG)
-    #
+
     run.moldyn()
 #    run.light_moldyn()

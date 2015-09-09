@@ -818,8 +818,8 @@ class Wrapper(object):
 
     def run_command(self, kwargs):
         """
-        run_command: Run a command that comes in kwargs in a subprocess, and return
-        the output as (output, errors)
+        run_command: Run a command that comes in kwargs in a subprocess, and
+        return the output as (output, errors)
         """
 
         command = self.generate_command(kwargs)

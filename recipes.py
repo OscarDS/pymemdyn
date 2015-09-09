@@ -542,7 +542,7 @@ class BasicCollectResults(object):
         in a tar file.
 
         Provides a list of *steps* as the order to execute the recipe.
-        dict *recipe* as the variables to pass to funcions.
+        dict *recipe* as the variables to pass to functions.
         dict *breaks* as points where object calling can put their vars.
         """
         self.breaks = {}
@@ -561,7 +561,8 @@ class BasicCollectResults(object):
                                         "tgt": "traj_EQ.xtc"},
                             "input": "c\n" * 6},
 
-                       "trjconv": {"gromacs": "trjconv",  # 27
+                       "trjconv":
+                           {"gromacs": "trjconv",  # 27
                                    "options": {"src": "traj_EQ.xtc",
                                                "src2": "topol.tpr",
                                                "tgt": "traj_pymol.xtc",
@@ -570,27 +571,23 @@ class BasicCollectResults(object):
                                                "pbc": "mol"},
                                    "input": "1\n0\n"},
 
-                       "eneconv": {"gromacs": "eneconv",  # 2
-                                   "options": {"dir1": "eq",
-                                               "dir2": "eqBW",
-                                               "name": "ener.edr",
-                                               "tgt": "ener_EQ.edr"},
-                                   "input": "y\n" * 6},
+                       "eneconv":
+                           {"gromacs": "eneconv",  # 2
+                            "options": {"dir1": "eq",
+                                        "dir2": "eqBW",
+                                        "name": "ener.edr",
+                                        "tgt": "ener_EQ.edr"},
+                            "input": "y\nc\nc\nc\nc\nc\nc\n"},
 
-                       "g_rms": {"gromacs": "g_rms",  # 3
+                       "g_rms":
+                           {"gromacs": "g_rms",  # 3
                                  "options": {"src": "eq/topol.tpr",
                                              "src2": "traj_EQ.xtc",
                                              "tgt": "rmsd.xvg"},
                                  "input": "4\n" * 2},
 
-                       "eneconv": {"gromacs": "eneconv",  # 4
-                                   "options": {"dir1": "eq",
-                                               "dir2": "eqBW",
-                                               "name": "ener.edr",
-                                               "tgt": "ener_EQ.edr"},
-                                   "input": "y\n" * 6},
-
-                       "set_end": {"command": "set_stage_init",  # 9
+                       "set_end":
+                           {"command": "set_stage_init",  # 9
                                    "options": {"src_dir": "eqBW",
                                                #"src_files": ["traj.xtc",
                                                # "confout.gro", "topol.tpr"],
@@ -602,11 +599,13 @@ class BasicCollectResults(object):
                                                               "load_gpcr.pml"],
                                                "tgt_dir": "finalOutput"}},
 
-                       "clean_topol": {"command": "clean_topol",
+                       "clean_topol":
+                           {"command": "clean_topol",
                                        "options": {"src": "topol.top",
                                                    "tgt": "finalOutput/topol.top"}},
 
-                       "set_end_2": {"command": "set_stage_init",  # 9
+                       "set_end_2":
+                           {"command": "set_stage_init",  # 9
                                      "options": {"src_dir": "",
                                                  "src_files": [
                                                      "ffoplsaa_mod.itp",
@@ -619,7 +618,8 @@ class BasicCollectResults(object):
                                                      "traj_pymol.xtc"],
                                                  "tgt_dir": "finalOutput"}},
 
-                       "set_end_3": {"command": "set_stage_init",  # 9
+                       "set_end_3":
+                           {"command": "set_stage_init",  # 9
                                      "options": {"src_dir": "",
                                                  "src_files": ["tot_ener.xvg",
                                                                "tot_ener.log",
@@ -631,12 +631,14 @@ class BasicCollectResults(object):
                                                                "volume.log"],
                                                  "tgt_dir": "finalOutput/reports"}},
 
-                       "set_end_4": {"command": "set_stage_init",  # 9
+                       "set_end_4":
+                           {"command": "set_stage_init",  # 9
                                      "options": {"src_dir": "eq",
                                                  "src_files": ["md_eq1000.log"],
                                                  "tgt_dir": "finalOutput/logs"}},
 
-                       "set_end_5": {"command": "set_stage_init",  # 9
+                       "set_end_5":
+                           {"command": "set_stage_init",  # 9
                                      "options": {"src_dir": "eq",
                                                  "src_files": [
                                                      "{0}/md_eq{0}.log".format(
@@ -645,12 +647,14 @@ class BasicCollectResults(object):
                                                      range(800, 0, -200)],
                                                  "tgt_dir": "finalOutput/logs"}},
 
-                       "set_end_6": {"command": "set_stage_init",  # 9
+                       "set_end_6":
+                           {"command": "set_stage_init",  # 9
                                      "options": {"src_dir": "eqBW",
                                                  "src_files": ["md_eqBW.log"],
                                                  "tgt_dir": "finalOutput/logs"}},
 
-                       "tar_it": {"command": "tar_out",
+                       "tar_it":
+                           {"command": "tar_out",
                                   "options": {"src_dir": "finalOutput",
                                               "tgt": "MD_output.tgz"}},
                        #   "final_clean": {"command": "clean_all",
@@ -660,6 +664,7 @@ class BasicCollectResults(object):
 
         options = {"tot_ener": "13\n", "temp": "14\n", "pressure": "15\n",
                    "volume": "20\n"}
+
         for option, gro_key in options.iteritems():
             self.recipe[option] = \
                 {"gromacs": "g_energy",
