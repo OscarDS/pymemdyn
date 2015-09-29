@@ -8,7 +8,7 @@ class Queue(object):
         self.num_node   = getattr(settings, "QUEUE_NUM_NODES") or 1  # N
         self.ntasks     = getattr(settings, "QUEUE_NUM_TASK") or 8   # n
         self.max_time   = getattr(settings, "QUEUE_MAX_TIME") or "72:00:00"
-        self.projnum    = getattr(settings, "PROJECT_NUM") or  snic2014-1-262 
+        self.projnum    = getattr(settings, "PROJECT_NUM") or  "snic2014-1-262"
 #        self.ntaskpern  = getattr(settings, "QUEUE_NTS_NODE") or 8
         self.sh = "./mdrun.sh"
 
@@ -52,7 +52,7 @@ class Slurm(Queue):
             "-t", self.max_time,
             self.sh]
 
-#        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_slurm") #FOR CUELEBRE
+#        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_slurm") # FOR CUELEBRE
 #        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun") # FOR CSB
         self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") # FOR triolith
 
