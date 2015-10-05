@@ -1,5 +1,7 @@
 import os
+
 import settings
+
 
 class Queue(object):
     def __init__(self, *args, **kwargs):
@@ -12,14 +14,20 @@ class Queue(object):
         self.sh = "./mdrun.sh"
 
     def set_mdrun(self, value):
-        '''Set the md_run command'''
+        """
+        Set the md_run command
+        """
         self._mdrun = value
+
     def get_mdrun(self):
         return self._mdrun
     mdrun = property(get_mdrun, set_mdrun)
 
+
 class NoQueue(Queue):
-    '''Dummy queue when no queue is selected'''
+    """
+    Dummy queue when no queue is selected
+    """
     def __init__(self, *args, **kwargs):
         super(NoQueue, self).__init__(self, *args, **kwargs)
         self.command = [self.sh]
@@ -27,8 +35,10 @@ class NoQueue(Queue):
         self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun")
 
     def make_script(self, workdir, options):
-        '''binary is the executable
-        options is a list with all the options'''
+        """
+        workdir is the path to the binary executable
+        options is a list with all the options
+        """
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
         sh.write("cd %s\n" % workdir)
@@ -38,7 +48,11 @@ class NoQueue(Queue):
 
         return True
 
+
 class Slurm(Queue):
+    """
+    Queue for SLURM systems
+    """
     def __init__(self, *args, **kwargs):
         super(Slurm, self).__init__(self, *args, **kwargs)
         self.command = ["srun",
@@ -54,8 +68,10 @@ class Slurm(Queue):
         self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun") # FOR CSB
 
     def make_script(self, workdir, options):
-        '''binary is the executable
-        options is a list with all the options'''
+        """
+        workdir is the path to the binary executable
+        options is a list with all options
+        """
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
 #        sh.write("source /home/apps/gromacs-4.6.5/bin/GMXRC\n")
@@ -70,8 +86,11 @@ class Slurm(Queue):
 
         return True
 
+
 class PBS(Queue):
-    '''Queue for the PBS system'''
+    """
+    Queue for PBS systems
+    """
     def __init__(self, *args, **kwargs):
         super(PBS, self).__init__(self, *args, **kwargs)
         '''Setting the command to run mdrun in pbs queue with mpi'''
@@ -96,8 +115,10 @@ class PBS(Queue):
         self.command = [self.sh]
 
     def make_script(self, workdir, options):
-        '''PBS must load some modules in each node by shell scripts
-        options is a list with all the options'''
+        """
+        PBS must load some modules in each node by shell scripts
+        options is a list with all the options
+        """
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
         sh.write("cd %s\n" % os.path.join(os.getcwd(), workdir))
@@ -108,6 +129,7 @@ class PBS(Queue):
         os.chmod(self.sh, 0755)
 
         return True
+
 
 class PBS_IB(Queue):
     def __init__(self, *args, **kwargs):
@@ -132,8 +154,10 @@ class PBS_IB(Queue):
         self.command = [self.sh]
 
     def make_script(self, workdir, options):
-        '''PBS must load some modules in each node by shell scripts
-        options is a list with all the options'''
+        """
+        PBS must load some modules in each node by shell scripts
+        options is a list with all the options
+        """
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
         sh.write("cd %s\n" % os.path.join(os.getcwd(), workdir))
@@ -145,8 +169,11 @@ class PBS_IB(Queue):
 
         return True
 
+
 class Svgd(Queue):
-    '''Queue for the PBS system at svgd.cesga.es'''
+    """
+    Queue for the PBS system at svgd.cesga.es
+    """
     def __init__(self, *args, **kwargs):
         super(Svgd, self).__init__(self, *args, **kwargs)
         '''Setting the command to run mdrun in pbs queue with mpi'''
@@ -154,8 +181,10 @@ class Svgd(Queue):
         self.command = [self.sh]
 
     def make_script(self, workdir, options):
-        '''PBS must load some modules in each node by shell scripts
-        options is a list with all the options'''
+        """
+        PBS must load some modules in each node by shell scripts
+        options is a list with all the options
+        """
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
         sh.write("cd %s\n" % os.path.join(os.getcwd(), workdir))
@@ -179,6 +208,7 @@ class Svgd(Queue):
         os.chmod(self.sh, 0755)
 
         return True
+
 
 class Other(Queue):
     def __init__(self):

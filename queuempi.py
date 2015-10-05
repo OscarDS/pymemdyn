@@ -1,4 +1,5 @@
 import os
+
 import settings
 
 class Queue(object):
@@ -13,14 +14,19 @@ class Queue(object):
         self.sh = "./mdrun.sh"
 
     def set_mdrun(self, value):
-        '''Set the md_run command'''
+        """
+        Set the md_run command
+        """
         self._mdrun = value
     def get_mdrun(self):
         return self._mdrun
     mdrun = property(get_mdrun, set_mdrun)
 
+
 class NoQueue(Queue):
-    '''Dummy queue when no queue is selected'''
+    """
+    Dummy queue when no queue is selected
+    """
     def __init__(self, *args, **kwargs):
         super(NoQueue, self).__init__(self, *args, **kwargs)
         self.command = [self.sh]
@@ -29,8 +35,10 @@ class NoQueue(Queue):
         self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") #For triolith
 
     def make_script(self, workdir, options):
-        '''binary is the executable
-        options is a list with all the options'''
+        """
+        binary is the executable
+        options is a list with all the options
+        """
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
         sh.write("cd %s\n" % workdir)
@@ -39,6 +47,7 @@ class NoQueue(Queue):
         os.chmod(self.sh, 0755)
 
         return True
+
 
 class Slurm(Queue):
     def __init__(self, *args, **kwargs):
@@ -73,6 +82,7 @@ class Slurm(Queue):
         os.chmod(self.sh, 0755)
 
         return True
+
 
 class PBS(Queue):
     '''Queue for the PBS system'''
@@ -113,6 +123,7 @@ class PBS(Queue):
 
         return True
 
+
 class PBS_IB(Queue):
     def __init__(self, *args, **kwargs):
         super(PBS, self).__init__(self, *args, **kwargs)
@@ -149,6 +160,7 @@ class PBS_IB(Queue):
 
         return True
 
+
 class Svgd(Queue):
     '''Queue for the PBS system at svgd.cesga.es'''
     def __init__(self, *args, **kwargs):
@@ -183,6 +195,7 @@ class Svgd(Queue):
         os.chmod(self.sh, 0755)
 
         return True
+
 
 class Other(Queue):
     def __init__(self):
