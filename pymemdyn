@@ -23,7 +23,7 @@ class Run(object):
         this class would try to build a full embedded-in-membrane complex.
 
         The complex is stored in self.g (a *Gromacs* object), and thus
-        can be **runned** through g.recipe and g.run_recipe procedure. See
+        can be **run** through g.recipe and g.run_recipe procedure. See
         gromacs.py for more information.
 
         The queueing system is also created here to be used in certain steps.

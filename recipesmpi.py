@@ -274,7 +274,7 @@ class BasicMinimization(object):
                                            "tgt_dir": "Rmin",
                                            "repo_files": ["eq.mdp"]}},
 
-            "mdrun": {"gromacs": "mdrun_mpi",  # 2
+            "mdrun": {"gromacs": "mdrun",  # 2
                       "options": {"dir": "Rmin",
                                   "src": "topol.tpr",
                                   "tgt": "traj.trj",
