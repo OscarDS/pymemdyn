@@ -2,15 +2,15 @@ import os
 
 import settings
 
+
 class Queue(object):
     def __init__(self, *args, **kwargs):
         #Default number of processors, nodes and time alloted in cluster.
-        self.num_proc   = getattr(settings, "QUEUE_NUM_PROCS") or 8  # c
-        self.num_node   = getattr(settings, "QUEUE_NUM_NODES") or 1  # N
-        self.ntasks     = getattr(settings, "QUEUE_NUM_TASK") or 8   # n
+        self.num_proc   = getattr(settings, "QUEUE_NUM_PROCS") or 8
+        self.num_node   = getattr(settings, "QUEUE_NUM_NODES") or 1
         self.max_time   = getattr(settings, "QUEUE_MAX_TIME") or "72:00:00"
-        self.projnum    = getattr(settings, "PROJECT_NUM") or  "snic2014-1-262"
-#        self.ntaskpern  = getattr(settings, "QUEUE_NTS_NODE") or 8
+        self.ntasks     = getattr(settings, "QUEUE_NUM_TASK") or 8
+        self.ntaskpern  = getattr(settings, "QUEUE_NTS_NODE") or 8
         self.sh = "./mdrun.sh"
 
     def set_mdrun(self, value):
@@ -18,6 +18,7 @@ class Queue(object):
         Set the md_run command
         """
         self._mdrun = value
+
     def get_mdrun(self):
         return self._mdrun
     mdrun = property(get_mdrun, set_mdrun)
@@ -36,7 +37,7 @@ class NoQueue(Queue):
 
     def make_script(self, workdir, options):
         """
-        binary is the executable
+        workdir is the path to the binary executable
         options is a list with all the options
         """
         sh = open(self.sh, "w")
@@ -50,24 +51,29 @@ class NoQueue(Queue):
 
 
 class Slurm(Queue):
+    """
+    Queue for SLURM systems
+    """
     def __init__(self, *args, **kwargs):
         super(Slurm, self).__init__(self, *args, **kwargs)
-        self.command = ["sbatch",
+        self.command = ["srun",
+#            "--ntasks=%s" % str(self.ntasks),
+#            "--ntasks-per-node=%s" % str(self.ntaskpern),
 #        self.command = ["srun",
-            "-n", str(self.ntasks),
-#            "-N", str(self.num_node),
-#            "-c", str(self.num_proc),
-            "-A", str(self.projnum),
+#            "-n", str(self.num_node),
+            "-c", str(self.num_proc),
             "-t", self.max_time,
             self.sh]
 
-#        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_slurm") # FOR CUELEBRE
+#        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_slurm") #FOR CUELEBRE
 #        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun") # FOR CSB
         self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") # FOR triolith
 
     def make_script(self, workdir, options):
-        '''binary is the executable
-        options is a list with all the options'''
+        """
+        workdir is the path to the binary executable
+        options is a list with all options
+        """
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
 #        sh.write("source /home/apps/gromacs-4.6.5/bin/GMXRC\n")
@@ -75,8 +81,8 @@ class Slurm(Queue):
 #        sh.write("module load openmpi-x86_64\n")
         sh.write("cd %s  \n" % workdir)
 #        sh.write("%s -ntmpi 16 -ntomp 1  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
-#        sh.write("%s -nt 8 %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))        
-#        sh.write("%s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))        
+#        sh.write("%s -nt 8 %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
+#        sh.write("%s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
         sh.write("mpprun %s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options))) # Triolith needs mpprun
         sh.close()
         os.chmod(self.sh, 0755)
@@ -85,7 +91,9 @@ class Slurm(Queue):
 
 
 class PBS(Queue):
-    '''Queue for the PBS system'''
+    """
+    Queue for PBS systems
+    """
     def __init__(self, *args, **kwargs):
         super(PBS, self).__init__(self, *args, **kwargs)
         '''Setting the command to run mdrun in pbs queue with mpi'''
@@ -110,8 +118,10 @@ class PBS(Queue):
         self.command = [self.sh]
 
     def make_script(self, workdir, options):
-        '''PBS must load some modules in each node by shell scripts
-        options is a list with all the options'''
+        """
+        PBS must load some modules in each node by shell scripts
+        options is a list with all the options
+        """
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
         sh.write("cd %s\n" % os.path.join(os.getcwd(), workdir))
@@ -147,8 +157,10 @@ class PBS_IB(Queue):
         self.command = [self.sh]
 
     def make_script(self, workdir, options):
-        '''PBS must load some modules in each node by shell scripts
-        options is a list with all the options'''
+        """
+        PBS must load some modules in each node by shell scripts
+        options is a list with all the options
+        """
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
         sh.write("cd %s\n" % os.path.join(os.getcwd(), workdir))
@@ -162,7 +174,9 @@ class PBS_IB(Queue):
 
 
 class Svgd(Queue):
-    '''Queue for the PBS system at svgd.cesga.es'''
+    """
+    Queue for the PBS system at svgd.cesga.es
+    """
     def __init__(self, *args, **kwargs):
         super(Svgd, self).__init__(self, *args, **kwargs)
         '''Setting the command to run mdrun in pbs queue with mpi'''
@@ -170,8 +184,10 @@ class Svgd(Queue):
         self.command = [self.sh]
 
     def make_script(self, workdir, options):
-        '''PBS must load some modules in each node by shell scripts
-        options is a list with all the options'''
+        """
+        PBS must load some modules in each node by shell scripts
+        options is a list with all the options
+        """
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
         sh.write("cd %s\n" % os.path.join(os.getcwd(), workdir))

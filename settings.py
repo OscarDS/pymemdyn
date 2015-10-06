@@ -26,7 +26,7 @@ GROMACS_PATH = "/Users/esguerra/software/gromacs-4.6.5/bin/"        #Standalone 
 #GROMACS_PATH = "/lap/gromacs/4.6.5/bin"                             #Abisko
 
 # Define a path to the clustalw binary.
-CLUSTAL_BIN = os.path.join(ROOT_DIR, ".bin/clustalw_linux")
+CLUSTAL_BIN = os.path.join(ROOT_DIR, ".bin/clustalw_mac")
 
 # Choose which queuing system to use. Look inside queue.py.
 QUEUE = ""

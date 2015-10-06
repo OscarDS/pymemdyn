@@ -33,6 +33,7 @@ class NoQueue(Queue):
         self.command = [self.sh]
 
         self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun")
+#        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") #For triolith
 
     def make_script(self, workdir, options):
         """
@@ -66,6 +67,7 @@ class Slurm(Queue):
 
 #        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_slurm") #FOR CUELEBRE
         self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun") # FOR CSB
+#        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") # FOR triolith
 
     def make_script(self, workdir, options):
         """
@@ -79,8 +81,9 @@ class Slurm(Queue):
 #        sh.write("module load openmpi-x86_64\n")
         sh.write("cd %s  \n" % workdir)
 #        sh.write("%s -ntmpi 16 -ntomp 1  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
-#        sh.write("%s -nt 8 %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))        
-        sh.write("%s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))        
+#        sh.write("%s -nt 8 %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
+        sh.write("%s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
+#        sh.write("mpprun %s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options))) # Triolith needs mpprun
         sh.close()
         os.chmod(self.sh, 0755)
 
