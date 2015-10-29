@@ -2,6 +2,8 @@ import os
 import shutil
 from string import Template
 
+import bw4posres
+
 
 def _arrange_dir(src_dir, new_dir, useful_files=[], useful_fixed=[]):
     """
@@ -24,6 +26,7 @@ def _arrange_dir(src_dir, new_dir, useful_files=[], useful_fixed=[]):
 
     return True
 
+
 def check_forces(pdb, itp, ffield):
     """
     A force field must give a set of forces that matches every atom in
@@ -31,7 +34,7 @@ def check_forces(pdb, itp, ffield):
     may vary along a very broad range of atoms.
     """
 
-    #The itp matches each residue in the ligand pdb with the force field
+    # The itp matches each residue in the ligand pdb with the force field
     atoms_def = False
     molecules = {}
     for line in open(itp, "r"):
@@ -42,38 +45,40 @@ def check_forces(pdb, itp, ffield):
         if atoms_def and not line.startswith(";"):
             data = line.split()
             if len(data) > 6:
-                if data[3] not in molecules.keys(): molecules[data[3]] = {}
-                #{"LIG": {"C1": "TC1"},}
+                if data[3] not in molecules.keys():
+                    molecules[data[3]] = {}
+                # {"LIG": {"C1": "TC1"},}
                 molecules[data[3]][data[4]] = data[1]
 
     atoms = {}
-    #The force field matches each atom in the pdb with one line
+    # The force field matches each atom in the pdb with one line
     atomtypes = False
     for line in open(ffield, "r"):
         if "[ atomtypes ]" in line:
             atomtypes = True
         if atomtypes:
-            #We are inside the atomtypes definition, so add the defined atoms
+            # We are inside the atomtypes definition, so add the defined atoms
             if (len(line.split()) > 6):
                 #{"TC1": "C1"}
                 atoms[line.split()[0]] = line.split()[1]
             
-    #The pdb has the name of the atom in the third position.
-    #Here we cross-check all three files to match their harvested values
+    # The pdb has the name of the atom in the third position.
+    # Here we cross-check all three files to match their harvested values
     for line in open(pdb, "r"):
         data = line.split()
         if len(data) > 6:
             if molecules[data[3]][data[2]] not in atoms.keys():
-                #Some atoms in the pdb have no definition in force field
+                # Some atoms in the pdb have no definition in force field
                 # TODO : add a guessing function
                 print "Atom {0} has no field definition".format(data[1])
-                #return False
+                # return False
             if atoms[molecules[data[3]][data[2]]] not in\
                 molecules[data[3]].keys():
                 print "Atom {0} has a wrong field definition".format(data[1])
-                #return False
+                # return False
 
     return True
+
 
 def clean_all(target_dir = "", exclude = []):
         """
@@ -102,6 +107,7 @@ def clean_all(target_dir = "", exclude = []):
 
         return True
 
+
 def clean_topol(src = [], tgt = []):
     """
     Clean the src topol of path specifics, and paste results in target
@@ -122,6 +128,7 @@ def clean_topol(src = [], tgt = []):
 
     return True
 
+
 def concat(**kwargs):
     """
     Make a whole pdb file with all the pdb provided
@@ -133,6 +140,18 @@ def concat(**kwargs):
             if getattr(kwargs["tgt"], compound_class):
                 _file_append(kwargs["src"],
                              getattr(kwargs["tgt"], compound_class).pdb)
+
+
+def getbw(**kwargs):
+    """
+    Call the Ballesteros-Weistein based pair-distance restraint
+    module.
+    """
+    bw4posres.Run(kwargs["src"]).pdb2fas()
+    bw4posres.Run(kwargs["src"]).clustalalign()
+    bw4posres.Run(kwargs["src"]).getcalphas()
+    bw4posres.Run(kwargs["src"]).makedisre()
+
 
 def _file_append(f_src, f2a):
     """
@@ -158,6 +177,7 @@ def _file_append(f_src, f2a):
 
     return True
 
+
 def make_cat(dir1, dir2, name):
     """
     Very tight function to make a list of files to inject
@@ -169,6 +189,7 @@ def make_cat(dir1, dir2, name):
     traj_src.extend([os.path.join(dir2, name)])
 
     return traj_src
+
 
 def make_ffoplsaanb(complex = None):
     """
@@ -201,6 +222,7 @@ def make_ffoplsaanb(complex = None):
     open("ffoplsaanb_mod.itp", "w").write(output)
 
     return True
+
 
 def make_topol(template_dir = \
     os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates"),
@@ -328,6 +350,7 @@ def make_topol(template_dir = \
 
     return True
 
+
 def make_topol_lines(itp_name = "",
     ifdef_name = "",
     posre_name = ""):
@@ -343,6 +366,7 @@ def make_topol_lines(itp_name = "",
                           id = ifdef_name,
                           po = posre_name)
 
+
 def tar_out(src_dir = [], tgt = []):
     """
     Tar everything in a src_dir to the tar_file
@@ -356,6 +380,7 @@ def tar_out(src_dir = [], tgt = []):
         t_f.add(to_tar)
     t_f.close()
     os.chdir(base_dir)
+
 
 def tune_mdp(groups):
     """

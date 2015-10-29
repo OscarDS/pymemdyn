@@ -497,9 +497,12 @@ class BasicCARelax(object):
 
 class BasicBWRelax(object):
     def __init__(self, **kwargs):
-        self.steps = ["set_stage_init", "grompp", "mdrun"]
+        self.steps = ["getbw","set_stage_init", "grompp", "mdrun"]
         self.recipe = {
-            "set_stage_init": {"command": "set_stage_init",  # 1
+            "getbw": {"command": "getbw",  # 1
+                      "options": {"src": "proteinopls.pdb"}},
+
+            "set_stage_init": {"command": "set_stage_init",  # 2
                                "options": {"src_dir": "eq",
                                            "tgt_dir": "eqBW",
                                            "src_files": ["confout.gro",

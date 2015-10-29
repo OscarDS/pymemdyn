@@ -50,14 +50,14 @@ bwtags = ['1.46','1.49','1.50','1.53','1.57','2.42','2.43','2.44','2.47','2.50',
           '4.57','5.54','5.57','5.60','6.41','6.44','6.47','6.48','6.51','7.38',
           '7.39','7.45','7.46','7.47','7.50','7.53']
          
-bwpairs = {'1.46':'7.47','1.49':'7.50','1.50':'2.47','1.50':'2.50',
-           '1.50':'7.46','1.53':'2.47','1.57':'2.44','2.42':'3.46',
-           '2.43':'7.53','2.50':'7.46','3.34':'4.53','3.34':'4.57',
-           '3.36':'6.48','3.38':'4.50','3.38':'4.53','3.40':'6.44',
-           '3.44':'5.54','3.47':'5.57','3.51':'5.57','3.51':'5.60',
-           '5.54':'6.41','6.47':'7.45','6.51':'7.38','6.51':'7.39'}
+#bwpairs2 = {'1.46':'7.47','1.49':'7.50','1.50':'2.47','1.50':'2.50',
+#           '1.50':'7.46','1.53':'2.47','1.57':'2.44','2.42':'3.46',
+#           '2.43':'7.53','2.50':'7.46','3.34':'4.53','3.34':'4.57',
+#           '3.36':'6.48','3.38':'4.50','3.38':'4.53','3.40':'6.44',
+#           '3.44':'5.54','3.47':'5.57','3.51':'5.57','3.51':'5.60',
+#           '5.54':'6.41','6.47':'7.45','6.51':'7.38','6.51':'7.39'}
 
-bwpairs2 = [('1.46','7.47'),('1.49','7.50'),('1.50','2.47'),('1.50','2.50'),
+bwpairs = [('1.46','7.47'),('1.49','7.50'),('1.50','2.47'),('1.50','2.50'),
             ('1.50','7.46'),('1.53','2.47'),('1.57','2.44'),('2.42','3.46'),
             ('2.43','7.53'),('2.50','7.46'),('3.34','4.53'),('3.34','4.57'),
             ('3.36','6.48'),('3.38','4.50'),('3.38','4.53'),('3.40','6.44'),
@@ -192,9 +192,9 @@ class Run(object):
         list2l = list(list2s)
 
         # The two lists are combined into a list of tuples using the zip builtin
-        # and then the dashes (sequence gaps) are parsed out of the correspoding
-        # well aligned sequence to be able to count without gaps.
-        # Finally the residue numbers correspoding to the A mask are returned.
+        # and then the dashes (sequence gaps) are parsed out of the
+        # corresponding well aligned sequence to be able to count without gaps.
+        # Finally the residue numbers corresponding to the A mask are returned.
         ziplist = zip(list1l,list2l)
         nodash = []
         for index, string in enumerate(ziplist):
@@ -225,7 +225,7 @@ class Run(object):
         #        continue
 
         # These two lists must have the same dimension:
-        # print len(bwtags), len(caid)
+        print len(bwtags), len(caid)
         
         # The mapping (rosetta-stone) between BW id numbers and c-alpha atom
         # numbers is made in this list.
@@ -233,7 +233,7 @@ class Run(object):
 
         bwatom1 = []
         bwatom2 = []        
-        for index, value in enumerate(bwpairs2):
+        for index, value in enumerate(bwpairs):
             bwatom1.append(value[0])
             bwatom2.append(value[1])
 
@@ -250,7 +250,7 @@ class Run(object):
                     caatom2.append(bw2calpha[j][1])
 
         for i in range(0,24):
-            print caatom1[i], caatom2[i], bwpairs2[i]
+            print caatom1[i], caatom2[i], bwpairs[i]
 #        print bw2calpha
         
         # This part finally writes to the disre.itp file all the information it needs

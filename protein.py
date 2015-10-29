@@ -107,7 +107,7 @@ class Protein(object):
         with open(self.pdb, "r") as pdb_fp:
             for line in pdb_fp:
                 if (len(line) > 21) and (
-                    line.startswith(("ATOM", "TER", "HETATM"))):
+                        line.startswith(("ATOM", "TER", "HETATM"))):
                     if (line[21] != " ") and (line[21] not in chains):
                         chains.append(line[21])
     
