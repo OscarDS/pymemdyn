@@ -9,7 +9,7 @@ class Printing(object):
     def __init__(self):
         """
         This is a proxy to put a message directly to the stdout through
-        "print" command
+        *print* command
         """
         pass
 
@@ -30,12 +30,12 @@ class DjangoDB(object):
         import http_models
 
         self.pk = kwargs.get("pk")
-        #TODO Test this, as importing * seems to not work
+        # TODO Test this, as importing * seems to not work
         self.queue_task = http_models.QueueTask.objects.get(pk = self.pk)
 
     def dispatch(self, msg):
         """
-        Put a message in the "last_message" column of the table
+        Put a message in the *last_message* column of the table
         """
 
         self.queue_task.last_message = str(msg)

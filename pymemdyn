@@ -4,7 +4,6 @@ import logging
 import os
 import shutil
 
-#import bw4posres
 import complex
 import gromacs
 import membrane
@@ -96,12 +95,6 @@ class Run(object):
 
         self.g.queue = my_queue
 
-#        bw4posres.Run(pdb).pdb2fas()
-#        bw4posres.Run(pdb).clustalalign()
-#        bw4posres.Run(pdb).getcalphas()
-#        bw4posres.Run(pdb).makedisre()
-
-
     def clean(self):
         """
         Removes all previously generated files
@@ -142,10 +135,8 @@ class Run(object):
         """
         Run all steps in a molecular dynamics simulation of a membrane protein
         """
-#        steps = ["Init", "Minimization", "Equilibration", "Relax", "BWRelax",
-#            "CollectResults"]
-
-        steps = ["Init", "BWRelax"]
+        steps = ["Init", "Minimization", "Equilibration", "Relax", "BWRelax",
+            "CollectResults"]
 
         for step in steps:
             self.g.select_recipe(stage=step, debug=self.debug)
@@ -161,6 +152,7 @@ class Run(object):
         for step in steps:
             self.g.select_recipe(stage=step, debug=self.debug)
             self.g.run_recipe(debug = self.debug)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

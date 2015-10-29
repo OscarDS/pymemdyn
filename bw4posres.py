@@ -49,13 +49,6 @@ bwtags = ['1.46','1.49','1.50','1.53','1.57','2.42','2.43','2.44','2.47','2.50',
           '3.34','3.36','3.38','3.40','3.44','3.46','3.47','3.51','4.50','4.53',
           '4.57','5.54','5.57','5.60','6.41','6.44','6.47','6.48','6.51','7.38',
           '7.39','7.45','7.46','7.47','7.50','7.53']
-         
-#bwpairs2 = {'1.46':'7.47','1.49':'7.50','1.50':'2.47','1.50':'2.50',
-#           '1.50':'7.46','1.53':'2.47','1.57':'2.44','2.42':'3.46',
-#           '2.43':'7.53','2.50':'7.46','3.34':'4.53','3.34':'4.57',
-#           '3.36':'6.48','3.38':'4.50','3.38':'4.53','3.40':'6.44',
-#           '3.44':'5.54','3.47':'5.57','3.51':'5.57','3.51':'5.60',
-#           '5.54':'6.41','6.47':'7.45','6.51':'7.38','6.51':'7.39'}
 
 bwpairs = [('1.46','7.47'),('1.49','7.50'),('1.50','2.47'),('1.50','2.50'),
             ('1.50','7.46'),('1.53','2.47'),('1.57','2.44'),('2.42','3.46'),
@@ -82,7 +75,6 @@ class Run(object):
         self.clustal_bin = s.CLUSTAL_BIN
         self.repo_dir = s.TEMPLATES_DIR
 
-        
     def pdb2fas(self):
         """
         From pdb file convert to fasta sequence format without the use of
@@ -110,8 +102,7 @@ class Run(object):
         fastaseq.write("{0}".format("\n".join(lines)))
         fastaseq.write("\n")
         fastaseq.close()
-        
-        
+
     def clustalalign(self):
         """
         Align the produced fasta sequence with clustalw to assing
@@ -138,7 +129,6 @@ class Run(object):
 
         return True
 
-        
     def getcalphas(self):
         """
         Pulls out the atom numbers of c-alpha atoms. Restraints are
@@ -149,7 +139,6 @@ class Run(object):
             atoms = [a for a in line if line[0:6] == "ATOM  " and line[13:16] == "CA "]
             atomnum = atoms[7:10]
             calphaspdb.write("{0}".format("".join(atoms)))
-            
 
     def makedisre(self):
         """
@@ -270,7 +259,6 @@ class Run(object):
         return True
 
 
-        
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog='bw4posres',

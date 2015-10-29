@@ -2,6 +2,7 @@
 class GromacsError(BaseException):
     pass
 
+
 class IOGromacsError(GromacsError):
     """
     Exception raised with "File input/output error" message
@@ -13,16 +14,17 @@ class IOGromacsError(GromacsError):
     def __str__(self):
         return "%s failed with '%s'" % (self.command, self.explain)
 
+
 class GromacsMessages(object):
     """
     Load an error message and split it along as many properties as
     posible
     """
 
-    #Map the messages with the errors
+    # Map the messages with the errors
     e = {"File input/output error": IOGromacsError,
          "Can not open file": IOGromacsError,
-         #FIXME: Clearly the following is not IOError
+         # FIXME: Clearly the following is not IOError
          "srun: error: Unable to create job step": IOGromacsError,
         }
 
@@ -48,9 +50,10 @@ class GromacsMessages(object):
                 if line.startswith(error):
                     raise self.e[error](self.command, error)
 
+
 def test_run(command):
     import subprocess
-    c = ["/home/apps/gromacs-4.6.7/bin/" + command]
+    c = ["/home/apps/gromacs-4.6.5/bin/" + command]
     p = subprocess.Popen(c,
         stdout = subprocess.PIPE,
         stderr = subprocess.PIPE,

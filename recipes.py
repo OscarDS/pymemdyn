@@ -385,7 +385,7 @@ class LigandAlostericEquilibration(LigandEquilibration):
 
 
 ##########################################################################
-#                    Relaxation                                          #
+#                 Relaxation                                             #
 ##########################################################################
 
 class BasicRelax(object):
@@ -446,7 +446,7 @@ class LigandAlostericRelax(LigandRelax):
 
 
 ##########################################################################
-#                    Alpha Chains Relaxation                             #
+#                 C-Alpha Atoms Relaxation                               #
 ##########################################################################
 
 class BasicCARelax(object):
@@ -492,7 +492,7 @@ class BasicCARelax(object):
 
 
 ##########################################################################
-#                Ballesteros-Weinstein Restrained Relaxation             #
+#                 Ballesteros-Weinstein Restrained Relaxation            #
 ##########################################################################
 
 class BasicBWRelax(object):
@@ -535,7 +535,7 @@ class BasicBWRelax(object):
 
 
 ##########################################################################
-#                    Collect all results & output                        #
+#                 Collect All Results & Output                           #
 ##########################################################################
 class BasicCollectResults(object):
     def __init__(self, **kwargs):

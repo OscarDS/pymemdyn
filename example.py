@@ -7,7 +7,7 @@ import membrane
 
 import os, shutil, sys
 
-#Remove all previous files
+# Remove all previous files
 to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
              "#mdout.mdp.2#",
              "#mdout.mdp.3#",
@@ -41,26 +41,26 @@ for target in to_unlink:
 for target in dirs_to_unlink:
     if os.path.isdir(target): shutil.rmtree(target)
 
-#sys.exit()
-#First we define all parts to be used
+# sys.exit()
+# First we define all parts to be used
 
 monomer = protein.Monomer(pdb = "Y1_min.pdb")
 ligand = protein.Ligand(pdb = "lig.pdb", itp = "lig.itp")
 membr = membrane.Membrane()
 g = gromacs.Gromacs()
 
-#Now we create a complex membrane + protein(s) + ligand
+# Now we create a complex membrane + protein(s) + ligand
 
 prot_complex = protein.ProteinComplex(monomer = monomer, ligand = ligand)
 full_complex = complex.MembraneComplex()
 full_complex.complex = prot_complex
 full_complex.membrane = membr
 
-#Now we call gromacs to make all the operations
+# Now we call gromacs to make all the operations
 
 g = gromacs.Gromacs(membrane_complex = full_complex)
 
-#Now we can peek inside any object to look for its properties:
+# Now we can peek inside any object to look for its properties:
 # g.membrane_complex.tpr
 # g.membrane_complex.box_height
 # g.membrane_complex.complex.monomer.pdb
@@ -69,7 +69,7 @@ g = gromacs.Gromacs(membrane_complex = full_complex)
 # g.repo_dir
 # ... and so on
 
-#g.run_recipe()
+# g.run_recipe()
 
 # At this point we should have our hexagon, and the useful files topol.tpr
 # to make a minimization with eq.mdp file.
@@ -87,7 +87,7 @@ g = gromacs.Gromacs(membrane_complex = full_complex)
 # g.membrane_complex.complex.prot_xy
 # g.membrane_complex.complex.prot_z
 
-#g.run_recipe() #This is the basic recipe (should be explicit?)
+# g.run_recipe() #This is the basic recipe (should be explicit?)
 #
 g.recipe = recipes.MonomerLigandRecipe("debug")
 g.run_recipe()
@@ -97,11 +97,11 @@ sys.exit()
 #
 g.recipe = recipes.BasicMinimization("debug")
 g.run_recipe()
-#sys.exit()
+# sys.exit()
 #
 g.recipe = recipes.BasicEquilibration("debug")
 g.run_recipe()
-#sys.exit()
+# sys.exit()
 #
 g.recipe = recipes.BasicRelax("debug")
 g.run_recipe()

@@ -5,7 +5,7 @@ import settings
 
 class Queue(object):
     def __init__(self, *args, **kwargs):
-        #Default number of processors, nodes and time alloted in cluster.
+        # Default number of processors, nodes and time alloted in cluster.
         self.num_proc   = getattr(settings, "QUEUE_NUM_PROCS") or 8
         self.num_node   = getattr(settings, "QUEUE_NUM_NODES") or 1
         self.max_time   = getattr(settings, "QUEUE_MAX_TIME") or "72:00:00"

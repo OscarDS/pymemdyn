@@ -17,18 +17,19 @@ import settings
 
 class Run(object):
     def __init__(self, pdb, *args, **kwargs):
-        '''
-        A molecular dynamics "Run()"  MUST be given a "pdb"
+        """
+        A molecular dynamics *Run()*  MUST be given a *pdb*
         
         This class tries to initialize a full complex to send to simulation. Given
         a set of molecules (protein, ligand, other ligand, waters, ...), 
         this class would try to build a full embedded-in-membrane complex.
 
-        The complex is stored in self.g (a "Gromacs" object), and thus
-        can be 'runned' through g.recipe and g.run_recipe procedure. See
+        The complex is stored in self.g (a **Gromacs** object), and thus
+        can be *runned* through g.recipe and g.run_recipe procedure. See
         gromacs.py for more information.
 
-        The queueing system is also created here to be used in certain steps.'''
+        The queueing system is also created here to be used in certain steps.
+        """
 
         self.pdb = pdb
         self.own_dir = kwargs.get("own_dir") or ""
@@ -96,7 +97,9 @@ class Run(object):
         self.g.queue = my_queue
 
     def clean(self):
-        '''Removes all previously generated files'''
+        """
+        Removes all previously generated files
+        """
         to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
             "#mdout.mdp.2#", "#mdout.mdp.3#", "#mdout.mdp.4#", "#mdout.mdp.5#",
             "#mdout.mdp.6#", "#mdout.mdp.7#", "#mdout.mdp.8#", "#mdout.mdp.9#",
@@ -127,7 +130,9 @@ class Run(object):
         return True
 
     def moldyn(self):
-        '''Runs all the dynamics'''
+        """
+        Runs all the dynamics
+        """
 
         steps = ["Init", "Minimization", "Equilibration", "Relax", "CARelax",
             "CollectResults"]
@@ -137,7 +142,9 @@ class Run(object):
             self.g.run_recipe(debug = self.debug)
 
     def light_moldyn(self):
-        '''This is a function to debug a run in steps'''
+        """
+        This is a function to debug a run in steps
+        """
 #        steps = ["Init", "Minimization", "Equilibration", "Relax", "CARelax"]
         steps = ["Equilibration","Relax"]        
 #        steps = ["CollectResults"]
@@ -213,7 +220,7 @@ if __name__ == "__main__":
         debug = args.debug)
     run.clean()
 
-    #Delete old GROMACS.log if this is a re-run
+    # Delete old GROMACS.log if this is a re-run
     f = open("GROMACS.log", "w")
     f.close()
 

@@ -26,7 +26,6 @@ def _arrange_dir(src_dir, new_dir, useful_files=[], useful_fixed=[]):
 
     return True
 
-
 def check_forces(pdb, itp, ffield):
     """
     A force field must give a set of forces that matches every atom in
@@ -79,14 +78,13 @@ def check_forces(pdb, itp, ffield):
 
     return True
 
-
 def clean_all(target_dir = "", exclude = []):
         """
         Remove all intermediate files from 'target_dir'  except that files
          in 'exclude'
          """
         to_unlink_dir = os.path.join(os.getcwd(), target_dir)
-        #First a security checkout to not delete up a certain point
+        # First a security checkout to not delete up a certain point
         minimum = "/home/gpcruser/public"
         if not to_unlink_dir.startswith(minimum): return False
         if not "dynamic" in to_unlink_dir: return False
@@ -96,17 +94,16 @@ def clean_all(target_dir = "", exclude = []):
         for file_name in targets:
             target = os.path.join(to_unlink_dir, file_name)
             if file_name not in exclude:
-                #Deleting files
+                # Deleting files
                 if os.path.isfile(target): os.unlink(target)
-                #Deleting subdirs
+                # Deleting subdirs
                 if os.path.isdir(target): shutil.rmtree(target)
             else:
-                #Changing remaining files to be downloadable by web user
+                # Changing remaining files to be downloadable by web user
                 os.chmod(target, 0775)
                 os.chown(target, -1, 8)
 
         return True
-
 
 def clean_topol(src = [], tgt = []):
     """
@@ -128,19 +125,17 @@ def clean_topol(src = [], tgt = []):
 
     return True
 
-
 def concat(**kwargs):
     """
     Make a whole pdb file with all the pdb provided
     """
 #    for compound_class in ["ligand", "waters", "ions", "cho", "alosteric"]:
     for compound_class in ["ligand", "ions", "cho", "alosteric", "waters"]:
-        #Does the complex carry the group?
+        # Does the complex carry the group?
         if hasattr(kwargs["tgt"], compound_class):
             if getattr(kwargs["tgt"], compound_class):
                 _file_append(kwargs["src"],
                              getattr(kwargs["tgt"], compound_class).pdb)
-
 
 def getbw(**kwargs):
     """
@@ -151,7 +146,6 @@ def getbw(**kwargs):
     bw4posres.Run(kwargs["src"]).clustalalign()
     bw4posres.Run(kwargs["src"]).getcalphas()
     bw4posres.Run(kwargs["src"]).makedisre()
-
 
 def _file_append(f_src, f2a):
     """
@@ -177,7 +171,6 @@ def _file_append(f_src, f2a):
 
     return True
 
-
 def make_cat(dir1, dir2, name):
     """
     Very tight function to make a list of files to inject
@@ -189,7 +182,6 @@ def make_cat(dir1, dir2, name):
     traj_src.extend([os.path.join(dir2, name)])
 
     return traj_src
-
 
 def make_ffoplsaanb(complex = None):
     """
@@ -223,11 +215,10 @@ def make_ffoplsaanb(complex = None):
 
     return True
 
-
 def make_topol(template_dir = \
     os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates"),
-    target_dir = "",  #Dir where topol.top should land
-    working_dir = "", #Dir where script is working
+    target_dir = "",  # Dir where topol.top should land
+    working_dir = "", # Dir where script is working
     complex = None):  # The MembraneComplex object to deal
     """
     Make the topol starting from our topol.top template
@@ -335,7 +326,7 @@ def make_topol(template_dir = \
         else:
             comps[c]["line"] = ";"
 
-    if working_dir: working_dir += "/" #Root dir doesn't need to be slashed
+    if working_dir: working_dir += "/" # Root dir doesn't need to be slashed
 
     tgt.write(t.substitute(working_dir = working_dir,
                            protein = comps["protein"]["line"],
@@ -349,7 +340,6 @@ def make_topol(template_dir = \
     tgt.close()
 
     return True
-
 
 def make_topol_lines(itp_name = "",
     ifdef_name = "",
@@ -366,7 +356,6 @@ def make_topol_lines(itp_name = "",
                           id = ifdef_name,
                           po = posre_name)
 
-
 def tar_out(src_dir = [], tgt = []):
     """
     Tar everything in a src_dir to the tar_file
@@ -375,12 +364,11 @@ def tar_out(src_dir = [], tgt = []):
 
     t_f = tarfile.open(tgt, mode="w:gz")
     base_dir = os.getcwd()
-    os.chdir(src_dir) #To avoid the include of all parent dirs
+    os.chdir(src_dir) # To avoid the include of all parent dirs
     for to_tar in os.listdir(os.path.join(base_dir, src_dir)):
         t_f.add(to_tar)
     t_f.close()
     os.chdir(base_dir)
-
 
 def tune_mdp(groups):
     """
@@ -401,5 +389,3 @@ def tune_mdp(groups):
     eq_out.close()
 
     return True
-
-

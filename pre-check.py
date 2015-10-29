@@ -1,9 +1,12 @@
 import os
+
 import queue
 import settings
 
 def gromacs_check():
-    '''Verify the gromacs paths'''
+    """
+    Verify the gromacs paths
+    """
     if not os.path.isdir(settings.GROMACS_PATH):
         print "Invalid GROMACS_PATH: '%s'" % settings.GROMACS_PATH
         return False
@@ -11,7 +14,9 @@ def gromacs_check():
     return True
 
 def queue_check():
-    '''Verify the usability of the queue'''
+    """
+    Verify the usability of the queue
+    """
     queues = {"": "NoQueue",
               "slurm": "Slurm",
               "pbs": "PBS",
@@ -20,9 +25,9 @@ def queue_check():
 
     if settings.QUEUE in queues.keys():
         if hasattr(queue, queues[settings.QUEUE]):
-            #Get the binary path from the queue
+            # Get the binary path from the queue
             mdrun = getattr(queue, queues[settings.QUEUE])().mdrun
-            #And check if it exists
+            # And check if it exists
             if not os.path.isfile(mdrun):
                 print "Queue doesn't match with Gromacs path: '%s'" % mdrun
                 return False
@@ -36,7 +41,9 @@ def queue_check():
     return True
 
 def repo_dir():
-    '''Verify the validity of the repo dir defined'''
+    """
+    Verify the validity of the repo dir defined
+    """
 
     repo_files = ["eqCA.mdp", "ffoplsaa_mod.itp", "popc.itp", "topol.top",
         "eqDEBUG.mdp", "ffoplsaanb_base.itp", "prod.mdp", "x4bilayer.pdb",
