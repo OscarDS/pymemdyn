@@ -16,17 +16,18 @@ TEMPLATES_DIR = os.path.join(ROOT_DIR, "templates")
 #GROMACS_PATH = "/opt/applications/gromacs/4.0.5/gnu/gige/bin/"
 #GROMACS_PATH = "/opt/cesga/gromacs-4.0.7/bin/"
 #GROMACS_PATH = "/opt/gromacs405/bin/"                               #cuelebre.inv.usc.es
-#GROMACS_PATH = "/home/apps/gromacs-4.6.7/bin/"                      #csb.bmc.uu.se
+GROMACS_PATH = "/home/apps/gromacs-4.6.5/bin/"                      #csb.bmc.uu.se
 #GROMACS_PATH = "/software/apps/gromacs/4.6.3/g472/bin/"             #Triolith
 #GROMACS_PATH = "/sw/bin/"                                           #Standalone in Mac Fink
-GROMACS_PATH = "/Users/esguerra/software/gromacs-4.6.5/bin/"        #Standalone in Mac
+#GROMACS_PATH = "/Users/esguerra/software/gromacs-4.6.5/bin/"        #Standalone in Mac
 #GROMACS_PATH = "/c3se/apps/Glenn/gromacs/4.6.3-p20130821-gcc48/bin" #Glenn at Chalmers
 #GROMACS_PATH = "/c3se/apps/Glenn/gromacs/5.0.4-gcc48-cuda/bin/"     #Glenn GPU at Chalmers
 #GROMACS_PATH = "/sw/apps/gromacs/4.6.3/tintin/bin"                  #Tintin
 #GROMACS_PATH = "/lap/gromacs/4.6.5/bin"                             #Abisko
 
 # Define a path to the clustalw binary.
-CLUSTAL_BIN = os.path.join(ROOT_DIR, ".bin/clustalw_mac")
+#CLUSTAL_BIN = os.path.join(ROOT_DIR, ".bin/clustalw_mac")
+CLUSTAL_BIN = os.path.join(ROOT_DIR, ".bin/clustalw_linux")
 
 # Choose which queuing system to use. Look inside queue.py.
 QUEUE = ""
@@ -42,7 +43,7 @@ QUEUE_NUM_NODES = 1
 QUEUE_NUM_PROCS = 8
 
 # Choose the maximum alloted time for your run.
-QUEUE_MAX_TIME = "60:00:00"
+QUEUE_MAX_TIME = "47:59:59"
 
 QUEUE_NUM_TASK = 8
 QUEUE_NTS_NODE = 8
