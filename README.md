@@ -126,16 +126,22 @@ and can then be passed  to other objects.
 - **complex.py**.  Defines the full complex, protein + membrane.   
   It can  include any  of the previous objects.
 
+
 ### Auxiliary Modules
 
 - **queue.py**.   Queue  manager.  That  is,  it  receives  objects to  be
   executed.   
 - **recipes.py**.   Applies  step by  step instructions  for  carrying a 
-  modeling  step.  
+  modeling  step.
+- **bw4posres.py**. Creates a set of distance restraints based on 
+  Ballesteros-Weinstein identities which are gathered by alignment to a 
+  multiple-sequence alignment using clustalw.
 - **utils.py**.  Puts the  functions done by the previous objects on demand.
-  For example, manipulate files, copy  folders, etc.
+  For example, manipulate files, copy  folders, call functions or classes from 
+  standalone modules like bw4posres.py, etc.
 - **settings.py** This modules sets up the main environment variables needed
   to run the calculation, for example, the path to the gromacs binaries.
+
 
 ### Execution Modules
 
@@ -143,6 +149,7 @@ and can then be passed  to other objects.
   load the  objects to be modeled,  the modeling recipe, and  run it.  *
   Wrapper is a  proxy for gromacs commands. When a  recipe entry is sent
   to it this returns the command to be run.
+
 
 ### Examples
 
@@ -160,7 +167,11 @@ Changelog
 - Tuesday, June 23, 2015
 
 Implemented Ballesteros-Weinstein based pair-distance restraints using the
-NMR-type heaviside potential function implemente in *GROMACS*.
+NMR-type heaviside potential function implemented in *GROMACS*. The set of 
+restraints depends on a list of tuples called bwpairs which can be defined in
+any way the user desires. In out case we are using the Venkatrakrishnan et al.
+conserved contact network. New reports for *RMSD* on c-alpha atoms and  per
+residue *RMSF*.
 
 
 ### Changes from version 1.0 to 1.1

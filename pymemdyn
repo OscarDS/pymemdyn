@@ -16,7 +16,7 @@ class Run(object):
     def __init__(self, pdb, *args, **kwargs):
         """
         A molecular dynamics *Run()*  MUST be given a *pdb* file.
-        
+
         This class tries to initialize a full complex to send to simulation.
         Given a set of molecules (protein, ligand, other ligand, waters, ...),
         this class would try to build a full embedded-in-membrane complex.

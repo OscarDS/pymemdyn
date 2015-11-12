@@ -639,6 +639,8 @@ class Wrapper(object):
                 command.extend(self._mode_genion(options))
             if (mode == "g_rms"):  # G_RMS
                 command.extend(self._mode_g_rms(options))
+            if (mode == "g_rmsf"):  # G_RMSF
+                command.extend(self._mode_g_rmsf(options))
             if (mode == "tpbconv"):  # TPBCONV
                 command.extend(self._mode_tpbconv(options))
             if (mode == "trjcat"):  # TRJCAT
@@ -691,6 +693,16 @@ class Wrapper(object):
         return ["-s", self._setDir(kwargs["src"]),
                 "-f", self._setDir(kwargs["src2"]),
                 "-o", self._setDir(kwargs["tgt"])]
+
+    def _mode_g_rmsf(self, kwargs):
+        """
+        _mode_g_rmsf: Wrap the g_rmsf command options and report per
+        residue RMSF
+        """
+        return ["-s", self._setDir(kwargs["src"]),
+                "-f", self._setDir(kwargs["src2"]),
+                "-o", self._setDir(kwargs["tgt"]),
+                "-res"]
 
     def _mode_genbox(self, kwargs):
         '''_mode_genbox: Wrap the genbox command options'''
