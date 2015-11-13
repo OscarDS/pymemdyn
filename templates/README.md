@@ -1,13 +1,13 @@
 CONGRATULATIONS!!
-================================================================================
-
+=================
 You have  performed an  MD equilibration  of your  receptor, including
 lipids, water molecules and counterions.
 For more  details on the methods  followed please take some time to read
 reference [1].
 
+
 The performed equilibration includes the following stages:
---------------------------------------------------------------------------------
+----------------------------------------------------------
 
 |   STAGE    | RESTRAINED ATOMS        | FORCE CONSTANT       | TIME           |
 |:----------:|:-----------------------:|:--------------------:|:--------------:|
@@ -23,9 +23,9 @@ The performed equilibration includes the following stages:
 
 In this folder you will find several files related to this simulation:
 
-INPUT:  
---------------------------------------------------------------------------------
 
+INPUT:
+------
     - popc.itp              # Topology of the lipids  
     - ffoplsaa_mod.itp      # Modified OPLSAA-FF, to account for lipid modifications  
     - ffoplsaabon_mod.itp   # Modified OPLSAA-FF(bonded), to account for lipid modifications   
@@ -37,31 +37,32 @@ INPUT:
     - prod_example.mdp      # Example of a parameter file to configure a production run (see TIPS)
 
 
-STRUCTURES:  
---------------------------------------------------------------------------------
-
+STRUCTURES:
+-----------
     - hexagon.pdb           # Initial structure of the system, with the receptor centered in the box 
     - confout.gro           # Final structure of the system (see TIPS)
     - load_gpcr.pml         # Loads the initial structure and the trajectory in pymol
 
-TRAJECTORY FILES  
---------------------------------------------------------------------------------
+
+TRAJECTORY FILES:
+-----------------
     - traj_pymol.xtc        # Trajectory of the whole system for visualization in pymol. 1 snapshot/100 ps
     - traj_EQ.xtc           # Trajectory of the whole system in .xtc format: 1 snapshot/50 ps 
     - ener_EQ.edr           # Energy file of the trajectory
     - load_gpcr.pml         # Script to load the equilibration trajectory in pymol.
 
-REPORTS:  
---------------------------------------------------------------------------------
-In the "reports" subfolder, you will find the following files:
+
+REPORTS:
+--------
+In the "reports" subfolder, you will find the following files:  
     - tot_ener.xvg, tot_ener.log    # System total energy plot and log
     - temp.xvg, temp.log            # System temperature plot and log
     - pressure.xvg, pressure.log    # System pressure plot and log
     - volume.xvg, volume.log        # System volume plot and log
 
-LOGS:  
---------------------------------------------------------------------------------
-In the "logs" subfolder, you will find the log files of mdrun:
+LOGS:
+-----
+In the "logs" subfolder, you will find the log files of mdrun:  
     - eq_{force_constant}.log       # log of stages with restrained heavy atoms of the receptor
     - eqCA.log                      # log of the stage with restrained C-alfa atoms of the receptor
 
@@ -82,13 +83,14 @@ explicitly stated in the Rodriguez et al. [1] publication.
 
 **TIPS**  
 
-- If you want to configure a .tpr input file for a production run, you
+- If you want to configure a .tpr input file for a **production** run, you
 can use the template 'prod_example.mdp' file by introducing the number
 of steps (nsteps), and thus the simulation time, you want to run.  
 
 After that, you just have to type:  
 
-    grompp -f prod.mdp -c confout.gro -p topol.top -n index.ndx -o topol_prod.tpr
+    grompp -f prod.mdp -c confout.gro -p topol.top -n index.ndx -o topol_prod.tpr  
+    mdrun -s topol_prod.tpr -o traj.trr -e ener.edr -c confout.gro -g production.log -x traj_prod.xtc
 
 - If  you  want  to  create  a  PDB file  of  your  system  after  the
 equilibration, with the receptor centered in the box, type:  
@@ -103,8 +105,8 @@ equilibration, with the receptor centered in the box, type:
 NOTE: these tips work for GROMACS version >= 4.5 and < 5.0  
 
 
-References  
---------------------------------------------------------------------------------
+References
+----------
 
 [1] Rodríguez D., Piñeiro Á. and Gutiérrez-de-Terán H.   
 Molecular Dynamics Simulations Reveal Insights into Key Structural Elements of Adenosine Receptors   
