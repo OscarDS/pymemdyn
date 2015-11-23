@@ -1,24 +1,23 @@
-#import pymoldyn
 import os
 
-PID_FILE = "/home/gpcruser/gpcr_modsim/run/PyroDaemon2.pid"
-LOG_FILE = "/home/gpcruser/gpcr_modsim/log/PyroDaemon2.log"
-MODEL_LOG_FILE = "/home/gpcruser/gpcr_modsim/log/model_file.log"
+PID_FILE = "/home/gpcradmin/gpcr_modsim/run/PyroDaemon.pid"
+LOG_FILE = "/home/gpcradmin/gpcr_modsim/log/PyroDaemon.log"
+MODEL_LOG_FILE = "/home/gpcradmin/gpcr_modsim/log/model_file.log"
 PYTHON_BIN = "/home/apps/bin/python2.7"
 JAVA_PATH = "/usr/java/latest/bin/java"
-BINDIR = "/home/gpcruser/gpcr_modsim/lib/"
-TEMPLATES_DIR = "/home/gpcruser/gpcr_modsim/templates/"
+BINDIR = "/home/gpcradmin/gpcr_modsim/gpcr_backend/"
+TEMPLATES_DIR = "/home/gpcradmin/gpcr_modsim/templates/"
 
 # Used in pyro_objects.py
-SLURMOUT = "/home/gpcruser/gpcr_modsim/slurm-out/"
-PYMEMPATH = "/home/gpcruser/gpcr_modsim/pymemdyn/"
+SLURMOUT = "/home/gpcradmin/gpcr_modsim/slurm-out/"
+PYMEMPATH = "/home/gpcradmin/gpcr_modsim/pymemdyn/"
 
 # STAMP related fields (used in stamp.py)
 STAMP_BIN = "/home/apps/stamp.4.4/bin/linux/"
 STAMP_DIR =  "/home/apps/stamp.4.4/defs/"
-STAMP_TMPDIR = "/opt/tmp/"
-CLUSTAL_BIN = "/home/apps/clustalo"
-TEMPLATE_PDB = "/home/gpcruser/gpcr_modsim/templates/3eml.pdb"
+STAMP_TMPDIR = "/home/gpcradmin/tmp/"
+CLUSTAL_BIN = "/home/apps/clustalw"
+TEMPLATE_PDB = "/home/gpcradmin/gpcr_modsim/templates/3eml.pdb"
 
 # MOLPROBITY
 MOLPROBITY_PATH = "/home/apps/molprobity/lib/"
@@ -28,11 +27,11 @@ MOLPROBITY_PATH = "/home/apps/molprobity/lib/"
 
 # This is the dir where pymoldyn git repo has been deployed,
 # or to be more specific, this file settings.py is located
-ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
+#ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 #This dir now has to be the absolute path to the source of templates
 # You can refer it relatively like this:
-TEMPLATES_DIR = os.path.join(ROOT_DIR, "templates")
+PYMEMTEMP_DIR = os.path.join(PYMEMPATH, "templates")
 # Or absolutely like this:
 # TEMPLATES_DIR = "/path/to/your/templates"
 # But this WILL FAIL: * TEMPLATES_DIR = "templates" *
@@ -50,9 +49,13 @@ GROMACS_PATH = "/home/apps/gromacs-4.6.5/bin/"                      #csb.bmc.uu.
 #GROMACS_PATH = "/sw/apps/gromacs/4.6.3/tintin/bin"                  #Tintin
 #GROMACS_PATH = "/lap/gromacs/4.6.5/bin"                             #Abisko
 
+# Define a path to the clustalw binary.
+#CLUSTAL_BIN = os.path.join(ROOT_DIR, ".bin/clustalw_mac")
+CLUSTAL_BIN = os.path.join(PYMEMPATH, ".bin/clustalw_linux")
+
 # Choose which queuing system to use. Look inside queue.py.
-#QUEUE = ""
-QUEUE = "slurm"
+QUEUE = ""
+#QUEUE = "slurm"
 #QUEUE = "pbs"
 #QUEUE = "pbs_ib"
 #QUEUE = "svgd"

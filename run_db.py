@@ -27,11 +27,11 @@ import broker
 
 
 class Run(object):
-    #This is a dummy
     def __init__(self, dynamic_pk, *args, **kwargs):
-        '''
-        This is an specialized version of run.py, but it's able to interact
-        with the remote DB to get the values without being explicitly provided
+        """
+        This is an specialized version of pymemdyn.
+        The idea is that it interacts with the remote DB to get the 
+        arguments for the run.
 
         A "Run()" of molecular dynamics MUST be provided with a "pdb"
         
@@ -43,7 +43,8 @@ class Run(object):
         can be 'runned' through g.recipe and g.run_recipe procedures. See
         gromacs.py for more information.
 
-        Here, the queue system is also created for use in certain steps.'''
+        Here, the queue system is also created for use in certain steps.
+        """
 
         self.dynamic = DynamicDynamic.objects.get(pk = dynamic_pk)
         if kwargs.get("broker_pk"):
@@ -136,7 +137,7 @@ class Run(object):
             "protpopc.pdb", "steep.mdp", "traj.xtc", "traj_EQ.xtc", "tmp.pdb",
             "topol.top", "topol.tpr", "tmp_proteinopls.pdb", "water.pdb"]
 
-        dirs_to_unlink = ["Rmin", "eq", "eqCA"]
+        dirs_to_unlink = ["Rmin", "eq", "eqCA", "eqBW"]
 
         for target in to_unlink:
             if os.path.isfile(target): os.unlink(target)
@@ -180,8 +181,8 @@ class Run(object):
     def moldyn(self):
         '''Runs all the dynamics'''
 
-        steps = ["Init", "Minimization", "Equilibration",
-            "Relax", "CARelax", "CollectResults"]
+        steps = ["Init", "Minimization", "Equilibration", "Relax", "BWRelax", 
+           "CollectResults"]
 
         for step in steps:
             self.g.select_recipe(stage = step, debug = self.debug)
