@@ -30,8 +30,7 @@ class Run(object):
     def __init__(self, dynamic_pk, *args, **kwargs):
         """
         This is an specialized version of pymemdyn.
-        The idea is that it interacts with the remote DB to get the 
-        arguments for the run.
+        It interacts with the remote DB to get the arguments for the run.
 
         A "Run()" of molecular dynamics MUST be provided with a "pdb"
         
@@ -117,7 +116,9 @@ class Run(object):
         self.g.queue = my_queue
 
     def clean(self):
-        '''Removes all previously generated files'''
+        """
+        Removes all previously generated files
+        """
         to_unlink = ["#index.ndx.1#", "#ligand_ha.ndx.1#", "#mdout.mdp.1#",
             "#mdout.mdp.2#", "#mdout.mdp.3#", "#mdout.mdp.4#", "#mdout.mdp.5#",
             "#mdout.mdp.6#", "#mdout.mdp.7#", "#mdout.mdp.8#", "#mdout.mdp.9#",
@@ -147,9 +148,22 @@ class Run(object):
     
         return True
 
+    def moldyn(self):
+        """
+        Run all steps in a molecular dynamics simulation of a membrane protein
+        """
+        steps = ["Init", "Minimization", "Equilibration", "Relax", "BWRelax", 
+           "CollectResults"]
+
+        for step in steps:
+            self.g.select_recipe(stage = step, debug = self.debug)
+            self.g.run_recipe(debug = self.debug)
+
     def make_mix(self):
-        '''Explore all ingredients and set the file paths'''
-        #TODO: to be added the Lipids
+        """
+        Explore all ingredients and set the file paths
+        """
+        #TODO: Lipids to be added.
         sugars = {"ligand": "Ligand",
             "alosteric": "Alosteric",
             "waters": "CrystalWaters",
@@ -178,18 +192,10 @@ class Run(object):
                     getattr(protein, class_name)(**kwargs))
         return True
 
-    def moldyn(self):
-        '''Runs all the dynamics'''
-
-        steps = ["Init", "Minimization", "Equilibration", "Relax", "BWRelax", 
-           "CollectResults"]
-
-        for step in steps:
-            self.g.select_recipe(stage = step, debug = self.debug)
-            self.g.run_recipe(debug = self.debug)
-
     def send_email(self):
-        '''Send an email to the user who launched the dynamic'''
+        """
+        Send an email to the user who launched the dynamics run
+        """
         from django.core.mail import send_mail
         email_addr = self.dynamic.pdb.project.user_id.email
 
@@ -201,7 +207,9 @@ class Run(object):
             http_settings.EMAIL_HOST_USER, [email_addr])
 
     def set_file_path(self):
-        '''If all the dynamic run fine, update the file_path in the DB'''
+        """
+        If all the dynamic steps run fine, update the file_path in the DB
+        """
         self.dynamic.file_path = os.path.join(
             os.path.relpath(
                 self.own_dir, http_settings.CUELEBRE_ROOT),
@@ -210,8 +218,10 @@ class Run(object):
         return True
 
 def update_queue(queue_obj, status, timefield):
-      '''Update a queue_obj (a DB Table) with current status (Started, Running,
-      ...) in the timefield appropiate (started, ended)'''
+      """
+      Update a queue_obj (a DB Table) with current status (Started, Running,
+      ...) in the timefield appropiate (started, ended)
+      """
       now = datetime.datetime.now()
 
       setattr(queue_obj, timefield, now)
@@ -223,7 +233,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description = textwrap.dedent('''\
-    == This script runs a Molecular Dynamic with a Dynamic PK. ==
+    == This script runs a Molecular Dynamics Run with a Dynamic PK. ==
     '''))
 
     parser.add_argument('-r',
