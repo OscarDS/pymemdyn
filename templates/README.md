@@ -1,8 +1,8 @@
 CONGRATULATIONS!!
 =================
 You have  performed an  MD equilibration  of your  receptor, including
-lipids, water molecules and counterions.
-For more  details on the methods  followed please take some time to read
+lipids, water molecules and counterions. For more  details on the methods  
+followed please take some time to read
 reference [1].
 
 
@@ -18,7 +18,7 @@ The performed equilibration includes the following stages:
 |Equil. 3    |Protein Heavy Atoms      | 600                  | 0.5            |
 |Equil. 4    |Protein Heavy Atoms      | 400                  | 0.5            |
 |Equil. 5    |Protein Heavy Atoms      | 200                  | 0.5            |
-|Equil. 6    |Protein C-alfa Atoms     | 200                  | 2.5            |
+|Equil. 6    |Venkatakrishnan Pairs    | 200                  | 2.5            |
 
 
 In this folder you will find several files related to this simulation:
