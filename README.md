@@ -21,9 +21,9 @@ given access to the free repository.
 
 To install **py-MEMdyn** follow these steps:  
 
-1.  Clone the current version of **py-MEMdyn**
+1.  Clone the Version 1.3 of **py-MEMdyn**
 
-        git clone https://username@bitbucket.org/gpcrmodsim/pymemdyn.git
+        git clone -b stable/1.3 https://username@bitbucket.org/gpcrmodsim/pymemdyn.git pymemdyn
 
     Make sure to change *username* to the one you have created at
     bitbucket.  
@@ -60,31 +60,39 @@ To install **py-MEMdyn** follow these steps:
 
     You should obtain the following help output:
 
-        usage: pymemdyn [-h] [-b OWN_DIR] [-r TEMPLATES_DIR] -p PDB [-l LIGAND]
-                      [--alo ALOSTERIC] [--waters WATERS] [--ions IONS] [--cho CHO]
-                      [-q QUEUE] [--debug]
+        usage: pymemdyn [-h] [-v] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
+                        [-a ALOSTERIC] [-w WATERS] [-i IONS] [-c CHO] [-q QUEUE] [-d]
 
-        == Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
+         == Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
 
         optional arguments:
-          -h, --help       show this help message and exit
-          -b OWN_DIR       Working dir if different from actual dir
-          -r TEMPLATES_DIR      Path to templates of fixed files. If not provided, take the
-                           value from settings.TEMPLATES_DIR.
-          -p PDB           Name of the pdb to insert into MD (mandatory)
-          -l LIGAND        Name of the ligand, without extension. Three files must be
-                           present along with the molecule pdb: the ligand, its itp
-                           and its force field.
-          --alo ALOSTERIC  Name of the alosteric interaction, without extension. Three
-                           files must be present along with the molecule pdb: the
-                           alosteric, its itp and its force field.
-          --waters WATERS  Crystalized water molecules. File name without extension.
-          --ions IONS      Crystalized ions file name without extension.
-          --cho CHO        Crystalized cholesterol molecules file name without
-                           extension.
-          -q QUEUE         Queueing system to use (slurm, pbs, pbs_ib and svgd
-                           supported)
-          --debug  
+          -h, --help            show this help message and exit
+          -v, --version         show program's version number and exit
+          -b OWN_DIR            Working dir if different from actual dir
+          -r REPO_DIR           Path to templates of fixed files. If not provided,
+                                take the value from settings.TEMPLATES_DIR.
+          -p PDB                Name of the pdb to insert into membrane for MD
+                                (mandatory). Use the pdb extension. (e.g. -p
+                                myprot.pdb)
+          -l LIGAND, --lig LIGAND
+                                Name of the ligand, without extension. Three files
+                                must be present along with the molecule pdb: the
+                                ligand, its itp and its force field.
+          -a ALOSTERIC, --alo ALOSTERIC
+                                Name of the alosteric interaction, without extension.
+                                Three files must be present along with the molecule
+                                pdb: the alosteric, its itp and its force field.
+          -w WATERS, --waters WATERS
+                                Crystalized water molecules. File name without
+                                extension.
+          -i IONS, --ions IONS  Crystalized ions file name without extension.
+          -c CHO, --cho CHO     Crystalized cholesterol molecules file name without
+                                extension.
+          -q QUEUE, --queue QUEUE
+                                Queueing system to use (slurm, pbs, pbs_ib and svgd
+                                supported)
+          -d, --debug
+
 
 3.  Updates are very easy thanks to the git versioning system. Once
     **py-MEMdyn** has been downloaded into its own *pymemdyn* folder you
@@ -167,7 +175,7 @@ Changelog
 - Tuesday, June 23, 2015
 
 Implemented Ballesteros-Weinstein based pair-distance restraints using the
-NMR-type heaviside potential function implemented in *GROMACS*. The set of 
+NMR-type piecewise potential function implemented in *GROMACS*. The set of 
 restraints depends on a list of tuples called bwpairs which can be defined in
 any way the user desires. In out case we are using the Venkatrakrishnan et al.
 conserved contact network. New reports for *RMSD* on c-alpha atoms and  per
