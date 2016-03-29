@@ -33,7 +33,7 @@ class NoQueue(Queue):
         self.command = [self.sh]
 
 #        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun")
-        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") #For triolith
+        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") #For triolith or hebbe
 
     def make_script(self, workdir, options):
         """
@@ -43,7 +43,9 @@ class NoQueue(Queue):
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
         sh.write("cd %s\n" % workdir)
-        sh.write("%s %s\n" % (self.mdrun, " ".join(options)))
+        sh.write("mpirun %s %s -v &>mdrun.log\n" \
+            % (self.mdrun, " ".join(options)))
+#        sh.write("%s %s\n" % (self.mdrun, " ".join(options)))
         sh.close()
         os.chmod(self.sh, 0755)
 
@@ -59,15 +61,16 @@ class Slurm(Queue):
         self.command = ["srun",
 #            "--ntasks=%s" % str(self.ntasks),
 #            "--ntasks-per-node=%s" % str(self.ntaskpern),
-#        self.command = ["srun",
 #            "-n", str(self.num_node),
-            "-c", str(self.num_proc),
-            "-t", self.max_time,
+#            "-c", str(self.num_proc),
+#            "-t", self.max_time,
+             "-A", "SNIC2015-16-12",
+             "-n", "8",
+             "-t", "30:00:00",
             self.sh]
-
 #        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_slurm") #FOR CUELEBRE
-        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun") # FOR CSB
-#        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") # FOR triolith
+#        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun") # FOR CSB
+        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") # FOR triolith
 
     def make_script(self, workdir, options):
         """
@@ -76,14 +79,14 @@ class Slurm(Queue):
         """
         sh = open(self.sh, "w")
         sh.write("#!/bin/bash\n")
-#        sh.write("source /home/apps/gromacs-4.6.5/bin/GMXRC\n")
 #        sh.write("source /home/apps/bin/apps.sh\n")
 #        sh.write("module load openmpi-x86_64\n")
         sh.write("cd %s  \n" % workdir)
 #        sh.write("%s -ntmpi 16 -ntomp 1  %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
 #        sh.write("%s -nt 8 %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
-        sh.write("%s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
+#        sh.write("%s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
 #        sh.write("mpprun %s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options))) # Triolith needs mpprun
+        sh.write("mpirun %s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options))) # Hebbe
         sh.close()
         os.chmod(self.sh, 0755)
 
