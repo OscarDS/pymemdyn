@@ -1,0 +1,1057 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>gromacs &mdash; pymemdyn 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="pymemdyn 1.4 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pymemdyn
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pymemdyn.html">pymemdyn package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">pymemdyn</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>gromacs</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gromacs</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="kn">import</span> <span class="nn">broker</span>
+<span class="kn">import</span> <span class="nn">groerrors</span>
+<span class="kn">import</span> <span class="nn">protein</span>
+<span class="kn">import</span> <span class="nn">recipes</span>
+<span class="kn">import</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+
+
+<div class="viewcode-block" id="Gromacs"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs">[docs]</a><span class="k">class</span> <span class="nc">Gromacs</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">broker</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;broker&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">broker</span><span class="o">.</span><span class="n">Printing</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_membrane_complex</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span> <span class="o">=</span> <span class="n">Wrapper</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;GROMACS.log&quot;</span><span class="p">,</span>
+                            <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                            <span class="n">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;membrane_complex&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_membrane_complex</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;membrane_complex&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tpr</span> <span class="o">=</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">monomer</span><span class="o">.</span><span class="n">pdb</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.pdb&quot;</span><span class="p">,</span> 
+                                                                  <span class="s2">&quot;.tpr&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Gromacs.set_membrane_complex"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.set_membrane_complex">[docs]</a>    <span class="k">def</span> <span class="nf">set_membrane_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        set_membrane_complex: Sets the monomer object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_membrane_complex</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="Gromacs.get_membrane_complex"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.get_membrane_complex">[docs]</a>    <span class="k">def</span> <span class="nf">get_membrane_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_membrane_complex</span></div>
+    <span class="n">membrane_complex</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_membrane_complex</span><span class="p">,</span> <span class="n">set_membrane_complex</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Gromacs.count_lipids"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.count_lipids">[docs]</a>    <span class="k">def</span> <span class="nf">count_lipids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        count_lipids: Counts the lipids in source and writes a target with N4 tags</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">tgt</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">],</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+        <span class="n">half</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">prot_z</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">lipids_up</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">lipids_down</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">n_wats</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="p">,</span> <span class="s2">&quot;waters&quot;</span><span class="p">):</span>
+            <span class="c1"># Careful, some waters belong to crystal, not solvent</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">n_wats</span> <span class="o">-=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">waters</span><span class="o">.</span><span class="n">number</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">src</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># This N4 and POP are the lipid markers</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;N4&quot;</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;POP&quot;</span><span class="p">:</span>
+                    <span class="n">tgt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">7</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="n">half</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">lipids_up</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">elif</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">7</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">half</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">lipids_down</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;OW&quot;</span><span class="p">:</span>  <span class="c1"># Water marker</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">n_wats</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">src</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">tgt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.get_charge"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.get_charge">[docs]</a>    <span class="k">def</span> <span class="nf">get_charge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get_charge: Gets the total charge of a system using gromacs grompp command</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># wrapper = Wrapper()</span>
+
+        <span class="n">out</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">run_command</span><span class="p">({</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;grompp&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">})</span>
+
+        <span class="c1"># Now we are looking for this line:</span>
+        <span class="c1"># System has non-zero total charge: 6.000002e+00</span>
+        <span class="n">charge</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">err</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;total charge&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="c1"># In gromacs 4.6.5 the charge is not displayed in scientific notation.</span>
+                <span class="c1"># so this will result in giving a charge of 5, for a charge of 5.99999</span>
+                <span class="c1">#                charge = abs(int(float(line.split()[-1])))</span>
+                <span class="n">charge</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))))</span>
+                <span class="k">break</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">negative_charge</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">positive_charge</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">charge</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">positive_charge</span> <span class="o">=</span> <span class="n">charge</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">negative_charge</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">charge</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">negative_charge</span> <span class="o">=</span> <span class="n">charge</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">positive_charge</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">negative_charge</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">positive_charge</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.get_ndx_groups"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.get_ndx_groups">[docs]</a>    <span class="k">def</span> <span class="nf">get_ndx_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get_ndx_groups: Run make_ndx and set the total number of groups found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># wrapper = Wrapper()</span>
+
+        <span class="n">out</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">run_command</span><span class="p">({</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;make_ndx&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">,</span>
+                                             <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;q</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">})</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="c1">#            if &quot;Water_and_ions&quot; in line and &quot;atoms&quot; in line:</span>
+            <span class="k">if</span> <span class="s2">&quot;atoms&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_groups</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="c1">#                print int(line.split()[0])</span>
+                <span class="c1">#                return False</span>
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.get_ndx_sol"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.get_ndx_sol">[docs]</a>    <span class="k">def</span> <span class="nf">get_ndx_sol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get_ndx_sol: Run make_ndx and set the last number id for SOL found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">out</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">run_command</span><span class="p">({</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;make_ndx&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">,</span>
+                                             <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;q</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">})</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;SOL&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_sol</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.make_ndx"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.make_ndx">[docs]</a>    <span class="k">def</span> <span class="nf">make_ndx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        make_ndx: Wraps the make_ndx command tweaking the input to reflect the</span>
+<span class="sd">        characteristics of the complex</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_ndx_groups</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)):</span> <span class="k">return</span> <span class="bp">False</span>
+        <span class="n">n_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_groups</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_ndx_sol</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)):</span> <span class="k">return</span> <span class="bp">False</span>
+        <span class="n">n_sol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_sol</span>
+
+        <span class="c1"># Create the solution with no crystal water, crossing fingers.</span>
+        <span class="c1">#        n_group += 1</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="s2">&quot;r SOL </span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="nb">input</span> <span class="o">+=</span> <span class="s2">&quot;name {0} SOL</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_sol</span><span class="p">)</span>
+        <span class="nb">input</span> <span class="o">+=</span> <span class="s2">&quot;del {0}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_sol</span><span class="p">)</span>
+        <span class="c1">#        print n_group</span>
+        <span class="c1">#        print &quot;{0}&quot;.format(input)</span>
+
+        <span class="c1"># Create the &quot;wation&quot; group (always present)</span>
+        <span class="n">n_group</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="nb">input</span> <span class="o">+=</span> <span class="s2">&quot; r SOL | r HOH | r Cl* | r Na* </span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="nb">input</span> <span class="o">+=</span> <span class="s2">&quot;name {0} wation</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_group</span><span class="p">)</span>
+
+        <span class="c1"># Create the &quot;protlig&quot; group</span>
+        <span class="n">n_group</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1">#        input += &quot;1 || r LIG || r ALO\n&quot;  # LEGACY CODE gromacs 4.0.5</span>
+        <span class="nb">input</span> <span class="o">+=</span> <span class="s2">&quot; </span><span class="se">\&quot;</span><span class="s2">Protein</span><span class="se">\&quot;</span><span class="s2"> | r LIG | r ALO </span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="nb">input</span> <span class="o">+=</span> <span class="s2">&quot;name {0} protlig</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_group</span><span class="p">)</span>
+
+        <span class="c1"># Create the &quot;membr&quot; group</span>
+        <span class="n">n_group</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="nb">input</span> <span class="o">+=</span> <span class="s2">&quot; r POP | r CHO | r LIP </span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="nb">input</span> <span class="o">+=</span> <span class="s2">&quot;name {0} membr</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_group</span><span class="p">)</span>
+
+
+
+        <span class="c1"># This makes a separate group for each chain (if more than one)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">monomer</span><span class="p">)</span> <span class="o">==</span> <span class="n">protein</span><span class="o">.</span><span class="n">Dimer</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">monomer</span><span class="o">.</span><span class="n">chains</span><span class="p">:</span>
+                <span class="c1"># points = {&#39;A&#39;: [1, 4530], &#39;B&#39;: [4532, 9061]}</span>
+                <span class="n">n_group</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="nb">input</span> <span class="o">+=</span> <span class="s2">&quot;a {0}-{1}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">monomer</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">chain</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="c1"># points of chain A</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">monomer</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">chain</span><span class="p">][</span>
+                        <span class="mi">1</span><span class="p">])</span>  <span class="c1"># points of chain B</span>
+                <span class="nb">input</span> <span class="o">+=</span> <span class="s2">&quot;name {0} Protein_chain_{1}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_group</span><span class="p">,</span> <span class="n">chain</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="p">,</span> <span class="s2">&quot;ions&quot;</span><span class="p">):</span>
+            <span class="c1"># This makes the group ions TODO</span>
+            <span class="c1"># n_group += 1</span>
+            <span class="c1"># input += &quot;1 || r LIG\nname {0} protlig\n&quot;.format(n_group)</span>
+            <span class="k">pass</span>
+        <span class="nb">input</span> <span class="o">+=</span> <span class="s2">&quot;q</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="c1"># Now the wrapper itself</span>
+        <span class="n">out</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">run_command</span><span class="p">({</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;make_ndx&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">,</span>
+                                             <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">})</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;make_ndx command&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="c1"># We need to set the eq.mdp with these new groups</span>
+        <span class="c1"># NO LONGER NEEDED AS eq.mdp IS NOW GENERIC</span>
+        <span class="c1"># utils.tune_mdp(groups)</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.make_topol_lipids"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.make_topol_lipids">[docs]</a>    <span class="k">def</span> <span class="nf">make_topol_lipids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        make_topol_lipids: Add lipid positions to topol.top</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">topol</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;topol.top&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+        <span class="n">topol</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;; Number of POPC molecules with higher z-coord value:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">topol</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;POPC &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">lipids_up</span><span class="p">))</span>
+        <span class="n">topol</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">; Number of POPC molecules with lower z-coord value:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">topol</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;POPC &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">lipids_down</span><span class="p">))</span>
+        <span class="n">topol</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">; Total number of SOL molecules:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">topol</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;SOL &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">n_wats</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">topol</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.manual_log"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.manual_log">[docs]</a>    <span class="k">def</span> <span class="nf">manual_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        manual_log: Redirect the output to file in command[&quot;options&quot;][&quot;log&quot;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;log&quot;</span><span class="p">],</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.passing"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.passing">[docs]</a>    <span class="k">def</span> <span class="nf">passing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        passing: Do nothing, to respect some orders</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.relax"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.relax">[docs]</a>    <span class="k">def</span> <span class="nf">relax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        relax: Relax a protein</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt_dir&quot;</span><span class="p">]):</span> <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt_dir&quot;</span><span class="p">])</span>
+        <span class="n">posres</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;posres&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">monomer</span><span class="p">)</span> <span class="o">==</span> <span class="n">protein</span><span class="o">.</span><span class="n">Monomer</span><span class="p">:</span>
+            <span class="n">posres</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;posre.itp&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">monomer</span><span class="p">)</span> <span class="o">==</span> <span class="n">protein</span><span class="o">.</span><span class="n">Dimer</span><span class="p">:</span>
+            <span class="n">posres</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;posre_Protein_chain_A.itp&quot;</span><span class="p">,</span> <span class="s2">&quot;posre_Protein_chain_B.itp&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="p">,</span> <span class="s2">&quot;waters&quot;</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">waters</span><span class="p">:</span>
+            <span class="n">posres</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;posre_hoh.itp&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="p">,</span> <span class="s2">&quot;ions&quot;</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">ions</span><span class="p">:</span>
+            <span class="n">posres</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;posre_ion.itp&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="p">,</span> <span class="s2">&quot;cho&quot;</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">cho</span><span class="p">:</span>
+            <span class="n">posres</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;posre_cho.itp&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">posre</span> <span class="ow">in</span> <span class="n">posres</span><span class="p">:</span>
+            <span class="n">new_posre</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt_dir&quot;</span><span class="p">],</span> <span class="n">posre</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src_dir&quot;</span><span class="p">],</span> <span class="n">posre</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;1000&quot;</span><span class="p">]:</span>
+                    <span class="n">new_posre</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> \
+                                             <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;const&quot;</span><span class="p">])]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">))</span>
+                    <span class="n">new_posre</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_posre</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">new_posre</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">new_mdp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt_dir&quot;</span><span class="p">],</span> <span class="s2">&quot;eq.mdp&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">src_mdp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src_dir&quot;</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mdp&quot;</span><span class="p">]),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">src_mdp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;gen_vel&quot;</span><span class="p">)):</span>
+                <span class="n">new_mdp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;gen_vel = no</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_mdp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">src_mdp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">new_mdp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">make_topol</span><span class="p">(</span><span class="n">target_dir</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt_dir&quot;</span><span class="p">],</span>
+                         <span class="n">working_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
+                         <span class="nb">complex</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Gromacs.run_recipe"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.run_recipe">[docs]</a>    <span class="k">def</span> <span class="nf">run_recipe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        run_recipe: Run recipe for the complex</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;recipe&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">select_recipe</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
+
+        <span class="c1"># wrapper = Wrapper()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repo_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">repo_dir</span>
+
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">command_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">steps</span><span class="p">):</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="n">command_name</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">command_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">breaks</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">command</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_options</span><span class="p">(</span><span class="n">command</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">],</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">breaks</span><span class="p">[</span><span class="n">command_name</span><span class="p">])</span>
+
+            <span class="c1"># NOW RUN IT !</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">broker</span><span class="o">.</span><span class="n">dispatch</span><span class="p">(</span><span class="s2">&quot;{0} Step ({1}/{2}): {3}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>
+                <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">steps</span><span class="p">),</span>
+                <span class="n">command_name</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s2">&quot;gromacs&quot;</span><span class="p">):</span>
+                <span class="c1"># Either run a Gromacs pure command...</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;queue&quot;</span><span class="p">):</span> <span class="n">command</span><span class="p">[</span><span class="s2">&quot;queue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span>
+                <span class="n">out</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">run_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">generate_command</span><span class="p">(</span><span class="n">command</span><span class="p">)))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+                <span class="c1">## Next line tests Gromacs output checking for known errors</span>
+                <span class="n">groerrors</span><span class="o">.</span><span class="n">GromacsMessages</span><span class="p">(</span><span class="n">gro_err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span>
+                                          <span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">[</span><span class="s2">&quot;gromacs&quot;</span><span class="p">])</span>
+
+                <span class="c1"># Some commands are unable to log via flag, so we catch and</span>
+                <span class="c1"># redirect stdout and stderr</span>
+                <span class="k">if</span> <span class="n">command</span><span class="p">[</span><span class="s2">&quot;gromacs&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;g_energy&quot;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">manual_log</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># ...or run a local function</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">[</span><span class="s2">&quot;command&quot;</span><span class="p">])</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="c1"># Fallback to the utils module</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">utils</span><span class="p">,</span> <span class="n">command</span><span class="p">[</span><span class="s2">&quot;command&quot;</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">):</span>
+                    <span class="n">f</span><span class="p">(</span><span class="o">**</span><span class="n">command</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">f</span><span class="p">()</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Function &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">__doc__</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.select_recipe"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.select_recipe">[docs]</a>    <span class="k">def</span> <span class="nf">select_recipe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        select_recipe: Select the appropriate recipe for the complex</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">recipe</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">stage</span> <span class="o">=</span> <span class="n">stage</span> <span class="ow">or</span> <span class="s2">&quot;Init&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">ligand</span><span class="p">:</span>
+                <span class="n">recipe</span> <span class="o">+=</span> <span class="s2">&quot;Basic&quot;</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="p">,</span> <span class="s2">&quot;ligand&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">ligand</span><span class="p">:</span>
+                    <span class="n">recipe</span> <span class="o">+=</span> <span class="s2">&quot;Ligand&quot;</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="p">,</span> <span class="s2">&quot;alosteric&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">alosteric</span><span class="p">:</span>
+                    <span class="n">recipe</span> <span class="o">+=</span> <span class="s2">&quot;Alosteric&quot;</span>
+
+        <span class="n">recipe</span> <span class="o">+=</span> <span class="n">stage</span>  <span class="c1"># This kwarg carries the proper recipe:</span>
+        <span class="c1"># Init, Minimization, Equilibration...</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">recipes</span><span class="p">,</span> <span class="n">recipe</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">recipes</span><span class="p">,</span> <span class="n">recipe</span><span class="p">)(</span><span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">recipes</span><span class="p">,</span> <span class="s2">&quot;Basic&quot;</span> <span class="o">+</span> <span class="n">stage</span><span class="p">):</span>
+            <span class="c1"># Fall back to Basic recipe if no specific where found</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">recipes</span><span class="p">,</span> <span class="s2">&quot;Basic&quot;</span> <span class="o">+</span> <span class="n">stage</span><span class="p">)(</span><span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.set_box_sizes"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.set_box_sizes">[docs]</a>    <span class="k">def</span> <span class="nf">set_box_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        set_box_sizes: Set length values for different boxes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">set_nanom</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">trans_box_size</span> <span class="o">=</span> \
+            <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">gmx_prot_xy</span><span class="p">),</span>
+             <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">gmx_prot_xy</span><span class="p">),</span>
+             <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">gmx_bilayer_z</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">bilayer_box_size</span> <span class="o">=</span> \
+            <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">gmx_bilayer_x</span><span class="p">),</span>
+             <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">gmx_bilayer_y</span><span class="p">),</span>
+             <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">gmx_bilayer_z</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">embeded_box_size</span> <span class="o">=</span> \
+            <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">gmx_bilayer_x</span><span class="p">),</span>
+             <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">gmx_bilayer_y</span><span class="p">),</span>
+             <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">gmx_prot_z</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">protein_box_size</span> <span class="o">=</span> \
+            <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">gmx_prot_xy</span><span class="p">),</span>
+             <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">gmx_prot_xy</span><span class="p">),</span>
+             <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">gmx_prot_z</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.set_chains"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.set_chains">[docs]</a>    <span class="k">def</span> <span class="nf">set_chains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        set_chains: Set the REAL points of a dimer after protonation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">monomer</span><span class="p">)</span> <span class="o">==</span> <span class="n">protein</span><span class="o">.</span><span class="n">Dimer</span><span class="p">:</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">monomer</span><span class="o">.</span><span class="n">points</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pdb_fp</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">pdb_fp</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">21</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;ATOM&quot;</span><span class="p">,</span> <span class="s2">&quot;HETATM&quot;</span><span class="p">)):</span>
+                        <span class="n">atom_serial</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">11</span><span class="p">])</span>
+                        <span class="n">chain_id</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">points</span><span class="p">[</span><span class="n">chain_id</span><span class="p">]:</span>
+                            <span class="n">points</span><span class="p">[</span><span class="n">chain_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                                <span class="nb">min</span><span class="p">(</span><span class="n">atom_serial</span><span class="p">,</span> <span class="n">points</span><span class="p">[</span><span class="n">chain_id</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+                                <span class="nb">max</span><span class="p">(</span><span class="n">atom_serial</span><span class="p">,</span> <span class="n">points</span><span class="p">[</span><span class="n">chain_id</span><span class="p">][</span><span class="mi">1</span><span class="p">])]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">points</span><span class="p">[</span><span class="n">chain_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">atom_serial</span><span class="p">,</span> <span class="n">atom_serial</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">monomer</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.set_grompp"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.set_grompp">[docs]</a>    <span class="k">def</span> <span class="nf">set_grompp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        set_grompp: Copy template files to working dir</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">repo_src</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">repo_dir</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">repo_src</span><span class="p">]),</span>
+                <span class="n">repo_src</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.set_itp"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.set_itp">[docs]</a>    <span class="k">def</span> <span class="nf">set_itp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        set_itp: Cut a top file to be usable later as itp</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">tgt</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">],</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+        <span class="n">get_name</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">src</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#include&quot;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;; Include Position restraint file&quot;</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tgt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">get_name</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">monomer</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">get_name</span> <span class="o">=</span> <span class="bp">False</span>
+
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;[ moleculetype ]&quot;</span><span class="p">):</span>
+                <span class="n">get_name</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="n">tgt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">src</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.set_options"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.set_options">[docs]</a>    <span class="k">def</span> <span class="nf">set_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">breaks</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        set_options: Set break options from recipe</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">option</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">breaks</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="c1"># This is a hack to get the attribute recursively,</span>
+            <span class="c1"># feeding getattr with dot-splitted string thanks to reduce</span>
+            <span class="c1"># Here we charge some commands with options calculated</span>
+            <span class="n">new_option</span> <span class="o">=</span> <span class="nb">reduce</span><span class="p">(</span><span class="nb">getattr</span><span class="p">,</span>
+                                <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">),</span>
+                                <span class="bp">self</span><span class="p">)</span>
+            <span class="n">options</span><span class="p">[</span><span class="n">option</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_option</span>
+
+        <span class="k">return</span> <span class="n">options</span></div>
+
+<div class="viewcode-block" id="Gromacs.set_popc"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.set_popc">[docs]</a>    <span class="k">def</span> <span class="nf">set_popc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tgt</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        set_popc: Create a pdb file only with the lipid bilayer (POP), no waters.</span>
+<span class="sd">        Set some measures on the fly (height of the bilayer)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tgt</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">tgt</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">pops</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">7</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;POP&quot;</span><span class="p">:</span>
+                    <span class="n">tgt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                    <span class="n">pops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">7</span><span class="p">]))</span>
+
+        <span class="n">tgt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">bilayer_z</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">pops</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">pops</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.set_protein_size"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.set_protein_size">[docs]</a>    <span class="k">def</span> <span class="nf">set_protein_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        set_protein_size: Get the protein maximum base width from a pdb file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;CRYST1&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;xy&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">prot_xy</span> <span class="o">=</span> \
+                        <span class="nb">max</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">]),</span>  <span class="c1"># xyprotein</span>
+                            <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">]))</span>
+                <span class="k">elif</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dir&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">prot_z</span> <span class="o">=</span> \
+                        <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">])</span>  <span class="c1"># hprotein</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">set_box_sizes</span><span class="p">()</span>
+
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.set_stage_init"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.set_stage_init">[docs]</a>    <span class="k">def</span> <span class="nf">set_stage_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        set_stage_init: Copy a set of files from source to target dir</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt_dir&quot;</span><span class="p">]):</span> <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt_dir&quot;</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">src_file</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src_files&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src_dir&quot;</span><span class="p">],</span> <span class="n">src_file</span><span class="p">))):</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src_dir&quot;</span><span class="p">],</span> <span class="n">src_file</span><span class="p">),</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt_dir&quot;</span><span class="p">],</span>
+                                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">src_file</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="k">if</span> <span class="s2">&quot;repo_files&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">repo_file</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;repo_files&quot;</span><span class="p">]:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repo_dir</span><span class="p">,</span> <span class="n">repo_file</span><span class="p">),</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt_dir&quot;</span><span class="p">],</span> <span class="n">repo_file</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.set_steep"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.set_steep">[docs]</a>    <span class="k">def</span> <span class="nf">set_steep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        set_steep: Copy the template steep.mdp to target dir</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repo_dir</span><span class="p">,</span> <span class="s2">&quot;steep.mdp&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;steep.mdp&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Gromacs.set_water"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Gromacs.set_water">[docs]</a>    <span class="k">def</span> <span class="nf">set_water</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        set_water: Create a water layer for a box</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">bilayer_zw</span> <span class="o">-</span> \
+                 <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">prot_z</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">prot_z</span>
+
+        <span class="n">src</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">membrane_complex</span><span class="o">.</span><span class="n">membrane</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">tgt</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">],</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="s2">&quot;NULL&quot;</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">src</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">7</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;OW&quot;</span><span class="p">)</span> <span class="ow">and</span>
+                        <span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">7</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">end</span><span class="p">)</span> <span class="ow">or</span>
+                             <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">7</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">start</span><span class="p">))):</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">4</span><span class="p">]</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">4</span><span class="p">]</span> <span class="o">!=</span> <span class="n">res</span><span class="p">)</span> <span class="ow">and</span>
+                        <span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;SOL&quot;</span><span class="p">)):</span>
+                    <span class="n">tgt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+        <span class="n">tgt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">src</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div></div>
+
+
+<div class="viewcode-block" id="Wrapper"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Wrapper">[docs]</a><span class="k">class</span> <span class="nc">Wrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">work_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="c1"># The gromacs to be used</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gromacs_dir</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">GROMACS_PATH</span>
+        <span class="c1"># The directory where all the files live</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repo_dir</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">TEMPLATES_DIR</span>
+
+    <span class="k">def</span> <span class="nf">_common_io</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _common_io: Autoexpand many Gromacs commands that use -f for input</span>
+<span class="sd">        and -o for the output file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">tgt</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Wrapper.generate_command"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Wrapper.generate_command">[docs]</a>    <span class="k">def</span> <span class="nf">generate_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        generate_command: Receive some variables in kwargs, generate</span>
+<span class="sd">        the appropriate command to be run. Return a set in the form of</span>
+<span class="sd">        a string &quot;command -with flags&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;gromacs&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span>
+
+        <span class="k">if</span> <span class="s2">&quot;src&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;src&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;tgt&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">tgt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;tgt&quot;</span><span class="p">])</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">]</span>
+
+        <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gromacs_dir</span><span class="p">,</span> <span class="n">mode</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="s2">&quot;queue&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;queue&quot;</span><span class="p">],</span> <span class="n">mode</span><span class="p">):</span>
+                <span class="c1"># If we got a queue enabled for this command, use it</span>
+                <span class="n">command</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;queue&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">command</span><span class="p">)</span>  <span class="c1"># Already a list</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;queue&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">make_script</span><span class="p">(</span>
+                    <span class="n">workdir</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;dir&quot;</span><span class="p">],</span>
+                    <span class="n">options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode_mdrun</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+
+        <span class="c1"># Standard -f input -o output</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;pdb2gmx&quot;</span><span class="p">,</span> <span class="s2">&quot;editconf&quot;</span><span class="p">,</span> <span class="s2">&quot;grompp&quot;</span><span class="p">,</span> <span class="s2">&quot;trjconv&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;make_ndx&quot;</span><span class="p">,</span> <span class="s2">&quot;genrestr&quot;</span><span class="p">,</span> <span class="s2">&quot;g_energy&quot;</span><span class="p">]:</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_io</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;pdb2gmx&quot;</span><span class="p">):</span>  <span class="c1"># PDB2GMX</span>
+                <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode_pdb2gmx</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;editconf&quot;</span><span class="p">):</span>  <span class="c1"># EDITCONF</span>
+                <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode_editconf</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;grompp&quot;</span><span class="p">):</span>  <span class="c1"># GROMPP</span>
+                <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode_grompp</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;trjconv&quot;</span><span class="p">):</span>  <span class="c1"># TRJCONV</span>
+                <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode_trjconv</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;make_ndx&quot;</span><span class="p">):</span>  <span class="c1"># MAKE_NDX</span>
+                <span class="k">pass</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;genrestr&quot;</span><span class="p">):</span>  <span class="c1"># GENRSTR</span>
+                <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode_genrest</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;g_energy&quot;</span><span class="p">):</span>  <span class="c1"># G_ENERGY</span>
+                <span class="k">pass</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;eneconv&quot;</span><span class="p">):</span>  <span class="c1"># ENECONV</span>
+                <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode_eneconv</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;genbox&quot;</span><span class="p">):</span>  <span class="c1"># GENBOX</span>
+                <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode_genbox</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;genion&quot;</span><span class="p">):</span>  <span class="c1"># GENION</span>
+                <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode_genion</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;g_rms&quot;</span><span class="p">):</span>  <span class="c1"># G_RMS</span>
+                <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode_g_rms</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;g_rmsf&quot;</span><span class="p">):</span>  <span class="c1"># G_RMSF</span>
+                <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode_g_rmsf</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;tpbconv&quot;</span><span class="p">):</span>  <span class="c1"># TPBCONV</span>
+                <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode_tpbconv</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;trjcat&quot;</span><span class="p">):</span>  <span class="c1"># TRJCAT</span>
+                <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode_trjcat</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;mdrun&quot;</span><span class="p">):</span>  <span class="c1"># MDRUN_SLURM</span>
+                <span class="k">pass</span>
+                <span class="c1"># command.extend(self._mode_mdrun(options))</span>
+
+        <span class="k">return</span> <span class="n">command</span></div>
+
+    <span class="k">def</span> <span class="nf">_mode_editconf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _mode_editconf: Wrap the editconf command options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;dist&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dist&quot;</span><span class="p">])])</span>
+        <span class="k">if</span> <span class="s2">&quot;box&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-box&quot;</span><span class="p">])</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;box&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;angles&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-angles&quot;</span><span class="p">])</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;angles&quot;</span><span class="p">])</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-bt&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;bt&quot;</span><span class="p">]])</span>
+        <span class="k">if</span> <span class="s2">&quot;translate&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-translate&quot;</span><span class="p">])</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;translate&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">command</span>
+
+    <span class="k">def</span> <span class="nf">_mode_eneconv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        mode_eneconv: Wrap the eneconv command options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">src_files</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_cat</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dir1&quot;</span><span class="p">],</span>
+                                   <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dir2&quot;</span><span class="p">],</span>
+                                   <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-f&quot;</span><span class="p">]</span>
+        <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">src_files</span><span class="p">)</span>
+        <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">]),</span>
+                        <span class="s2">&quot;-settime&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">command</span>
+
+    <span class="k">def</span> <span class="nf">_mode_g_rms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _mode_g_rms: Wrap the g_rms command options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src2&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">])]</span>
+
+    <span class="k">def</span> <span class="nf">_mode_g_rmsf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _mode_g_rmsf: Wrap the g_rmsf command options and report per</span>
+<span class="sd">        residue RMSF</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src2&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;-res&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_mode_genbox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;_mode_genbox: Wrap the genbox command options&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;-cp&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cp&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;-cs&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cs&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">])]</span>
+
+    <span class="k">def</span> <span class="nf">_mode_genion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _mode_genion: Wrap the genion command options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;np&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;nn&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="c1"># Genion refuses to run at all if no ion are provided, so provide</span>
+            <span class="c1"># one of each</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;np&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;nn&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">],</span>
+                   <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">],</span>
+                   <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src2&quot;</span><span class="p">]),</span>
+                   <span class="c1"># In version 4.6.5 of gromacs the log is generated</span>
+                   <span class="c1"># by default and the -g option doesn&#39;t exist anymore.</span>
+                   <span class="c1"># &quot;-g&quot;, self._setDir(&quot;genion.log&quot;),</span>
+                   <span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">],</span>
+                   <span class="s2">&quot;-np&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;np&quot;</span><span class="p">]),</span>
+                   <span class="s2">&quot;-nn&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;nn&quot;</span><span class="p">]),</span>
+                   <span class="s2">&quot;-pname&quot;</span><span class="p">,</span> <span class="s2">&quot;NA+&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;-nname&quot;</span><span class="p">,</span> <span class="s2">&quot;CL-&quot;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">command</span>
+
+    <span class="k">def</span> <span class="nf">_mode_genrest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _mode_genrest: Wrap the genrest command options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-fc&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;forces&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;index&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]])</span>
+
+        <span class="k">return</span> <span class="n">command</span>
+
+    <span class="k">def</span> <span class="nf">_mode_grompp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _mode_grompp: Wrap the grompp command options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-maxwarn&quot;</span><span class="p">,</span> <span class="s2">&quot; 2&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src2&quot;</span><span class="p">]),</span>
+                   <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">]),</span>
+                   <span class="s2">&quot;-po&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="s2">&quot;mdout.mdp&quot;</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="s2">&quot;index&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">])])</span>
+
+        <span class="k">return</span> <span class="n">command</span>
+
+    <span class="k">def</span> <span class="nf">_mode_mdrun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _mode_mdrun: Wrap the mdrun command options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">],</span>
+                   <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">],</span>
+                   <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">],</span>
+                   <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;conf&quot;</span><span class="p">],</span>
+                   <span class="s2">&quot;-g&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;log&quot;</span><span class="p">]]</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;traj&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-x&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;traj&quot;</span><span class="p">]])</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;cpi&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-cpi&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cpi&quot;</span><span class="p">]])</span>
+
+        <span class="k">return</span> <span class="n">command</span>
+
+    <span class="k">def</span> <span class="nf">_mode_pdb2gmx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _mode_pdb2gmx: Wrap the pdb2gmx command options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="s2">&quot;posre.itp&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;-ignh&quot;</span><span class="p">,</span> <span class="s2">&quot;-ff&quot;</span><span class="p">,</span> <span class="s2">&quot;oplsaa&quot;</span><span class="p">,</span> <span class="s2">&quot;-water&quot;</span><span class="p">,</span> <span class="s2">&quot;spc&quot;</span><span class="p">]</span>
+               <span class="c1"># &quot;-ignh&quot;, &quot;-ff&quot;, &quot;oplsaa&quot;, &quot;-water&quot;, &quot;spc&quot;, &quot;-chainsep&quot;, \</span>
+               <span class="c1"># &quot;id_or_ter&quot;, &quot;-merge&quot;, &quot;all&quot;]</span>
+               <span class="c1"># &quot;-ignh&quot;, &quot;-ff&quot;, &quot;oplsaa&quot;, &quot;-water&quot;, &quot;spc&quot;, &quot;-ter&quot;]  # addition for the NPY-NH2 capping</span>
+
+    <span class="k">def</span> <span class="nf">_mode_tpbconv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _mode_tpbconv: Wrap the tpbconv command options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;-extend&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;extend&quot;</span><span class="p">]]</span>
+
+    <span class="k">def</span> <span class="nf">_mode_trjcat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _mode_trjcat: Wrap the trjcat command options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">src_files</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_cat</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dir1&quot;</span><span class="p">],</span>
+                                   <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dir2&quot;</span><span class="p">],</span>
+                                   <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-f&quot;</span><span class="p">]</span>
+        <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">src_files</span><span class="p">)</span>
+        <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">]),</span>
+                        <span class="s2">&quot;-settime&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">command</span>
+
+    <span class="k">def</span> <span class="nf">_mode_trjconv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _mode_trjconv: Wrap the trjconv command options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setDir</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src2&quot;</span><span class="p">]),</span>
+                   <span class="s2">&quot;-pbc&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;pbc&quot;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="s2">&quot;ur&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-ur&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ur&quot;</span><span class="p">]])</span>
+        <span class="k">if</span> <span class="s2">&quot;skip&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-skip&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;skip&quot;</span><span class="p">]])</span>
+        <span class="k">if</span> <span class="s2">&quot;trans&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-trans&quot;</span><span class="p">])</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;trans&quot;</span><span class="p">]])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">command</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-center&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">command</span>
+
+<div class="viewcode-block" id="Wrapper.run_command"><a class="viewcode-back" href="../pymemdyn.html#gromacs.Wrapper.run_command">[docs]</a>    <span class="k">def</span> <span class="nf">run_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        run_command: Run a command that comes in kwargs in a subprocess, and</span>
+<span class="sd">        return the output as (output, errors)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_command</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># my_dir = os.getcwd()</span>
+
+        <span class="c1"># if kwargs[&quot;gromacs&quot;] == &quot;mdrun&quot;:</span>
+        <span class="c1"># MDRUN depends on the local .mdp, no option to set it.</span>
+        <span class="c1">#    os.chdir(kwargs[&quot;options&quot;][&quot;dir&quot;])</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;input&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span>
+                                 <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                                 <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                                 <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+            <span class="n">gro_out</span><span class="p">,</span> <span class="n">gro_errs</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span>
+                                 <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                                 <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+
+            <span class="n">gro_out</span><span class="p">,</span> <span class="n">gro_errs</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+
+        <span class="c1"># os.chdir(my_dir)</span>
+
+        <span class="k">return</span> <span class="n">gro_out</span><span class="p">,</span> <span class="n">gro_errs</span></div>
+
+    <span class="k">def</span> <span class="nf">_setDir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _setDir: Expand a filename with the work dir to save code space</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Esguerra, Bello, Teran.
+
+    </p>
+  </div>
+  
+   
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

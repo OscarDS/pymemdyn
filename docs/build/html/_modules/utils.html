@@ -1,0 +1,582 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>utils &mdash; pymemdyn 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="pymemdyn 1.4 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pymemdyn
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pymemdyn.html">pymemdyn package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">pymemdyn</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>utils</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">Template</span>
+
+<span class="kn">import</span> <span class="nn">bw4posres</span>
+
+
+<span class="k">def</span> <span class="nf">_arrange_dir</span><span class="p">(</span><span class="n">src_dir</span><span class="p">,</span> <span class="n">new_dir</span><span class="p">,</span> <span class="n">useful_files</span><span class="o">=</span><span class="p">[],</span> <span class="n">useful_fixed</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Copy the files in useful files from src_dir and</span>
+<span class="sd">    fixed files from self.own_dir to new dir, which is created if needed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">new_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">new_dir</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">u_f</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">src_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">useful_files</span><span class="p">]:</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">src_dir</span><span class="p">,</span> <span class="n">u_f</span><span class="p">)</span>
+        <span class="n">tgt</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_dir</span><span class="p">,</span> <span class="n">u_f</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">)</span>
+
+<span class="c1">#    for u_f in [x for x in os.listdir(self.own_dir) if x in useful_fixed]:</span>
+<span class="c1">#        src = os.path.join(self.own_dir, u_f)</span>
+<span class="c1">#        tgt = os.path.join(new_dir, u_f)</span>
+<span class="c1">#        shutil.copy(src, tgt)</span>
+
+    <span class="k">return</span> <span class="bp">True</span>
+
+<div class="viewcode-block" id="check_forces"><a class="viewcode-back" href="../pymemdyn.html#utils.check_forces">[docs]</a><span class="k">def</span> <span class="nf">check_forces</span><span class="p">(</span><span class="n">pdb</span><span class="p">,</span> <span class="n">itp</span><span class="p">,</span> <span class="n">ffield</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A force field must give a set of forces that matches every atom in</span>
+<span class="sd">    the pdb file. This showed particularly important to the ligands, as they</span>
+<span class="sd">    may vary along a very broad range of atoms.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># The itp matches each residue in the ligand pdb with the force field</span>
+    <span class="n">atoms_def</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">molecules</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">itp</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;[ atoms ]&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">atoms_def</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">if</span> <span class="s2">&quot;[ bonds ]&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">atoms_def</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">atoms_def</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">molecules</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">molecules</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="c1"># {&quot;LIG&quot;: {&quot;C1&quot;: &quot;TC1&quot;},}</span>
+                <span class="n">molecules</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]][</span><span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">]]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">atoms</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># The force field matches each atom in the pdb with one line</span>
+    <span class="n">atomtypes</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">ffield</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;[ atomtypes ]&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">atomtypes</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">if</span> <span class="n">atomtypes</span><span class="p">:</span>
+            <span class="c1"># We are inside the atomtypes definition, so add the defined atoms</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">):</span>
+                <span class="c1">#{&quot;TC1&quot;: &quot;C1&quot;}</span>
+                <span class="n">atoms</span><span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+            
+    <span class="c1"># The pdb has the name of the atom in the third position.</span>
+    <span class="c1"># Here we cross-check all three files to match their harvested values</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">pdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">molecules</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]][</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">atoms</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="c1"># Some atoms in the pdb have no definition in force field</span>
+                <span class="c1"># TODO : add a guessing function</span>
+                <span class="k">print</span> <span class="s2">&quot;Atom {0} has no field definition&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="c1"># return False</span>
+            <span class="k">if</span> <span class="n">atoms</span><span class="p">[</span><span class="n">molecules</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]][</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">]]]</span> <span class="ow">not</span> <span class="ow">in</span>\
+                <span class="n">molecules</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">print</span> <span class="s2">&quot;Atom {0} has a wrong field definition&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="c1"># return False</span>
+
+    <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="clean_all"><a class="viewcode-back" href="../pymemdyn.html#utils.clean_all">[docs]</a><span class="k">def</span> <span class="nf">clean_all</span><span class="p">(</span><span class="n">target_dir</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove all intermediate files from &#39;target_dir&#39;  except that files</span>
+<span class="sd">         in &#39;exclude&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">to_unlink_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">target_dir</span><span class="p">)</span>
+        <span class="c1"># First a security check to not delete up a certain point</span>
+        <span class="n">minimum</span> <span class="o">=</span> <span class="s2">&quot;/home/gpcruser/public&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">to_unlink_dir</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">minimum</span><span class="p">):</span> <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s2">&quot;dynamic&quot;</span> <span class="ow">in</span> <span class="n">to_unlink_dir</span><span class="p">:</span> <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="n">targets</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">to_unlink_dir</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">to_unlink_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">file_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>
+                <span class="c1"># Deleting files</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">target</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+                <span class="c1"># Deleting subdirs</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">target</span><span class="p">):</span> <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Changing remaining files to be downloadable by web user</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mo">0775</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">chown</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="clean_topol"><a class="viewcode-back" href="../pymemdyn.html#utils.clean_topol">[docs]</a><span class="k">def</span> <span class="nf">clean_topol</span><span class="p">(</span><span class="n">src</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">tgt</span> <span class="o">=</span> <span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Clean the src topol of path specifics, and paste results in target</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">tgt</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+        <span class="n">newline</span> <span class="o">=</span> <span class="n">line</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#include&quot;</span><span class="p">):</span>
+            <span class="n">newline</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; &quot;&#39;</span>
+            <span class="n">newline</span> <span class="o">+=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">newline</span> <span class="o">+=</span> <span class="s1">&#39;&quot;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">newline</span><span class="p">)</span>
+
+    <span class="n">target</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">source</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="concat"><a class="viewcode-back" href="../pymemdyn.html#utils.concat">[docs]</a><span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a whole pdb file with all the pdb provided</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="c1">#    for compound_class in [&quot;ligand&quot;, &quot;waters&quot;, &quot;ions&quot;, &quot;cho&quot;, &quot;alosteric&quot;]:</span>
+    <span class="k">for</span> <span class="n">compound_class</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ligand&quot;</span><span class="p">,</span> <span class="s2">&quot;ions&quot;</span><span class="p">,</span> <span class="s2">&quot;cho&quot;</span><span class="p">,</span> <span class="s2">&quot;alosteric&quot;</span><span class="p">,</span> <span class="s2">&quot;waters&quot;</span><span class="p">]:</span>
+        <span class="c1"># Does the complex carry the group?</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">],</span> <span class="n">compound_class</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">],</span> <span class="n">compound_class</span><span class="p">):</span>
+                <span class="n">_file_append</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">],</span>
+                             <span class="nb">getattr</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tgt&quot;</span><span class="p">],</span> <span class="n">compound_class</span><span class="p">)</span><span class="o">.</span><span class="n">pdb</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="getbw"><a class="viewcode-back" href="../pymemdyn.html#utils.getbw">[docs]</a><span class="k">def</span> <span class="nf">getbw</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call the Ballesteros-Weistein based pair-distance restraint</span>
+<span class="sd">    module.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bw4posres</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">pdb2fas</span><span class="p">()</span>
+    <span class="n">bw4posres</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">clustalalign</span><span class="p">()</span>
+    <span class="n">bw4posres</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">getcalphas</span><span class="p">()</span>
+    <span class="n">bw4posres</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">makedisre</span><span class="p">()</span></div>
+
+<span class="k">def</span> <span class="nf">_file_append</span><span class="p">(</span><span class="n">f_src</span><span class="p">,</span> <span class="n">f2a</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add (concatenate) a f2a pdb file to another src pdb file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">f_src</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">f2a</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">f2a</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">tgt</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;tmp_&quot;</span> <span class="o">+</span> <span class="n">f_src</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">src</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;TER&quot;</span> <span class="ow">or</span> <span class="s2">&quot;ENDMDL&quot;</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">tgt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line_2_add</span> <span class="ow">in</span> <span class="n">f2a</span><span class="p">:</span>
+                <span class="n">tgt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line_2_add</span><span class="p">)</span>
+            <span class="k">break</span>
+    <span class="n">tgt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;TER</span><span class="se">\n</span><span class="s2">ENDMDL</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">tgt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">f2a</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">src</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">tgt</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">f_src</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="bp">True</span>
+
+<div class="viewcode-block" id="make_cat"><a class="viewcode-back" href="../pymemdyn.html#utils.make_cat">[docs]</a><span class="k">def</span> <span class="nf">make_cat</span><span class="p">(</span><span class="n">dir1</span><span class="p">,</span> <span class="n">dir2</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Very tight function to make a list of files to inject</span>
+<span class="sd">    in some GROMACS suite programs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">traj_src</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir1</span><span class="p">,</span> <span class="n">name</span><span class="p">)]</span>
+    <span class="n">traj_src</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir1</span><span class="p">,</span> <span class="s2">&quot;{0}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">200</span><span class="p">)])</span>
+    <span class="n">traj_src</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir2</span><span class="p">,</span> <span class="n">name</span><span class="p">)])</span>
+
+    <span class="k">return</span> <span class="n">traj_src</span></div>
+
+<div class="viewcode-block" id="make_ffoplsaanb"><a class="viewcode-back" href="../pymemdyn.html#utils.make_ffoplsaanb">[docs]</a><span class="k">def</span> <span class="nf">make_ffoplsaanb</span><span class="p">(</span><span class="nb">complex</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Join all OPLS force fields needed to run the simulation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ff</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">__file__</span><span class="p">)),</span>
+                      <span class="s2">&quot;templates&quot;</span><span class="p">,</span> <span class="s2">&quot;ffoplsaanb_&quot;</span><span class="p">)</span>
+
+    <span class="n">base</span> <span class="o">=</span> <span class="s2">&quot;{0}base.itp&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ff</span><span class="p">)</span> <span class="c1"># This is the ff for proteins and other</span>
+    <span class="n">lip</span> <span class="o">=</span> <span class="s2">&quot;{0}lip.itp&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ff</span><span class="p">)</span>   <span class="c1"># This for the lipids</span>
+    <span class="n">cho</span> <span class="o">=</span> <span class="s2">&quot;{0}cho.itp&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ff</span><span class="p">)</span>   <span class="c1"># This for cholesterol</span>
+
+    <span class="n">to_concat</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="p">,</span> <span class="s2">&quot;ligand&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">ligand</span><span class="p">,</span> <span class="s2">&quot;force_field&quot;</span><span class="p">):</span>
+            <span class="n">to_concat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">ligand</span><span class="o">.</span><span class="n">force_field</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="p">,</span> <span class="s2">&quot;alosteric&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">alosteric</span><span class="p">,</span> <span class="s2">&quot;force_field&quot;</span><span class="p">):</span>
+            <span class="n">to_concat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">alosteric</span><span class="o">.</span><span class="n">force_field</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="p">,</span> <span class="s2">&quot;cho&quot;</span><span class="p">):</span>
+        <span class="n">to_concat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cho</span><span class="p">)</span>
+
+    <span class="n">to_concat</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">lip</span><span class="p">,</span> <span class="n">base</span><span class="p">])</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;[ atomtypes ]</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">for</span> <span class="n">ff_i</span> <span class="ow">in</span> <span class="n">to_concat</span><span class="p">:</span>
+        <span class="n">output</span> <span class="o">+=</span> <span class="nb">open</span><span class="p">(</span><span class="n">ff_i</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">output</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span> <span class="n">output</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;ffoplsaanb_mod.itp&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="make_topol"><a class="viewcode-back" href="../pymemdyn.html#utils.make_topol">[docs]</a><span class="k">def</span> <span class="nf">make_topol</span><span class="p">(</span><span class="n">template_dir</span> <span class="o">=</span> \
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">__file__</span><span class="p">)),</span> <span class="s2">&quot;templates&quot;</span><span class="p">),</span>
+    <span class="n">target_dir</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># Dir where topol.top should land</span>
+    <span class="n">working_dir</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="c1"># Dir where script is working</span>
+    <span class="nb">complex</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>  <span class="c1"># The MembraneComplex object to deal</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make the topol starting from our topol.top template</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="c1">#    protein = dimer = lig = hoh = na = cho = alo = 0</span>
+<span class="c1">#    lig_name = hoh_name = ions_name = cho_name = alosteric_name = &quot;&quot;</span>
+    <span class="n">protein</span> <span class="o">=</span> <span class="n">bw</span> <span class="o">=</span>  <span class="n">dimer</span> <span class="o">=</span> <span class="n">lig</span> <span class="o">=</span> <span class="n">na</span> <span class="o">=</span> <span class="n">cho</span> <span class="o">=</span> <span class="n">alo</span> <span class="o">=</span> <span class="n">hoh</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">lig_name</span> <span class="o">=</span> <span class="n">ions_name</span> <span class="o">=</span> <span class="n">cho_name</span> <span class="o">=</span> <span class="n">alosteric_name</span> <span class="o">=</span> <span class="n">hoh_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="p">,</span> <span class="s2">&quot;monomer&quot;</span><span class="p">):</span>
+        <span class="n">protein</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">bw</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">complex</span><span class="p">,</span> <span class="s2">&quot;monomer&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;Dimer&quot;</span><span class="p">:</span>
+            <span class="n">dimer</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="p">,</span> <span class="s2">&quot;ligand&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">complex</span><span class="o">.</span><span class="n">ligand</span><span class="p">:</span>
+            <span class="n">lig</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">lig_name</span> <span class="o">=</span> <span class="nb">complex</span><span class="o">.</span><span class="n">ligand</span><span class="o">.</span><span class="n">itp</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="p">,</span> <span class="s2">&quot;ions&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">ions</span><span class="p">,</span> <span class="s2">&quot;number&quot;</span><span class="p">):</span>
+            <span class="n">na</span> <span class="o">=</span> <span class="nb">complex</span><span class="o">.</span><span class="n">ions</span><span class="o">.</span><span class="n">number</span>
+            <span class="n">ions_name</span> <span class="o">=</span> <span class="nb">complex</span><span class="o">.</span><span class="n">ions</span><span class="o">.</span><span class="n">itp</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="p">,</span> <span class="s2">&quot;cho&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">cho</span><span class="p">,</span> <span class="s2">&quot;number&quot;</span><span class="p">):</span>
+            <span class="n">cho</span> <span class="o">=</span> <span class="nb">complex</span><span class="o">.</span><span class="n">cho</span><span class="o">.</span><span class="n">number</span>
+            <span class="n">cho_name</span> <span class="o">=</span> <span class="nb">complex</span><span class="o">.</span><span class="n">cho</span><span class="o">.</span><span class="n">itp</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="p">,</span> <span class="s2">&quot;alosteric&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">complex</span><span class="o">.</span><span class="n">alosteric</span><span class="p">:</span>
+            <span class="n">alo</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">alosteric_name</span> <span class="o">=</span> <span class="nb">complex</span><span class="o">.</span><span class="n">alosteric</span><span class="o">.</span><span class="n">itp</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="p">,</span> <span class="s2">&quot;waters&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">waters</span><span class="p">,</span> <span class="s2">&quot;number&quot;</span><span class="p">):</span>
+            <span class="n">hoh</span> <span class="o">=</span> <span class="nb">complex</span><span class="o">.</span><span class="n">waters</span><span class="o">.</span><span class="n">number</span>
+            <span class="n">hoh_name</span> <span class="o">=</span> <span class="nb">complex</span><span class="o">.</span><span class="n">waters</span><span class="o">.</span><span class="n">itp</span>
+
+
+<span class="c1">#    order = (&quot;protein&quot;, &quot;dimer&quot;, &quot;lig&quot;, &quot;hoh&quot;, &quot;na&quot;, &quot;cho&quot;, &quot;alo&quot;)</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;bw&quot;</span><span class="p">,</span> <span class="s2">&quot;dimer&quot;</span><span class="p">,</span> <span class="s2">&quot;lig&quot;</span><span class="p">,</span> <span class="s2">&quot;na&quot;</span><span class="p">,</span> <span class="s2">&quot;cho&quot;</span><span class="p">,</span> <span class="s2">&quot;alo&quot;</span><span class="p">,</span> <span class="s2">&quot;hoh&quot;</span><span class="p">)</span>
+    <span class="n">comps</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;protein&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;itp_name&quot;</span><span class="p">:</span> <span class="s2">&quot;protein.itp&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;ifdef_name&quot;</span><span class="p">:</span> <span class="s2">&quot;POSRES&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;posre_name&quot;</span><span class="p">:</span> <span class="s2">&quot;posre.itp&quot;</span><span class="p">},</span>
+
+             <span class="s2">&quot;bw&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ifdef_name&quot;</span><span class="p">:</span> <span class="s2">&quot;DISRE&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;posre_name&quot;</span><span class="p">:</span> <span class="s2">&quot;disre.itp&quot;</span><span class="p">},</span>
+
+             <span class="s2">&quot;dimer&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein_chain_B&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;itp_name&quot;</span><span class="p">:</span> <span class="s2">&quot;protein_Protein_chain_B.itp&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;ifdef_name&quot;</span><span class="p">:</span> <span class="s2">&quot;POSRES&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;posre_name&quot;</span><span class="p">:</span> <span class="s2">&quot;posre_Protein_chain_B.itp&quot;</span><span class="p">},</span>
+
+             <span class="s2">&quot;lig&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;itp_name&quot;</span><span class="p">:</span> <span class="n">lig_name</span><span class="p">,</span>
+                 <span class="s2">&quot;ifdef_name&quot;</span><span class="p">:</span> <span class="s2">&quot;POSRESLIG&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;posre_name&quot;</span><span class="p">:</span> <span class="s2">&quot;posre_lig.itp&quot;</span><span class="p">},</span>
+
+             <span class="s2">&quot;na&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;itp_name&quot;</span><span class="p">:</span> <span class="n">ions_name</span><span class="p">,</span>
+                 <span class="s2">&quot;ifdef_name&quot;</span><span class="p">:</span> <span class="s2">&quot;POSRESION&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;posre_name&quot;</span><span class="p">:</span> <span class="s2">&quot;posre_ion.itp&quot;</span><span class="p">},</span>
+
+             <span class="s2">&quot;cho&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;itp_name&quot;</span><span class="p">:</span> <span class="n">cho_name</span><span class="p">,</span>
+                 <span class="s2">&quot;ifdef_name&quot;</span><span class="p">:</span> <span class="s2">&quot;POSRESCHO&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;posre_name&quot;</span><span class="p">:</span> <span class="s2">&quot;posre_cho.itp&quot;</span><span class="p">},</span>
+
+             <span class="s2">&quot;alo&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;itp_name&quot;</span><span class="p">:</span> <span class="n">alosteric_name</span><span class="p">,</span>
+                 <span class="s2">&quot;ifdef_name&quot;</span><span class="p">:</span> <span class="s2">&quot;POSRESALO&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;posre_name&quot;</span><span class="p">:</span> <span class="s2">&quot;posre_alo.itp&quot;</span><span class="p">},</span>
+
+             <span class="s2">&quot;hoh&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;itp_name&quot;</span><span class="p">:</span> <span class="n">hoh_name</span><span class="p">,</span>
+                 <span class="s2">&quot;ifdef_name&quot;</span><span class="p">:</span> <span class="s2">&quot;POSRESHOH&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;posre_name&quot;</span><span class="p">:</span> <span class="s2">&quot;posre_hoh.itp&quot;</span><span class="p">},</span>
+             <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">dimer</span><span class="p">:</span>
+        <span class="n">comps</span><span class="p">[</span><span class="s2">&quot;protein&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein_chain_A&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;itp_name&quot;</span><span class="p">:</span> <span class="s2">&quot;protein_Protein_chain_A.itp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ifdef_name&quot;</span><span class="p">:</span> <span class="s2">&quot;POSRES&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;posre_name&quot;</span><span class="p">:</span> <span class="s2">&quot;posre_Protein_chain_A.itp&quot;</span><span class="p">}</span>
+
+    <span class="n">src</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">template_dir</span><span class="p">,</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">tgt</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">target_dir</span><span class="p">,</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">readlines</span><span class="p">()))</span>
+    <span class="n">src</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">itp_include</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">locals</span><span class="p">()[</span><span class="n">c</span><span class="p">]:</span>
+<span class="c1">#            itp_name = comps[c][&quot;itp_name&quot;]</span>
+<span class="c1">#            print c</span>
+<span class="c1">#            print comps[c].keys()</span>
+            <span class="k">if</span> <span class="s2">&quot;itp_name&quot;</span> <span class="ow">in</span> <span class="n">comps</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">posre_name</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="s2">&quot;posre_name&quot;</span><span class="p">]</span>
+                <span class="n">itp_include</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;#include &quot;{0}&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comps</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="s2">&quot;itp_name&quot;</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="s2">&quot;posre_name&quot;</span> <span class="ow">in</span> <span class="n">comps</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">itp_include</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;; Include Position restraint file&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;#ifdef {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comps</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="s2">&quot;ifdef_name&quot;</span><span class="p">]),</span>
+                <span class="s1">&#39;#include &quot;{0}&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">target_dir</span><span class="p">,</span>
+                    <span class="n">comps</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="s2">&quot;posre_name&quot;</span><span class="p">])),</span>
+                <span class="s1">&#39;#endif&#39;</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">comps</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">):</span>
+                <span class="n">comps</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="s2">&quot;line&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;{0} {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">comps</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="nb">locals</span><span class="p">()[</span><span class="n">c</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">comps</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="s2">&quot;line&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;{0} {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="nb">locals</span><span class="p">()[</span><span class="n">c</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">comps</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="s2">&quot;line&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;;&quot;</span>
+
+    <span class="k">if</span> <span class="n">working_dir</span><span class="p">:</span> <span class="n">working_dir</span> <span class="o">+=</span> <span class="s2">&quot;/&quot;</span> <span class="c1"># Root dir doesn&#39;t need to be slashed</span>
+
+    <span class="n">tgt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">substitute</span><span class="p">(</span><span class="n">working_dir</span> <span class="o">=</span> <span class="n">working_dir</span><span class="p">,</span>
+                           <span class="n">protein</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="s2">&quot;protein&quot;</span><span class="p">][</span><span class="s2">&quot;line&quot;</span><span class="p">],</span>
+                           <span class="n">dimer</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="s2">&quot;dimer&quot;</span><span class="p">][</span><span class="s2">&quot;line&quot;</span><span class="p">],</span>
+                           <span class="n">lig</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="s2">&quot;lig&quot;</span><span class="p">][</span><span class="s2">&quot;line&quot;</span><span class="p">],</span>
+                           <span class="n">na</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="s2">&quot;na&quot;</span><span class="p">][</span><span class="s2">&quot;line&quot;</span><span class="p">],</span>
+                           <span class="n">cho</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="s2">&quot;cho&quot;</span><span class="p">][</span><span class="s2">&quot;line&quot;</span><span class="p">],</span>
+                           <span class="n">alosteric</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="s2">&quot;alo&quot;</span><span class="p">][</span><span class="s2">&quot;line&quot;</span><span class="p">],</span>
+                           <span class="n">hoh</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="s2">&quot;hoh&quot;</span><span class="p">][</span><span class="s2">&quot;line&quot;</span><span class="p">],</span>
+                           <span class="n">itp_includes</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">itp_include</span><span class="p">)))</span>
+    <span class="n">tgt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="make_topol_lines"><a class="viewcode-back" href="../pymemdyn.html#utils.make_topol_lines">[docs]</a><span class="k">def</span> <span class="nf">make_topol_lines</span><span class="p">(</span><span class="n">itp_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">ifdef_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">posre_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make the topol lines to be included</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;#include &quot;{it}&quot;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;; Include Position restraint file&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;#ifdef {id}&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;#include &quot;{po}&quot;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;#endif&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">it</span> <span class="o">=</span> <span class="n">itp_name</span><span class="p">,</span>
+                          <span class="nb">id</span> <span class="o">=</span> <span class="n">ifdef_name</span><span class="p">,</span>
+                          <span class="n">po</span> <span class="o">=</span> <span class="n">posre_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="tar_out"><a class="viewcode-back" href="../pymemdyn.html#utils.tar_out">[docs]</a><span class="k">def</span> <span class="nf">tar_out</span><span class="p">(</span><span class="n">src_dir</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">tgt</span> <span class="o">=</span> <span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tar everything in a src_dir to the tar_file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">tarfile</span>
+
+    <span class="n">t_f</span> <span class="o">=</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tgt</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w:gz&quot;</span><span class="p">)</span>
+    <span class="n">base_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">src_dir</span><span class="p">)</span> <span class="c1"># To avoid the include of all parent dirs</span>
+    <span class="k">for</span> <span class="n">to_tar</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">src_dir</span><span class="p">)):</span>
+        <span class="n">t_f</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">to_tar</span><span class="p">)</span>
+    <span class="n">t_f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">base_dir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="tune_mdp"><a class="viewcode-back" href="../pymemdyn.html#utils.tune_mdp">[docs]</a><span class="k">def</span> <span class="nf">tune_mdp</span><span class="p">(</span><span class="n">groups</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adjust the tc-groups of eq.mdp to be in line with our system</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="s2">&quot;Rmin/eq.mdp&quot;</span><span class="p">,</span> <span class="s2">&quot;Rmin/eq.mdp~&quot;</span><span class="p">)</span>
+    <span class="n">eq</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;Rmin/eq.mdp~&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">eq_out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;Rmin/eq.mdp&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">eq</span><span class="p">:</span>
+        <span class="n">new_line</span> <span class="o">=</span> <span class="n">line</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;tc-grps&quot;</span><span class="p">):</span>
+            <span class="n">new_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;POP&quot;</span><span class="p">,</span> <span class="n">groups</span><span class="p">[</span><span class="s2">&quot;lipids&quot;</span><span class="p">])</span>
+            <span class="n">new_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;wation&quot;</span><span class="p">,</span> <span class="n">groups</span><span class="p">[</span><span class="s2">&quot;solvent&quot;</span><span class="p">])</span>
+            <span class="n">new_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Protein&quot;</span><span class="p">,</span> <span class="n">groups</span><span class="p">[</span><span class="s2">&quot;complex&quot;</span><span class="p">])</span>
+        <span class="n">eq_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">new_line</span><span class="p">)</span>
+    <span class="n">eq</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">eq_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="bp">True</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Esguerra, Bello, Teran.
+
+    </p>
+  </div>
+  
+   
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

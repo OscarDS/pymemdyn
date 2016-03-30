@@ -1,0 +1,785 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>protein &mdash; pymemdyn 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="pymemdyn 1.4 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pymemdyn
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pymemdyn.html">pymemdyn package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">pymemdyn</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>protein</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for protein</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+
+<div class="viewcode-block" id="ProteinComplex"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex">[docs]</a><span class="k">class</span> <span class="nc">ProteinComplex</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cres</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Central residue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cres</span><span class="p">]</span>  <span class="c1"># Module for translating complex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_wats</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Number of experimental waters</span>
+
+        <span class="k">if</span> <span class="s2">&quot;monomer&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMonomer</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;monomer&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;ligand&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setLigand</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ligand&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;waters&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setWaters</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;waters&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;ions&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setIons</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ions&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;cho&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setCho</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cho&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;alosteric&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setAlosteric</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;alosteric&quot;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="ProteinComplex.setMonomer"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex.setMonomer">[docs]</a>    <span class="k">def</span> <span class="nf">setMonomer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the monomer object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monomer</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="ProteinComplex.getMonomer"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex.getMonomer">[docs]</a>    <span class="k">def</span> <span class="nf">getMonomer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">monomer</span></div>
+    <span class="nb">property</span><span class="p">(</span><span class="n">getMonomer</span><span class="p">,</span> <span class="n">setMonomer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProteinComplex.setLigand"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex.setLigand">[docs]</a>    <span class="k">def</span> <span class="nf">setLigand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the ligand object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ligand</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="ProteinComplex.getLigand"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex.getLigand">[docs]</a>    <span class="k">def</span> <span class="nf">getLigand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ligand</span></div>
+    <span class="nb">property</span><span class="p">(</span><span class="n">getLigand</span><span class="p">,</span> <span class="n">setLigand</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProteinComplex.setWaters"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex.setWaters">[docs]</a>    <span class="k">def</span> <span class="nf">setWaters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the crystal waters object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waters</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="ProteinComplex.getWaters"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex.getWaters">[docs]</a>    <span class="k">def</span> <span class="nf">getWaters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">waters</span></div>
+    <span class="nb">property</span><span class="p">(</span><span class="n">getWaters</span><span class="p">,</span> <span class="n">setWaters</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProteinComplex.setIons"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex.setIons">[docs]</a>    <span class="k">def</span> <span class="nf">setIons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the ions object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ions</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="ProteinComplex.getIons"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex.getIons">[docs]</a>    <span class="k">def</span> <span class="nf">getIons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ions</span></div>
+    <span class="nb">property</span><span class="p">(</span><span class="n">getIons</span><span class="p">,</span> <span class="n">setIons</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProteinComplex.setCho"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex.setCho">[docs]</a>    <span class="k">def</span> <span class="nf">setCho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the cholesterol object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cho</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="ProteinComplex.getCho"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex.getCho">[docs]</a>    <span class="k">def</span> <span class="nf">getCho</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cho</span></div>
+    <span class="nb">property</span><span class="p">(</span><span class="n">getCho</span><span class="p">,</span> <span class="n">setCho</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProteinComplex.setAlosteric"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex.setAlosteric">[docs]</a>    <span class="k">def</span> <span class="nf">setAlosteric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the alosteric object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alosteric</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="ProteinComplex.getAlosteric"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex.getAlosteric">[docs]</a>    <span class="k">def</span> <span class="nf">getAlosteric</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">alosteric</span></div>
+    <span class="nb">property</span><span class="p">(</span><span class="n">getAlosteric</span><span class="p">,</span> <span class="n">setAlosteric</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProteinComplex.set_nanom"><a class="viewcode-back" href="../pymemdyn.html#protein.ProteinComplex.set_nanom">[docs]</a>    <span class="k">def</span> <span class="nf">set_nanom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert dimension measurements to nanometers for GROMACS</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nanometer</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gmx_prot_xy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prot_xy</span> <span class="o">/</span> <span class="n">nanometer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gmx_prot_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prot_z</span> <span class="o">/</span> <span class="n">nanometer</span></div></div>
+
+
+<div class="viewcode-block" id="Protein"><a class="viewcode-back" href="../pymemdyn.html#protein.Protein">[docs]</a><span class="k">class</span> <span class="nc">Protein</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is a proxy to determine if a protein is a Monomer or a Dimer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;pdb&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;File &#39;{0}&#39; missing&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Protein.check_number_of_chains"><a class="viewcode-back" href="../pymemdyn.html#protein.Protein.check_number_of_chains">[docs]</a>    <span class="k">def</span> <span class="nf">check_number_of_chains</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine if a PDB is a Monomer or a Dimer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chains</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pdb_fp</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">pdb_fp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">21</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                        <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;ATOM&quot;</span><span class="p">,</span> <span class="s2">&quot;TER&quot;</span><span class="p">,</span> <span class="s2">&quot;HETATM&quot;</span><span class="p">))):</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">chains</span><span class="p">):</span>
+                        <span class="n">chains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">21</span><span class="p">])</span>
+    
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chains</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Monomer</span><span class="p">(</span><span class="n">pdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">chains</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Dimer</span><span class="p">(</span><span class="n">pdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="n">chains</span> <span class="o">=</span> <span class="n">chains</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">chains</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Error: Your file {0} has more than two protein </span><span class="se">\n</span><span class="s2">&quot;</span>
+                   <span class="s2">&quot;chains. This is more than what pymemdyn can handle now.</span><span class="se">\n</span><span class="s2">&quot;</span>\
+                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="Monomer"><a class="viewcode-back" href="../pymemdyn.html#protein.Monomer">[docs]</a><span class="k">class</span> <span class="nc">Monomer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;pdb&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;File &#39;{0}&#39; missing&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;protlig&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete_chain</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setHist</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Monomer.delete_chain"><a class="viewcode-back" href="../pymemdyn.html#protein.Monomer.delete_chain">[docs]</a>    <span class="k">def</span> <span class="nf">delete_chain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        PDBs which have a chain column mess up with pdb2gmx, creating</span>
+<span class="sd">        an unsuitable protein.itp file by naming the protein ie &quot;Protein_A&quot;.</span>
+<span class="sd">        Here we remove the chain value</span>
+
+<span class="sd">        According to http://www.wwpdb.org/documentation/format33/sect9.html,</span>
+<span class="sd">        the chain value is in column 22</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span><span class="p">)</span>
+        <span class="n">pdb</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">pdb_out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+        <span class="n">replacing</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">pdb</span><span class="p">:</span>
+            <span class="n">new_line</span> <span class="o">=</span> <span class="n">line</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1">#Remove chain id</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot; &quot;</span><span class="p">:</span>
+                    <span class="n">replacing</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="n">new_line</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="c1">#Transform the line into a list...</span>
+                    <span class="n">new_line</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> 
+                    <span class="n">new_line</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_line</span><span class="p">)</span>
+            <span class="n">pdb_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">new_line</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">replacing</span><span class="p">:</span> <span class="k">print</span> <span class="s2">&quot;Removed chain id from your protein pdb!&quot;</span>
+        <span class="n">pdb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">pdb_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+ 
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+    <span class="k">def</span> <span class="nf">_setHist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change Histidines in pdb to the format preferred by gromacs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tgt</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;-his.pdb&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdb_his</span> <span class="o">=</span> <span class="n">tgt</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;HIE&quot;</span><span class="p">:</span>
+                    <span class="n">tgt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;HIE &#39;</span><span class="p">,</span><span class="s1">&#39;HISE&#39;</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;HID&quot;</span><span class="p">:</span>
+                    <span class="n">tgt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;HID &#39;</span><span class="p">,</span><span class="s1">&#39;HISD&#39;</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;HIP&quot;</span><span class="p">:</span>
+                    <span class="n">tgt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;HIP &#39;</span><span class="p">,</span><span class="s1">&#39;HISH&#39;</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tgt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tgt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">tgt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+
+<div class="viewcode-block" id="Dimer"><a class="viewcode-back" href="../pymemdyn.html#protein.Dimer">[docs]</a><span class="k">class</span> <span class="nc">Dimer</span><span class="p">(</span><span class="n">Monomer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Dimer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">chains</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;chains&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chains</span><span class="p">,</span> <span class="p">[])</span>
+
+<div class="viewcode-block" id="Dimer.delete_chain"><a class="viewcode-back" href="../pymemdyn.html#protein.Dimer.delete_chain">[docs]</a>    <span class="k">def</span> <span class="nf">delete_chain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overload the delete_chain method from Monomer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">True</span></div></div>
+
+
+<div class="viewcode-block" id="Compound"><a class="viewcode-back" href="../pymemdyn.html#protein.Compound">[docs]</a><span class="k">class</span> <span class="nc">Compound</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a super-class to provide common functions to added compounds</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">itp</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Compound.check_files"><a class="viewcode-back" href="../pymemdyn.html#protein.Compound.check_files">[docs]</a>    <span class="k">def</span> <span class="nf">check_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">files</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if files passed as *args exist</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">src</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;File {0} missing&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">src</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="Ligand"><a class="viewcode-back" href="../pymemdyn.html#protein.Ligand">[docs]</a><span class="k">class</span> <span class="nc">Ligand</span><span class="p">(</span><span class="n">Compound</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;pdb&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">itp</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;itp&quot;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Ligand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;protlig&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">force_field</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ff&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_forces</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Ligand.check_forces"><a class="viewcode-back" href="../pymemdyn.html#protein.Ligand.check_forces">[docs]</a>    <span class="k">def</span> <span class="nf">check_forces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A force field must give a set of forces that matches every atom in</span>
+<span class="sd">        the pdb file. This showed particularly important to the ligands, as they</span>
+<span class="sd">        may vary along a very broad range of atoms</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#The itp matches each residue in the ligand pdb with the force field</span>
+        <span class="n">atoms_def</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">molecules</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itp</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;[ atoms ]&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">atoms_def</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="s2">&quot;[ bonds ]&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">atoms_def</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">atoms_def</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">):</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">molecules</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span> <span class="n">molecules</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="c1">#{&quot;LIG&quot;: {&quot;C1&quot;: &quot;TC1&quot;},}</span>
+                    <span class="n">molecules</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]][</span><span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">]]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">atoms</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1">#The force field matches each atom in the pdb with one line</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">force_field</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">):</span>
+                    <span class="c1">#{&quot;TC1&quot;: &quot;C1&quot;}</span>
+                    <span class="n">atoms</span><span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1">#The pdb have the name of the atom in the third position.</span>
+        <span class="c1">#Here we cross-check all three files to match their harvested values</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">molecules</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]][</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">atoms</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="c1"># Some atoms in the pdb have no definition in the parameters</span>
+                    <span class="c1"># file lig.ff</span>
+                    <span class="c1"># TODO : Maybe add a guessing function, although it might</span>
+                    <span class="c1"># just be better to give a better error message stating</span>
+                    <span class="c1"># to check consistency between the pdb file and the</span>
+                    <span class="c1"># .ff (parameters) file</span>
+                    <span class="k">print</span> <span class="s2">&quot;Atom {0} has no field definition&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="c1">#return False</span>
+                <span class="k">if</span> <span class="n">atoms</span><span class="p">[</span><span class="n">molecules</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]][</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">]]]</span> <span class="ow">not</span> <span class="ow">in</span>\
+                    <span class="n">molecules</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">print</span> <span class="s2">&quot;Atom {0} has a wrong field definition. Check .pdb </span><span class="se">\</span>
+<span class="s2">                    and .ff files consistency&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="k">print</span> <span class="s2">&quot;Atom names in lig.pdb&quot;</span>
+                    <span class="k">print</span> <span class="n">molecules</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                    <span class="k">print</span> <span class="s2">&quot;Atom name in lig.ff&quot;</span>
+                    <span class="k">print</span> <span class="n">atoms</span><span class="p">[</span><span class="n">molecules</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]][</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">]]]</span>
+                    <span class="c1">#return False</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div></div>
+
+
+<div class="viewcode-block" id="CrystalWaters"><a class="viewcode-back" href="../pymemdyn.html#protein.CrystalWaters">[docs]</a><span class="k">class</span> <span class="nc">CrystalWaters</span><span class="p">(</span><span class="n">Compound</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;hoh.pdb&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">itp</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;itp&quot;</span><span class="p">,</span> <span class="s2">&quot;hoh.itp&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CrystalWaters</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;wation&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">posre_itp</span> <span class="o">=</span> <span class="s2">&quot;posre_hoh.itp&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setITP</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_wats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_waters</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CrystalWaters.setWaters"><a class="viewcode-back" href="../pymemdyn.html#protein.CrystalWaters.setWaters">[docs]</a>    <span class="k">def</span> <span class="nf">setWaters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set crystal waters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_wats</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="CrystalWaters.getWaters"><a class="viewcode-back" href="../pymemdyn.html#protein.CrystalWaters.getWaters">[docs]</a>    <span class="k">def</span> <span class="nf">getWaters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the crystal waters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_wats</span></div>
+    <span class="n">number</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">getWaters</span><span class="p">,</span> <span class="n">setWaters</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CrystalWaters.count_waters"><a class="viewcode-back" href="../pymemdyn.html#protein.CrystalWaters.count_waters">[docs]</a>    <span class="k">def</span> <span class="nf">count_waters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       Count and set the number of crystal waters in the pdb</span>
+<span class="sd">       &quot;&quot;&quot;</span>
+<span class="c1">#       return len([x for x in open(self.pdb, &quot;r&quot;) if &quot;OW&quot; in x])</span>
+       <span class="k">return</span> <span class="nb">len</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;HOH&quot;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span><span class="o">/</span><span class="mi">3</span></div>
+
+    <span class="k">def</span> <span class="nf">_setITP</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the itp to this structure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+            <span class="s2">&quot;; position restraints for crystallographic waters (resn HOH)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;[ position_restraints ]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;;  i funct       fcx        fcy        fcz&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;   1    1       1000       1000       1000&quot;</span><span class="p">])</span>
+
+        <span class="n">tgt</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">posre_itp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">tgt</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">tgt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Ions"><a class="viewcode-back" href="../pymemdyn.html#protein.Ions">[docs]</a><span class="k">class</span> <span class="nc">Ions</span><span class="p">(</span><span class="n">Compound</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;ions_local.pdb&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">itp</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;itp&quot;</span><span class="p">,</span> <span class="s2">&quot;ions_local.itp&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Ions</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;wation&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">posre_itp</span> <span class="o">=</span> <span class="s2">&quot;posre_ion.itp&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setITP</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_ions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_ions</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Ions.setIons"><a class="viewcode-back" href="../pymemdyn.html#protein.Ions.setIons">[docs]</a>    <span class="k">def</span> <span class="nf">setIons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the crystal ions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_ions</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="Ions.getIons"><a class="viewcode-back" href="../pymemdyn.html#protein.Ions.getIons">[docs]</a>    <span class="k">def</span> <span class="nf">getIons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the crystal ions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_ions</span></div>
+    <span class="n">number</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">getIons</span><span class="p">,</span> <span class="n">setIons</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Ions.count_ions"><a class="viewcode-back" href="../pymemdyn.html#protein.Ions.count_ions">[docs]</a>    <span class="k">def</span> <span class="nf">count_ions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       Count and set the number of ions in the pdb</span>
+<span class="sd">       &quot;&quot;&quot;</span>
+       <span class="n">ions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NA&quot;</span><span class="p">,</span> <span class="s2">&quot;CA&quot;</span><span class="p">,</span> <span class="s2">&quot;MG&quot;</span><span class="p">,</span> <span class="s2">&quot;CL&quot;</span><span class="p">,</span> <span class="s2">&quot;ZN&quot;</span><span class="p">]</span>
+       <span class="n">ion_count</span> <span class="o">=</span> <span class="mi">0</span>
+       <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+           <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+               <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="n">ions</span><span class="p">:</span>
+                   <span class="n">ion_count</span> <span class="o">+=</span> <span class="mi">1</span>
+       <span class="k">return</span> <span class="n">ion_count</span></div>
+
+    <span class="k">def</span> <span class="nf">_setITP</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create an itp file for this structure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+            <span class="s2">&quot;; position restraints for ions (resn NA, CA, MG, CL, ZN)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;[ position_restraints ]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;;  i funct       fcx        fcy        fcz&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;   1    1       1000       1000       1000&quot;</span><span class="p">])</span>
+
+        <span class="n">tgt</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">posre_itp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">tgt</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">tgt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Cholesterol"><a class="viewcode-back" href="../pymemdyn.html#protein.Cholesterol">[docs]</a><span class="k">class</span> <span class="nc">Cholesterol</span><span class="p">(</span><span class="n">Compound</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;cho.pdb&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">itp</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;itp&quot;</span><span class="p">,</span> <span class="s2">&quot;cho.itp&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Cholesterol</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;membr&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">posre_itp</span> <span class="o">=</span> <span class="s2">&quot;posre_cho.itp&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setITP</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_pdb</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_cho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_cho</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Cholesterol.setCho"><a class="viewcode-back" href="../pymemdyn.html#protein.Cholesterol.setCho">[docs]</a>    <span class="k">def</span> <span class="nf">setCho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the crystal cholesterol</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_cho</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="Cholesterol.getCho"><a class="viewcode-back" href="../pymemdyn.html#protein.Cholesterol.getCho">[docs]</a>    <span class="k">def</span> <span class="nf">getCho</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the crystal cholesterols</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_cho</span></div>
+    <span class="n">number</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">getCho</span><span class="p">,</span> <span class="n">setCho</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Cholesterol.check_pdb"><a class="viewcode-back" href="../pymemdyn.html#protein.Cholesterol.check_pdb">[docs]</a>    <span class="k">def</span> <span class="nf">check_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       Check the cholesterol file meets some standards</span>
+<span class="sd">       &quot;&quot;&quot;</span>
+       <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span><span class="p">)</span>
+       <span class="n">pdb</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+       <span class="n">pdb_out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+       <span class="n">replacing</span> <span class="o">=</span> <span class="bp">False</span>
+       <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">pdb</span><span class="p">:</span>
+           <span class="n">new_line</span> <span class="o">=</span> <span class="n">line</span>
+           <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+               <span class="c1">#Ensure the cholesterol is labeled as CHO</span>
+               <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;CHO&quot;</span><span class="p">:</span>
+                   <span class="n">replacing</span> <span class="o">=</span> <span class="bp">True</span>
+                   <span class="n">new_line</span> <span class="o">=</span> <span class="n">new_line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;CHO&quot;</span><span class="p">)</span>
+           <span class="n">pdb_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">new_line</span><span class="p">)</span>
+
+       <span class="k">if</span> <span class="n">replacing</span><span class="p">:</span> <span class="k">print</span> <span class="s2">&quot;Made some CHO replacements in cho.pdb!&quot;</span>
+       <span class="n">pdb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+       <span class="n">pdb_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+       <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Cholesterol.count_cho"><a class="viewcode-back" href="../pymemdyn.html#protein.Cholesterol.count_cho">[docs]</a>    <span class="k">def</span> <span class="nf">count_cho</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       Count and set the number of cho in the pdb</span>
+<span class="sd">       &quot;&quot;&quot;</span>
+       <span class="n">cho_count</span> <span class="o">=</span> <span class="mi">0</span>
+       <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+           <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+               <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;CHO&quot;</span><span class="p">,</span> <span class="s2">&quot;CLR&quot;</span><span class="p">]:</span>
+                   <span class="n">cho_count</span> <span class="o">+=</span> <span class="mi">1</span>
+       <span class="k">return</span> <span class="n">cho_count</span> <span class="o">/</span> <span class="mi">74</span> <span class="c1">#Each CHO has 74 atoms</span></div>
+
+    <span class="k">def</span> <span class="nf">_setITP</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the itp to this structure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+            <span class="s2">&quot;; position restraints for ions (resn CHO)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;[ position_restraints ]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;;  i funct       fcx        fcy        fcz&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;   1    1       1000       1000       1000&quot;</span><span class="p">])</span>
+
+        <span class="n">tgt</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">posre_itp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">tgt</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">tgt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Lipids"><a class="viewcode-back" href="../pymemdyn.html#protein.Lipids">[docs]</a><span class="k">class</span> <span class="nc">Lipids</span><span class="p">(</span><span class="n">Compound</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;lip.pdb&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">itp</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;itp&quot;</span><span class="p">,</span> <span class="s2">&quot;lip.itp&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Lipids</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;membr&quot;</span>
+
+<span class="c1">#        self.posre_itp = &quot;posre_lip.itp&quot;</span>
+<span class="c1">#        self._setITP()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_lip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_lip</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Lipids.setLip"><a class="viewcode-back" href="../pymemdyn.html#protein.Lipids.setLip">[docs]</a>    <span class="k">def</span> <span class="nf">setLip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the crystal lipids</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_lip</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="Lipids.getLip"><a class="viewcode-back" href="../pymemdyn.html#protein.Lipids.getLip">[docs]</a>    <span class="k">def</span> <span class="nf">getLip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the crystal lipids</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_lip</span></div>
+    <span class="n">number</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">getLip</span><span class="p">,</span> <span class="n">setLip</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Lipids.count_lip"><a class="viewcode-back" href="../pymemdyn.html#protein.Lipids.count_lip">[docs]</a>    <span class="k">def</span> <span class="nf">count_lip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       Count and set the number of lipids in the pdb</span>
+<span class="sd">       &quot;&quot;&quot;</span>
+       <span class="n">lip_count</span> <span class="o">=</span> <span class="p">[]</span>
+       <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+           <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+               <span class="k">if</span> <span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;LIP&quot;</span> <span class="ow">and</span>
+                   <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span>
+                   <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">4</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lip_count</span><span class="p">):</span>
+                   <span class="c1">#Lipid + number + new</span>
+                   <span class="n">lip_count</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">4</span><span class="p">])</span>
+       <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">lip_count</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_setITP</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the itp to this structure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+            <span class="s2">&quot;; position restraints for lipids (resn LIP)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;[ position_restraints ]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;;  i funct       fcx        fcy        fcz&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;   1    1       1000       1000       1000&quot;</span><span class="p">])</span>
+
+        <span class="n">tgt</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">posre_itp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">tgt</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">tgt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Alosteric"><a class="viewcode-back" href="../pymemdyn.html#protein.Alosteric">[docs]</a><span class="k">class</span> <span class="nc">Alosteric</span><span class="p">(</span><span class="n">Compound</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a compound that goes as a ligand but it&#39;s placed in an alosteric</span>
+<span class="sd">    site rather than an orthosteric one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;pdb&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">itp</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;itp&quot;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Alosteric</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_pdb</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">force_field</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ff&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_itp</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="s2">&quot;protlig&quot;</span>
+
+<div class="viewcode-block" id="Alosteric.check_pdb"><a class="viewcode-back" href="../pymemdyn.html#protein.Alosteric.check_pdb">[docs]</a>    <span class="k">def</span> <span class="nf">check_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       Check the alosteric file meets some standards</span>
+<span class="sd">       &quot;&quot;&quot;</span>
+       <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span><span class="p">)</span>
+       <span class="n">pdb</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+       <span class="n">pdb_out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+       <span class="n">replacing</span> <span class="o">=</span> <span class="bp">False</span>
+       <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">pdb</span><span class="p">:</span>
+           <span class="n">new_line</span> <span class="o">=</span> <span class="n">line</span>
+           <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+               <span class="c1">#Ensure the alosteric compound is labeled as ALO</span>
+               <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;ALO&quot;</span><span class="p">:</span>
+                   <span class="n">replacing</span> <span class="o">=</span> <span class="bp">True</span>
+                   <span class="n">new_line</span> <span class="o">=</span> <span class="n">new_line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;ALO&quot;</span><span class="p">)</span>
+           <span class="n">pdb_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">new_line</span><span class="p">)</span>
+
+       <span class="k">if</span> <span class="n">replacing</span><span class="p">:</span> <span class="k">print</span> <span class="s2">&quot;Made some ALO replacements in </span><span class="si">%s</span><span class="s2">!&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span>
+       <span class="n">pdb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+       <span class="n">pdb_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+       <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Alosteric.check_itp"><a class="viewcode-back" href="../pymemdyn.html#protein.Alosteric.check_itp">[docs]</a>    <span class="k">def</span> <span class="nf">check_itp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check the force field is correct</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">itp</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span><span class="p">)</span>
+        <span class="n">itp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itp</span> <span class="o">+</span> <span class="s2">&quot;~&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">itp_out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itp</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+ 
+        <span class="n">molecule_type</span> <span class="o">=</span> <span class="n">atoms</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">itp</span><span class="p">:</span>
+            <span class="n">new_line</span> <span class="o">=</span> <span class="n">line</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;[ moleculetype ]&quot;</span><span class="p">):</span> <span class="n">molecule_type</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">molecule_type</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">):</span> <span class="c1">#Not a comment</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="c1">#Change the user name to &quot;alo&quot;</span>
+                        <span class="n">new_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;alo&quot;</span><span class="p">)</span>
+                        <span class="n">molecule_type</span> <span class="o">=</span> <span class="bp">False</span>
+
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;[ &quot;</span><span class="p">):</span> <span class="c1">#Next section (after atoms) reached</span>
+                <span class="n">atoms</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;[ atoms ]&quot;</span><span class="p">):</span> <span class="n">atoms</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">atoms</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+                        <span class="c1">#Change the name of the compound to &quot;ALO&quot;</span>
+                        <span class="n">new_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;ALO&quot;</span><span class="p">)</span>
+            <span class="n">itp_out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">new_line</span><span class="p">)</span>
+
+        <span class="n">itp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">itp_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+  
+        <span class="k">return</span> <span class="bp">True</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Esguerra, Bello, Teran.
+
+    </p>
+  </div>
+  
+   
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

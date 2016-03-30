@@ -1,0 +1,409 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>queue &mdash; pymemdyn 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="pymemdyn 1.4 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pymemdyn
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pymemdyn.html">pymemdyn package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">pymemdyn</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>queue</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for queue</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">settings</span>
+
+
+<div class="viewcode-block" id="Queue"><a class="viewcode-back" href="../pymemdyn.html#queue.Queue">[docs]</a><span class="k">class</span> <span class="nc">Queue</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Default number of processors, nodes and time alloted in cluster.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_proc</span>   <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;QUEUE_NUM_PROCS&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">8</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_node</span>   <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;QUEUE_NUM_NODES&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_time</span>   <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;QUEUE_MAX_TIME&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;72:00:00&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ntasks</span>     <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;QUEUE_NUM_TASK&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">8</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ntaskpern</span>  <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;QUEUE_NTS_NODE&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">8</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh</span> <span class="o">=</span> <span class="s2">&quot;./mdrun.sh&quot;</span>
+
+<div class="viewcode-block" id="Queue.set_mdrun"><a class="viewcode-back" href="../pymemdyn.html#queue.Queue.set_mdrun">[docs]</a>    <span class="k">def</span> <span class="nf">set_mdrun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the md_run command</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mdrun</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="Queue.get_mdrun"><a class="viewcode-back" href="../pymemdyn.html#queue.Queue.get_mdrun">[docs]</a>    <span class="k">def</span> <span class="nf">get_mdrun</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mdrun</span></div>
+    <span class="n">mdrun</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_mdrun</span><span class="p">,</span> <span class="n">set_mdrun</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NoQueue"><a class="viewcode-back" href="../pymemdyn.html#queue.NoQueue">[docs]</a><span class="k">class</span> <span class="nc">NoQueue</span><span class="p">(</span><span class="n">Queue</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dummy queue when no queue is selected</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NoQueue</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mdrun</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GROMACS_PATH</span><span class="p">,</span> <span class="s2">&quot;mdrun&quot;</span><span class="p">)</span>
+<span class="c1">#        self._mdrun = os.path.join(settings.GROMACS_PATH, &quot;mdrun_mpi&quot;) #For triolith</span>
+
+<div class="viewcode-block" id="NoQueue.make_script"><a class="viewcode-back" href="../pymemdyn.html#queue.NoQueue.make_script">[docs]</a>    <span class="k">def</span> <span class="nf">make_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workdir</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        workdir is the path to the binary executable</span>
+<span class="sd">        options is a list with all the options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;#!/bin/bash</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;cd </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">workdir</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdrun</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">)))</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">,</span> <span class="mo">0755</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div></div>
+
+
+<div class="viewcode-block" id="Slurm"><a class="viewcode-back" href="../pymemdyn.html#queue.Slurm">[docs]</a><span class="k">class</span> <span class="nc">Slurm</span><span class="p">(</span><span class="n">Queue</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Queue for SLURM systems</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Slurm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;srun&quot;</span><span class="p">,</span>
+<span class="c1">#            &quot;--ntasks=%s&quot; % str(self.ntasks),</span>
+<span class="c1">#            &quot;--ntasks-per-node=%s&quot; % str(self.ntaskpern),</span>
+<span class="c1">#        self.command = [&quot;srun&quot;,</span>
+<span class="c1">#            &quot;-n&quot;, str(self.num_node),</span>
+            <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_proc</span><span class="p">),</span>
+            <span class="s2">&quot;-t&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_time</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">]</span>
+
+<span class="c1">#        self._mdrun = os.path.join(settings.GROMACS_PATH, &quot;mdrun_slurm&quot;) #FOR CUELEBRE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mdrun</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GROMACS_PATH</span><span class="p">,</span> <span class="s2">&quot;mdrun&quot;</span><span class="p">)</span> <span class="c1"># FOR CSB</span>
+<span class="c1">#        self._mdrun = os.path.join(settings.GROMACS_PATH, &quot;mdrun_mpi&quot;) # FOR triolith</span>
+
+<div class="viewcode-block" id="Slurm.make_script"><a class="viewcode-back" href="../pymemdyn.html#queue.Slurm.make_script">[docs]</a>    <span class="k">def</span> <span class="nf">make_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workdir</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        workdir is the path to the binary executable</span>
+<span class="sd">        options is a list with all options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;#!/bin/bash</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1">#        sh.write(&quot;source /home/apps/gromacs-4.6.5/bin/GMXRC\n&quot;)</span>
+<span class="c1">#        sh.write(&quot;source /home/apps/bin/apps.sh\n&quot;)</span>
+<span class="c1">#        sh.write(&quot;module load openmpi-x86_64\n&quot;)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;cd </span><span class="si">%s</span><span class="s2">  </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">workdir</span><span class="p">)</span>
+<span class="c1">#        sh.write(&quot;%s -ntmpi 16 -ntomp 1  %s -v&amp;&gt; mdrun.log\n&quot; % (self.mdrun, &quot; &quot;.join(options)))</span>
+<span class="c1">#        sh.write(&quot;%s -nt 8 %s -v&amp;&gt; mdrun.log\n&quot; % (self.mdrun, &quot; &quot;.join(options)))</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> -v&amp;&gt; mdrun.log</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdrun</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">)))</span>
+<span class="c1">#        sh.write(&quot;mpprun %s %s -v&amp;&gt; mdrun.log\n&quot; % (self.mdrun, &quot; &quot;.join(options))) # Triolith needs mpprun</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">,</span> <span class="mo">0755</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div></div>
+
+
+<div class="viewcode-block" id="PBS"><a class="viewcode-back" href="../pymemdyn.html#queue.PBS">[docs]</a><span class="k">class</span> <span class="nc">PBS</span><span class="p">(</span><span class="n">Queue</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Queue for PBS systems</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PBS</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="sd">&#39;&#39;&#39;Setting the command to run mdrun in pbs queue with mpi&#39;&#39;&#39;</span>
+        <span class="c1"># These values are here for reference, doesn&#39;t do NOTHING      #</span>
+        <span class="c1"># Calling file run.sh should resemble this lines               #</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">=</span> <span class="mi">1</span>                                             <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc_per_node</span> <span class="o">=</span> <span class="mi">8</span>                                         <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_time</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;QUEUE_MAX_TIME&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;72:00:00&quot;</span><span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_cpu_time</span> <span class="o">=</span> <span class="s2">&quot;72:00:00&quot;</span>                                 <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_mem</span> <span class="o">=</span> <span class="s2">&quot;12gb&quot;</span>                                          <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;qsub&quot;</span><span class="p">,</span>                                        <span class="c1">#</span>
+            <span class="s2">&quot;-nodes=</span><span class="si">%d</span><span class="s2">:ppn=</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_per_node</span><span class="p">),</span> <span class="c1">#</span>
+            <span class="s2">&quot;-walltime=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_time</span><span class="p">,</span>                            <span class="c1">#</span>
+            <span class="s2">&quot;-cput=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_cpu_time</span><span class="p">,</span>                            <span class="c1">#</span>
+            <span class="s2">&quot;-mem=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_mem</span><span class="p">,</span>                                  <span class="c1">#</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">]</span>                                                   <span class="c1">#</span>
+                                                                       <span class="c1">#</span>
+        <span class="c1"># XXX ##########################################################</span>
+
+<span class="c1">#        self._mdrun=os.path.join(settings.GROMACS_PATH, &quot;mdrun_mpi&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mdrun</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GROMACS_PATH</span><span class="p">,</span> <span class="s2">&quot;mdrun_&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">]</span>
+
+<div class="viewcode-block" id="PBS.make_script"><a class="viewcode-back" href="../pymemdyn.html#queue.PBS.make_script">[docs]</a>    <span class="k">def</span> <span class="nf">make_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workdir</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        PBS must load some modules in each node by shell scripts</span>
+<span class="sd">        options is a list with all the options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;#!/bin/bash</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;cd </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">workdir</span><span class="p">))</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;module load gromacs/4.0.5-gige</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;mpirun </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> -v &amp;&gt;mdrun.log</span><span class="se">\n</span><span class="s2">&quot;</span> \
+            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdrun</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">)))</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">,</span> <span class="mo">0755</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div></div>
+
+
+<div class="viewcode-block" id="PBS_IB"><a class="viewcode-back" href="../pymemdyn.html#queue.PBS_IB">[docs]</a><span class="k">class</span> <span class="nc">PBS_IB</span><span class="p">(</span><span class="n">Queue</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PBS</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># USELESS, see class PBS for explanation                            #</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">=</span> <span class="mi">10</span>                                                 <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc_per_node</span> <span class="o">=</span> <span class="mi">4</span>                                              <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_time</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;QUEUE_MAX_TIME&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;08:00:00&quot;</span>   <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_cpu_time</span> <span class="o">=</span> <span class="s2">&quot;320:00:00&quot;</span>                                     <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_mem</span> <span class="o">=</span> <span class="s2">&quot;12gb&quot;</span>                                               <span class="c1">#</span>
+                                                                            <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="p">[</span>                                                    <span class="c1">#</span>
+            <span class="s2">&quot;qsub&quot;</span><span class="p">,</span>                                                         <span class="c1">#</span>
+            <span class="s2">&quot;-l nodes=</span><span class="si">%d</span><span class="s2">:ppn=</span><span class="si">%d</span><span class="s2">:ib&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_per_node</span><span class="p">),</span> <span class="c1">#</span>
+            <span class="s2">&quot;-l walltime=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_time</span><span class="p">,</span>                               <span class="c1">#</span>
+            <span class="s2">&quot;-l cput=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_cpu_time</span><span class="p">,</span>                               <span class="c1">#</span>
+            <span class="s2">&quot;-l mem=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_mem</span><span class="p">,</span>                                     <span class="c1">#</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">]</span>                                                        <span class="c1">#</span>
+        <span class="c1">#####################################################################</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mdrun</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GROMACS_PATH</span><span class="p">,</span> <span class="s2">&quot;mdrun_mpi&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">]</span>
+
+<div class="viewcode-block" id="PBS_IB.make_script"><a class="viewcode-back" href="../pymemdyn.html#queue.PBS_IB.make_script">[docs]</a>    <span class="k">def</span> <span class="nf">make_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workdir</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        PBS must load some modules in each node by shell scripts</span>
+<span class="sd">        options is a list with all the options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;#!/bin/bash</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;cd </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">workdir</span><span class="p">))</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;module load gromacs</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;mpirun </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> -v &amp;&gt;mdrun.log</span><span class="se">\n</span><span class="s2">&quot;</span> \
+            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdrun</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">)))</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">,</span> <span class="mo">0755</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div></div>
+
+
+<div class="viewcode-block" id="Svgd"><a class="viewcode-back" href="../pymemdyn.html#queue.Svgd">[docs]</a><span class="k">class</span> <span class="nc">Svgd</span><span class="p">(</span><span class="n">Queue</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Queue for the PBS system at svgd.cesga.es</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Svgd</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="sd">&#39;&#39;&#39;Setting the command to run mdrun in pbs queue with mpi&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mdrun</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GROMACS_PATH</span><span class="p">,</span> <span class="s2">&quot;mdrun&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Svgd.make_script"><a class="viewcode-back" href="../pymemdyn.html#queue.Svgd.make_script">[docs]</a>    <span class="k">def</span> <span class="nf">make_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workdir</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        PBS must load some modules in each node by shell scripts</span>
+<span class="sd">        options is a list with all the options</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;#!/bin/bash</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;cd </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">workdir</span><span class="p">))</span>
+        <span class="c1"># Somehow impi is loaded, and conflicts with the (see down) tricky way</span>
+        <span class="c1"># of SVGD of dealing with parallel runnings of mdrun through mpich2</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;module unload impi</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;module load mpich2</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;module load gromacs/4.0.7</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># CESGA SVGD has its own tweaks. The mdrun binary &quot;jumps&quot; to mpiexec,</span>
+        <span class="c1"># and call back mdrun with as much nslots (~cores) as reserved in the</span>
+        <span class="c1"># command line calling the whole pipeline, this way:</span>
+        <span class="c1">#  qsub -l num_proc=1,s_rt=01:00:00,s_vmem=1G,h_fsize=1G,arch=amd \</span>
+        <span class="c1">#    -pe mpi 4 run.sh</span>
+        <span class="c1"># That &quot;-pe mpi 4&quot; tells the queue system to allocate 4 cores to run.sh</span>
+        <span class="c1"># and it&#39;s responsability of run.sh (aka the next line) to pass $NSLOTS</span>
+        <span class="c1"># Note that this SVGD uses THE SAME queue system than PBS and PBS_IB,</span>
+        <span class="c1"># but lacks of mpirun executable. Always a pleasure to adjust a queue.</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> -np $NSLOTS </span><span class="si">%s</span><span class="s2"> -v &amp;&gt;mdrun.log</span><span class="se">\n</span><span class="s2">&quot;</span> \
+            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdrun</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">)))</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="p">,</span> <span class="mo">0755</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">True</span></div></div>
+
+
+<div class="viewcode-block" id="Other"><a class="viewcode-back" href="../pymemdyn.html#queue.Other">[docs]</a><span class="k">class</span> <span class="nc">Other</span><span class="p">(</span><span class="n">Queue</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Esguerra, Bello, Teran.
+
+    </p>
+  </div>
+  
+   
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

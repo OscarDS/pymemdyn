@@ -1,0 +1,1511 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pymemdyn package &mdash; pymemdyn 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="pymemdyn 1.4 documentation" href="index.html"/>
+        <link rel="prev" title="Welcome to pymemdyn’s documentation!" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pymemdyn
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">pymemdyn package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-broker">broker module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustersettings-module">clustersettings module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-complex">complex module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-module">example module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-groerrors">groerrors module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gromacs-original-module">gromacs.original module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-gromacs">gromacs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-gromacsmpi">gromacsmpi module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-membrane">membrane module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pre-check-module">pre-check module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-protein">protein module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#queue-faultyincsb-module">queue.faultyincsb module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#queue-original-module">queue.original module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-queue">queue module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-queuempi">queuempi module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#recipes-original-module">recipes.original module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-recipes">recipes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-recipesmpi">recipesmpi module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-run">run module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-db-module">run_db module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-runtests">runtests module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-settings">settings module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-settingsmpi">settingsmpi module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-utils">utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-contents">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">pymemdyn</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>pymemdyn package</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/pymemdyn.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pymemdyn-package">
+<h1>pymemdyn package<a class="headerlink" href="#pymemdyn-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-broker">
+<span id="broker-module"></span><h2>broker module<a class="headerlink" href="#module-broker" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="broker.DjangoDB">
+<em class="property">class </em><code class="descclassname">broker.</code><code class="descname">DjangoDB</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/broker.html#DjangoDB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#broker.DjangoDB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="broker.DjangoDB.dispatch">
+<code class="descname">dispatch</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/broker.html#DjangoDB.dispatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#broker.DjangoDB.dispatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put a message in the <em>last_message</em> column of the table</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="broker.Printing">
+<em class="property">class </em><code class="descclassname">broker.</code><code class="descname">Printing</code><a class="reference internal" href="_modules/broker.html#Printing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#broker.Printing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="broker.Printing.dispatch">
+<code class="descname">dispatch</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/broker.html#Printing.dispatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#broker.Printing.dispatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply print the msg passed</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="clustersettings-module">
+<h2>clustersettings module<a class="headerlink" href="#clustersettings-module" title="Permalink to this headline">¶</a></h2>
+<p>This in itself is a non-functional module.
+It only stores environment variables.</p>
+<span class="target" id="module-clustersettings"></span></div>
+<div class="section" id="module-complex">
+<span id="complex-module"></span><h2>complex module<a class="headerlink" href="#module-complex" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="complex.MembraneComplex">
+<em class="property">class </em><code class="descclassname">complex.</code><code class="descname">MembraneComplex</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/complex.html#MembraneComplex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#complex.MembraneComplex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="complex.MembraneComplex.getComplex">
+<code class="descname">getComplex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/complex.html#MembraneComplex.getComplex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#complex.MembraneComplex.getComplex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="complex.MembraneComplex.getMembrane">
+<code class="descname">getMembrane</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/complex.html#MembraneComplex.getMembrane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#complex.MembraneComplex.getMembrane" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="complex.MembraneComplex.setComplex">
+<code class="descname">setComplex</code><span class="sig-paren">(</span><em>complex</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/complex.html#MembraneComplex.setComplex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#complex.MembraneComplex.setComplex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the complex object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="complex.MembraneComplex.setMembrane">
+<code class="descname">setMembrane</code><span class="sig-paren">(</span><em>membrane</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/complex.html#MembraneComplex.setMembrane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#complex.MembraneComplex.setMembrane" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the membrane pdb file</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="example-module">
+<h2>example module<a class="headerlink" href="#example-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-groerrors">
+<span id="groerrors-module"></span><h2>groerrors module<a class="headerlink" href="#module-groerrors" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="groerrors.GromacsError">
+<em class="property">exception </em><code class="descclassname">groerrors.</code><code class="descname">GromacsError</code><a class="reference internal" href="_modules/groerrors.html#GromacsError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groerrors.GromacsError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.BaseException</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="groerrors.GromacsMessages">
+<em class="property">class </em><code class="descclassname">groerrors.</code><code class="descname">GromacsMessages</code><span class="sig-paren">(</span><em>gro_err=''</em>, <em>command=''</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/groerrors.html#GromacsMessages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groerrors.GromacsMessages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Load an error message and split it along as many properties as
+posible</p>
+<dl class="method">
+<dt id="groerrors.GromacsMessages.check">
+<code class="descname">check</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/groerrors.html#GromacsMessages.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groerrors.GromacsMessages.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the GROMACS error message have any of the known error
+messages. Set the self.error to the value of the error</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="groerrors.GromacsMessages.e">
+<code class="descname">e</code><em class="property"> = {'Can not open file': &lt;class 'groerrors.IOGromacsError'&gt;, 'File input/output error': &lt;class 'groerrors.IOGromacsError'&gt;, 'srun: error: Unable to create job step': &lt;class 'groerrors.IOGromacsError'&gt;}</em><a class="headerlink" href="#groerrors.GromacsMessages.e" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="groerrors.IOGromacsError">
+<em class="property">exception </em><code class="descclassname">groerrors.</code><code class="descname">IOGromacsError</code><span class="sig-paren">(</span><em>command</em>, <em>explain</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/groerrors.html#IOGromacsError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groerrors.IOGromacsError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#groerrors.GromacsError" title="groerrors.GromacsError"><code class="xref py py-class docutils literal"><span class="pre">groerrors.GromacsError</span></code></a></p>
+<p>Exception raised with &#8220;File input/output error&#8221; message</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="groerrors.test_run">
+<code class="descclassname">groerrors.</code><code class="descname">test_run</code><span class="sig-paren">(</span><em>command</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/groerrors.html#test_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#groerrors.test_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="gromacs-original-module">
+<h2>gromacs.original module<a class="headerlink" href="#gromacs-original-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-gromacs">
+<span id="gromacs-module"></span><h2>gromacs module<a class="headerlink" href="#module-gromacs" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="gromacs.Gromacs">
+<em class="property">class </em><code class="descclassname">gromacs.</code><code class="descname">Gromacs</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="gromacs.Gromacs.count_lipids">
+<code class="descname">count_lipids</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.count_lipids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.count_lipids" title="Permalink to this definition">¶</a></dt>
+<dd><p>count_lipids: Counts the lipids in source and writes a target with N4 tags</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.get_charge">
+<code class="descname">get_charge</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.get_charge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.get_charge" title="Permalink to this definition">¶</a></dt>
+<dd><p>get_charge: Gets the total charge of a system using gromacs grompp command</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.get_membrane_complex">
+<code class="descname">get_membrane_complex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.get_membrane_complex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.get_membrane_complex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.get_ndx_groups">
+<code class="descname">get_ndx_groups</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.get_ndx_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.get_ndx_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>get_ndx_groups: Run make_ndx and set the total number of groups found</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.get_ndx_sol">
+<code class="descname">get_ndx_sol</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.get_ndx_sol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.get_ndx_sol" title="Permalink to this definition">¶</a></dt>
+<dd><p>get_ndx_sol: Run make_ndx and set the last number id for SOL found</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.make_ndx">
+<code class="descname">make_ndx</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.make_ndx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.make_ndx" title="Permalink to this definition">¶</a></dt>
+<dd><p>make_ndx: Wraps the make_ndx command tweaking the input to reflect the
+characteristics of the complex</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.make_topol_lipids">
+<code class="descname">make_topol_lipids</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.make_topol_lipids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.make_topol_lipids" title="Permalink to this definition">¶</a></dt>
+<dd><p>make_topol_lipids: Add lipid positions to topol.top</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.manual_log">
+<code class="descname">manual_log</code><span class="sig-paren">(</span><em>command</em>, <em>output</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.manual_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.manual_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>manual_log: Redirect the output to file in command[&#8220;options&#8221;][&#8220;log&#8221;]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gromacs.Gromacs.membrane_complex">
+<code class="descname">membrane_complex</code><a class="headerlink" href="#gromacs.Gromacs.membrane_complex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.passing">
+<code class="descname">passing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.passing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.passing" title="Permalink to this definition">¶</a></dt>
+<dd><p>passing: Do nothing, to respect some orders</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.relax">
+<code class="descname">relax</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.relax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.relax" title="Permalink to this definition">¶</a></dt>
+<dd><p>relax: Relax a protein</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.run_recipe">
+<code class="descname">run_recipe</code><span class="sig-paren">(</span><em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.run_recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.run_recipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>run_recipe: Run recipe for the complex</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.select_recipe">
+<code class="descname">select_recipe</code><span class="sig-paren">(</span><em>stage=''</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.select_recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.select_recipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>select_recipe: Select the appropriate recipe for the complex</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.set_box_sizes">
+<code class="descname">set_box_sizes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.set_box_sizes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.set_box_sizes" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_box_sizes: Set length values for different boxes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.set_chains">
+<code class="descname">set_chains</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.set_chains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.set_chains" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_chains: Set the REAL points of a dimer after protonation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.set_grompp">
+<code class="descname">set_grompp</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.set_grompp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.set_grompp" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_grompp: Copy template files to working dir</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.set_itp">
+<code class="descname">set_itp</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.set_itp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.set_itp" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_itp: Cut a top file to be usable later as itp</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.set_membrane_complex">
+<code class="descname">set_membrane_complex</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.set_membrane_complex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.set_membrane_complex" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_membrane_complex: Sets the monomer object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.set_options">
+<code class="descname">set_options</code><span class="sig-paren">(</span><em>options</em>, <em>breaks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.set_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.set_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_options: Set break options from recipe</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.set_popc">
+<code class="descname">set_popc</code><span class="sig-paren">(</span><em>tgt=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.set_popc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.set_popc" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_popc: Create a pdb file only with the lipid bilayer (POP), no waters.
+Set some measures on the fly (height of the bilayer)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.set_protein_size">
+<code class="descname">set_protein_size</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.set_protein_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.set_protein_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_protein_size: Get the protein maximum base width from a pdb file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.set_stage_init">
+<code class="descname">set_stage_init</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.set_stage_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.set_stage_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_stage_init: Copy a set of files from source to target dir</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.set_steep">
+<code class="descname">set_steep</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.set_steep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.set_steep" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_steep: Copy the template steep.mdp to target dir</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Gromacs.set_water">
+<code class="descname">set_water</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Gromacs.set_water"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Gromacs.set_water" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_water: Create a water layer for a box</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gromacs.Wrapper">
+<em class="property">class </em><code class="descclassname">gromacs.</code><code class="descname">Wrapper</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="gromacs.Wrapper.generate_command">
+<code class="descname">generate_command</code><span class="sig-paren">(</span><em>kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Wrapper.generate_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Wrapper.generate_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate_command: Receive some variables in kwargs, generate
+the appropriate command to be run. Return a set in the form of
+a string &#8220;command -with flags&#8221;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacs.Wrapper.run_command">
+<code class="descname">run_command</code><span class="sig-paren">(</span><em>kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacs.html#Wrapper.run_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacs.Wrapper.run_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>run_command: Run a command that comes in kwargs in a subprocess, and
+return the output as (output, errors)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-gromacsmpi">
+<span id="gromacsmpi-module"></span><h2>gromacsmpi module<a class="headerlink" href="#module-gromacsmpi" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="gromacsmpi.Gromacs">
+<em class="property">class </em><code class="descclassname">gromacsmpi.</code><code class="descname">Gromacs</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.count_lipids">
+<code class="descname">count_lipids</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.count_lipids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.count_lipids" title="Permalink to this definition">¶</a></dt>
+<dd><p>count_lipids: Counts the lipids in source and writes a target with N4 tags</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.get_charge">
+<code class="descname">get_charge</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.get_charge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.get_charge" title="Permalink to this definition">¶</a></dt>
+<dd><p>get_charge: Gets the total charge of a system using gromacs grompp command</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.get_membrane_complex">
+<code class="descname">get_membrane_complex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.get_membrane_complex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.get_membrane_complex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.get_ndx_groups">
+<code class="descname">get_ndx_groups</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.get_ndx_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.get_ndx_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>get_ndx_groups: Run make_ndx and set the total number of groups found</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.get_ndx_sol">
+<code class="descname">get_ndx_sol</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.get_ndx_sol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.get_ndx_sol" title="Permalink to this definition">¶</a></dt>
+<dd><p>get_ndx_sol: Run make_ndx and set the last number id for SOL found</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.make_ndx">
+<code class="descname">make_ndx</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.make_ndx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.make_ndx" title="Permalink to this definition">¶</a></dt>
+<dd><p>make_ndx: Wraps the make_ndx command tweaking the input to reflect the
+characteristics of the complex</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.make_topol_lipids">
+<code class="descname">make_topol_lipids</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.make_topol_lipids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.make_topol_lipids" title="Permalink to this definition">¶</a></dt>
+<dd><p>make_topol_lipids: Add lipid positions to topol.top</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.manual_log">
+<code class="descname">manual_log</code><span class="sig-paren">(</span><em>command</em>, <em>output</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.manual_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.manual_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>manual_log: Redirect the output to file in command[&#8220;options&#8221;][&#8220;log&#8221;]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gromacsmpi.Gromacs.membrane_complex">
+<code class="descname">membrane_complex</code><a class="headerlink" href="#gromacsmpi.Gromacs.membrane_complex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.passing">
+<code class="descname">passing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.passing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.passing" title="Permalink to this definition">¶</a></dt>
+<dd><p>passing: Do nothing, to respect some orders</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.relax">
+<code class="descname">relax</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.relax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.relax" title="Permalink to this definition">¶</a></dt>
+<dd><p>relax: Relax a protein</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.run_recipe">
+<code class="descname">run_recipe</code><span class="sig-paren">(</span><em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.run_recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.run_recipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>run_recipe: Run recipe for the complex</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.select_recipe">
+<code class="descname">select_recipe</code><span class="sig-paren">(</span><em>stage=''</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.select_recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.select_recipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>select_recipe: Select the appropriate recipe for the complex</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.set_box_sizes">
+<code class="descname">set_box_sizes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.set_box_sizes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.set_box_sizes" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_box_sizes: Set length values for different boxes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.set_chains">
+<code class="descname">set_chains</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.set_chains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.set_chains" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_chains: Set the REAL points of a dimer after protonation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.set_grompp">
+<code class="descname">set_grompp</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.set_grompp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.set_grompp" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_grompp: Copy template files to working dir</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.set_itp">
+<code class="descname">set_itp</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.set_itp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.set_itp" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_itp: Cut a top file to be usable later as itp</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.set_membrane_complex">
+<code class="descname">set_membrane_complex</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.set_membrane_complex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.set_membrane_complex" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_membrane_complex: Sets the monomer object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.set_options">
+<code class="descname">set_options</code><span class="sig-paren">(</span><em>options</em>, <em>breaks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.set_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.set_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_options: Set break options from recipe</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.set_popc">
+<code class="descname">set_popc</code><span class="sig-paren">(</span><em>tgt=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.set_popc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.set_popc" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_popc: Create a pdb file only with the lipid bilayer (POP), no waters.
+Set some measures on the fly (height of the bilayer)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.set_protein_size">
+<code class="descname">set_protein_size</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.set_protein_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.set_protein_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_protein_size: Get the protein maximum base width from a pdb file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.set_stage_init">
+<code class="descname">set_stage_init</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.set_stage_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.set_stage_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_stage_init: Copy a set of files from source to target dir</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.set_steep">
+<code class="descname">set_steep</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.set_steep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.set_steep" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_steep: Copy the template steep.mdp to target dir</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Gromacs.set_water">
+<code class="descname">set_water</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Gromacs.set_water"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Gromacs.set_water" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_water: Create a water layer for a box</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gromacsmpi.Wrapper">
+<em class="property">class </em><code class="descclassname">gromacsmpi.</code><code class="descname">Wrapper</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="gromacsmpi.Wrapper.generate_command">
+<code class="descname">generate_command</code><span class="sig-paren">(</span><em>kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Wrapper.generate_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Wrapper.generate_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate_command: Receive some variables in kwargs, generate
+the appropriate command to be run. Return a set in the form of
+a string &#8220;command -with flags&#8221;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gromacsmpi.Wrapper.run_command">
+<code class="descname">run_command</code><span class="sig-paren">(</span><em>kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gromacsmpi.html#Wrapper.run_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gromacsmpi.Wrapper.run_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>run_command: Run a command that comes in kwargs in a subprocess, and
+return the output as (output, errors)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-membrane">
+<span id="membrane-module"></span><h2>membrane module<a class="headerlink" href="#module-membrane" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="membrane.Membrane">
+<em class="property">class </em><code class="descclassname">membrane.</code><code class="descname">Membrane</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/membrane.html#Membrane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#membrane.Membrane" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Set the characteristics of the membrane in the complex.</p>
+<dl class="method">
+<dt id="membrane.Membrane.set_nanom">
+<code class="descname">set_nanom</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/membrane.html#Membrane.set_nanom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#membrane.Membrane.set_nanom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert some measurements to nanometers to comply with GROMACS units.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="pre-check-module">
+<h2>pre-check module<a class="headerlink" href="#pre-check-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-protein">
+<span id="protein-module"></span><h2>protein module<a class="headerlink" href="#module-protein" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="protein.Alosteric">
+<em class="property">class </em><code class="descclassname">protein.</code><code class="descname">Alosteric</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Alosteric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Alosteric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#protein.Compound" title="protein.Compound"><code class="xref py py-class docutils literal"><span class="pre">protein.Compound</span></code></a></p>
+<p>This is a compound that goes as a ligand but it&#8217;s placed in an alosteric
+site rather than an orthosteric one.</p>
+<dl class="method">
+<dt id="protein.Alosteric.check_itp">
+<code class="descname">check_itp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Alosteric.check_itp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Alosteric.check_itp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the force field is correct</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.Alosteric.check_pdb">
+<code class="descname">check_pdb</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Alosteric.check_pdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Alosteric.check_pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the alosteric file meets some standards</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="protein.Cholesterol">
+<em class="property">class </em><code class="descclassname">protein.</code><code class="descname">Cholesterol</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Cholesterol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Cholesterol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#protein.Compound" title="protein.Compound"><code class="xref py py-class docutils literal"><span class="pre">protein.Compound</span></code></a></p>
+<dl class="method">
+<dt id="protein.Cholesterol.check_pdb">
+<code class="descname">check_pdb</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Cholesterol.check_pdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Cholesterol.check_pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the cholesterol file meets some standards</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.Cholesterol.count_cho">
+<code class="descname">count_cho</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Cholesterol.count_cho"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Cholesterol.count_cho" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count and set the number of cho in the pdb</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.Cholesterol.getCho">
+<code class="descname">getCho</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Cholesterol.getCho"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Cholesterol.getCho" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the crystal cholesterols</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="protein.Cholesterol.number">
+<code class="descname">number</code><a class="headerlink" href="#protein.Cholesterol.number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the crystal cholesterols</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.Cholesterol.setCho">
+<code class="descname">setCho</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Cholesterol.setCho"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Cholesterol.setCho" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the crystal cholesterol</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="protein.Compound">
+<em class="property">class </em><code class="descclassname">protein.</code><code class="descname">Compound</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Compound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Compound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This is a super-class to provide common functions to added compounds</p>
+<dl class="method">
+<dt id="protein.Compound.check_files">
+<code class="descname">check_files</code><span class="sig-paren">(</span><em>*files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Compound.check_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Compound.check_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if files passed as <a href="#id1"><span class="problematic" id="id2">*</span></a>args exist</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="protein.CrystalWaters">
+<em class="property">class </em><code class="descclassname">protein.</code><code class="descname">CrystalWaters</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#CrystalWaters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.CrystalWaters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#protein.Compound" title="protein.Compound"><code class="xref py py-class docutils literal"><span class="pre">protein.Compound</span></code></a></p>
+<dl class="method">
+<dt id="protein.CrystalWaters.count_waters">
+<code class="descname">count_waters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#CrystalWaters.count_waters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.CrystalWaters.count_waters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count and set the number of crystal waters in the pdb</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.CrystalWaters.getWaters">
+<code class="descname">getWaters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#CrystalWaters.getWaters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.CrystalWaters.getWaters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the crystal waters</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="protein.CrystalWaters.number">
+<code class="descname">number</code><a class="headerlink" href="#protein.CrystalWaters.number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the crystal waters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.CrystalWaters.setWaters">
+<code class="descname">setWaters</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#CrystalWaters.setWaters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.CrystalWaters.setWaters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set crystal waters</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="protein.Dimer">
+<em class="property">class </em><code class="descclassname">protein.</code><code class="descname">Dimer</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Dimer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Dimer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#protein.Monomer" title="protein.Monomer"><code class="xref py py-class docutils literal"><span class="pre">protein.Monomer</span></code></a></p>
+<dl class="method">
+<dt id="protein.Dimer.delete_chain">
+<code class="descname">delete_chain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Dimer.delete_chain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Dimer.delete_chain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overload the delete_chain method from Monomer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="protein.Ions">
+<em class="property">class </em><code class="descclassname">protein.</code><code class="descname">Ions</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Ions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Ions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#protein.Compound" title="protein.Compound"><code class="xref py py-class docutils literal"><span class="pre">protein.Compound</span></code></a></p>
+<dl class="method">
+<dt id="protein.Ions.count_ions">
+<code class="descname">count_ions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Ions.count_ions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Ions.count_ions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count and set the number of ions in the pdb</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.Ions.getIons">
+<code class="descname">getIons</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Ions.getIons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Ions.getIons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the crystal ions</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="protein.Ions.number">
+<code class="descname">number</code><a class="headerlink" href="#protein.Ions.number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the crystal ions</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.Ions.setIons">
+<code class="descname">setIons</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Ions.setIons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Ions.setIons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the crystal ions</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="protein.Ligand">
+<em class="property">class </em><code class="descclassname">protein.</code><code class="descname">Ligand</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Ligand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Ligand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#protein.Compound" title="protein.Compound"><code class="xref py py-class docutils literal"><span class="pre">protein.Compound</span></code></a></p>
+<dl class="method">
+<dt id="protein.Ligand.check_forces">
+<code class="descname">check_forces</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Ligand.check_forces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Ligand.check_forces" title="Permalink to this definition">¶</a></dt>
+<dd><p>A force field must give a set of forces that matches every atom in
+the pdb file. This showed particularly important to the ligands, as they
+may vary along a very broad range of atoms</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="protein.Lipids">
+<em class="property">class </em><code class="descclassname">protein.</code><code class="descname">Lipids</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Lipids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Lipids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#protein.Compound" title="protein.Compound"><code class="xref py py-class docutils literal"><span class="pre">protein.Compound</span></code></a></p>
+<dl class="method">
+<dt id="protein.Lipids.count_lip">
+<code class="descname">count_lip</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Lipids.count_lip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Lipids.count_lip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count and set the number of lipids in the pdb</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.Lipids.getLip">
+<code class="descname">getLip</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Lipids.getLip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Lipids.getLip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the crystal lipids</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="protein.Lipids.number">
+<code class="descname">number</code><a class="headerlink" href="#protein.Lipids.number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the crystal lipids</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.Lipids.setLip">
+<code class="descname">setLip</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Lipids.setLip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Lipids.setLip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the crystal lipids</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="protein.Monomer">
+<em class="property">class </em><code class="descclassname">protein.</code><code class="descname">Monomer</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Monomer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Monomer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="protein.Monomer.delete_chain">
+<code class="descname">delete_chain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Monomer.delete_chain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Monomer.delete_chain" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDBs which have a chain column mess up with pdb2gmx, creating
+an unsuitable protein.itp file by naming the protein ie &#8220;Protein_A&#8221;.
+Here we remove the chain value</p>
+<p>According to <a class="reference external" href="http://www.wwpdb.org/documentation/format33/sect9.html">http://www.wwpdb.org/documentation/format33/sect9.html</a>,
+the chain value is in column 22</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="protein.Protein">
+<em class="property">class </em><code class="descclassname">protein.</code><code class="descname">Protein</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Protein"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Protein" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="protein.Protein.check_number_of_chains">
+<code class="descname">check_number_of_chains</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#Protein.check_number_of_chains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.Protein.check_number_of_chains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if a PDB is a Monomer or a Dimer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="protein.ProteinComplex">
+<em class="property">class </em><code class="descclassname">protein.</code><code class="descname">ProteinComplex</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="protein.ProteinComplex.getAlosteric">
+<code class="descname">getAlosteric</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex.getAlosteric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex.getAlosteric" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="protein.ProteinComplex.getCho">
+<code class="descname">getCho</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex.getCho"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex.getCho" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="protein.ProteinComplex.getIons">
+<code class="descname">getIons</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex.getIons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex.getIons" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="protein.ProteinComplex.getLigand">
+<code class="descname">getLigand</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex.getLigand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex.getLigand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="protein.ProteinComplex.getMonomer">
+<code class="descname">getMonomer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex.getMonomer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex.getMonomer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="protein.ProteinComplex.getWaters">
+<code class="descname">getWaters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex.getWaters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex.getWaters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="protein.ProteinComplex.setAlosteric">
+<code class="descname">setAlosteric</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex.setAlosteric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex.setAlosteric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the alosteric object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.ProteinComplex.setCho">
+<code class="descname">setCho</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex.setCho"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex.setCho" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the cholesterol object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.ProteinComplex.setIons">
+<code class="descname">setIons</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex.setIons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex.setIons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the ions object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.ProteinComplex.setLigand">
+<code class="descname">setLigand</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex.setLigand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex.setLigand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the ligand object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.ProteinComplex.setMonomer">
+<code class="descname">setMonomer</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex.setMonomer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex.setMonomer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the monomer object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.ProteinComplex.setWaters">
+<code class="descname">setWaters</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex.setWaters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex.setWaters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the crystal waters object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="protein.ProteinComplex.set_nanom">
+<code class="descname">set_nanom</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/protein.html#ProteinComplex.set_nanom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#protein.ProteinComplex.set_nanom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert dimension measurements to nanometers for GROMACS</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="queue-faultyincsb-module">
+<h2>queue.faultyincsb module<a class="headerlink" href="#queue-faultyincsb-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="queue-original-module">
+<h2>queue.original module<a class="headerlink" href="#queue-original-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-queue">
+<span id="queue-module"></span><h2>queue module<a class="headerlink" href="#module-queue" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="queue.NoQueue">
+<em class="property">class </em><code class="descclassname">queue.</code><code class="descname">NoQueue</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queue.html#NoQueue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.NoQueue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#queue.Queue" title="queue.Queue"><code class="xref py py-class docutils literal"><span class="pre">queue.Queue</span></code></a></p>
+<p>Dummy queue when no queue is selected</p>
+<dl class="method">
+<dt id="queue.NoQueue.make_script">
+<code class="descname">make_script</code><span class="sig-paren">(</span><em>workdir</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queue.html#NoQueue.make_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.NoQueue.make_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>workdir is the path to the binary executable
+options is a list with all the options</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="queue.Other">
+<em class="property">class </em><code class="descclassname">queue.</code><code class="descname">Other</code><a class="reference internal" href="_modules/queue.html#Other"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.Other" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#queue.Queue" title="queue.Queue"><code class="xref py py-class docutils literal"><span class="pre">queue.Queue</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="queue.PBS">
+<em class="property">class </em><code class="descclassname">queue.</code><code class="descname">PBS</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queue.html#PBS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.PBS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#queue.Queue" title="queue.Queue"><code class="xref py py-class docutils literal"><span class="pre">queue.Queue</span></code></a></p>
+<p>Queue for PBS systems</p>
+<dl class="method">
+<dt id="queue.PBS.make_script">
+<code class="descname">make_script</code><span class="sig-paren">(</span><em>workdir</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queue.html#PBS.make_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.PBS.make_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>PBS must load some modules in each node by shell scripts
+options is a list with all the options</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="queue.PBS_IB">
+<em class="property">class </em><code class="descclassname">queue.</code><code class="descname">PBS_IB</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queue.html#PBS_IB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.PBS_IB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#queue.Queue" title="queue.Queue"><code class="xref py py-class docutils literal"><span class="pre">queue.Queue</span></code></a></p>
+<dl class="method">
+<dt id="queue.PBS_IB.make_script">
+<code class="descname">make_script</code><span class="sig-paren">(</span><em>workdir</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queue.html#PBS_IB.make_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.PBS_IB.make_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>PBS must load some modules in each node by shell scripts
+options is a list with all the options</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="queue.Queue">
+<em class="property">class </em><code class="descclassname">queue.</code><code class="descname">Queue</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queue.html#Queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.Queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="queue.Queue.get_mdrun">
+<code class="descname">get_mdrun</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/queue.html#Queue.get_mdrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.Queue.get_mdrun" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="queue.Queue.mdrun">
+<code class="descname">mdrun</code><a class="headerlink" href="#queue.Queue.mdrun" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="queue.Queue.set_mdrun">
+<code class="descname">set_mdrun</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queue.html#Queue.set_mdrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.Queue.set_mdrun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the md_run command</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="queue.Slurm">
+<em class="property">class </em><code class="descclassname">queue.</code><code class="descname">Slurm</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queue.html#Slurm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.Slurm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#queue.Queue" title="queue.Queue"><code class="xref py py-class docutils literal"><span class="pre">queue.Queue</span></code></a></p>
+<p>Queue for SLURM systems</p>
+<dl class="method">
+<dt id="queue.Slurm.make_script">
+<code class="descname">make_script</code><span class="sig-paren">(</span><em>workdir</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queue.html#Slurm.make_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.Slurm.make_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>workdir is the path to the binary executable
+options is a list with all options</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="queue.Svgd">
+<em class="property">class </em><code class="descclassname">queue.</code><code class="descname">Svgd</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queue.html#Svgd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.Svgd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#queue.Queue" title="queue.Queue"><code class="xref py py-class docutils literal"><span class="pre">queue.Queue</span></code></a></p>
+<p>Queue for the PBS system at svgd.cesga.es</p>
+<dl class="method">
+<dt id="queue.Svgd.make_script">
+<code class="descname">make_script</code><span class="sig-paren">(</span><em>workdir</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queue.html#Svgd.make_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queue.Svgd.make_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>PBS must load some modules in each node by shell scripts
+options is a list with all the options</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-queuempi">
+<span id="queuempi-module"></span><h2>queuempi module<a class="headerlink" href="#module-queuempi" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="queuempi.NoQueue">
+<em class="property">class </em><code class="descclassname">queuempi.</code><code class="descname">NoQueue</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queuempi.html#NoQueue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.NoQueue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#queuempi.Queue" title="queuempi.Queue"><code class="xref py py-class docutils literal"><span class="pre">queuempi.Queue</span></code></a></p>
+<p>Dummy queue when no queue is selected</p>
+<dl class="method">
+<dt id="queuempi.NoQueue.make_script">
+<code class="descname">make_script</code><span class="sig-paren">(</span><em>workdir</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queuempi.html#NoQueue.make_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.NoQueue.make_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>workdir is the path to the binary executable
+options is a list with all the options</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="queuempi.Other">
+<em class="property">class </em><code class="descclassname">queuempi.</code><code class="descname">Other</code><a class="reference internal" href="_modules/queuempi.html#Other"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.Other" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#queuempi.Queue" title="queuempi.Queue"><code class="xref py py-class docutils literal"><span class="pre">queuempi.Queue</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="queuempi.PBS">
+<em class="property">class </em><code class="descclassname">queuempi.</code><code class="descname">PBS</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queuempi.html#PBS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.PBS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#queuempi.Queue" title="queuempi.Queue"><code class="xref py py-class docutils literal"><span class="pre">queuempi.Queue</span></code></a></p>
+<p>Queue for PBS systems</p>
+<dl class="method">
+<dt id="queuempi.PBS.make_script">
+<code class="descname">make_script</code><span class="sig-paren">(</span><em>workdir</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queuempi.html#PBS.make_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.PBS.make_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>PBS must load some modules in each node by shell scripts
+options is a list with all the options</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="queuempi.PBS_IB">
+<em class="property">class </em><code class="descclassname">queuempi.</code><code class="descname">PBS_IB</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queuempi.html#PBS_IB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.PBS_IB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#queuempi.Queue" title="queuempi.Queue"><code class="xref py py-class docutils literal"><span class="pre">queuempi.Queue</span></code></a></p>
+<dl class="method">
+<dt id="queuempi.PBS_IB.make_script">
+<code class="descname">make_script</code><span class="sig-paren">(</span><em>workdir</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queuempi.html#PBS_IB.make_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.PBS_IB.make_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>PBS must load some modules in each node by shell scripts
+options is a list with all the options</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="queuempi.Queue">
+<em class="property">class </em><code class="descclassname">queuempi.</code><code class="descname">Queue</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queuempi.html#Queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.Queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="queuempi.Queue.get_mdrun">
+<code class="descname">get_mdrun</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/queuempi.html#Queue.get_mdrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.Queue.get_mdrun" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="queuempi.Queue.mdrun">
+<code class="descname">mdrun</code><a class="headerlink" href="#queuempi.Queue.mdrun" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="queuempi.Queue.set_mdrun">
+<code class="descname">set_mdrun</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queuempi.html#Queue.set_mdrun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.Queue.set_mdrun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the md_run command</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="queuempi.Slurm">
+<em class="property">class </em><code class="descclassname">queuempi.</code><code class="descname">Slurm</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queuempi.html#Slurm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.Slurm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#queuempi.Queue" title="queuempi.Queue"><code class="xref py py-class docutils literal"><span class="pre">queuempi.Queue</span></code></a></p>
+<p>Queue for SLURM systems</p>
+<dl class="method">
+<dt id="queuempi.Slurm.make_script">
+<code class="descname">make_script</code><span class="sig-paren">(</span><em>workdir</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queuempi.html#Slurm.make_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.Slurm.make_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>workdir is the path to the binary executable
+options is a list with all options</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="queuempi.Svgd">
+<em class="property">class </em><code class="descclassname">queuempi.</code><code class="descname">Svgd</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queuempi.html#Svgd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.Svgd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#queuempi.Queue" title="queuempi.Queue"><code class="xref py py-class docutils literal"><span class="pre">queuempi.Queue</span></code></a></p>
+<p>Queue for the PBS system at svgd.cesga.es</p>
+<dl class="method">
+<dt id="queuempi.Svgd.make_script">
+<code class="descname">make_script</code><span class="sig-paren">(</span><em>workdir</em>, <em>options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/queuempi.html#Svgd.make_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#queuempi.Svgd.make_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>PBS must load some modules in each node by shell scripts
+options is a list with all the options</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="recipes-original-module">
+<h2>recipes.original module<a class="headerlink" href="#recipes-original-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-recipes">
+<span id="recipes-module"></span><h2>recipes module<a class="headerlink" href="#module-recipes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="recipes.BasicBWRelax">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">BasicBWRelax</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#BasicBWRelax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.BasicBWRelax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.BasicCARelax">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">BasicCARelax</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#BasicCARelax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.BasicCARelax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.BasicCollectResults">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">BasicCollectResults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#BasicCollectResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.BasicCollectResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.BasicEquilibration">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">BasicEquilibration</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#BasicEquilibration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.BasicEquilibration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.BasicInit">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">BasicInit</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#BasicInit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.BasicInit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.BasicMinimization">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">BasicMinimization</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#BasicMinimization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.BasicMinimization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.BasicRelax">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">BasicRelax</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#BasicRelax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.BasicRelax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.LigandAlostericEquilibration">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">LigandAlostericEquilibration</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#LigandAlostericEquilibration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.LigandAlostericEquilibration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.LigandEquilibration" title="recipes.LigandEquilibration"><code class="xref py py-class docutils literal"><span class="pre">recipes.LigandEquilibration</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.LigandAlostericInit">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">LigandAlostericInit</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#LigandAlostericInit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.LigandAlostericInit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.LigandInit" title="recipes.LigandInit"><code class="xref py py-class docutils literal"><span class="pre">recipes.LigandInit</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.LigandAlostericMinimization">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">LigandAlostericMinimization</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#LigandAlostericMinimization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.LigandAlostericMinimization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.BasicMinimization" title="recipes.BasicMinimization"><code class="xref py py-class docutils literal"><span class="pre">recipes.BasicMinimization</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.LigandAlostericRelax">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">LigandAlostericRelax</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#LigandAlostericRelax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.LigandAlostericRelax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.LigandRelax" title="recipes.LigandRelax"><code class="xref py py-class docutils literal"><span class="pre">recipes.LigandRelax</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.LigandEquilibration">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">LigandEquilibration</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#LigandEquilibration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.LigandEquilibration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.BasicEquilibration" title="recipes.BasicEquilibration"><code class="xref py py-class docutils literal"><span class="pre">recipes.BasicEquilibration</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.LigandInit">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">LigandInit</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#LigandInit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.LigandInit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.BasicInit" title="recipes.BasicInit"><code class="xref py py-class docutils literal"><span class="pre">recipes.BasicInit</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.LigandMinimization">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">LigandMinimization</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#LigandMinimization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.LigandMinimization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.BasicMinimization" title="recipes.BasicMinimization"><code class="xref py py-class docutils literal"><span class="pre">recipes.BasicMinimization</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipes.LigandRelax">
+<em class="property">class </em><code class="descclassname">recipes.</code><code class="descname">LigandRelax</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipes.html#LigandRelax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipes.LigandRelax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.BasicRelax" title="recipes.BasicRelax"><code class="xref py py-class docutils literal"><span class="pre">recipes.BasicRelax</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-recipesmpi">
+<span id="recipesmpi-module"></span><h2>recipesmpi module<a class="headerlink" href="#module-recipesmpi" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="recipesmpi.BasicBWRelax">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">BasicBWRelax</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#BasicBWRelax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.BasicBWRelax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.BasicCARelax">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">BasicCARelax</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#BasicCARelax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.BasicCARelax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.BasicCollectResults">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">BasicCollectResults</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#BasicCollectResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.BasicCollectResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.BasicEquilibration">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">BasicEquilibration</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#BasicEquilibration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.BasicEquilibration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.BasicInit">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">BasicInit</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#BasicInit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.BasicInit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.BasicMinimization">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">BasicMinimization</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#BasicMinimization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.BasicMinimization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.BasicRelax">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">BasicRelax</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#BasicRelax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.BasicRelax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.LigandAlostericEquilibration">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">LigandAlostericEquilibration</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#LigandAlostericEquilibration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.LigandAlostericEquilibration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipesmpi.LigandEquilibration" title="recipesmpi.LigandEquilibration"><code class="xref py py-class docutils literal"><span class="pre">recipesmpi.LigandEquilibration</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.LigandAlostericInit">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">LigandAlostericInit</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#LigandAlostericInit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.LigandAlostericInit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipesmpi.LigandInit" title="recipesmpi.LigandInit"><code class="xref py py-class docutils literal"><span class="pre">recipesmpi.LigandInit</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.LigandAlostericMinimization">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">LigandAlostericMinimization</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#LigandAlostericMinimization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.LigandAlostericMinimization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipesmpi.BasicMinimization" title="recipesmpi.BasicMinimization"><code class="xref py py-class docutils literal"><span class="pre">recipesmpi.BasicMinimization</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.LigandAlostericRelax">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">LigandAlostericRelax</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#LigandAlostericRelax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.LigandAlostericRelax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipesmpi.LigandRelax" title="recipesmpi.LigandRelax"><code class="xref py py-class docutils literal"><span class="pre">recipesmpi.LigandRelax</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.LigandEquilibration">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">LigandEquilibration</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#LigandEquilibration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.LigandEquilibration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipesmpi.BasicEquilibration" title="recipesmpi.BasicEquilibration"><code class="xref py py-class docutils literal"><span class="pre">recipesmpi.BasicEquilibration</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.LigandInit">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">LigandInit</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#LigandInit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.LigandInit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipesmpi.BasicInit" title="recipesmpi.BasicInit"><code class="xref py py-class docutils literal"><span class="pre">recipesmpi.BasicInit</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.LigandMinimization">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">LigandMinimization</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#LigandMinimization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.LigandMinimization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipesmpi.BasicMinimization" title="recipesmpi.BasicMinimization"><code class="xref py py-class docutils literal"><span class="pre">recipesmpi.BasicMinimization</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="recipesmpi.LigandRelax">
+<em class="property">class </em><code class="descclassname">recipesmpi.</code><code class="descname">LigandRelax</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipesmpi.html#LigandRelax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipesmpi.LigandRelax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipesmpi.BasicRelax" title="recipesmpi.BasicRelax"><code class="xref py py-class docutils literal"><span class="pre">recipesmpi.BasicRelax</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-run">
+<span id="run-module"></span><h2>run module<a class="headerlink" href="#module-run" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="run.Run">
+<em class="property">class </em><code class="descclassname">run.</code><code class="descname">Run</code><span class="sig-paren">(</span><em>pdb</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run.html#Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#run.Run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="run.Run.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/run.html#Run.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#run.Run.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all previously generated files</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="run.Run.light_moldyn">
+<code class="descname">light_moldyn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/run.html#Run.light_moldyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#run.Run.light_moldyn" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a function to debug a run in steps</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="run.Run.moldyn">
+<code class="descname">moldyn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/run.html#Run.moldyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#run.Run.moldyn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs all the dynamics</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="run-db-module">
+<h2>run_db module<a class="headerlink" href="#run-db-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-runtests">
+<span id="runtests-module"></span><h2>runtests module<a class="headerlink" href="#module-runtests" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-settings">
+<span id="settings-module"></span><h2>settings module<a class="headerlink" href="#module-settings" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-settingsmpi">
+<span id="settingsmpi-module"></span><h2>settingsmpi module<a class="headerlink" href="#module-settingsmpi" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-utils">
+<span id="utils-module"></span><h2>utils module<a class="headerlink" href="#module-utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="utils.check_forces">
+<code class="descclassname">utils.</code><code class="descname">check_forces</code><span class="sig-paren">(</span><em>pdb</em>, <em>itp</em>, <em>ffield</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#check_forces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.check_forces" title="Permalink to this definition">¶</a></dt>
+<dd><p>A force field must give a set of forces that matches every atom in
+the pdb file. This showed particularly important to the ligands, as they
+may vary along a very broad range of atoms.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.clean_all">
+<code class="descclassname">utils.</code><code class="descname">clean_all</code><span class="sig-paren">(</span><em>target_dir=''</em>, <em>exclude=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#clean_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.clean_all" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Remove all intermediate files from &#8216;target_dir&#8217;  except that files</dt>
+<dd>in &#8216;exclude&#8217;</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.clean_topol">
+<code class="descclassname">utils.</code><code class="descname">clean_topol</code><span class="sig-paren">(</span><em>src=[]</em>, <em>tgt=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#clean_topol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.clean_topol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean the src topol of path specifics, and paste results in target</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.concat">
+<code class="descclassname">utils.</code><code class="descname">concat</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#concat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.concat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a whole pdb file with all the pdb provided</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.getbw">
+<code class="descclassname">utils.</code><code class="descname">getbw</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#getbw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.getbw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the Ballesteros-Weistein based pair-distance restraint
+module.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.make_cat">
+<code class="descclassname">utils.</code><code class="descname">make_cat</code><span class="sig-paren">(</span><em>dir1</em>, <em>dir2</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#make_cat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_cat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Very tight function to make a list of files to inject
+in some GROMACS suite programs</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.make_ffoplsaanb">
+<code class="descclassname">utils.</code><code class="descname">make_ffoplsaanb</code><span class="sig-paren">(</span><em>complex=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#make_ffoplsaanb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_ffoplsaanb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Join all OPLS force fields needed to run the simulation</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.make_topol">
+<code class="descclassname">utils.</code><code class="descname">make_topol</code><span class="sig-paren">(</span><em>template_dir='/Users/esguerra/software/pymemdyn/templates'</em>, <em>target_dir=''</em>, <em>working_dir=''</em>, <em>complex=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#make_topol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_topol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make the topol starting from our topol.top template</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.make_topol_lines">
+<code class="descclassname">utils.</code><code class="descname">make_topol_lines</code><span class="sig-paren">(</span><em>itp_name=''</em>, <em>ifdef_name=''</em>, <em>posre_name=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#make_topol_lines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.make_topol_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make the topol lines to be included</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.tar_out">
+<code class="descclassname">utils.</code><code class="descname">tar_out</code><span class="sig-paren">(</span><em>src_dir=[]</em>, <em>tgt=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#tar_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.tar_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tar everything in a src_dir to the tar_file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils.tune_mdp">
+<code class="descclassname">utils.</code><code class="descname">tune_mdp</code><span class="sig-paren">(</span><em>groups</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#tune_mdp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.tune_mdp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjust the tc-groups of eq.mdp to be in line with our system</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to pymemdyn’s documentation!" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Esguerra, Bello, Teran.
+
+    </p>
+  </div>
+  
+   
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

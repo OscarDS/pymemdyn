@@ -1,0 +1,427 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>run &mdash; pymemdyn 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="pymemdyn 1.4 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pymemdyn
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pymemdyn.html">pymemdyn package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">pymemdyn</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>run</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for run</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python2.7</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+
+<span class="kn">import</span> <span class="nn">complex</span>
+<span class="kn">import</span> <span class="nn">gromacs</span>
+<span class="kn">import</span> <span class="nn">membrane</span>
+<span class="kn">import</span> <span class="nn">protein</span>
+<span class="kn">import</span> <span class="nn">queue</span>
+<span class="kn">import</span> <span class="nn">recipes</span>
+<span class="kn">import</span> <span class="nn">settings</span>
+
+<div class="viewcode-block" id="Run"><a class="viewcode-back" href="../pymemdyn.html#run.Run">[docs]</a><span class="k">class</span> <span class="nc">Run</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdb</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A molecular dynamics *Run()*  MUST be given a *pdb*</span>
+<span class="sd">        </span>
+<span class="sd">        This class tries to initialize a full complex to send to simulation. Given</span>
+<span class="sd">        a set of molecules (protein, ligand, other ligand, waters, ...), </span>
+<span class="sd">        this class would try to build a full embedded-in-membrane complex.</span>
+
+<span class="sd">        The complex is stored in self.g (a **Gromacs** object), and thus</span>
+<span class="sd">        can be *runned* through g.recipe and g.run_recipe procedure. See</span>
+<span class="sd">        gromacs.py for more information.</span>
+
+<span class="sd">        The queueing system is also created here to be used in certain steps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">=</span> <span class="n">pdb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">own_dir</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;own_dir&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repo_dir</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repo_dir&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ligand</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ligand&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alosteric</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;alosteric&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;waters&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ions</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ions&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cho</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cho&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;queue&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span> <span class="o">=</span> <span class="n">protein</span><span class="o">.</span><span class="n">Protein</span><span class="p">(</span><span class="n">pdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">)</span><span class="o">.</span><span class="n">check_number_of_chains</span><span class="p">()</span>
+
+        <span class="n">sugars</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ligand&quot;</span><span class="p">:</span> <span class="s2">&quot;Ligand&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;alosteric&quot;</span><span class="p">:</span> <span class="s2">&quot;Alosteric&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;waters&quot;</span><span class="p">:</span> <span class="s2">&quot;CrystalWaters&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ions&quot;</span><span class="p">:</span> <span class="s2">&quot;Ions&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cho&quot;</span><span class="p">:</span> <span class="s2">&quot;Cholesterol&quot;</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">sugar_type</span><span class="p">,</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">sugars</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sugar_type</span><span class="p">):</span>
+                <span class="n">base_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sugar_type</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">sugar_type</span><span class="p">,</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">protein</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)(</span>
+                        <span class="n">pdb</span> <span class="o">=</span> <span class="n">base_name</span> <span class="o">+</span> <span class="s2">&quot;.pdb&quot;</span><span class="p">,</span>
+                        <span class="n">itp</span> <span class="o">=</span> <span class="n">base_name</span> <span class="o">+</span> <span class="s2">&quot;.itp&quot;</span><span class="p">,</span>
+                        <span class="n">ff</span> <span class="o">=</span> <span class="n">base_name</span> <span class="o">+</span> <span class="s2">&quot;.ff&quot;</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">membr</span> <span class="o">=</span> <span class="n">membrane</span><span class="o">.</span><span class="n">Membrane</span><span class="p">()</span>
+
+        <span class="n">prot_complex</span> <span class="o">=</span> <span class="n">protein</span><span class="o">.</span><span class="n">ProteinComplex</span><span class="p">(</span>
+            <span class="n">monomer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span>
+            <span class="n">ligand</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ligand</span> <span class="ow">or</span> <span class="bp">None</span><span class="p">,</span>
+            <span class="n">alosteric</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alosteric</span> <span class="ow">or</span> <span class="bp">None</span><span class="p">,</span>
+            <span class="n">waters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">waters</span> <span class="ow">or</span> <span class="bp">None</span><span class="p">,</span>
+            <span class="n">ions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ions</span> <span class="ow">or</span> <span class="bp">None</span><span class="p">,</span>
+            <span class="n">cho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cho</span> <span class="ow">or</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">full_complex</span> <span class="o">=</span> <span class="nb">complex</span><span class="o">.</span><span class="n">MembraneComplex</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;Dimer&quot;</span><span class="p">:</span>
+            <span class="sd">&#39;&#39;&#39;The box for the dimers is slightly bigger&#39;&#39;&#39;</span>
+            <span class="n">full_complex</span><span class="o">.</span><span class="n">box_height</span> <span class="o">=</span> <span class="mf">3.5</span>
+            <span class="n">full_complex</span><span class="o">.</span><span class="n">box_width</span> <span class="o">=</span> <span class="mf">1.2</span>
+        <span class="n">full_complex</span><span class="o">.</span><span class="n">complex</span> <span class="o">=</span> <span class="n">prot_complex</span>
+        <span class="n">full_complex</span><span class="o">.</span><span class="n">membrane</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">membr</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">gromacs</span><span class="o">.</span><span class="n">Gromacs</span><span class="p">(</span><span class="n">membrane_complex</span> <span class="o">=</span> <span class="n">full_complex</span><span class="p">)</span>
+
+        <span class="c1"># NOTE: If it&#39;s not provided in command line, self.queue is set in</span>
+        <span class="c1"># settings.py</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">==</span> <span class="s2">&quot;slurm&quot;</span><span class="p">:</span>
+                <span class="n">my_queue</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Slurm</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">==</span> <span class="s2">&quot;pbs&quot;</span><span class="p">:</span>
+                <span class="n">my_queue</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">PBS</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">==</span> <span class="s2">&quot;pbs_ib&quot;</span><span class="p">:</span>
+                <span class="n">my_queue</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">PBS_IB</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">==</span> <span class="s2">&quot;svgd&quot;</span><span class="p">:</span>
+                <span class="n">my_queue</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Svgd</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">my_queue</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">NoQueue</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">my_queue</span>
+
+<div class="viewcode-block" id="Run.clean"><a class="viewcode-back" href="../pymemdyn.html#run.Run.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes all previously generated files</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">to_unlink</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#index.ndx.1#&quot;</span><span class="p">,</span> <span class="s2">&quot;#ligand_ha.ndx.1#&quot;</span><span class="p">,</span> <span class="s2">&quot;#mdout.mdp.1#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#mdout.mdp.2#&quot;</span><span class="p">,</span> <span class="s2">&quot;#mdout.mdp.3#&quot;</span><span class="p">,</span> <span class="s2">&quot;#mdout.mdp.4#&quot;</span><span class="p">,</span> <span class="s2">&quot;#mdout.mdp.5#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#mdout.mdp.6#&quot;</span><span class="p">,</span> <span class="s2">&quot;#mdout.mdp.7#&quot;</span><span class="p">,</span> <span class="s2">&quot;#mdout.mdp.8#&quot;</span><span class="p">,</span> <span class="s2">&quot;#mdout.mdp.9#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#output.pdb.1#&quot;</span><span class="p">,</span> <span class="s2">&quot;#output.tpr.1#&quot;</span><span class="p">,</span> <span class="s2">&quot;#popc.pdb.1#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#posre.itp.1#&quot;</span><span class="p">,</span> <span class="s2">&quot;#proteinopls.pdb.1#&quot;</span><span class="p">,</span> <span class="s2">&quot;#proteinopls.pdb.2#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#proteinopls.pdb.3#&quot;</span><span class="p">,</span> <span class="s2">&quot;#proteinopls.pdb.4#&quot;</span><span class="p">,</span><span class="s2">&quot;#protein.top.1#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#protpopc.pdb.1#&quot;</span><span class="p">,</span> <span class="s2">&quot;#protpopc.pdb.2#&quot;</span><span class="p">,</span> <span class="s2">&quot;#tmp.pdb.1#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#topol.top.1#&quot;</span><span class="p">,</span> <span class="s2">&quot;#topol.top.2#&quot;</span><span class="p">,</span> <span class="s2">&quot;#topol.top.3#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#topol.tpr.1#&quot;</span><span class="p">,</span> <span class="s2">&quot;#topol.tpr.2#&quot;</span><span class="p">,</span> <span class="s2">&quot;#topol.tpr.3#&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;#topol.tpr.4#&quot;</span><span class="p">,</span> <span class="s2">&quot;#water.pdb.1#&quot;</span><span class="p">,</span> <span class="s2">&quot;ener_EQ.edr&quot;</span><span class="p">,</span> 
+            <span class="s2">&quot;ffoplsaabon_mod.itp&quot;</span><span class="p">,</span> <span class="s2">&quot;ffoplsaa_mod.itp&quot;</span><span class="p">,</span> <span class="s2">&quot;ffoplsaanb_mod.itp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;genion.log&quot;</span><span class="p">,</span> <span class="s2">&quot;hexagon.pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ligand_ha.ndx&quot;</span><span class="p">,</span> <span class="s2">&quot;mdout.mdp&quot;</span><span class="p">,</span> <span class="s2">&quot;min.pdb&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;output.pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;output.tpr&quot;</span><span class="p">,</span> <span class="s2">&quot;popc.pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;popc.itp&quot;</span><span class="p">,</span> <span class="s2">&quot;posre.itp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;posre_lig.itp&quot;</span><span class="p">,</span> <span class="s2">&quot;protein.itp&quot;</span><span class="p">,</span> <span class="s2">&quot;protein.top&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;protein_ca200.itp&quot;</span><span class="p">,</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;proteinopls-ligand.pdb&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;protpopc.pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;steep.mdp&quot;</span><span class="p">,</span> <span class="s2">&quot;traj.xtc&quot;</span><span class="p">,</span> <span class="s2">&quot;traj_EQ.xtc&quot;</span><span class="p">,</span> <span class="s2">&quot;tmp.pdb&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;topol.top&quot;</span><span class="p">,</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span> <span class="s2">&quot;tmp_proteinopls.pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;water.pdb&quot;</span><span class="p">]</span>
+
+        <span class="n">dirs_to_unlink</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Rmin&quot;</span><span class="p">,</span> <span class="s2">&quot;eq&quot;</span><span class="p">,</span> <span class="s2">&quot;eqCA&quot;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">to_unlink</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">target</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">dirs_to_unlink</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">target</span><span class="p">):</span> <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+    
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="Run.moldyn"><a class="viewcode-back" href="../pymemdyn.html#run.Run.moldyn">[docs]</a>    <span class="k">def</span> <span class="nf">moldyn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs all the dynamics</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">steps</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Init&quot;</span><span class="p">,</span> <span class="s2">&quot;Minimization&quot;</span><span class="p">,</span> <span class="s2">&quot;Equilibration&quot;</span><span class="p">,</span> <span class="s2">&quot;Relax&quot;</span><span class="p">,</span> <span class="s2">&quot;CARelax&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;CollectResults&quot;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">select_recipe</span><span class="p">(</span><span class="n">stage</span> <span class="o">=</span> <span class="n">step</span><span class="p">,</span> <span class="n">debug</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">run_recipe</span><span class="p">(</span><span class="n">debug</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Run.light_moldyn"><a class="viewcode-back" href="../pymemdyn.html#run.Run.light_moldyn">[docs]</a>    <span class="k">def</span> <span class="nf">light_moldyn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is a function to debug a run in steps</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<span class="c1">#        steps = [&quot;Init&quot;, &quot;Minimization&quot;, &quot;Equilibration&quot;, &quot;Relax&quot;, &quot;CARelax&quot;]</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Equilibration&quot;</span><span class="p">,</span><span class="s2">&quot;Relax&quot;</span><span class="p">]</span>        
+<span class="c1">#        steps = [&quot;CollectResults&quot;]</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">select_recipe</span><span class="p">(</span><span class="n">stage</span> <span class="o">=</span> <span class="n">step</span><span class="p">,</span> <span class="n">debug</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="o">.</span><span class="n">run_recipe</span><span class="p">(</span><span class="n">debug</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span><span class="p">,</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span><span class="se">\</span>
+<span class="s1">    == Setup Molecular Dynamics for Membrane Proteins given a PDB. ==</span>
+<span class="s1">    &#39;&#39;&#39;</span><span class="p">))</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-b&#39;</span><span class="p">,</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="s2">&quot;own_dir&quot;</span><span class="p">,</span>
+        <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Working dir if different from actual dir&quot;</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-r&#39;</span><span class="p">,</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="s2">&quot;repo_dir&quot;</span><span class="p">,</span>
+        <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Path to templates of fixed files. If not </span><span class="se">\</span>
+<span class="s2">            provided, take the value from settings.TEMPLATES_DIR.&quot;</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">TEMPLATES_DIR</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="s2">&quot;pdb&quot;</span><span class="p">,</span>
+        <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+        <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Name of the pdb to insert into MD (mandatory)&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--lig&#39;</span><span class="p">,</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="s2">&quot;ligand&quot;</span><span class="p">,</span>
+        <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Name of the ligand, without extension. Three files must be </span><span class="se">\</span>
+<span class="s2">            present along with the molecule pdb: the ligand, its itp and </span><span class="se">\</span>
+<span class="s2">            its force field.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--alo&quot;</span><span class="p">,</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="s2">&quot;alosteric&quot;</span><span class="p">,</span>
+        <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Name of the alosteric interaction, without extension. Three </span><span class="se">\</span>
+<span class="s2">            files must be present along with the molecule pdb: the alosteric, </span><span class="se">\</span>
+<span class="s2">            its itp and its force field.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--waters&#39;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;waters&quot;</span><span class="p">,</span>
+        <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Crystalized water molecules. File name without extension.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--ions&#39;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;ions&quot;</span><span class="p">,</span>
+        <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Crystalized ions file name without extension.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--cho&#39;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;cho&quot;</span><span class="p">,</span>
+        <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Crystalized cholesterol molecules file name</span><span class="se">\</span>
+<span class="s2">            without extension.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-q&#39;</span><span class="p">,</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="s2">&quot;queue&quot;</span><span class="p">,</span>
+        <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Queueing system to use (slurm, pbs, pbs_ib and svgd supported)&quot;</span><span class="p">,</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">QUEUE</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--debug&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
+<span class="c1">#    parser.add_argument(&#39;--clean&#39;,</span>
+<span class="c1">#                        )</span>
+    
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">own_dir</span><span class="p">)):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">own_dir</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s2">&quot;Created working dir {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">own_dir</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">own_dir</span><span class="p">)</span>
+
+    <span class="n">run</span> <span class="o">=</span> <span class="n">Run</span><span class="p">(</span><span class="n">own_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">own_dir</span><span class="p">,</span>
+        <span class="n">repo_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">repo_dir</span><span class="p">,</span>
+        <span class="n">pdb</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pdb</span><span class="p">,</span>
+        <span class="n">ligand</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">ligand</span><span class="p">,</span>
+        <span class="n">alosteric</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">alosteric</span><span class="p">,</span>
+        <span class="n">waters</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">waters</span><span class="p">,</span>
+        <span class="n">ions</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">ions</span><span class="p">,</span>
+        <span class="n">cho</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">cho</span><span class="p">,</span>
+        <span class="n">queue</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">queue</span><span class="p">,</span>
+        <span class="n">debug</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+    <span class="n">run</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+
+    <span class="c1"># Delete old GROMACS.log if this is a re-run</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;GROMACS.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;GROMACS_debug.log&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;GROMACS.log&#39;</span><span class="p">,</span>
+            <span class="n">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">/%Y %I:%M:%S&#39;</span><span class="p">,</span>
+            <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="n">run</span><span class="o">.</span><span class="n">moldyn</span><span class="p">()</span>
+<span class="c1">#    run.light_moldyn()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Esguerra, Bello, Teran.
+
+    </p>
+  </div>
+  
+   
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

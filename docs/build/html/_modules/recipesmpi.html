@@ -1,0 +1,901 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>recipesmpi &mdash; pymemdyn 1.4 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="pymemdyn 1.4 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pymemdyn
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pymemdyn.html">pymemdyn package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">pymemdyn</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>recipesmpi</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for recipesmpi</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+
+
+<div class="viewcode-block" id="BasicInit"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.BasicInit">[docs]</a><span class="k">class</span> <span class="nc">BasicInit</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># First we make a list of ordered steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pdb2gmx&quot;</span><span class="p">,</span> <span class="s2">&quot;set_itp&quot;</span><span class="p">,</span> <span class="s2">&quot;concat&quot;</span><span class="p">,</span> <span class="s2">&quot;editconf&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;set_protein_size&quot;</span><span class="p">,</span> <span class="s2">&quot;editconf2&quot;</span><span class="p">,</span> <span class="s2">&quot;set_protein_size2&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;set_popc&quot;</span><span class="p">,</span> <span class="s2">&quot;editconf3&quot;</span><span class="p">,</span> <span class="s2">&quot;editconf4&quot;</span><span class="p">,</span> <span class="s2">&quot;make_topol&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;editconf5&quot;</span><span class="p">,</span> <span class="s2">&quot;genbox&quot;</span><span class="p">,</span> <span class="s2">&quot;set_water&quot;</span><span class="p">,</span> <span class="s2">&quot;editconf6&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;editconf7&quot;</span><span class="p">,</span> <span class="s2">&quot;genbox2&quot;</span><span class="p">,</span> <span class="s2">&quot;count_lipids&quot;</span><span class="p">,</span> <span class="s2">&quot;make_topol2&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;make_topol_lipids&quot;</span><span class="p">,</span> <span class="s2">&quot;make_ffoplsaanb&quot;</span><span class="p">,</span> <span class="s2">&quot;set_grompp&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;set_chains&quot;</span><span class="p">,</span> <span class="s2">&quot;make_ndx&quot;</span><span class="p">,</span> <span class="s2">&quot;grompp&quot;</span><span class="p">,</span> <span class="s2">&quot;trjconv&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;get_charge&quot;</span><span class="p">,</span> <span class="s2">&quot;genion&quot;</span><span class="p">,</span> <span class="s2">&quot;grompp2&quot;</span><span class="p">,</span> <span class="s2">&quot;trjconv2&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;grompp3&quot;</span><span class="p">,</span> <span class="s2">&quot;trjconv3&quot;</span><span class="p">]</span>
+
+        <span class="c1"># And then we define each step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> \
+            <span class="p">{</span><span class="s2">&quot;pdb2gmx&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;pdb2gmx_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 1</span>
+                         <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="s2">&quot;protein.top&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;set_itp&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_itp&quot;</span><span class="p">,</span>  <span class="c1"># 2</span>
+                         <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;protein.top&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;protein.itp&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;concat&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;concat&quot;</span><span class="p">,</span>  <span class="c1"># 3</span>
+                        <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;editconf&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;editconf_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 4</span>
+                          <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;dist&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;set_protein_size&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_protein_size&quot;</span><span class="p">,</span>  <span class="c1"># 5</span>
+                                  <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span>
+                                              <span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="s2">&quot;xy&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;editconf2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;editconf_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 6</span>
+                           <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;dist&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;set_protein_size2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_protein_size&quot;</span><span class="p">,</span>  <span class="c1"># 7</span>
+                                   <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span>
+                                               <span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;set_popc&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_popc&quot;</span><span class="p">,</span>  <span class="c1"># 8</span>
+                          <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;popc.pdb&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;editconf3&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;editconf_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 9</span>
+                           <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;box&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;angles&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;90&quot;</span><span class="p">,</span> <span class="s2">&quot;90&quot;</span><span class="p">,</span> <span class="s2">&quot;120&quot;</span><span class="p">],</span>
+                                       <span class="s2">&quot;bt&quot;</span><span class="p">:</span> <span class="s2">&quot;tric&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;editconf4&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;editconf_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 10</span>
+                           <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;popc.pdb&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;popc.pdb&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;box&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;make_topol&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;make_topol&quot;</span><span class="p">,</span>  <span class="c1"># 11</span>
+                            <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{}},</span>
+
+             <span class="s2">&quot;editconf5&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;editconf_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 12</span>
+                           <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;translate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">]}},</span>
+
+             <span class="s2">&quot;genbox&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;genbox_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 13</span>
+                        <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;cp&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;cs&quot;</span><span class="p">:</span> <span class="s2">&quot;popc.pdb&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;protpopc.pdb&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;set_water&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_water&quot;</span><span class="p">,</span>  <span class="c1"># 14</span>
+                           <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;water.pdb&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;editconf6&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;editconf_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 15</span>
+                           <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;water.pdb&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;water.pdb&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;box&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;editconf7&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;editconf_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 16</span>
+                           <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;protpopc.pdb&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;protpopc.pdb&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;box&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;angles&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;90&quot;</span><span class="p">,</span> <span class="s2">&quot;90&quot;</span><span class="p">,</span> <span class="s2">&quot;120&quot;</span><span class="p">],</span>
+                                       <span class="s2">&quot;bt&quot;</span><span class="p">:</span> <span class="s2">&quot;tric&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;genbox2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;genbox_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 17</span>
+                         <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;cp&quot;</span><span class="p">:</span> <span class="s2">&quot;protpopc.pdb&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;cs&quot;</span><span class="p">:</span> <span class="s2">&quot;water.pdb&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;tmp.pdb&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;count_lipids&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;count_lipids&quot;</span><span class="p">,</span>  <span class="c1"># 18</span>
+                              <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;tmp.pdb&quot;</span><span class="p">,</span>
+                                          <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;popc.pdb&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;make_topol2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;make_topol&quot;</span><span class="p">,</span>  <span class="c1"># 19</span>
+                             <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{}},</span>
+
+             <span class="s2">&quot;make_topol_lipids&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;make_topol_lipids&quot;</span><span class="p">},</span>  <span class="c1"># 20</span>
+
+             <span class="s2">&quot;make_ffoplsaanb&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;make_ffoplsaanb&quot;</span><span class="p">,</span>  <span class="c1"># 21</span>
+                                 <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{}},</span>
+
+             <span class="s2">&quot;set_grompp&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_grompp&quot;</span><span class="p">,</span>  <span class="c1"># 22</span>
+                            <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;steep.mdp&quot;</span><span class="p">:</span> <span class="s2">&quot;steep.mdp&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;popc.itp&quot;</span><span class="p">:</span> <span class="s2">&quot;popc.itp&quot;</span><span class="p">,</span>
+                                        <span class="c1"># &quot;ffoplsaanb_mod.itp&quot;: &quot;ffoplsaanb_mod.itp&quot;,</span>
+                                        <span class="s2">&quot;ffoplsaabon_mod.itp&quot;</span><span class="p">:</span> <span class="s2">&quot;ffoplsaabon_mod.itp&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;ffoplsaa_mod.itp&quot;</span><span class="p">:</span> <span class="s2">&quot;ffoplsaa_mod.itp&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;set_chains&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_chains&quot;</span><span class="p">,</span>  <span class="c1"># 23</span>
+                            <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;make_ndx&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;make_ndx&quot;</span><span class="p">,</span>  <span class="c1"># 24</span>
+                          <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;tmp.pdb&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;grompp&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;grompp_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 25</span>
+                        <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;steep.mdp&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;tmp.pdb&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;trjconv&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;trjconv_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 26</span>
+                         <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;tmp.pdb&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;tmp.pdb&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;pbc&quot;</span><span class="p">:</span> <span class="s2">&quot;mol&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">},</span>
+                         <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;1</span><span class="se">\n</span><span class="s2">0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">},</span>
+
+             <span class="s2">&quot;get_charge&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;get_charge&quot;</span><span class="p">,</span>  <span class="c1"># 27</span>
+                            <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;steep.mdp&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;tmp.pdb&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;genion&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;genion_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 28</span>
+                        <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;output.pdb&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;np&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                    <span class="s2">&quot;nn&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">},</span>
+                        <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot; SOL </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">},</span>
+
+             <span class="s2">&quot;grompp2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;grompp_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 29</span>
+                         <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;steep.mdp&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;output.pdb&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;trjconv2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;trjconv_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 30</span>
+                          <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;output.pdb&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;output.pdb&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;trans&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                                      <span class="s2">&quot;pbc&quot;</span><span class="p">:</span> <span class="s2">&quot;mol&quot;</span><span class="p">},</span>
+                          <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">},</span>
+
+             <span class="s2">&quot;grompp3&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;grompp_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 31</span>
+                         <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;steep.mdp&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;output.pdb&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">}},</span>
+
+             <span class="s2">&quot;trjconv3&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;trjconv_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 32</span>
+                          <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;output.pdb&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;hexagon.pdb&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;ur&quot;</span><span class="p">:</span> <span class="s2">&quot;compact&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;pbc&quot;</span><span class="p">:</span> <span class="s2">&quot;mol&quot;</span><span class="p">},</span>
+                          <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;1</span><span class="se">\n</span><span class="s2">0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">},</span>
+             <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaks</span> <span class="o">=</span> \
+            <span class="p">{</span><span class="s2">&quot;pdb2gmx&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.complex.monomer.pdb_his&quot;</span><span class="p">},</span>
+             <span class="s2">&quot;concat&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.complex&quot;</span><span class="p">},</span>
+             <span class="s2">&quot;editconf&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dist&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.box_height&quot;</span><span class="p">},</span>
+             <span class="s2">&quot;editconf2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dist&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.box_width&quot;</span><span class="p">},</span>
+             <span class="s2">&quot;editconf3&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;box&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.trans_box_size&quot;</span><span class="p">},</span>
+             <span class="s2">&quot;editconf4&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;box&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.bilayer_box_size&quot;</span><span class="p">},</span>
+             <span class="s2">&quot;editconf6&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;box&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.embeded_box_size&quot;</span><span class="p">},</span>
+             <span class="s2">&quot;editconf7&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;box&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.protein_box_size&quot;</span><span class="p">},</span>
+             <span class="s2">&quot;genion&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;nn&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.complex.positive_charge&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;np&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.complex.negative_charge&quot;</span><span class="p">},</span>
+             <span class="s2">&quot;make_topol&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;complex&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.complex&quot;</span><span class="p">},</span>
+             <span class="s2">&quot;make_topol2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;complex&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.complex&quot;</span><span class="p">},</span>
+             <span class="s2">&quot;make_ffoplsaanb&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;complex&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.complex&quot;</span><span class="p">},</span>
+             <span class="s2">&quot;trjconv2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;trans&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.complex.trans&quot;</span><span class="p">}</span>
+             <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;set_grompp&quot;</span><span class="p">][</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;steep.mdp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;steepDEBUG.mdp&quot;</span></div>
+
+
+<span class="c1"># This recipe modifies the previous one taking a ligand into account</span>
+<div class="viewcode-block" id="LigandInit"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.LigandInit">[docs]</a><span class="k">class</span> <span class="nc">LigandInit</span><span class="p">(</span><span class="n">BasicInit</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LigandInit</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="s2">&quot;genrestr_lig&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;genrestr_lig&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;genrestr_mpi&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;posre_lig.itp&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;ligand_ha.ndx&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;forces&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;1000&quot;</span><span class="p">]},</span>
+             <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;2</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="s2">&quot;make_ndx_lig&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;make_ndx_lig&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;make_ndx_mpi&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;ligand_ha.ndx&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;ligand&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+             <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;! a H*</span><span class="se">\n</span><span class="s2">q</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaks</span><span class="p">[</span><span class="s2">&quot;make_ndx_lig&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.complex.ligand.pdb&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaks</span><span class="p">[</span><span class="s2">&quot;genrestr_lig&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.complex.ligand.pdb&quot;</span><span class="p">}</span></div>
+
+
+<span class="c1"># This recipe modifies the previous one taking an alosteric ligand into account</span>
+<div class="viewcode-block" id="LigandAlostericInit"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.LigandAlostericInit">[docs]</a><span class="k">class</span> <span class="nc">LigandAlostericInit</span><span class="p">(</span><span class="n">LigandInit</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LigandAlostericInit</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="s2">&quot;genrestr_alo&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;genrestr_alo&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;genrestr_mpi&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;posre_alo.itp&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;alosteric_ha.ndx&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;forces&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;1000&quot;</span><span class="p">,</span> <span class="s2">&quot;1000&quot;</span><span class="p">]},</span>
+             <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;2</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="s2">&quot;make_ndx_alo&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;make_ndx_alo&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;make_ndx_mpi&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;alosteric_ha.ndx&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;alosteric&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+             <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;! a H*</span><span class="se">\n</span><span class="s2">q</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaks</span><span class="p">[</span><span class="s2">&quot;make_ndx_alo&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.complex.alosteric.pdb&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaks</span><span class="p">[</span><span class="s2">&quot;genrestr_alo&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_complex.complex.alosteric.pdb&quot;</span><span class="p">}</span></div>
+
+
+<span class="c1">##########################################################################</span>
+<span class="c1">#                 Minimization                                           #</span>
+<span class="c1">##########################################################################</span>
+
+<div class="viewcode-block" id="BasicMinimization"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.BasicMinimization">[docs]</a><span class="k">class</span> <span class="nc">BasicMinimization</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span> <span class="s2">&quot;mdrun&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;set_stage_init&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span>  <span class="c1"># 1</span>
+                               <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                           <span class="s2">&quot;src_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;topol.tpr&quot;</span><span class="p">],</span>
+                                           <span class="s2">&quot;tgt_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;Rmin&quot;</span><span class="p">,</span>
+                                           <span class="s2">&quot;repo_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;eq.mdp&quot;</span><span class="p">]}},</span>
+
+            <span class="s2">&quot;mdrun&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;mdrun&quot;</span><span class="p">,</span>  <span class="c1"># 2</span>
+                      <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="s2">&quot;Rmin&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;traj.trj&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="s2">&quot;ener.edr&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;conf&quot;</span><span class="p">:</span> <span class="s2">&quot;confout.gro&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;log&quot;</span><span class="p">:</span> <span class="s2">&quot;md.log&quot;</span><span class="p">}},</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaks</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;set_stage_init&quot;</span><span class="p">][</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;repo_files&quot;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="p">[</span><span class="s2">&quot;eqDEBUG.mdp&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="LigandMinimization"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.LigandMinimization">[docs]</a><span class="k">class</span> <span class="nc">LigandMinimization</span><span class="p">(</span><span class="n">BasicMinimization</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LigandMinimization</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LigandAlostericMinimization"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.LigandAlostericMinimization">[docs]</a><span class="k">class</span> <span class="nc">LigandAlostericMinimization</span><span class="p">(</span><span class="n">BasicMinimization</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LigandAlostericMinimization</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="c1">##########################################################################</span>
+<span class="c1">#                 Equilibration                                          #</span>
+<span class="c1">##########################################################################</span>
+
+<div class="viewcode-block" id="BasicEquilibration"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.BasicEquilibration">[docs]</a><span class="k">class</span> <span class="nc">BasicEquilibration</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;editconf&quot;</span><span class="p">,</span> <span class="s2">&quot;make_ndx&quot;</span><span class="p">,</span> <span class="s2">&quot;grompp&quot;</span><span class="p">,</span> <span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;set_stage_init2&quot;</span><span class="p">,</span> <span class="s2">&quot;mdrun&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;editconf&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;editconf_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 1</span>
+                         <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;Rmin/confout.gro&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;min.pdb&quot;</span><span class="p">}},</span>
+
+            <span class="s2">&quot;make_ndx&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;make_ndx&quot;</span><span class="p">,</span>  <span class="c1"># 2</span>
+                         <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;min.pdb&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">}},</span>
+
+            <span class="s2">&quot;grompp&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;grompp_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 3</span>
+                       <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;Rmin/eq.mdp&quot;</span><span class="p">,</span>
+                                   <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;min.pdb&quot;</span><span class="p">,</span>
+                                   <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">,</span>
+                                   <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                   <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">}},</span>
+
+            <span class="s2">&quot;set_stage_init&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span>  <span class="c1"># 4</span>
+                               <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;Rmin&quot;</span><span class="p">,</span>
+                                           <span class="s2">&quot;src_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;eq.mdp&quot;</span><span class="p">],</span>
+                                           <span class="s2">&quot;tgt_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;eq&quot;</span><span class="p">}},</span>
+
+            <span class="s2">&quot;set_stage_init2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span>  <span class="c1"># 5</span>
+                                <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                            <span class="s2">&quot;src_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                                          <span class="s2">&quot;posre.itp&quot;</span><span class="p">,</span>
+                                                          <span class="s2">&quot;posre_Protein_chain_A.itp&quot;</span><span class="p">,</span>
+                                                          <span class="s2">&quot;posre_Protein_chain_B.itp&quot;</span><span class="p">,</span>
+                                                          <span class="s2">&quot;posre_hoh.itp&quot;</span><span class="p">,</span>
+                                                          <span class="s2">&quot;posre_ion.itp&quot;</span><span class="p">,</span>
+                                                          <span class="s2">&quot;posre_lig.itp&quot;</span><span class="p">,</span>
+                                                          <span class="s2">&quot;posre_alo.itp&quot;</span><span class="p">,</span>
+                                                          <span class="s2">&quot;posre_cho.itp&quot;</span><span class="p">],</span>
+                                            <span class="s2">&quot;tgt_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;eq&quot;</span><span class="p">}},</span>
+
+            <span class="s2">&quot;mdrun&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;mdrun&quot;</span><span class="p">,</span>  <span class="c1"># 6  this is weird it should be mdrun_mpi, but it IS mdrun.</span>
+                      <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="s2">&quot;eq&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;traj.trr&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="s2">&quot;ener.edr&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;conf&quot;</span><span class="p">:</span> <span class="s2">&quot;confout.gro&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;traj&quot;</span><span class="p">:</span> <span class="s2">&quot;traj.xtc&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;log&quot;</span><span class="p">:</span> <span class="s2">&quot;md_eq1000.log&quot;</span><span class="p">}},</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaks</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;grompp&quot;</span><span class="p">][</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;src&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Rmin/eqDEBUG.mdp&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;set_stage_init&quot;</span><span class="p">][</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;src_files&quot;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="p">[</span><span class="s2">&quot;eqDEBUG.mdp&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="LigandEquilibration"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.LigandEquilibration">[docs]</a><span class="k">class</span> <span class="nc">LigandEquilibration</span><span class="p">(</span><span class="n">BasicEquilibration</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LigandEquilibration</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;genrestr&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;genrestr&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;genrestr_mpi&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;Rmin/topol.tpr&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;protein_ca200.itp&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;forces&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;200&quot;</span><span class="p">,</span> <span class="s2">&quot;200&quot;</span><span class="p">,</span> <span class="s2">&quot;200&quot;</span><span class="p">]},</span>
+             <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;3</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="LigandAlostericEquilibration"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.LigandAlostericEquilibration">[docs]</a><span class="k">class</span> <span class="nc">LigandAlostericEquilibration</span><span class="p">(</span><span class="n">LigandEquilibration</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LigandAlostericEquilibration</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;genrestr&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;genrestr&quot;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;genrestr_mpi&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;Rmin/topol.tpr&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;protein_ca200.itp&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;forces&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;200&quot;</span><span class="p">,</span> <span class="s2">&quot;200&quot;</span><span class="p">,</span> <span class="s2">&quot;200&quot;</span><span class="p">]},</span>
+             <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;3</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">}</span></div>
+
+
+<span class="c1">##########################################################################</span>
+<span class="c1">#                    Relaxation                                          #</span>
+<span class="c1">##########################################################################</span>
+
+<div class="viewcode-block" id="BasicRelax"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.BasicRelax">[docs]</a><span class="k">class</span> <span class="nc">BasicRelax</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">const</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">200</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;relax{0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">const</span><span class="p">),</span>
+                               <span class="s2">&quot;grompp{0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">const</span><span class="p">),</span>
+                               <span class="s2">&quot;mdrun{0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">const</span><span class="p">)])</span>
+            <span class="n">tgt_dir</span> <span class="o">=</span> <span class="s2">&quot;eq/{0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">const</span><span class="p">)</span>
+            <span class="n">src_dir</span> <span class="o">=</span> <span class="s2">&quot;eq&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;relax</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">const</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;relax&quot;</span><span class="p">,</span>  <span class="c1"># 1, 4, 7, 10</span>
+                 <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;const&quot;</span><span class="p">:</span> <span class="n">const</span><span class="p">,</span>
+                             <span class="s2">&quot;src_dir&quot;</span><span class="p">:</span> <span class="n">src_dir</span><span class="p">,</span>
+                             <span class="s2">&quot;tgt_dir&quot;</span><span class="p">:</span> <span class="n">tgt_dir</span><span class="p">,</span>
+                             <span class="s2">&quot;posres&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                             <span class="s2">&quot;mdp&quot;</span><span class="p">:</span> <span class="s2">&quot;eq.mdp&quot;</span><span class="p">}}</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;grompp</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">const</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;grompp_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 2, 5, 8, 11</span>
+                 <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tgt_dir</span><span class="p">,</span> <span class="s2">&quot;eq.mdp&quot;</span><span class="p">),</span>
+                             <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">src_dir</span><span class="p">,</span> <span class="s2">&quot;confout.gro&quot;</span><span class="p">),</span>
+                             <span class="c1"># top&quot;: os.path.join(tgt_dir, &quot;topol.top&quot;),</span>
+                             <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tgt_dir</span><span class="p">,</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">),</span>
+                             <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">}}</span>
+            <span class="c1"># TODO the confout.gro coming next needs to be copied, it feels a</span>
+            <span class="c1"># bit like cheating</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;mdrun</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">const</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;mdrun&quot;</span><span class="p">,</span>  <span class="c1"># 3, 6, 9, 12  AGAIN WEIRD</span>
+                 <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="n">tgt_dir</span><span class="p">,</span>
+                             <span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;traj.trr&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="s2">&quot;ener.edr&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;conf&quot;</span><span class="p">:</span> <span class="s2">&quot;../confout.gro&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;traj&quot;</span><span class="p">:</span> <span class="s2">&quot;traj.xtc&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;log&quot;</span><span class="p">:</span> <span class="s2">&quot;md_eq{0}.log&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">const</span><span class="p">)}}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaks</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;relax&quot;</span><span class="p">)]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;mdp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;eqDEBUG.mdp&quot;</span></div>
+
+
+<div class="viewcode-block" id="LigandRelax"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.LigandRelax">[docs]</a><span class="k">class</span> <span class="nc">LigandRelax</span><span class="p">(</span><span class="n">BasicRelax</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LigandRelax</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;relax800&quot;</span><span class="p">][</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;posres&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;posre_lig.itp&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LigandAlostericRelax"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.LigandAlostericRelax">[docs]</a><span class="k">class</span> <span class="nc">LigandAlostericRelax</span><span class="p">(</span><span class="n">LigandRelax</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LigandAlostericRelax</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;relax800&quot;</span><span class="p">][</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;posres&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;posre_alo.itp&quot;</span><span class="p">)</span></div>
+
+
+<span class="c1">##########################################################################</span>
+<span class="c1">#                 C-Alpha Atoms Relaxation                               #</span>
+<span class="c1">##########################################################################</span>
+
+<div class="viewcode-block" id="BasicCARelax"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.BasicCARelax">[docs]</a><span class="k">class</span> <span class="nc">BasicCARelax</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span> <span class="s2">&quot;genrestr&quot;</span><span class="p">,</span> <span class="s2">&quot;grompp&quot;</span><span class="p">,</span> <span class="s2">&quot;mdrun&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;set_stage_init&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span>  <span class="c1"># 1</span>
+                               <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;eq&quot;</span><span class="p">,</span>
+                                           <span class="s2">&quot;tgt_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;eqCA&quot;</span><span class="p">,</span>
+                                           <span class="s2">&quot;src_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;confout.gro&quot;</span><span class="p">],</span>
+                                           <span class="s2">&quot;repo_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;eqCA.mdp&quot;</span><span class="p">]}},</span>
+
+            <span class="s2">&quot;genrestr&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;genrestr_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 2</span>
+                         <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;Rmin/topol.tpr&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;posre.itp&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;forces&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;200&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">},</span>
+                         <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;3</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">},</span>
+
+            <span class="s2">&quot;grompp&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;grompp_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 3</span>
+                       <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;eqCA/eqCA.mdp&quot;</span><span class="p">,</span>
+                                   <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;eqCA/confout.gro&quot;</span><span class="p">,</span>
+                                   <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">,</span>
+                                   <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;eqCA/topol.tpr&quot;</span><span class="p">,</span>
+                                   <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">}},</span>
+
+            <span class="s2">&quot;mdrun&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;mdrun&quot;</span><span class="p">,</span>  <span class="c1"># 4  </span>
+                      <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="s2">&quot;eqCA&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;traj.trr&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="s2">&quot;ener.edr&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;conf&quot;</span><span class="p">:</span> <span class="s2">&quot;confout.gro&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;traj&quot;</span><span class="p">:</span> <span class="s2">&quot;traj.xtc&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;log&quot;</span><span class="p">:</span> <span class="s2">&quot;md_eqCA.log&quot;</span><span class="p">}},</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaks</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;set_stage_init&quot;</span><span class="p">][</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;src_files&quot;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="p">[</span><span class="s2">&quot;confout.gro&quot;</span><span class="p">,</span> <span class="s2">&quot;eqDEBUG.mdp&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;grompp&quot;</span><span class="p">][</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;src&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;eqCA/eqDEBUG.mdp&quot;</span></div>
+
+
+<span class="c1">##########################################################################</span>
+<span class="c1">#                 Ballesteros-Weinstein Restrained Relaxation            #</span>
+<span class="c1">##########################################################################</span>
+
+<div class="viewcode-block" id="BasicBWRelax"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.BasicBWRelax">[docs]</a><span class="k">class</span> <span class="nc">BasicBWRelax</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;getbw&quot;</span><span class="p">,</span><span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span> <span class="s2">&quot;grompp&quot;</span><span class="p">,</span> <span class="s2">&quot;mdrun&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;getbw&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;getbw&quot;</span><span class="p">,</span>  <span class="c1"># 1</span>
+                      <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;proteinopls.pdb&quot;</span><span class="p">}},</span>
+
+            <span class="s2">&quot;set_stage_init&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span>  <span class="c1"># 2</span>
+                               <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;eq&quot;</span><span class="p">,</span>
+                                           <span class="s2">&quot;tgt_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;eqBW&quot;</span><span class="p">,</span>
+                                           <span class="s2">&quot;src_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;confout.gro&quot;</span><span class="p">,</span>
+                                                         <span class="s2">&quot;../disre.itp&quot;</span><span class="p">],</span>
+                                           <span class="s2">&quot;repo_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dres.mdp&quot;</span><span class="p">]}},</span>
+
+            <span class="s2">&quot;grompp&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;grompp_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 3</span>
+                       <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;eqBW/dres.mdp&quot;</span><span class="p">,</span>
+                                   <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;eqBW/confout.gro&quot;</span><span class="p">,</span>
+                                   <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">,</span>
+                                   <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;eqBW/topol.tpr&quot;</span><span class="p">,</span>
+                                   <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;index.ndx&quot;</span><span class="p">}},</span>
+
+            <span class="s2">&quot;mdrun&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;mdrun&quot;</span><span class="p">,</span>  <span class="c1"># 4</span>
+                      <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="s2">&quot;eqBW&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;traj.trr&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="s2">&quot;ener.edr&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;conf&quot;</span><span class="p">:</span> <span class="s2">&quot;confout.gro&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;traj&quot;</span><span class="p">:</span> <span class="s2">&quot;traj.xtc&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;log&quot;</span><span class="p">:</span> <span class="s2">&quot;md_eqBW.log&quot;</span><span class="p">}},</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaks</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;set_stage_init&quot;</span><span class="p">][</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;src_files&quot;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="p">[</span><span class="s2">&quot;confout.gro&quot;</span><span class="p">,</span> <span class="s2">&quot;eqDEBUG.mdp&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;grompp&quot;</span><span class="p">][</span><span class="s2">&quot;options&quot;</span><span class="p">][</span><span class="s2">&quot;src&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;eqBW/eqDEBUG.mdp&quot;</span></div>
+
+
+<span class="c1">##########################################################################</span>
+<span class="c1">#                 Collect All Results &amp; Output                           #</span>
+<span class="c1">##########################################################################</span>
+<div class="viewcode-block" id="BasicCollectResults"><a class="viewcode-back" href="../pymemdyn.html#recipesmpi.BasicCollectResults">[docs]</a><span class="k">class</span> <span class="nc">BasicCollectResults</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This recipe navigates through the output of *GROMACS*, generating and</span>
+<span class="sd">        collecting various files and logs, and finally putting it all together</span>
+<span class="sd">        in a tar file.</span>
+
+<span class="sd">        Provides a list of *steps* as the order to execute the recipe.</span>
+<span class="sd">        dict *recipe* as the variables to pass to functions.</span>
+<span class="sd">        dict *breaks* as points where object calling can put their vars.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;trjcat&quot;</span><span class="p">,</span> <span class="s2">&quot;trjconv&quot;</span><span class="p">,</span> <span class="s2">&quot;eneconv&quot;</span><span class="p">,</span> <span class="s2">&quot;g_rms1&quot;</span><span class="p">,</span> <span class="s2">&quot;g_rms2&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;g_rms3&quot;</span><span class="p">,</span> <span class="s2">&quot;g_rmsf&quot;</span><span class="p">,</span> <span class="s2">&quot;tot_ener&quot;</span><span class="p">,</span> <span class="s2">&quot;temp&quot;</span><span class="p">,</span> <span class="s2">&quot;pressure&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;volume&quot;</span><span class="p">,</span> <span class="s2">&quot;set_end&quot;</span><span class="p">,</span> <span class="s2">&quot;clean_topol&quot;</span><span class="p">,</span> <span class="s2">&quot;set_end_2&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;set_end_3&quot;</span><span class="p">,</span> <span class="s2">&quot;set_end_4&quot;</span><span class="p">,</span> <span class="s2">&quot;set_end_5&quot;</span><span class="p">,</span> <span class="s2">&quot;set_end_6&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;tar_it&quot;</span><span class="p">]</span>  <span class="c1"># ,</span>
+        <span class="c1"># &quot;final_clean&quot;] This is dangerous, could delete needed files.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;trjcat&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;trjcat_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 1</span>
+                            <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dir1&quot;</span><span class="p">:</span> <span class="s2">&quot;eq&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;dir2&quot;</span><span class="p">:</span> <span class="s2">&quot;eqBW&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;traj.xtc&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;traj_EQ.xtc&quot;</span><span class="p">},</span>
+                            <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;c</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="mi">6</span><span class="p">},</span>
+
+                       <span class="s2">&quot;trjconv&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;trjconv_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 27</span>
+                                   <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;traj_EQ.xtc&quot;</span><span class="p">,</span>
+                                               <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.tpr&quot;</span><span class="p">,</span>
+                                               <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;traj_pymol.xtc&quot;</span><span class="p">,</span>
+                                               <span class="s2">&quot;ur&quot;</span><span class="p">:</span> <span class="s2">&quot;compact&quot;</span><span class="p">,</span>
+                                               <span class="s2">&quot;skip&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span>
+                                               <span class="s2">&quot;pbc&quot;</span><span class="p">:</span> <span class="s2">&quot;mol&quot;</span><span class="p">},</span>
+                                   <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;1</span><span class="se">\n</span><span class="s2">0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">},</span>
+
+                       <span class="s2">&quot;eneconv&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;eneconv_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 2</span>
+                            <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dir1&quot;</span><span class="p">:</span> <span class="s2">&quot;eq&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;dir2&quot;</span><span class="p">:</span> <span class="s2">&quot;eqBW&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ener.edr&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;ener_EQ.edr&quot;</span><span class="p">},</span>
+                            <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;y</span><span class="se">\n</span><span class="s2">c</span><span class="se">\n</span><span class="s2">c</span><span class="se">\n</span><span class="s2">c</span><span class="se">\n</span><span class="s2">c</span><span class="se">\n</span><span class="s2">c</span><span class="se">\n</span><span class="s2">c</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">},</span>
+
+                       <span class="s2">&quot;g_rms1&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;g_rms_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 4</span>
+                                 <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;eq/topol.tpr&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;traj_EQ.xtc&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;rmsd-all-atom-vs-start.xvg&quot;</span><span class="p">},</span>
+                                 <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;1</span><span class="se">\n</span><span class="s2">1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">},</span>
+
+                       <span class="s2">&quot;g_rms2&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;g_rms_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 5</span>
+                                 <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;eq/topol.tpr&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;traj_EQ.xtc&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;rmsd-backbone-vs-start.xvg&quot;</span><span class="p">},</span>
+                                 <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;4</span><span class="se">\n</span><span class="s2">4</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">},</span>
+
+                       <span class="s2">&quot;g_rms3&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;g_rms_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 6</span>
+                                 <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;eq/topol.tpr&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;traj_EQ.xtc&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;rmsd-calpha-vs-start.xvg&quot;</span><span class="p">},</span>
+                                 <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;3</span><span class="se">\n</span><span class="s2">3</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">},</span>
+
+                       <span class="s2">&quot;g_rmsf&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;g_rmsf_mpi&quot;</span><span class="p">,</span>  <span class="c1"># 7</span>
+                                 <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;eq/topol.tpr&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;src2&quot;</span><span class="p">:</span> <span class="s2">&quot;traj_EQ.xtc&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;rmsf-per-residue.xvg&quot;</span><span class="p">},</span>
+                                 <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">},</span>
+
+                       <span class="s2">&quot;set_end&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span>  <span class="c1"># 8</span>
+                                   <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;eqBW&quot;</span><span class="p">,</span>
+                                               <span class="c1">#&quot;src_files&quot;: [&quot;traj.xtc&quot;,</span>
+                                               <span class="c1"># &quot;confout.gro&quot;, &quot;topol.tpr&quot;],</span>
+                                               <span class="s2">&quot;src_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;confout.gro&quot;</span><span class="p">,</span>
+                                                             <span class="s2">&quot;topol.tpr&quot;</span><span class="p">],</span>
+                                               <span class="s2">&quot;repo_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;popc.itp&quot;</span><span class="p">,</span>
+                                                              <span class="s2">&quot;README.md&quot;</span><span class="p">,</span>
+                                                              <span class="s2">&quot;prod.mdp&quot;</span><span class="p">,</span>
+                                                              <span class="s2">&quot;load_gpcr.pml&quot;</span><span class="p">],</span>
+                                               <span class="s2">&quot;tgt_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;finalOutput&quot;</span><span class="p">}},</span>
+
+                       <span class="s2">&quot;clean_topol&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;clean_topol&quot;</span><span class="p">,</span>  <span class="c1"># 9</span>
+                                       <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;topol.top&quot;</span><span class="p">,</span>
+                                                   <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;finalOutput/topol.top&quot;</span><span class="p">}},</span>
+
+                       <span class="s2">&quot;set_end_2&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span>  <span class="c1"># 10</span>
+                                     <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;src_files&quot;</span><span class="p">:</span> <span class="p">[</span>
+                                                     <span class="s2">&quot;ffoplsaa_mod.itp&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;ffoplsaabon_mod.itp&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;ffoplsaanb_mod.itp&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;hexagon.pdb&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;protein.itp&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;lig.itp&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;ions_local.itp&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;cho.itp&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;hoh.itp&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;index.ndx&quot;</span><span class="p">,</span> <span class="s2">&quot;traj_EQ.xtc&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;ener_EQ.edr&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;rmsd-all-atom-vs-start.xvg&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;rmsd-calpha-vs-start.xvg&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;rmsd-backbone-vs-start.xvg&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;rmsf-per-residue.xvg&quot;</span><span class="p">,</span>
+                                                     <span class="s2">&quot;traj_pymol.xtc&quot;</span><span class="p">],</span>
+                                                 <span class="s2">&quot;tgt_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;finalOutput&quot;</span><span class="p">}},</span>
+
+                       <span class="s2">&quot;set_end_3&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span>  <span class="c1"># 11</span>
+                                     <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;src_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;tot_ener.xvg&quot;</span><span class="p">,</span>
+                                                               <span class="s2">&quot;tot_ener.log&quot;</span><span class="p">,</span>
+                                                               <span class="s2">&quot;temp.xvg&quot;</span><span class="p">,</span>
+                                                               <span class="s2">&quot;temp.log&quot;</span><span class="p">,</span>
+                                                               <span class="s2">&quot;pressure.xvg&quot;</span><span class="p">,</span>
+                                                               <span class="s2">&quot;pressure.log&quot;</span><span class="p">,</span>
+                                                               <span class="s2">&quot;volume.xvg&quot;</span><span class="p">,</span>
+                                                               <span class="s2">&quot;volume.log&quot;</span><span class="p">],</span>
+                                                 <span class="s2">&quot;tgt_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;finalOutput/reports&quot;</span><span class="p">}},</span>
+
+                       <span class="s2">&quot;set_end_4&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span>  <span class="c1"># 12</span>
+                                     <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;eq&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;src_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;md_eq1000.log&quot;</span><span class="p">],</span>
+                                                 <span class="s2">&quot;tgt_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;finalOutput/logs&quot;</span><span class="p">}},</span>
+
+                       <span class="s2">&quot;set_end_5&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span>  <span class="c1"># 13</span>
+                                     <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;eq&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;src_files&quot;</span><span class="p">:</span> <span class="p">[</span>
+                                                     <span class="s2">&quot;{0}/md_eq{0}.log&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                                         <span class="n">const</span><span class="p">)</span>
+                                                     <span class="k">for</span> <span class="n">const</span> <span class="ow">in</span>
+                                                     <span class="nb">range</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">200</span><span class="p">)],</span>
+                                                 <span class="s2">&quot;tgt_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;finalOutput/logs&quot;</span><span class="p">}},</span>
+
+                       <span class="s2">&quot;set_end_6&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;set_stage_init&quot;</span><span class="p">,</span>  <span class="c1"># 14</span>
+                                     <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;eqBW&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;src_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;md_eqBW.log&quot;</span><span class="p">],</span>
+                                                 <span class="s2">&quot;tgt_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;finalOutput/logs&quot;</span><span class="p">}},</span>
+
+                       <span class="s2">&quot;tar_it&quot;</span><span class="p">:</span>
+                           <span class="p">{</span><span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="s2">&quot;tar_out&quot;</span><span class="p">,</span> <span class="c1"># 15</span>
+                                  <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;finalOutput&quot;</span><span class="p">,</span>
+                                              <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;MD_output.tgz&quot;</span><span class="p">}},</span>
+                       <span class="c1">#   &quot;final_clean&quot;: {&quot;command&quot;: &quot;clean_all&quot;,</span>
+                       <span class="c1">#       &quot;options&quot;: {&quot;target_dir&quot;: &quot;&quot;,</span>
+                       <span class="c1">#           &quot;exclude&quot;: [&quot;MD_output.tgz&quot;, &quot;GROMACS.log&quot;]}},</span>
+                       <span class="p">}</span>
+
+        <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;tot_ener&quot;</span><span class="p">:</span> <span class="s2">&quot;13</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;temp&quot;</span><span class="p">:</span> <span class="s2">&quot;14</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;pressure&quot;</span><span class="p">:</span> <span class="s2">&quot;15</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;volume&quot;</span><span class="p">:</span> <span class="s2">&quot;20</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">}</span> <span class="c1"># 16 to 19</span>
+
+        <span class="k">for</span> <span class="n">option</span><span class="p">,</span> <span class="n">gro_key</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">[</span><span class="n">option</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="p">{</span><span class="s2">&quot;gromacs&quot;</span><span class="p">:</span> <span class="s2">&quot;g_energy_mpi&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;src&quot;</span><span class="p">:</span> <span class="s2">&quot;ener_EQ.edr&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;tgt&quot;</span><span class="p">:</span> <span class="s2">&quot;{0}.xvg&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">option</span><span class="p">),</span>
+                             <span class="s2">&quot;log&quot;</span><span class="p">:</span> <span class="s2">&quot;{0}.log&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">option</span><span class="p">)},</span>
+                 <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">gro_key</span><span class="p">}</span></div>
+
+<span class="c1">#  LocalWords:  pdb2gmx itp</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Esguerra, Bello, Teran.
+
+    </p>
+  </div>
+  
+   
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
