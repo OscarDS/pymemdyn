@@ -9,16 +9,16 @@ reference [1].
 The performed equilibration includes the following stages:
 ----------------------------------------------------------
 
-|   STAGE    | RESTRAINED ATOMS        | FORCE CONSTANT       | TIME           |
-|:----------:|:-----------------------:|:--------------------:|:--------------:|
-|  -         |   -                     |kJ/(mol·nm^2)         | ns             |
-|Minimization|   -                     | -                    |(Max. 500 steps)|
-|Equil. 1    |Protein Heavy Atoms      | 1000                 | 0.5            |
-|Equil. 2    |Protein Heavy Atoms      | 800                  | 0.5            |
-|Equil. 3    |Protein Heavy Atoms      | 600                  | 0.5            |
-|Equil. 4    |Protein Heavy Atoms      | 400                  | 0.5            |
-|Equil. 5    |Protein Heavy Atoms      | 200                  | 0.5            |
-|Equil. 6    |Protein C-alfa Atoms     | 200                  | 2.5            |
+|   STAGE    | RESTRAINED ATOMS           | FORCE CONSTANT       | TIME           |
+|:----------:|:--------------------------:|:--------------------:|:--------------:|
+|  -         |   -                        |kJ/(mol·nm^2)         | ns             |
+|Minimization|   -                        | -                    |(Max. 500 steps)|
+|Equil. 1    |Protein Heavy Atoms         | 1000                 | 0.5            |
+|Equil. 2    |Protein Heavy Atoms         | 800                  | 0.5            |
+|Equil. 3    |Protein Heavy Atoms         | 600                  | 0.5            |
+|Equil. 4    |Protein Heavy Atoms         | 400                  | 0.5            |
+|Equil. 5    |Protein Heavy Atoms         | 200                  | 0.5            |
+|Equil. 6    |Ballesteros-Weinstein pair  | 200                  | 2.5            |
 
 
 In this folder you will find several files related to this simulation:

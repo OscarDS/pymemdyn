@@ -1,4 +1,4 @@
-#!/home/apps/bin/python2.7
+#!/home/apps/python/2.7.6/bin/python2.7
 import argparse
 import datetime
 import logging
@@ -199,10 +199,10 @@ class Run(object):
         from django.core.mail import send_mail
         email_addr = self.dynamic.pdb.project.user_id.email
 
-        body_msg = ["You can check this dynamic at http://gpcr-modsim.org",
+        body_msg = ["You can check this dynamic at http://open.gpcr-modsim.org",
                     "/dynamic/{0}".format(self.dynamic.pk)]
         
-        send_mail("GPCR-ModSim ended a Molecular Dynamics Run",
+        send_mail("gpcr-modsim.org has completed your Molecular Dynamics simulation",
             "".join(body_msg),
             http_settings.EMAIL_HOST_USER, [email_addr])
 
@@ -233,7 +233,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description = textwrap.dedent('''\
-    == This script runs a Molecular Dynamics Run with a Dynamic PK. ==
+    == This script runs a Molecular Dynamics run with a Dynamic PK. ==
     '''))
 
     parser.add_argument('-r',
@@ -244,7 +244,7 @@ if __name__ == "__main__":
     parser.add_argument('-d',
         dest = "dynamic_pk",
         required = True,
-        help = "PK of the Dynamic to retrieve from Database (mandatory)")
+        help = "PK of the Dynamic to retrieve from database (mandatory)")
     parser.add_argument('-q',
         dest = "queue",
         help = "Queue system to use (slurm, pbs, pbs_ib and svgd supported)",

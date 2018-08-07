@@ -85,7 +85,7 @@ def clean_all(target_dir = "", exclude = []):
          """
         to_unlink_dir = os.path.join(os.getcwd(), target_dir)
         # First a security checkout to not delete up a certain point
-        minimum = "/home/gpcruser/public"
+        minimum = "/home/gpcradmin/public"
         if not to_unlink_dir.startswith(minimum): return False
         if not "dynamic" in to_unlink_dir: return False
 
