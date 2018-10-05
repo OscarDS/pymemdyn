@@ -786,7 +786,7 @@ class Wrapper(object):
                 "-ignh", "-ff", "oplsaa", "-water", "spc"]
                # "-ignh", "-ff", "oplsaa", "-water", "spc", "-chainsep", \
                # "id_or_ter", "-merge", "all"]
-               # "-ignh", "-ff", "oplsaa", "-water", "spc", "-ter"]  # addition for the NPY-NH2 capping
+               # "-ignh", "-ff", "oplsaa", "-water", "spc", "-ter"]  # addition for NPY-NH2 capping. Echo 0, or 1
 
     def _mode_tpbconv(self, kwargs):
         """

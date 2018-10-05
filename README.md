@@ -7,14 +7,14 @@ package can be  used either in a desktop environment,  or in a cluster
 with popular queuing systems such as Torque/PBS or Slurm.  
 
 
-**py-MEMdyn** is hosted in a bitbucket repository at:  
+**py-MEMdyn** is hosted in github at:  
 
-<https://bitbucket.org/gpcrmodsim/pymemdyn.git>  
+<https://github.com/GPCR-ModSim/pymemdyn>  
 
 You can download any version of **py-MEMdyn** by cloning the repository
 to your local machine using git.  
 
-You will need to create a  free personal account at bitbucket and send
+You will need to create a  free personal account at github and send
 and  e-mail  to:  [gpcruser@gmail.com](gpcruser@gmail.com)  requesting
 access to the code. After request processing from us you will be
 given access to the free repository.  
@@ -23,10 +23,10 @@ To install **py-MEMdyn** follow these steps:
 
 1.  Clone the current version of **py-MEMdyn**
 
-        git clone https://username@bitbucket.org/gpcrmodsim/pymemdyn.git
+        git clone https://username@github.com/GPCR-ModSim/pymemdyn.git
 
     Make sure to change *username* to the one you have created at
-    bitbucket.  
+    github.  
 
 2.  The previous command will create a *pymemdyn* directory. Now you
     have to tell your operating system how to find that folder. You
@@ -95,8 +95,8 @@ To install **py-MEMdyn** follow these steps:
 
 
 3.  Updates are very easy thanks to the git versioning system. Once
-    **py-MEMdyn** has been downloaded into its own *pymemdyn* folder you
-    just have to move to it and pull the newest changes:
+    **py-MEMdyn** has been downloaded (cloned) into its own *pymemdyn* folder 
+    you just have to move to it and pull the newest changes:
 
         cd /home/username/software/pymemdyn
         git pull   
@@ -105,7 +105,7 @@ To install **py-MEMdyn** follow these steps:
     example the stable version 1.0 which works well and has been tested
     extensively again gromacs version 4.0.5 can be cloned with:
 
-        git clone https://username@bitbucket.org/gpcrmodsim/pymemdyn \
+        git clone https://username@github.com/GPCR-ModSim/pymemdyn.git \
         --branch stable/1.0 --single-branch pymemdyn-1.0
 
     Now you will have to change your .bashrc or .cshrc files in your
@@ -116,10 +116,10 @@ To install **py-MEMdyn** follow these steps:
     installed in your system. To do this you will need to edit the
     settings.py file with any text editor (“vi” and “emacs” are common
     options in the unix environment). Make sure that only one line is
-    uncommented, looking like: GROMACS\_PATH = /opt/gromacs405/bin
+    uncommented, looking like: GROMACS\_PATH = /opt/gromacs-4.6.7/bin
     Provided that in your case gromacs is installed in /opt. The program
     will prepend this line to the binaries names, so calling
-    “/opt/gromacs405/bin/grompp” should point to that binary.  
+    “/opt/gromacs-4.6.7/bin/grompp” should point to that binary.  
 
 
 ### Modeling Modules 
