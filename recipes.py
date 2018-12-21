@@ -112,6 +112,8 @@ class BasicInit(object):
              "set_grompp": {"command": "set_grompp",  # 22
                             "options": {"steep.mdp": "steep.mdp",
                                         "popc.itp": "popc.itp",
+                                        "spc.itp": "spc.itp",
+                                        "ions.itp":"ions.itp",
                                         # "ffoplsaanb_mod.itp": "ffoplsaanb_mod.itp",
                                         "ffoplsaabon_mod.itp": "ffoplsaabon_mod.itp",
                                         "ffoplsaa_mod.itp": "ffoplsaa_mod.itp"}},

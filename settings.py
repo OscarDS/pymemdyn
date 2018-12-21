@@ -20,7 +20,8 @@ TEMPLATES_DIR = os.path.join(ROOT_DIR, "templates")
 #GROMACS_PATH = "/software/apps/gromacs/4.6.3/g472/bin/"             #Triolith
 #GROMACS_PATH = "/sw/bin/"                                           #Standalone in Mac Fink
 #GROMACS_PATH = "/Users/esguerra/software/gromacs-4.6.5/bin/"        #Standalone in Mac
-GROMACS_PATH = "/Users/esguerra/software/gromacs-2016.3/bin/"        #Standalone in Mac
+#GROMACS_PATH = "/Users/esguerra/software/gromacs-2016.3/bin/"       #Standalone in Mac
+GROMACS_PATH = "/home/apps/gromacs/2016.4/bin/"                      # csb
 #GROMACS_PATH = "/c3se/apps/Glenn/gromacs/4.6.3-p20130821-gcc48/bin" #Glenn at Chalmers
 #GROMACS_PATH = "/c3se/apps/Glenn/gromacs/5.0.4-gcc48-cuda/bin/"     #Glenn GPU at Chalmers
 #GROMACS_PATH = "/c3se/NOBACKUP/apps/Hebbe/EB/software/GROMACS/4.6.7-intel-2015b-hybrid.wip/GROMACS/4.6.7-intel-2015b-hybrid/bin" #Hebbe at Chalmers
@@ -28,11 +29,11 @@ GROMACS_PATH = "/Users/esguerra/software/gromacs-2016.3/bin/"        #Standalone
 #GROMACS_PATH = "/lap/gromacs/4.6.5/bin"                             #Abisko
 
 # Which gmx type is being used
-GMX_TYPE = "gmx_mpi"
+GMX_TYPE = "gmx"
 
 # Define a path to the clustalw binary.
-CLUSTAL_BIN = os.path.join(ROOT_DIR, ".bin/clustalw_mac")
-#CLUSTAL_BIN = os.path.join(ROOT_DIR, ".bin/clustalw_linux")
+#CLUSTAL_BIN = os.path.join(ROOT_DIR, ".bin/clustalw_mac")
+CLUSTAL_BIN = os.path.join(ROOT_DIR, ".bin/clustalw_linux")
 
 # Choose which queuing system to use. Look inside queue.py.
 QUEUE = ""
