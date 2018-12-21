@@ -1,4 +1,4 @@
-pyMEMdyn Version 1.3
+pyMEMdyn Development Version 1.5
 ================================================================================
 
 pyMEMdyn is  a standalone *python*  package to setup  membrane molecular
@@ -153,9 +153,9 @@ and can then be passed  to other objects.
 
 ### Execution Modules
 
-- **gromacs.py**. Defines the Gromacs and Wrapper objects.  * Gromacs will
-  load the  objects to be modeled,  the modeling recipe, and  run it.  *
-  Wrapper is a  proxy for gromacs commands. When a  recipe entry is sent
+- **gromacs.py**. Defines the *Gromacs* and *Wrapper* classes.  
+  *Gromacs* will load the  objects to be modeled,  the modeling recipe, and  run it.
+  *Wrapper* is a  proxy for gromacs commands. When a  recipe entry is sent
   to it this returns the command to be run.
 
 
@@ -169,6 +169,14 @@ and can then be passed  to other objects.
 
 Changelog
 --------------------------------------------------------------------------------
+
+### Changes from version 1.3 to 1.5development
+
+- Friday, December 21, 2018
+
+Starting to port to gromacs >= 5.0
+Issues with genbox and stderr logic.
+
 
 ### Changes from version 1.2 to 1.3
 
