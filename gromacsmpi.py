@@ -633,8 +633,8 @@ class Wrapper(object):
         else:
             if (mode == "eneconv_mpi"):  # ENECONV
                 command.extend(self._mode_eneconv(options))
-            if (mode == "genbox_mpi"):   # GENBOX
-                command.extend(self._mode_genbox(options))
+            if (mode == "solvate_mpi"):   # solvate
+                command.extend(self._mode_solvate(options))
             if (mode == "genion_mpi"):   # GENION
                 command.extend(self._mode_genion(options))
             if (mode == "g_rms_mpi"):    # G_RMS
@@ -704,8 +704,8 @@ class Wrapper(object):
                 "-o", self._setDir(kwargs["tgt"]),
                 "-res"]
 
-    def _mode_genbox(self, kwargs):
-        '''_mode_genbox: Wrap the genbox command options'''
+    def _mode_solvate(self, kwargs):
+        '''_mode_solvate: Wrap the solvate command options'''
         return ["-cp", self._setDir(kwargs["cp"]),
                 "-cs", self._setDir(kwargs["cs"]),
                 "-p", self._setDir(kwargs["top"]),

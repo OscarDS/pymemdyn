@@ -574,6 +574,8 @@ class Wrapper(object):
         self.work_dir = os.getcwd()
         # The gromacs to be used
         self.gromacs_dir = settings.GROMACS_PATH
+        # The gmx type
+        self.gmx_type = settings.GMX_TYPE
         # The directory where all the files live
         self.repo_dir = settings.TEMPLATES_DIR
 
@@ -601,7 +603,7 @@ class Wrapper(object):
             tgt = self._setDir(kwargs["options"]["tgt"])
         options = kwargs["options"]
 
-        command = [os.path.join(self.gromacs_dir, mode)]
+        command = [os.path.join(self.gromacs_dir, self.gmx_type), mode]
         if "queue" in kwargs.keys():
             if hasattr(kwargs["queue"], mode):
                 # If we got a queue enabled for this command, use it
@@ -633,8 +635,8 @@ class Wrapper(object):
         else:
             if (mode == "eneconv"):  # ENECONV
                 command.extend(self._mode_eneconv(options))
-            if (mode == "genbox"):  # GENBOX
-                command.extend(self._mode_genbox(options))
+            if (mode == "solvate"):  # SOLVATE
+                command.extend(self._mode_solvate(options))
             if (mode == "genion"):  # GENION
                 command.extend(self._mode_genion(options))
             if (mode == "g_rms"):  # G_RMS
@@ -704,8 +706,8 @@ class Wrapper(object):
                 "-o", self._setDir(kwargs["tgt"]),
                 "-res"]
 
-    def _mode_genbox(self, kwargs):
-        '''_mode_genbox: Wrap the genbox command options'''
+    def _mode_solvate(self, kwargs):
+        '''_mode_solvate: Wrap the solvate command options'''
         return ["-cp", self._setDir(kwargs["cp"]),
                 "-cs", self._setDir(kwargs["cs"]),
                 "-p", self._setDir(kwargs["top"]),
@@ -781,12 +783,14 @@ class Wrapper(object):
         """
         _mode_pdb2gmx: Wrap the pdb2gmx command options
         """
-        return ["-p", self._setDir(kwargs["top"]),
+        command = ["-p", self._setDir(kwargs["top"]),
                 "-i", self._setDir("posre.itp"),
                 "-ignh", "-ff", "oplsaa", "-water", "spc"]
-               # "-ignh", "-ff", "oplsaa", "-water", "spc", "-chainsep", \
-               # "id_or_ter", "-merge", "all"]
-               # "-ignh", "-ff", "oplsaa", "-water", "spc", "-ter"]  # addition for NPY-NH2 capping. Echo 0, or 1
+        # "-ignh", "-ff", "oplsaa", "-water", "spc", "-chainsep", \
+        # "id_or_ter", "-merge", "all"]
+        # "-ignh", "-ff", "oplsaa", "-water", "spc", "-ter"]  # addition for NPY-NH2 capping. Echo 0, or 1
+
+        return command
 
     def _mode_tpbconv(self, kwargs):
         """

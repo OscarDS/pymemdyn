@@ -17,7 +17,7 @@ sed -i '' 's/"gromacs": "make_ndx"/"gromacs": "make_ndx_mpi"/g' recipesmpi.py
 sed -i '' 's/"gromacs": "genrestr"/"gromacs": "genrestr_mpi"/g' recipesmpi.py
 sed -i '' 's/"gromacs": "g_energy"/"gromacs": "g_energy_mpi"/g' recipesmpi.py
 sed -i '' 's/"gromacs": "eneconv"/"gromacs": "eneconv_mpi"/g' recipesmpi.py
-sed -i '' 's/"gromacs": "genbox"/"gromacs": "genbox_mpi"/g' recipesmpi.py
+sed -i '' 's/"gromacs": "solvate"/"gromacs": "solvate_mpi"/g' recipesmpi.py
 sed -i '' 's/"gromacs": "genion"/"gromacs": "genion_mpi"/g' recipesmpi.py
 sed -i '' 's/"gromacs": "g_rms"/"gromacs": "g_rms_mpi"/g' recipesmpi.py
 sed -i '' 's/"gromacs": "trjcat"/"gromacs": "trjcat_mpi"/g' recipesmpi.py

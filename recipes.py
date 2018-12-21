@@ -7,8 +7,8 @@ class BasicInit(object):
         self.steps = ["pdb2gmx", "set_itp", "concat", "editconf",
                       "set_protein_size", "editconf2", "set_protein_size2",
                       "set_popc", "editconf3", "editconf4", "make_topol",
-                      "editconf5", "genbox", "set_water", "editconf6",
-                      "editconf7", "genbox2", "count_lipids", "make_topol2",
+                      "editconf5", "solvate", "set_water", "editconf6",
+                      "editconf7", "solvate2", "count_lipids", "make_topol2",
                       "make_topol_lipids", "make_ffoplsaanb", "set_grompp",
                       "set_chains", "make_ndx", "grompp", "trjconv",
                       "get_charge", "genion", "grompp2", "trjconv2",
@@ -70,7 +70,7 @@ class BasicInit(object):
                                        "tgt": "proteinopls.pdb",
                                        "translate": ["0", "0", "0"]}},
 
-             "genbox": {"gromacs": "genbox",  # 13
+             "solvate": {"gromacs": "solvate",  # 13
                         "options": {"cp": "proteinopls.pdb",
                                     "cs": "popc.pdb",
                                     "tgt": "protpopc.pdb",
@@ -91,7 +91,7 @@ class BasicInit(object):
                                        "angles": ["90", "90", "120"],
                                        "bt": "tric"}},
 
-             "genbox2": {"gromacs": "genbox",  # 17
+             "solvate2": {"gromacs": "solvate",  # 17
                          "options": {"cp": "protpopc.pdb",
                                      "cs": "water.pdb",
                                      "tgt": "tmp.pdb",
