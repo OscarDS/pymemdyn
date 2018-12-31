@@ -648,6 +648,7 @@ class Wrapper(object):
             if (mode == "trjcat"):  # TRJCAT
                 command.extend(self._mode_trjcat(options))
             if (mode == "mdrun"):  # MDRUN_SLURM
+                command.extend(self._mode_mdrun(options))
                 pass
                 # command.extend(self._mode_mdrun(options))
 
