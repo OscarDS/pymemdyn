@@ -752,7 +752,7 @@ class Wrapper(object):
         """
         _mode_grompp: Wrap the grompp command options
         """
-        command = ["-maxwarn", " 2",
+        command = ["-maxwarn", " 3",
                    "-c", self._setDir(kwargs["src2"]),
                    "-p", self._setDir(kwargs["top"]),
                    "-po", self._setDir("mdout.mdp")]
