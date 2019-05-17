@@ -157,7 +157,7 @@ class Run(object):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog='pymemdyn',
-        version='1.3',
+        version='1.5',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description = ' == Setup Molecular Dynamics for Membrane Proteins given a PDB. == ')
 

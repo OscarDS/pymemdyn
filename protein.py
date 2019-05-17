@@ -156,7 +156,7 @@ class Monomer(object):
                     new_line = "".join(new_line)
             pdb_out.write(new_line)
 
-        if replacing: print "Removed chain id from your protein pdb!"
+        if replacing: print ("Removed chain id from your protein pdb!")
         pdb.close()
         pdb_out.close()
  
@@ -270,17 +270,18 @@ class Ligand(Compound):
                     # just be better to give a better error message stating
                     # to check consistency between the pdb file and the
                     # .ff (parameters) file
-                    print "Atom {0} has no field definition".format(data[1])
+                    print ("Check your lig.ff")
+                    print ("Atom {0} has no field definition".format(data[1]))
                     #return False
                 if atoms[molecules[data[3]][data[2]]] not in\
                     molecules[data[3]].keys():
-                    print "Atom {0} has a wrong field definition. Check .pdb \
+                    print ("Atom {0} has a wrong field definition. Check .pdb \
                     and .ff files consistency".format(
-                        data[1])
-                    print "Atom names in lig.pdb"
-                    print molecules[data[3]].keys()
-                    print "Atom name in lig.ff"
-                    print atoms[molecules[data[3]][data[2]]]
+                        data[1]))
+                    print ("Atom names in lig.pdb")
+                    print (molecules[data[3]].keys())
+                    print ("Atom name in lig.ff")
+                    print (atoms[molecules[data[3]][data[2]]])
                     #return False
 
         return True
@@ -431,7 +432,7 @@ class Cholesterol(Compound):
                    new_line = new_line.replace(line.split()[3], "CHO")
            pdb_out.write(new_line)
 
-       if replacing: print "Made some CHO replacements in cho.pdb!"
+       if replacing: print ("Made some CHO replacements in cho.pdb!")
        pdb.close()
        pdb_out.close()
 
@@ -590,7 +591,7 @@ class Alosteric(Compound):
                    new_line = new_line.replace(line.split()[3], "ALO")
            pdb_out.write(new_line)
 
-       if replacing: print "Made some ALO replacements in %s!" % self.pdb
+       if replacing: print ("Made some ALO replacements in %s!" % self.pdb)
        pdb.close()
        pdb_out.close()
 
