@@ -1,4 +1,4 @@
-pyMEMdyn Version 1.3
+pyMEMdyn Version 1.4
 ================================================================================
 
 pyMEMdyn is  a standalone *python*  package to setup  membrane molecular
@@ -7,23 +7,23 @@ package can be  used either in a desktop environment,  or in a cluster
 with popular queuing systems such as Torque/PBS or Slurm.  
 
 
-**py-MEMdyn** is hosted in a bitbucket repository at:  
+**py-MEMdyn** is hosted in github at:  
 
-<https://bitbucket.org/gpcrmodsim/pymemdyn.git>  
+<https://github.com/GPCR-ModSim/pymemdyn>
 
 You can download any version of **py-MEMdyn** by cloning the repository
 to your local machine using git.  
 
-You will need to create a  free personal account at bitbucket and send
+You will need to create a  free personal account at github and send
 and  e-mail  to:  [gpcruser@gmail.com](gpcruser@gmail.com)  requesting
 access to the code. After request processing from us you will be
 given access to the free repository.  
 
 To install **py-MEMdyn** follow these steps:  
 
-1.  Clone the Version 1.3 of **py-MEMdyn**
+1.  Clone Version 1.4 of **py-MEMdyn** for python 3.7 (for Python 2.7 clone stable/1.3):  
 
-        git clone -b stable/1.3 https://username@bitbucket.org/gpcrmodsim/pymemdyn.git pymemdyn
+        git clone -b stable/1.4 https://esguerra@github.com/GPCR-ModSim/pymemdyn pymemdyn
 
     Make sure to change *username* to the one you have created at
     bitbucket.  
@@ -31,7 +31,7 @@ To install **py-MEMdyn** follow these steps:
 2.  The previous command will create a *pymemdyn* directory. Now you
     have to tell your operating system how to find that folder. You
     achieve this by declaring the location of the directory in a .bashrc
-    file or .cshrc file in your home folder. An example of what you will
+    file .cshrc or .zshrc file in your home folder. An example of what you will
     have to include in your .bashrc file follows:
 
         export PYMEMDYN=/home/username/software/pymemdyn
@@ -169,6 +169,16 @@ and can then be passed  to other objects.
 
 Changelog
 --------------------------------------------------------------------------------
+
+### Changes from version 1.3 to 1.4
+
+- Saturday, September 12, 2020
+
+Now pymemdyn runs in Python3. Has been tested only with python 3.7 but hopefully
+will work with python3 in general. A needed mac OSX Catalina binary for clustalw
+is included. There might still be python2 to python3 compatibility issues 
+lurking somewhere. Please report them if you see them. 
+
 
 ### Changes from version 1.2 to 1.3
 
