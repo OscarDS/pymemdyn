@@ -18,7 +18,7 @@ class IOGromacsError(GromacsError):
 class GromacsMessages(object):
     """
     Load an error message and split it along as many properties as
-    posible
+    possible
     """
 
     # Map the messages with the errors
@@ -26,7 +26,7 @@ class GromacsMessages(object):
          "Can not open file": IOGromacsError,
          # FIXME: Clearly the following is not IOError
          "srun: error: Unable to create job step": IOGromacsError,
-        }
+         }
 
     def __init__(self, gro_err="", command="", *args, **kwargs):
         """
@@ -35,13 +35,13 @@ class GromacsMessages(object):
         """
         self.error = False
         self.command = command
-        self.gro_err = gro_err.split("\n")
+        self.gro_err = gro_err.decode('utf-8').split("\n")
 
         self.check()
 
     def check(self):
         """
-        Check if the GROMACS error message have any of the known error
+        Check if the GROMACS error message has any of the known error
         messages. Set the self.error to the value of the error
         """
 
@@ -55,9 +55,9 @@ def test_run(command):
     import subprocess
     c = ["/home/apps/gromacs-4.6.5/bin/" + command]
     p = subprocess.Popen(c,
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE,
-        stdin = subprocess.PIPE)
+                         stdout = subprocess.PIPE,
+                         stderr = subprocess.PIPE,
+                         stdin = subprocess.PIPE)
     out, err = p.communicate("4\n")
     return err
 

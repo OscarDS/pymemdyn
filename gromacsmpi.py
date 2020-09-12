@@ -226,7 +226,7 @@ class Gromacs(object):
         manual_log: Redirect the output to file in command["options"]["log"]
         """
         log = open(command["options"]["log"], "w")
-        log.writelines(output)
+        log.writelines(str(output))
         log.close()
 
         return True

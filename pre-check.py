@@ -8,7 +8,7 @@ def gromacs_check():
     Verify the gromacs paths
     """
     if not os.path.isdir(settings.GROMACS_PATH):
-        print "Invalid GROMACS_PATH: '%s'" % settings.GROMACS_PATH
+        print ("Invalid GROMACS_PATH: '%s'" % settings.GROMACS_PATH)
         return False
 
     return True
@@ -29,13 +29,13 @@ def queue_check():
             mdrun = getattr(queue, queues[settings.QUEUE])().mdrun
             # And check if it exists
             if not os.path.isfile(mdrun):
-                print "Queue doesn't match with Gromacs path: '%s'" % mdrun
+                print ("Queue doesn't match with Gromacs path: '%s'" % mdrun)
                 return False
         else:
-            print "Bad defined queue: '%s'" % settings.QUEUE
+            print ("Bad defined queue: '%s'" % settings.QUEUE)
             return False
     else:
-        print "Bad defined queue: '%s'" % settings.QUEUE
+        print ("Bad defined queue: '%s'" % settings.QUEUE)
         return False
 
     return True
@@ -51,17 +51,17 @@ def repo_dir():
         "ffoplsaabon_mod.itp", "ffoplsaanb_lip.itp", "steep.mdp"]
 
     if not os.path.isdir(settings.TEMPLATES_DIR):
-        print "Invalid TEMPLATES_DIR: '%s'" % settings.TEMPLATES_DIR
+        print ("Invalid TEMPLATES_DIR: '%s'" % settings.TEMPLATES_DIR)
         return False
 
     current_files = os.listdir(settings.TEMPLATES_DIR)
     for f in repo_files:
         if f not in current_files:
-            print "'%s' expected to be in %s" % (f, settings.TEMPLATES_DIR)
+            print ("'%s' expected to be in %s" % (f, settings.TEMPLATES_DIR))
             return False
 
     return True
 
 if __name__ == "__main__":
     if repo_dir() and gromacs_check() and queue_check():
-        print 'All checks passed OK!'
+        print ('All checks passed OK!')
