@@ -23,7 +23,7 @@ To install **py-MEMdyn** follow these steps:
 
 1.  Clone Version 1.4 of **py-MEMdyn** for python 3.7 (for Python 2.7 clone stable/1.3):  
 
-        git clone -b stable/1.4 https://esguerra@github.com/GPCR-ModSim/pymemdyn pymemdyn
+        git clone -b stable/1.4 https://username@github.com/GPCR-ModSim/pymemdyn pymemdyn
 
     Make sure to change *username* to the one you have created at
     github.  
