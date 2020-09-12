@@ -340,7 +340,7 @@ class Gromacs(object):
                     f(**command["options"])
                 else:
                     f()
-                logging.debug("Function " + str(f.__doc__))
+                logging.debug("FUNCTION: " + str(f.__doc__))
 
         return True
 
