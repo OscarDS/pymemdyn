@@ -45,7 +45,7 @@ class NoQueue(Queue):
         sh.write("cd %s\n" % workdir)
         sh.write("%s %s\n" % (self.mdrun, " ".join(options)))
         sh.close()
-        os.chmod(self.sh, 0755)
+        os.chmod(self.sh, 0o755)
 
         return True
 
@@ -85,7 +85,7 @@ class Slurm(Queue):
         sh.write("%s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options)))
 #        sh.write("mpprun %s %s -v&> mdrun.log\n" % (self.mdrun, " ".join(options))) # Triolith needs mpprun
         sh.close()
-        os.chmod(self.sh, 0755)
+        os.chmod(self.sh, 0o755)
 
         return True
 
@@ -129,7 +129,7 @@ class PBS(Queue):
         sh.write("mpirun %s %s -v &>mdrun.log\n" \
             % (self.mdrun, " ".join(options)))
         sh.close()
-        os.chmod(self.sh, 0755)
+        os.chmod(self.sh, 0o755)
 
         return True
 
@@ -168,7 +168,7 @@ class PBS_IB(Queue):
         sh.write("mpirun %s %s -v &>mdrun.log\n" \
             % (self.mdrun, " ".join(options)))
         sh.close()
-        os.chmod(self.sh, 0755)
+        os.chmod(self.sh, 0o755)
 
         return True
 
@@ -208,7 +208,7 @@ class Svgd(Queue):
         sh.write("%s -np $NSLOTS %s -v &>mdrun.log\n" \
             % (self.mdrun, " ".join(options)))
         sh.close()
-        os.chmod(self.sh, 0755)
+        os.chmod(self.sh, 0o755)
 
         return True
 

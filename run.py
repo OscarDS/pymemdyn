@@ -51,7 +51,7 @@ class Run(object):
             "ions": "Ions",
             "cho": "Cholesterol"}
 
-        for sugar_type, class_name in sugars.iteritems():
+        for sugar_type, class_name in sugars.items():
             if getattr(self, sugar_type):
                 base_name = getattr(self, sugar_type)
                 setattr(self,
@@ -205,7 +205,7 @@ if __name__ == "__main__":
 
     if not (os.path.isdir(args.own_dir)):
         os.makedirs(args.own_dir)
-        print "Created working dir {0}".format(args.own_dir)
+        print ("Created working dir {0}".format(args.own_dir))
     os.chdir(args.own_dir)
 
     run = Run(own_dir = args.own_dir,

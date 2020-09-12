@@ -1,3 +1,4 @@
+import functools
 import logging
 import os
 import shutil
@@ -16,9 +17,10 @@ class Gromacs(object):
         self.broker = kwargs.get("broker") or broker.Printing()
         self._membrane_complex = None
         self.wrapper = Wrapper()
-        logging.basicConfig(filename="GROMACS.log",
-                            level=logging.DEBUG,
-                            format='%(message)s')
+        logging.basicConfig(filename='GROMACS.log',
+                            format='%(asctime)s %(message)s',
+                            datefmt='%m/%d/%Y %I:%M:%S',
+                            level=logging.DEBUG)
         if "membrane_complex" in kwargs.keys():
             self.set_membrane_complex(kwargs["membrane_complex"])
             self.tpr = \
@@ -81,7 +83,7 @@ class Gromacs(object):
         # Now we are looking for this line:
         # System has non-zero total charge: 6.000002e+00
         charge = 0
-        for line in err.split("\n"):
+        for line in err.decode("utf-8").split("\n"):
             if "total charge" in line:
                 # In gromacs 4.6.5 the charge is not displayed in scientific notation.
                 # so this will result in giving a charge of 5, for a charge of 5.99999
@@ -113,7 +115,7 @@ class Gromacs(object):
                                              "options": kwargs,
                                              "input": "q\n"})
 
-        for line in out.split("\n"):
+        for line in out.decode("utf-8").split("\n"):
             #            if "Water_and_ions" in line and "atoms" in line:
             if "atoms" in line:
                 self.n_groups = int(line.split()[0])
@@ -130,9 +132,12 @@ class Gromacs(object):
                                              "options": kwargs,
                                              "input": "q\n"})
 
-        for line in out.split("\n"):
+        for line in out.decode("utf-8").split("\n"):
+#        for line in out.decode().split():
+            print(line)
             if "SOL" in line:
                 self.n_sol = int(line.split()[0])
+
         return True
 
     def make_ndx(self, **kwargs):
@@ -171,8 +176,6 @@ class Gromacs(object):
         input += " r POP | r CHO | r LIP \n"
         input += "name {0} membr\n".format(n_group)
 
-
-
         # This makes a separate group for each chain (if more than one)
         if type(self.membrane_complex.complex.monomer) == protein.Dimer:
             for chain in self.membrane_complex.complex.monomer.chains:
@@ -198,8 +201,11 @@ class Gromacs(object):
                                              "input": input})
 
         logging.debug("make_ndx command")
-        logging.debug(err)
-        logging.debug(out)
+#        logging.debug(err)
+#        logging.debug(out)
+        logging.debug(err.decode().strip('\n'))
+        logging.debug(out.decode().strip('\n'))
+
         # We need to set the eq.mdp with these new groups
         # NO LONGER NEEDED AS eq.mdp IS NOW GENERIC
         # utils.tune_mdp(groups)
@@ -224,9 +230,12 @@ class Gromacs(object):
     def manual_log(self, command, output):
         """
         manual_log: Redirect the output to file in command["options"]["log"]
+        Some commands can't be logged via flag, so one has to catch and
+        redirect stdout and stderr
         """
         log = open(command["options"]["log"], "w")
-        log.writelines(output)
+        log.writelines(str(output.decode('utf8').strip('\n')))
+        print(str(output.decode('utf8').strip('\n')))
         log.close()
 
         return True
@@ -306,18 +315,18 @@ class Gromacs(object):
                                      self.recipe.breaks[command_name])
 
             # NOW RUN IT !
-
             self.broker.dispatch("{0} Step ({1}/{2}): {3}.".format(
                 self.recipe.__class__.__name__,
                 n + 1, len(self.recipe.steps),
                 command_name))
-            if command.has_key("gromacs"):
+            if ("gromacs") in command:
+#            if command.has_key("gromacs"):
                 # Either run a Gromacs pure command...
                 if hasattr(self, "queue"): command["queue"] = self.queue
                 out, err = self.wrapper.run_command(command)
                 logging.debug(" ".join(self.wrapper.generate_command(command)))
-                logging.debug(err)
-                logging.debug(out)
+                logging.debug(err.decode().strip('\n'))
+                logging.debug(out.decode().strip('\n'))
                 ## Next line tests Gromacs output checking for known errors
                 groerrors.GromacsMessages(gro_err=err,
                                           command=command["gromacs"])
@@ -336,11 +345,12 @@ class Gromacs(object):
                     # Fallback to the utils module
                     f = getattr(utils, command["command"])
 
-                if command.has_key("options"):
+#                if command.has_key("options"):
+                if ("options") in command:
                     f(**command["options"])
                 else:
                     f()
-                logging.debug("Function " + str(f.__doc__))
+                logging.debug("Function " + str(f.__doc__).strip())
 
         return True
 
@@ -465,11 +475,11 @@ class Gromacs(object):
         """
         set_options: Set break options from recipe
         """
-        for option, value in breaks.iteritems():
+        for option, value in breaks.items():
             # This is a hack to get the attribute recursively,
             # feeding getattr with dot-splitted string thanks to reduce
             # Here we charge some commands with options calculated
-            new_option = reduce(getattr,
+            new_option = functools.reduce(getattr,
                                 value.split("."),
                                 self)
             options[option] = new_option
@@ -847,7 +857,7 @@ class Wrapper(object):
                                  stdin=subprocess.PIPE,
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
-            gro_out, gro_errs = p.communicate(kwargs["input"])
+            gro_out, gro_errs = p.communicate(kwargs["input"].encode())
         else:
             p = subprocess.Popen(command,
                                  stdout=subprocess.PIPE,
@@ -864,3 +874,4 @@ class Wrapper(object):
         _setDir: Expand a filename with the work dir to save code space
         """
         return os.path.join(self.work_dir, filename)
+
