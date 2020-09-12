@@ -26,7 +26,7 @@ To install **py-MEMdyn** follow these steps:
         git clone -b stable/1.4 https://esguerra@github.com/GPCR-ModSim/pymemdyn pymemdyn
 
     Make sure to change *username* to the one you have created at
-    bitbucket.  
+    github.  
 
 2.  The previous command will create a *pymemdyn* directory. Now you
     have to tell your operating system how to find that folder. You
@@ -105,7 +105,7 @@ To install **py-MEMdyn** follow these steps:
     example the stable version 1.0 which works well and has been tested
     extensively again gromacs version 4.0.5 can be cloned with:
 
-        git clone https://username@bitbucket.org/gpcrmodsim/pymemdyn \
+        git clone https://username@github.org/gpcrmodsim/pymemdyn \
         --branch stable/1.0 --single-branch pymemdyn-1.0
 
     Now you will have to change your .bashrc or .cshrc files in your
