@@ -350,7 +350,7 @@ class Gromacs(object):
                     f(**command["options"])
                 else:
                     f()
-                logging.debug("Function " + str(f.__doc__).strip())
+                logging.debug("FUNCTION: " + str(f.__doc__).strip())
 
         return True
 

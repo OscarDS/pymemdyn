@@ -236,7 +236,7 @@ if __name__ == "__main__":
               debug = args.debug)
 
 
-#    run.clean()
+    run.clean()
     # Rewrite old GROMACS.log file if on a re-run
     f = open("GROMACS.log", "w")
     f.close()
@@ -250,5 +250,5 @@ if __name__ == "__main__":
 #                            datefmt='%m/%d/%Y %I:%M:%S',
 #                            level=logging.DEBUG)
 
-#    run.moldyn()
-    run.light_moldyn()
+    run.moldyn()
+#    run.light_moldyn()
