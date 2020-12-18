@@ -69,11 +69,11 @@ def check_forces(pdb, itp, ffield):
             if molecules[data[3]][data[2]] not in atoms.keys():
                 # Some atoms in the pdb have no definition in force field
                 # TODO : add a guessing function
-                print "Atom {0} has no field definition".format(data[1])
+                print ("Atom {0} has no field definition".format(data[1]))
                 # return False
             if atoms[molecules[data[3]][data[2]]] not in\
                 molecules[data[3]].keys():
-                print "Atom {0} has a wrong field definition".format(data[1])
+                print ("Atom {0} has a wrong field definition".format(data[1]))
                 # return False
 
     return True
@@ -100,7 +100,7 @@ def clean_all(target_dir = "", exclude = []):
                 if os.path.isdir(target): shutil.rmtree(target)
             else:
                 # Changing remaining files to be downloadable by web user
-                os.chmod(target, 0775)
+                os.chmod(target, 0o755)
                 os.chown(target, -1, 8)
 
         return True
@@ -306,8 +306,8 @@ def make_topol(template_dir = \
     for c in order:
         if locals()[c]:
 #            itp_name = comps[c]["itp_name"]
-#            print c
-#            print comps[c].keys()
+#            print (c)
+#            print (comps[c].keys())
             if "itp_name" in comps[c].keys():
                 posre_name = comps[c]["posre_name"]
                 itp_include.append('#include "{0}"'.format(comps[c]["itp_name"]))
@@ -318,7 +318,8 @@ def make_topol(template_dir = \
                     comps[c]["posre_name"])),
                 '#endif'])
 
-            if comps[c].has_key("name"):
+            # if comps[c].has_key("name"):
+            if ("name") in comps[c]:
                 comps[c]["line"] = "{0} {1}".format(
                     comps[c]["name"], locals()[c])
             else:

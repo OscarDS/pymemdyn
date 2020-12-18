@@ -17,7 +17,7 @@ class Printing(object):
         """
         Simply print the msg passed
         """
-        print msg
+        print (msg)
 
 
 class DjangoDB(object):

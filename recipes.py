@@ -699,7 +699,7 @@ class BasicCollectResults(object):
                    "pressure": "15\n",
                    "volume": "20\n"} # 16 to 19
 
-        for option, gro_key in options.iteritems():
+        for option, gro_key in options.items():
             self.recipe[option] = \
                 {"gromacs": "g_energy",
                  "options": {"src": "ener_EQ.edr",

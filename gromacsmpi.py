@@ -226,7 +226,7 @@ class Gromacs(object):
         manual_log: Redirect the output to file in command["options"]["log"]
         """
         log = open(command["options"]["log"], "w")
-        log.writelines(output)
+        log.writelines(str(output))
         log.close()
 
         return True
@@ -340,7 +340,7 @@ class Gromacs(object):
                     f(**command["options"])
                 else:
                     f()
-                logging.debug("Function " + str(f.__doc__))
+                logging.debug("FUNCTION: " + str(f.__doc__))
 
         return True
 

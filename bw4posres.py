@@ -17,7 +17,7 @@
     clustalo --profile1=GPCR_inactive_BWtags.aln --profile2=mod1.fasta \
     -o withbwtags.aln --outfmt=clustal --wrap=1000 --force -v -v -v
 
- 3. Translate Marks into properly identifies residues in sequence. Notice that
+ 3. Translate Marks into properly identified residues in sequence. Notice that
     this depends on a dictionary which uses the Ballesteros-Weinstein numbering.
 
  4. From sequence ID. pull the atom-numbers of corresponding c-alphas
@@ -38,24 +38,24 @@ import settings as s
 # the following path: /lib/python2.7/site-packages/Bio
 # For now we are just extending the dictionary to the various possible cases
 # for Histidines, that is, HIA, HIC, HID, HIE, HIP, HIQ
-protein_letters_3to1 = {'ALA':'A','ARG':'R','ASN':'N','ASP':'D','CYS':'C',
-                        'GLU':'E','GLN':'Q','GLY':'G','HIA':'H','HIC':'H',
-                        'HID':'H','HIE':'H','HIP':'H','HIQ':'H','HIS':'H',
-                        'ILE':'I','LEU':'L','LYS':'K','MET':'M','PHE':'F',
-                        'PRO':'P','SER':'S','THR':'T','TRP':'W','TYR':'Y',
-                        'VAL':'V'}
+protein_letters_3to1 = {'ALA': 'A', 'ARG': 'R', 'ASN': 'N', 'ASP': 'D', 'CYS': 'C',
+                        'GLU': 'E', 'GLN': 'Q', 'GLY': 'G', 'HIA': 'H', 'HIC': 'H',
+                        'HID': 'H', 'HIE': 'H', 'HIP': 'H', 'HIQ': 'H', 'HIS': 'H',
+                        'ILE': 'I', 'LEU': 'L', 'LYS': 'K', 'MET': 'M', 'PHE': 'F',
+                        'PRO': 'P', 'SER': 'S', 'THR': 'T', 'TRP': 'W', 'TYR': 'Y',
+                        'VAL': 'V'}
 
-bwtags = ['1.46','1.49','1.50','1.53','1.57','2.42','2.43','2.44','2.47','2.50',
-          '3.34','3.36','3.38','3.40','3.44','3.46','3.47','3.51','4.50','4.53',
-          '4.57','5.54','5.57','5.60','6.41','6.44','6.47','6.48','6.51','7.38',
-          '7.39','7.45','7.46','7.47','7.50','7.53']
+bwtags = ['1.46', '1.49', '1.50', '1.53', '1.57', '2.42', '2.43', '2.44', '2.47', '2.50',
+          '3.34', '3.36', '3.38', '3.40', '3.44', '3.46', '3.47', '3.51', '4.50', '4.53',
+          '4.57', '5.54', '5.57', '5.60', '6.41', '6.44', '6.47', '6.48', '6.51', '7.38',
+          '7.39', '7.45', '7.46', '7.47', '7.50', '7.53']
 
-bwpairs = [('1.46','7.47'),('1.49','7.50'),('1.50','2.47'),('1.50','2.50'),
-            ('1.50','7.46'),('1.53','2.47'),('1.57','2.44'),('2.42','3.46'),
-            ('2.43','7.53'),('2.50','7.46'),('3.34','4.53'),('3.34','4.57'),
-            ('3.36','6.48'),('3.38','4.50'),('3.38','4.53'),('3.40','6.44'),
-            ('3.44','5.54'),('3.47','5.57'),('3.51','5.57'),('3.51','5.60'),
-            ('5.54','6.41'),('6.47','7.45'),('6.51','7.38'),('6.51','7.39')]
+bwpairs = [('1.46', '7.47'), ('1.49', '7.50'), ('1.50', '2.47'), ('1.50', '2.50'),
+            ('1.50', '7.46'), ('1.53', '2.47'), ('1.57', '2.44'), ('2.42', '3.46'),
+            ('2.43', '7.53'), ('2.50', '7.46'), ('3.34', '4.53'), ('3.34', '4.57'),
+            ('3.36', '6.48'), ('3.38', '4.50'), ('3.38', '4.53'), ('3.40', '6.44'),
+            ('3.44', '5.54'), ('3.47', '5.57'), ('3.51', '5.57'), ('3.51', '5.60'),
+            ('5.54', '6.41'), ('6.47', '7.45'), ('6.51', '7.38'), ('6.51', '7.39')]
 
 
 class Run(object):
@@ -85,20 +85,20 @@ class Run(object):
         fastaseq = open(os.path.join(self.pdb.split(".")[0] + ".fasta"), "w")
         fastaseq.write(">")
         fastaseq.write("{0}\n".format(self.pdb))
-        result = []        
+        result = []
         for line in open(self.pdb, "r"):
             atoms = [a for a in line if line[0:6] == "ATOM  " and line[13:16] == "CA "]
-            seqnam = ''.join(atoms[17:20])            
+            seqnam = ''.join(atoms[17:20])
             if seqnam != '':
                 seq = protein_letters_3to1[seqnam]
                 result.append(seq)
 
         lines = []
         numcol = 70
-        resultasstr =''.join(result)
-        for i in xrange(0, len(resultasstr), numcol):
+        resultasstr = ''.join(result)
+        for i in range(0, len(resultasstr), numcol):
             lines.append(resultasstr[i:i+numcol])
- 
+
         fastaseq.write("{0}".format("\n".join(lines)))
         fastaseq.write("\n")
         fastaseq.close()
@@ -107,15 +107,15 @@ class Run(object):
         """
         Align the produced fasta sequence with clustalw to assing
         Ballesteros-Weinstein marks.
-        """        
+        """
         profile1 =  self.repo_dir + "/GPCR_inactive_BWtags.aln"
         profile2 = os.path.join(self.pdb.split(".")[0] + ".fasta")
         bwtagged = os.path.join(self.pdb.split(".")[0] + "_bw" + ".aln")
-        
+
         command = [
 #            os.path.join(os.path.dirname(__file__), ".bin", "clustalw"),
             self.clustal_bin,
-            "-profile1=" + profile1, 
+            "-profile1=" + profile1,
             "-profile2=" + profile2,
             "-outfile=" + bwtagged,
             "-output=clustal"]
@@ -155,8 +155,8 @@ class Run(object):
         disre.write("; of Ramakrishnan et al. minus one sd, up1 is the average plus one sd.\n")
         disre.write("; ai aj type index type' low up1 up2 fac\n")
         disre.write("[ distance_restraints ]\n")
-        
-        
+
+
         # This part pulls out the two last lines from the clustalw alignment
         # and puts each in a list.
         # list1 has the Ballesteros-Weinstein positions for the restraints.
@@ -174,7 +174,7 @@ class Run(object):
                     list2.append(fields[1])
             except IndexError:
                 continue
-                
+
         list1s = ''.join(list1)
         list1l = list(list1s)
         list2s = ''.join(list2)
@@ -184,18 +184,18 @@ class Run(object):
         # and then the dashes (sequence gaps) are parsed out of the
         # corresponding well aligned sequence to be able to count without gaps.
         # Finally the residue numbers corresponding to the A mask are returned.
-        ziplist = zip(list1l,list2l)
+        ziplist = list(zip(list1l, list2l))
         nodash = []
         for index, string in enumerate(ziplist):
             if ziplist[index][1].isalpha():
                 nodash.append(ziplist[index])
-                
+
         resid = []
         for index, string in enumerate(nodash):
             if nodash[index][0] == 'A':
         #        print index+1, string
                 resid.append(index+1)
-        
+
         # To map residue id's to c-alpha atom numbers I open the parsed
         # pdb which contains only c-alphas and look for the existence of
         # the located residue numbers in the resid list.
@@ -214,20 +214,20 @@ class Run(object):
         #        continue
 
         # These two lists must have the same dimension:
-        print "The following two lists must have the same dimension:"
-        print len(bwtags), len(caid)
+        print("The following two lists must have the same dimension:")
+        print(len(bwtags), len(caid))
         
         # The mapping (rosetta-stone) between BW id numbers and c-alpha atom
         # numbers is made in this list.
-        bw2calpha = zip(bwtags,caid)
+        bw2calpha = list(zip(bwtags,caid))
 
         bwatom1 = []
-        bwatom2 = []        
+        bwatom2 = []
         for index, value in enumerate(bwpairs):
             bwatom1.append(value[0])
             bwatom2.append(value[1])
 
-        caatom1 = []    
+        caatom1 = []
         for i in range(0, 24):
             for j in range (0,36):
         # TODO: make sure that a pdb with gaps will also go through.
@@ -238,21 +238,21 @@ class Run(object):
         #        print bwatom1[i], bw2calpha[j][0]
                 if bwatom1[i] == bw2calpha[j][0]:
                     caatom1.append(bw2calpha[j][1])
-                    
+
         caatom2 = []
         for i in range(0, 24):
-            for j in range (0,36):   
+            for j in range (0,36):
                 if bwatom2[i] == bw2calpha[j][0]:
                     caatom2.append(bw2calpha[j][1])
 
         for i in range(0,24):
-            print caatom1[i], caatom2[i], bwpairs[i]
+            print (caatom1[i], caatom2[i], bwpairs[i])
 #        print bw2calpha
-        
+
         # This part finally writes to the disre.itp file all the information it needs
         # for the atom pairs after they have been mapped from Ballesteros-Weinstein
         # into c-alpha atom numbers in the original pdb given as input.
-        for index, string in enumerate(readdisre):            
+        for index, string in enumerate(readdisre):
             fields = string.split()
             fields.insert(0, caatom2[index])
             fields.insert(0, caatom1[index])
@@ -292,13 +292,13 @@ if __name__ == "__main__":
 
     if not (os.path.isdir(args.own_dir)):
         os.makedirs(args.own_dir)
-        print "Created working dir {0}".format(args.own_dir)
+        print ("Created working dir {0}".format(args.own_dir))
 
     os.chdir(args.own_dir)
 
     run = Run(pdb = args.pdb)
     run.pdb2fas()
     run.clustalalign()
-    run.getcalphas()    
+    run.getcalphas()
     run.makedisre()
 

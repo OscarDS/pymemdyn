@@ -170,7 +170,7 @@ class Run(object):
             "ions": "Ions",
             "cho": "Cholesterol"}
 
-        for sugar_type, class_name in sugars.iteritems():
+        for sugar_type, class_name in sugars.items():
             if getattr(self, sugar_type):
                 #Get the molecule to be added to the mix
                 base_model = getattr(self, sugar_type)
@@ -178,7 +178,7 @@ class Run(object):
                 # Their constructors fill in with default if not provided.
                 # Here we check if the user provided the fields
                 kwargs = {"pdb": None, "itp": None, "ff": None}
-                for type, uploaded_file in kwargs.iteritems():
+                for type, uploaded_file in kwargs.items():
                     kwargs[type] = getattr(base_model, type, None)
                     #If there was a file uploaded, set the absolute path
                     if kwargs[type]:

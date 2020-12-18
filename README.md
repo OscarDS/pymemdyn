@@ -1,4 +1,4 @@
-pyMEMdyn Version 1.3
+pyMEMdyn Version 1.4
 ================================================================================
 
 pyMEMdyn is  a standalone *python*  package to setup  membrane molecular
@@ -21,7 +21,7 @@ given access to the free repository.
 
 To install **py-MEMdyn** follow these steps:  
 
-1.  Clone the current version of **py-MEMdyn**
+1.  Clone **py-MEMdyn** for python 3.7 (for Python 2.7 clone stable/1.3):  
 
         git clone https://username@github.com/GPCR-ModSim/pymemdyn.git
 
@@ -31,7 +31,7 @@ To install **py-MEMdyn** follow these steps:
 2.  The previous command will create a *pymemdyn* directory. Now you
     have to tell your operating system how to find that folder. You
     achieve this by declaring the location of the directory in a .bashrc
-    file or .cshrc file in your home folder. An example of what you will
+    file .cshrc or .zshrc file in your home folder. An example of what you will
     have to include in your .bashrc file follows:
 
         export PYMEMDYN=/home/username/software/pymemdyn
@@ -170,12 +170,22 @@ and can then be passed  to other objects.
 Changelog
 --------------------------------------------------------------------------------
 
+### Changes from version 1.3 to 1.4
+
+- Saturday, September 12, 2020
+
+Now pymemdyn runs in Python3. Has been tested only with python 3.7 but hopefully
+will work with python3 in general. A needed mac OSX Catalina binary for clustalw
+is included. There might still be python2 to python3 compatibility issues 
+lurking somewhere. Please report them if you see them. 
+
+
 ### Changes from version 1.2 to 1.3
 
 - Tuesday, June 23, 2015
 
 Implemented Ballesteros-Weinstein based pair-distance restraints using the
-NMR-type heaviside potential function implemented in *GROMACS*. The set of 
+NMR-type piecewise potential function implemented in *GROMACS*. The set of 
 restraints depends on a list of tuples called bwpairs which can be defined in
 any way the user desires. In out case we are using the Venkatrakrishnan et al.
 conserved contact network. New reports for *RMSD* on c-alpha atoms and  per

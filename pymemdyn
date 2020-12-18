@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3.7
 import argparse
 import logging
 import os
@@ -48,7 +48,7 @@ class Run(object):
                   "ions": "Ions",
                   "cho": "Cholesterol"}
 
-        for sugar_type, class_name in sugars.iteritems():
+        for sugar_type, class_name in sugars.items():
             if getattr(self, sugar_type):
                 base_name = getattr(self, sugar_type)
                 setattr(self,
@@ -57,7 +57,7 @@ class Run(object):
                             pdb=base_name + ".pdb",
                             itp=base_name + ".itp",
                             ff=base_name + ".ff"))
-        
+
         self.membr = membrane.Membrane()
 
         prot_complex = protein.ProteinComplex(
@@ -128,7 +128,7 @@ class Run(object):
 
         for target in dirs_to_unlink:
             if os.path.isdir(target): shutil.rmtree(target)
-    
+
         return True
 
     def moldyn(self):
@@ -136,7 +136,7 @@ class Run(object):
         Run all steps in a molecular dynamics simulation of a membrane protein
         """
         steps = ["Init", "Minimization", "Equilibration", "Relax", "BWRelax",
-            "CollectResults"]
+                 "CollectResults"]
 
         for step in steps:
             self.g.select_recipe(stage=step, debug=self.debug)
@@ -146,8 +146,8 @@ class Run(object):
         """
         This is a function to debug a run in steps
         """
-#        steps = ["Init", "Minimization", "Equilibration", "Relax", "CARelax"]
-#        steps = ["Equilibration","Relax"]
+        #        steps = ["Init", "Minimization", "Equilibration", "Relax", "CARelax"]
+        #        steps = ["Equilibration","Relax"]
         steps = ["CollectResults"]
         for step in steps:
             self.g.select_recipe(stage=step, debug=self.debug)
@@ -157,96 +157,98 @@ class Run(object):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog='pymemdyn',
-        version='1.3',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        description = ' == Setup Molecular Dynamics for Membrane Proteins given a PDB. == ')
+        description=' == Setup Molecular Dynamics for Membrane Proteins given a PDB. == ')
+
+    parser.add_argument('-v', '--version',
+                        action='version',
+                        version='%(prog)s 1.4')
 
     parser.add_argument('-b',
-        dest = "own_dir",
-        help = "Working dir if different from actual dir",
-        default = os.getcwd())
+                        dest = "own_dir",
+                        help = "Working dir if different from actual dir",
+                        default = os.getcwd())
 
     parser.add_argument('-r',
-        dest = "repo_dir",
-        help = "Path to templates of fixed files. If not \
+                        dest = "repo_dir",
+                        help = "Path to templates of fixed files. If not \
             provided, take the value from settings.TEMPLATES_DIR.",
-        default = settings.TEMPLATES_DIR)
+                        default = settings.TEMPLATES_DIR)
 
     parser.add_argument('-p',
-        dest = "pdb",
-        required = True,
-        help = "Name of the pdb to insert into membrane for MD (mandatory). \
+                        dest = "pdb",
+                        required = True,
+                        help = "Name of the pdb to insert into membrane for MD (mandatory). \
         Use the pdb extension. (e.g. -p myprot.pdb)")
 
     parser.add_argument('-l', '--lig',
-        dest = "ligand",
-        help = "Name of the ligand, without extension. Three files must be \
+                        dest = "ligand",
+                        help = "Name of the ligand, without extension. Three files must be \
             present along with the molecule pdb: the ligand, its itp and \
             its force field.")
 
     parser.add_argument('-a', "--alo",
-        dest = "alosteric",
-        help = "Name of the alosteric interaction, without extension. Three \
+                        dest = "alosteric",
+                        help = "Name of the alosteric interaction, without extension. Three \
             files must be present along with the molecule pdb: the alosteric, \
             its itp and its force field.")
 
     parser.add_argument('-w','--waters',
-        dest="waters",
-        help = "Crystalized water molecules. File name without extension.")
+                        dest="waters",
+                        help = "Crystalized water molecules. File name without extension.")
 
     parser.add_argument('-i', '--ions',
-        dest="ions",
-        help = "Crystalized ions file name without extension.")
+                        dest="ions",
+                        help = "Crystalized ions file name without extension.")
 
     parser.add_argument('-c', '--cho',
-        dest="cho",
-        help = "Crystalized cholesterol molecules file name\
+                        dest="cho",
+                        help = "Crystalized cholesterol molecules file name\
             without extension.")
 
     parser.add_argument('-q', '--queue',
-        dest = "queue",
-        help = "Queueing system to use (slurm, pbs, pbs_ib and svgd supported)",
-        default = settings.QUEUE)
+                        dest = "queue",
+                        help = "Queueing system to use (slurm, pbs, pbs_ib and svgd supported)",
+                        default = settings.QUEUE)
 
     parser.add_argument('-d', '--debug',
-        action="store_true")
+                        action="store_true")
 
-#    parser.add_argument('-cl', '--clean',
-#        default=Run.clean)
+    #    parser.add_argument('-cl', '--clean',
+    #        default=Run.clean)
 
-    
+
     args = parser.parse_args()
 
     if not (os.path.isdir(args.own_dir)):
         os.makedirs(args.own_dir)
-        print "Created working dir {0}".format(args.own_dir)
+        print ("Created working dir {0}".format(args.own_dir))
     os.chdir(args.own_dir)
 
     run = Run(own_dir = args.own_dir,
-        repo_dir = args.repo_dir,
-        pdb = args.pdb,
-        ligand = args.ligand,
-        alosteric = args.alosteric,
-        waters = args.waters,
-        ions = args.ions,
-        cho = args.cho,
-        queue = args.queue,
-        debug = args.debug)
+              repo_dir = args.repo_dir,
+              pdb = args.pdb,
+              ligand = args.ligand,
+              alosteric = args.alosteric,
+              waters = args.waters,
+              ions = args.ions,
+              cho = args.cho,
+              queue = args.queue,
+              debug = args.debug)
 
 
     run.clean()
-
-    # Deletes old GROMACS.log if this is a re-run    
+    # Rewrite old GROMACS.log file if on a re-run
     f = open("GROMACS.log", "w")
     f.close()
 
-    if args.debug:
-        logging.basicConfig(filename='GROMACS_debug.log', level=logging.DEBUG)
-    else:
-        logging.basicConfig(filename='GROMACS.log',
-            format='%(asctime)s %(message)s',
-            datefmt='%m/%d/%Y %I:%M:%S',
-            level=logging.DEBUG)
+#    if args.debug:
+#        logging.basicConfig(filename='GROMACS_debug.log',
+#                            level=logging.DEBUG)
+#    else:
+#        logging.basicConfig(filename='GROMACS.log',
+#                            format='%(asctime)s %(message)s',
+#                            datefmt='%m/%d/%Y %I:%M:%S',
+#                            level=logging.DEBUG)
 
     run.moldyn()
 #    run.light_moldyn()
