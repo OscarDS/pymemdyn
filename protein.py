@@ -229,12 +229,12 @@ class Ligand(Compound):
 
     def check_forces(self):
         """
-        A force field must give a set of forces that matches every atom in
+        A force field must give a set of forces which match every atom in
         the pdb file. This showed particularly important to the ligands, as they
         may vary along a very broad range of atoms
         """
 
-        #The itp matches each residue in the ligand pdb with the force field
+        # The itp matches each residue in the ligand pdb with the force field
         atoms_def = False
         molecules = {}
         for line in open(self.itp, "r"):
@@ -250,15 +250,15 @@ class Ligand(Compound):
                     molecules[data[3]][data[4]] = data[1]
 
         atoms = {}
-        #The force field matches each atom in the pdb with one line
+        # The force field matches each atom in the pdb with one line
         for line in open(self.force_field, "r"):
             if not line.startswith(";"):
                 if (len(line.split()) > 6):
                     #{"TC1": "C1"}
                     atoms[line.split()[0]] = line.split()[1]
 
-        #The pdb have the name of the atom in the third position.
-        #Here we cross-check all three files to match their harvested values
+        # The pdb has the name of the atom in the third position.
+        # Here we cross-check all three files to match their harvested values
         for line in open(self.pdb, "r"):
             data = line.split()
             if len(data) > 6:
@@ -515,6 +515,43 @@ class Lipids(Compound):
         tgt = open(self.posre_itp, "w")
         tgt.writelines(s)
         tgt.close()
+
+
+class Oligo(Compound):
+    """
+    Class to insert oligopeptide into the complex.
+    TODO: All of it. This is just a starting non-functional scaffold
+    """
+    def __init__(self, *args, **kwargs):
+        self.pdb = kwargs.get("pdb", "oligo.pdb")
+        self.itp = kwargs.get("itp", "oligo.itp")
+        super(Oligo, self).__init__(self, *args, **kwargs)
+
+        self.check_pdb()
+
+        self.group = "protlig"
+        self.check_itp()
+
+        self.force_field = kwargs["ff"]
+
+        self.posre_itp = "posre_oligo.itp"
+        self._setITP()
+
+
+    def _setITP(self):
+        """
+        Create the itp for restraining this structure
+        """
+        s = "\n".join([
+            "; position restraints for oligopeptide ",
+            "[ position_restraints ]",
+            ";  i funct       fcx        fcy        fcz",
+            "   1    1       1000       1000       1000"])
+
+        tgt = open(self.posre_itp, "w")
+        tgt.writelines(s)
+        tgt.close()
+
 
 
 class Alosteric(Compound):

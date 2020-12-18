@@ -9,7 +9,7 @@ with popular queuing systems such as Torque/PBS or Slurm.
 
 **py-MEMdyn** is hosted in github at:  
 
-<https://github.com/GPCR-ModSim/pymemdyn>
+<https://github.com/GPCR-ModSim/pymemdyn>  
 
 You can download any version of **py-MEMdyn** by cloning the repository
 to your local machine using git.  
@@ -21,9 +21,9 @@ given access to the free repository.
 
 To install **py-MEMdyn** follow these steps:  
 
-1.  Clone Version 1.4 of **py-MEMdyn** for python 3.7 (for Python 2.7 clone stable/1.3):  
+1.  Clone **py-MEMdyn** for python 3.7 (for Python 2.7 clone stable/1.3):  
 
-        git clone -b stable/1.4 https://username@github.com/GPCR-ModSim/pymemdyn pymemdyn
+        git clone https://username@github.com/GPCR-ModSim/pymemdyn.git
 
     Make sure to change *username* to the one you have created at
     github.  
@@ -95,8 +95,8 @@ To install **py-MEMdyn** follow these steps:
 
 
 3.  Updates are very easy thanks to the git versioning system. Once
-    **py-MEMdyn** has been downloaded into its own *pymemdyn* folder you
-    just have to move to it and pull the newest changes:
+    **py-MEMdyn** has been downloaded (cloned) into its own *pymemdyn* folder 
+    you just have to move to it and pull the newest changes:
 
         cd /home/username/software/pymemdyn
         git pull   
@@ -105,7 +105,7 @@ To install **py-MEMdyn** follow these steps:
     example the stable version 1.0 which works well and has been tested
     extensively again gromacs version 4.0.5 can be cloned with:
 
-        git clone https://username@github.org/gpcrmodsim/pymemdyn \
+        git clone https://username@github.com/GPCR-ModSim/pymemdyn.git \
         --branch stable/1.0 --single-branch pymemdyn-1.0
 
     Now you will have to change your .bashrc or .cshrc files in your
@@ -116,10 +116,10 @@ To install **py-MEMdyn** follow these steps:
     installed in your system. To do this you will need to edit the
     settings.py file with any text editor (“vi” and “emacs” are common
     options in the unix environment). Make sure that only one line is
-    uncommented, looking like: GROMACS\_PATH = /opt/gromacs405/bin
+    uncommented, looking like: GROMACS\_PATH = /opt/gromacs-4.6.7/bin
     Provided that in your case gromacs is installed in /opt. The program
     will prepend this line to the binaries names, so calling
-    “/opt/gromacs405/bin/grompp” should point to that binary.  
+    “/opt/gromacs-4.6.7/bin/grompp” should point to that binary.  
 
 
 ### Modeling Modules 

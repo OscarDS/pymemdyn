@@ -633,17 +633,19 @@ class Wrapper(object):
         else:
             if (mode == "eneconv_mpi"):  # ENECONV
                 command.extend(self._mode_eneconv(options))
-            if (mode == "genbox_mpi"):  # GENBOX
+            if (mode == "genbox_mpi"):   # GENBOX
                 command.extend(self._mode_genbox(options))
-            if (mode == "genion_mpi"):  # GENION
+            if (mode == "genion_mpi"):   # GENION
                 command.extend(self._mode_genion(options))
-            if (mode == "g_rms_mpi"):  # G_RMS
+            if (mode == "g_rms_mpi"):    # G_RMS
                 command.extend(self._mode_g_rms(options))
+            if (mode == "g_rmsf_mpi"):   # G_RMSF
+                command.extend(self._mode_g_rmsf(options))
             if (mode == "tpbconv_mpi"):  # TPBCONV
                 command.extend(self._mode_tpbconv(options))
-            if (mode == "trjcat_mpi"):  # TRJCAT
+            if (mode == "trjcat_mpi"):   # TRJCAT
                 command.extend(self._mode_trjcat(options))
-            if (mode == "mdrun_mpi"):  # MDRUN_SLURM
+            if (mode == "mdrun_mpi"):    # MDRUN_SLURM
                 pass
                 # command.extend(self._mode_mdrun(options))
 
@@ -691,6 +693,16 @@ class Wrapper(object):
         return ["-s", self._setDir(kwargs["src"]),
                 "-f", self._setDir(kwargs["src2"]),
                 "-o", self._setDir(kwargs["tgt"])]
+
+    def _mode_g_rmsf(self, kwargs):
+        """
+        _mode_g_rmsf: Wrap the g_rmsf command options and report per
+        residue RMSF
+        """
+        return ["-s", self._setDir(kwargs["src"]),
+                "-f", self._setDir(kwargs["src2"]),
+                "-o", self._setDir(kwargs["tgt"]),
+                "-res"]
 
     def _mode_genbox(self, kwargs):
         '''_mode_genbox: Wrap the genbox command options'''

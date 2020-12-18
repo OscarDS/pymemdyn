@@ -82,9 +82,9 @@ def clean_all(target_dir = "", exclude = []):
         """
         Remove all intermediate files from 'target_dir'  except that files
          in 'exclude'
-         """
+        """
         to_unlink_dir = os.path.join(os.getcwd(), target_dir)
-        # First a security checkout to not delete up a certain point
+        # First a security check to not delete up a certain point
         minimum = "/home/gpcruser/public"
         if not to_unlink_dir.startswith(minimum): return False
         if not "dynamic" in to_unlink_dir: return False

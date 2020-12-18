@@ -102,6 +102,14 @@ equilibration, with the receptor centered in the box, type:
 
     echo 3 3 | g_rms -f traj_EQ.xtc -s topol.tpr -o rmsd-calpha-vs-start.xvg
 
+- You may want to get a pdb file of your last frame. You can first
+check the total time of your trajectory and then use this time to
+request the last frame with:
+
+    gmxcheck -f traj_pymol.xtc
+    echo 1 | trjconv -b 5000 -e 5000 -f traj_pymol.xtc -o last51.pdb
+
+
 NOTE: these tips work for GROMACS version >= 4.5 and < 5.0  
 
 

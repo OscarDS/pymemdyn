@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 """
 ================================================================================
  File:        bw4posres.py
@@ -214,8 +214,9 @@ class Run(object):
         #        continue
 
         # These two lists must have the same dimension:
-        print (len(bwtags), len(caid))
-
+        print("The following two lists must have the same dimension:")
+        print(len(bwtags), len(caid))
+        
         # The mapping (rosetta-stone) between BW id numbers and c-alpha atom
         # numbers is made in this list.
         bw2calpha = list(zip(bwtags,caid))
@@ -229,6 +230,12 @@ class Run(object):
         caatom1 = []
         for i in range(0, 24):
             for j in range (0,36):
+        # TODO: make sure that a pdb with gaps will also go through.
+        # right now a pdb with gaps on the sequential numbering of
+        # residues will have a wrong mapping and not even an error message
+        # is issued.
+        # Issue reported by user Laurens Kooijman
+        #        print bwatom1[i], bw2calpha[j][0]
                 if bwatom1[i] == bw2calpha[j][0]:
                     caatom1.append(bw2calpha[j][1])
 
