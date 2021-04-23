@@ -1,4 +1,4 @@
-#!/home/apps/python/2.7.6/bin/python2.7
+#!/usr/bin/env python2.7
 import argparse
 import datetime
 import logging
@@ -199,7 +199,7 @@ class Run(object):
         from django.core.mail import send_mail
         email_addr = self.dynamic.pdb.project.user_id.email
 
-        body_msg = ["You can check this dynamic at http://open.gpcr-modsim.org",
+        body_msg = ["You can check this dynamic at http://gpcr-modsim.org",
                     "/dynamic/{0}".format(self.dynamic.pk)]
         
         send_mail("gpcr-modsim.org has completed your Molecular Dynamics simulation",
@@ -285,9 +285,9 @@ if __name__ == "__main__":
         if args.queue_pk:
             update_queue(queue_task, "Finished", "ended")
         run.set_file_path()
-        run.send_email()
+        # run.send_email()
     except:
         if args.queue_pk:
             update_queue(queue_task, "Failed", "ended")
-        run.send_email()
+        # run.send_email()
         raise

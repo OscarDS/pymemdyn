@@ -144,11 +144,14 @@ class Monomer(object):
         pdb = open(self.pdb + "~", "r")
         pdb_out = open(self.pdb, "w")
 
+        print(pdb)
         replacing = False
         for line in pdb:
             new_line = line
-            if len(line.split()) > 2:
+#            if len(line.split()) > 2:
+            if line.split()[0] == "ATOM":                
                 #Remove chain id
+                #print(len(line.split()), line[21])
                 if line[21] != " ":
                     replacing = True
                     new_line = list(line) #Transform the line into a list...

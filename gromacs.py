@@ -437,6 +437,7 @@ class Gromacs(object):
         set_itp: Cut a top file to be usable later as itp
         """
         src = open(kwargs["src"], "r")
+        print(src)
         tgt = open(kwargs["tgt"], "w")
 
         get_name = False
