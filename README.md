@@ -120,7 +120,7 @@ To install **PyMemDyn** follow these steps:
     installed in your system. To do this you will need to edit the
     settings.py file with any text editor (“vi” and “emacs” are common
     options in the unix environment). Make sure that only one line is
-    uncommented, looking like: GROMACS\_PATH = /opt/gromacs-2021/bin
+    uncommented, looking like: GROMACS_PATH = /opt/gromacs-2021/bin
     Provided that in your case gromacs is installed in /opt. The program
     will prepend this line to the binaries names, so calling
     “/opt/gromacs-2021/bin/gmx should point to that binary.  
@@ -179,7 +179,7 @@ Now PyMemDyn runs with the current GROMACS versions (version 5.0 >). Has been
 tested only with GROMACS 2021, but should work for all GROMACS versions above
 5.0. Please report any issues encountered with GROMACS compatibility issues.
 In addition, --res was added to the command line to allow for position restraint
-selection for the production MD run./
+selection for the production MD run.
 
 ### Changes from version 1.3 to 1.4
 
