@@ -2,11 +2,11 @@
 
 **PyMemDyn** is a python package developed to automate the process of
 setting up the simulation, via Molecular Dynamics (MD), of G-protein
-Coupled Receptors (GPCR’s) embedded in a cell membrane. The protocol can
-be adapted to insert other transmembrane proteins, not only GPCR’s. The
+Coupled Receptors (GPCRs) embedded in a cell membrane. The protocol can
+be adapted to insert other transmembrane proteins, not only GPCRs. The
 library has been adapted from that described in Gutiérrez de Terán et
 al. (2011) [1], and is implemented in the web-based service
-for modeling and simulation of GPCR’s available at
+for modeling and simulation of GPCRs available at
 <http://gpcr-modsim.org>.
 
  - Description 
@@ -35,10 +35,10 @@ But the simulation of an isolated receptor can only account for one part
 of the problem, and the influence of different non-protein elements in
 receptor dynamics such as the orthosteric (primary) ligand, allosteric
 modulator, or even specific cholesterol, lipid, water or ion molecules
-are key for a more comprehensive characterization of GPCR’s.
+are key for a more comprehensive characterization of GPCRs.
 **PyMemDyn** can explicitly handle these elements allowing a broader
-audience in the field of GPCR’s to use molecular dynamics simulations.
-These molecules should be uploaded in the same way they’re present in
+audience in the field of GPCRs to use molecular dynamics simulations.
+These molecules should be uploaded in the same way theyâ€™re present in
 the original PDB file of the receptor, so they are properly integrated
 into the membrane insertion protocol described above, together with
 force-field associated files (which can be either generated with
@@ -181,16 +181,16 @@ To install **PyMemDyn** follow these steps:
 5.  To make sure that your GROMACS installation is understood by
     **PyMemDyn** you will need to specify the path to where GROMACS is
     installed in your system. To do this you will need to edit the
-    settings.py file with any text editor (“vi” and “emacs” are common
+    settings.py file with any text editor ("vi" and "emac" are common
     options in the unix environment). Make sure that only one line is
-    uncommented, looking like: GROMACS\_PATH = /opt/gromacs-2021/bin
+    uncommented, looking like: GROMACS_PATH = /opt/gromacs-2021/bin
     Provided that in your case gromacs is installed in /opt. The program
     will prepend this line to the binaries names, so calling
-    “/opt/gromacs-2021/bin/gmx should point to that binary. 
+    â€œ/opt/gromacs-2021/bin/gmx should point to that binary. 
 
 
 6.  Similarly, in that file you specify which queuing system you
-    are using. We will assume that you will use Slurm�, but you can use
+    are using. We will assume that you will use "Slurm", but you can use
     any of the possible options by uncommenting the one that best suits
     your system.
 
@@ -201,9 +201,9 @@ To install **PyMemDyn** follow these steps:
     error says, this is the bare minimum to perform an MD simulation! we
     will assume that the file is called gpcr.pdb Thus pymemdyn -p gpcr.pdb
     should work! Accesory options: The common user should not take care
-    of the -b, -r or --debug options: The working directory (OWN\_DIR) is
+    of the -b, -r or --debug options: The working directory (OWN_DIR) is
     set by default to that where the program is invoked, and the
-    repository (TEMPLATES\_DIR) is specified in the settings.py file (by
+    repository (TEMPLATES_DIR) is specified in the settings.py file (by
     default, templates/ subdirectory in the **PyMemDyn**
     instalation).
 
@@ -211,7 +211,7 @@ To install **PyMemDyn** follow these steps:
     waters, structural lipids, cholesterol molecules, explicit
     ions.
 
-    -   Option -l (specifying an orthosteric ligand). Lets assume
+    -   Option -l --lig (specifying an orthosteric ligand). Lets assume
         that we have docked a ligand in the orthosteric binding site. We
         can include this in the simulation as long as we have generated
         the requested library and parameter files in gromacs. Thus, 3
@@ -227,7 +227,7 @@ To install **PyMemDyn** follow these steps:
             angles, dihedrals and torsions) as derived with the OPLS
             forcefield in the Gromacs standard nomenclature.
 
-        -   lig.ff: we will refer to as the “force-field file”,
+        -   lig.ff: we will refer to as the "force-field file",
             which collects the OPLS2005 atom types and non-bonded
             parameters in the Gromacs standard nomenclature. For the
             users used to Gromacs, this file is generally non-existing
@@ -248,17 +248,17 @@ To install **PyMemDyn** follow these steps:
         but in this case the ff file is avoided as the parameters are in
         the standard forcefield.
 
-    -   Option --ions (specifying structural ions) If we want to
+    -   Option -i --ions (specifying structural ions) If we want to
         consider structural ions (i.e., the sodium ion in the A2A high
         resolution structure 4EIY), we should name the needed files i.e.
         ion-local and provide the same information as in the case of
         structural waters: ion-local.pdb and ion-local.itp.
 
-    -   Option --cho (specifying cholesterol molecules): As in the
+    -   Option -c --cho (specifying cholesterol molecules): As in the
         previous case, the pdb and itp files are needed (i.e., cho.pdb
         and cho.itp).
 
-    -   Option �--queue: if other queue than the default one,
+    -   Option -q --queue: if other queue than the default one,
         indicated in the settings.py, is needed (in our example, slurm
         in cuelebre) this should be indicated in the option.
         Possibilities are listed in the settings.py file:
@@ -267,7 +267,7 @@ To install **PyMemDyn** follow these steps:
 
         -   pbs as implemented in garibaldi.scripps.edu
 
-        -   pbs\_ib infiniband, as implemented in
+        -   pbs_ib infiniband, as implemented in
             garibaldi.scripps.edu
 
         -   svgd, as implemented in svgd.cesga.es
@@ -279,15 +279,15 @@ Running with queues
 ===================
 
 $\approx$ 90% of the time you will want to use some queueing system. We
-deal with queue systems tweaks as we stumble into them and it’s out of
+deal with queue systems tweaks as we stumble into them and itâ€™s out of
 our scope to cover them all. If you take a look at the source code dir,
-you’ll found some files called “run\_pbs.sh”, “run\_svgd.sh” and so on.
+you'll found some files called "run_pbs.sh", "run_svgd.sh" and so on.
 Also there are specific queue objects in the source file queue.py we
 have to tweak for every and each queue. In you want to run your
-simulation in a supported queue, copy the “run\_queuename.sh” file to
+simulation in a supported queue, copy the "run_queuename.sh" file to
 your working directory, and edit it. E.g. the workdir to run an A2a.pdb
-simulation in svgd.cesga.es looks like: . .. A2a.pdb run\_svgd.sh And
-run\_svgd.sh looks like:
+simulation in svgd.cesga.es looks like: . .. A2a.pdb run_svgd.sh And
+run_svgd.sh looks like:
 
     \$!/bin/bash   
     module   load  python/3.7
@@ -307,11 +307,11 @@ run as mpi with reservation of 8 cores in SVGD queue.
 If you are to set up a new system, it is a good idea to just run a few
 steps of each stage in the equilibration protocol just to test that the
 pdb file is read correctly and the membrane-insertion protocol works
-fine and the system can be minimized and does not “explode” during the
+fine and the system can be minimized and does not "explode" during the
 equilibration protocol (i.e., detect if atom clashes and so on exist on
 your system).
 
-To do this, use the –debug option, like:
+To do this, use the --debug option, like:
 
     pymemdyn -p gpcr.pdb -l lig --waters hoh --debug 
 
@@ -327,22 +327,22 @@ normal, and you have two options: i) trust that the full equilibration
 procedure will fix the steric clashes in your starting system, and then
 directly run the pymoldyn without the debugging option, or ii) identify
 the hot atoms (check the mdrun.log file in the last subdirectory that
-was written in your output (generally eq/mdrun.log and look for “LINCS
-WARNING”). What if you want to check partial functions of pymoldyn? In
+was written in your output (generally eq/mdrun.log and look for "LINCS
+WARNING"). What if you want to check partial functions of pymoldyn? In
 order to do this you must edit the file pymemdyn and change:
 
-1.  Line 211 comment with “\#” this line [that states:
+1.  Line 260 comment with "#" this line [that states:
     run.clean()], which is the one that deletes all the output files
     present in the working directory.
 
-2.  In the last two lines of this file, comment (add a “\#”) the
+2.  In the last two lines of this file, comment (add a "#") the
     line: run.moldyn()
 
-3.  And uncomment (remove the “\#”) the line:
-    run.light\_moldyn()
+3.  And uncomment (remove the "#") the line:
+    run.light_moldyn()
 
-4.  In the line 140 and within that block (ligh\_moldyn) change
-    the lines stating steps = [“xxxx”] and include only those steps that
+4.  In the line 153 and within that block (ligh_moldyn) change
+    the lines stating steps = ["xxxx"] and include only those steps that
     you want to test, which should be within a list of strings.
 
 For the sake of clarity, these have been subdivided in two lines:
@@ -351,7 +351,7 @@ For the sake of clarity, these have been subdivided in two lines:
 
 Here you remove those strings that you do not want to be executed, i.e.
 if only membrane insertion and minimization is wished, remove
-“Equilibration”, “Relax”, “CARelax” so the line states:
+"Equilibration", "Relax", "CARelax" so the line states:
 
     steps   =   ["Init",  "Minimization"]  
 
@@ -371,7 +371,7 @@ The performed equilibration includes the following stages:
 
 |   STAGE    | RESTRAINED ATOMS        | FORCE CONSTANT       | TIME           |
 |:----------:|:-----------------------:|:--------------------:|:--------------:|
-|  -         |   -                     |kJ/(mol·nm^2)        | ns             |
+|  -         |   -                     |kJ/(molÂ·nm^2)        | ns             |
 |Minimization|   -                     | -                    |(Max. 500 steps)|
 |Equil. 1    |Protein Heavy Atoms      | 1000                 | 0.5            |
 |Equil. 2    |Protein Heavy Atoms      | 800                  | 0.5            |
@@ -419,7 +419,7 @@ In the "reports" subfolder, you will find the following files:
     - temp.xvg, temp.log            # System temperature plot and log
     - pressure.xvg, pressure.log    # System pressure plot and log
     - volume.xvg, volume.log        # System volume plot and log
-    - rmsd-all-atom-vs-start	    # All atoms RMSD plot
+    - rmsd-all-atom-vs-start	       # All atoms RMSD plot
     - rmsd-backbone-vs-start.xvg    # Backbone RMSD plot
     - rmsd-calpha-vs-start.xvg      # C-Alpha RMSD plot
     - rmsf-per-residue.xvg          # Residue RMSF plot
@@ -480,6 +480,6 @@ request the last frame with:
 References
 ----------
 
-[1] Rodríguez D., Piñeiro Á. and Gutiérrez-de-Terán H.   
+[1] Rodríguez D., Piñeiro A. and Gutiérrez-de-Terán H.   
 Molecular Dynamics Simulations Reveal Insights into Key Structural Elements of Adenosine Receptors   
 Biochemistry (2011), 50, 4194-208.   
