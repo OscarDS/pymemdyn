@@ -1,4 +1,3 @@
-
 class GromacsError(BaseException):
     pass
 
@@ -44,22 +43,7 @@ class GromacsMessages(object):
         Check if the GROMACS error message has any of the known error
         messages. Set the self.error to the value of the error
         """
-
         for line in self.gro_err:
             for error in self.e.keys():
                 if line.startswith(error):
                     raise self.e[error](self.command, error)
-
-
-def test_run(command):
-    import subprocess
-    c = ["/home/apps/gromacs-4.6.5/bin/" + command]
-    p = subprocess.Popen(c,
-                         stdout = subprocess.PIPE,
-                         stderr = subprocess.PIPE,
-                         stdin = subprocess.PIPE)
-    out, err = p.communicate("4\n")
-    return err
-
-if __name__ == "__main__":
-    GromacsMessages(gro_err=test_run("eneconv"), command="eneconv")

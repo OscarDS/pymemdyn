@@ -223,7 +223,7 @@ if __name__ == "__main__":
     parser.add_argument('-q', '--queue',
                         dest = "queue",
                         help = "Queueing system to use (slurm, pbs, pbs_ib and svgd supported)",
-                        default = settings.QUEUE)
+                        default = "")
 
     parser.add_argument('-d', '--debug',
                         action="store_true")

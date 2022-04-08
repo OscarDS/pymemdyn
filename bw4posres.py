@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3.7
 """
 ================================================================================
  File:        bw4posres.py
@@ -25,7 +25,6 @@
 
 ================================================================================
 """
-import argparse
 import os
 import subprocess
 
@@ -56,7 +55,6 @@ bwpairs = [('1.46', '7.47'), ('1.49', '7.50'), ('1.50', '2.47'), ('1.50', '2.50'
             ('3.36', '6.48'), ('3.38', '4.50'), ('3.38', '4.53'), ('3.40', '6.44'),
             ('3.44', '5.54'), ('3.47', '5.57'), ('3.51', '5.57'), ('3.51', '5.60'),
             ('5.54', '6.41'), ('6.47', '7.45'), ('6.51', '7.38'), ('6.51', '7.39')]
-
 
 class Run(object):
     """
@@ -113,7 +111,6 @@ class Run(object):
         bwtagged = os.path.join(self.pdb.split(".")[0] + "_bw" + ".aln")
 
         command = [
-#            os.path.join(os.path.dirname(__file__), ".bin", "clustalw"),
             self.clustal_bin,
             "-profile1=" + profile1,
             "-profile2=" + profile2,
@@ -137,7 +134,6 @@ class Run(object):
         calphaspdb = open(os.path.join(self.pdb.split(".")[0] + "_CA.pdb"), "w")
         for line in open(self.pdb, "r"):
             atoms = [a for a in line if line[0:6] == "ATOM  " and line[13:16] == "CA "]
-            atomnum = atoms[7:10]
             calphaspdb.write("{0}".format("".join(atoms)))
 
     def makedisre(self):
@@ -155,7 +151,6 @@ class Run(object):
         disre.write("; of Ramakrishnan et al. minus one sd, up1 is the average plus one sd.\n")
         disre.write("; ai aj type index type' low up1 up2 fac\n")
         disre.write("[ distance_restraints ]\n")
-
 
         # This part pulls out the two last lines from the clustalw alignment
         # and puts each in a list.
@@ -193,7 +188,6 @@ class Run(object):
         resid = []
         for index, string in enumerate(nodash):
             if nodash[index][0] == 'A':
-        #        print index+1, string
                 resid.append(index+1)
 
         # To map residue id's to c-alpha atom numbers I open the parsed
@@ -209,9 +203,6 @@ class Run(object):
         for line in onlyca:
             if int(''.join(line[22:26])) in renumbered:
                 caid.append(line[7:11])
-        #        print int(''.join(line[22:26])), ''.join(line[7:11])
-        #        print caid
-        #        continue
 
         # These two lists must have the same dimension:
         print("The following two lists must have the same dimension:")
@@ -235,7 +226,6 @@ class Run(object):
         # residues will have a wrong mapping and not even an error message
         # is issued.
         # Issue reported by user Laurens Kooijman
-        #        print bwatom1[i], bw2calpha[j][0]
                 if bwatom1[i] == bw2calpha[j][0]:
                     caatom1.append(bw2calpha[j][1])
 
@@ -247,7 +237,6 @@ class Run(object):
 
         for i in range(0,24):
             print (caatom1[i], caatom2[i], bwpairs[i])
-#        print bw2calpha
 
         # This part finally writes to the disre.itp file all the information it needs
         # for the atom pairs after they have been mapped from Ballesteros-Weinstein
@@ -258,47 +247,8 @@ class Run(object):
             fields.insert(0, caatom1[index])
             #It would be better to have first 9 fields be float
             #instead of str.
-            #fields = [float(i) for i in fields]
             fields.insert(9, '\n')
             disre.write('{0}'.format('   '.join(fields)))
         disre.close()
 
         return True
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        prog='bw4posres',
-        version='1.0',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        description = '       == From a network of Ballesteros-Weinstein \n \
-        pair-distances make a translation to gromacs to impose NMR-style \n \
-        restraints == ')
-
-    parser.add_argument('-p',
-                        dest = "pdb",
-                        required = True,
-                        help = "Name of the pdb to insert into membrane for MD \
-                        (mandatory). Use the pdb extension. \
-                        (e.g. -p myprot.pdb)")
-
-    parser.add_argument('-b',
-                        dest = "own_dir",
-                        help = "Working dir if different from actual dir",
-                        default = os.getcwd())
-
-
-    args = parser.parse_args()
-
-    if not (os.path.isdir(args.own_dir)):
-        os.makedirs(args.own_dir)
-        print ("Created working dir {0}".format(args.own_dir))
-
-    os.chdir(args.own_dir)
-
-    run = Run(pdb = args.pdb)
-    run.pdb2fas()
-    run.clustalalign()
-    run.getcalphas()
-    run.makedisre()
-

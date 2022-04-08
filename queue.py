@@ -2,15 +2,18 @@ import os
 
 import settings
 
+# TODO: Queuing system requires additional look. Currently PyMemDyn 1.5 works 
+#       when queued (in Slurm/CBS) externally (bash-shell calling pymemdyn)
+#       Unknown if the same is the case for the other queuing systems.
 
 class Queue(object):
     def __init__(self, *args, **kwargs):
         # Default number of processors, nodes and time alloted in cluster.
-        self.num_proc   = getattr(settings, "QUEUE_NUM_PROCS") or 8
+        self.num_proc   = getattr(settings, "QUEUE_NUM_PROCS") or 16
         self.num_node   = getattr(settings, "QUEUE_NUM_NODES") or 1
-        self.max_time   = getattr(settings, "QUEUE_MAX_TIME") or "72:00:00"
-        self.ntasks     = getattr(settings, "QUEUE_NUM_TASK") or 8
-        self.ntaskpern  = getattr(settings, "QUEUE_NTS_NODE") or 8
+        self.max_time   = getattr(settings, "QUEUE_MAX_TIME") or "47:59:59"
+        self.ntasks     = getattr(settings, "QUEUE_NUM_TASK") or 16
+        self.ntaskpern  = getattr(settings, "QUEUE_NTS_NODE") or 16
         self.sh = "./mdrun.sh"
 
     def set_mdrun(self, value):
@@ -33,7 +36,7 @@ class NoQueue(Queue):
         self.command = [self.sh]
 
         self._mdrun = os.path.join(settings.GROMACS_PATH, "gmx mdrun")
-#        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") #For triolith
+#        self._mdrun = os.path.join(settings.GROMACS_PATH, "gmx mdrun_mpi") #For triolith
 
     def make_script(self, workdir, options):
         """
@@ -211,8 +214,3 @@ class Svgd(Queue):
         os.chmod(self.sh, 0o755)
 
         return True
-
-
-class Other(Queue):
-    def __init__(self):
-        pass

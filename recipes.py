@@ -114,7 +114,6 @@ class BasicInit(object):
                                         "popc.itp": "popc.itp",
                                         "spc.itp": "spc.itp",
                                         "ions.itp": "ions.itp",
-                                        # "ffoplsaanb_mod.itp": "ffoplsaanb_mod.itp",
                                         "ffoplsaabon_mod.itp": "ffoplsaabon_mod.itp",
                                         "ffoplsaa_mod.itp": "ffoplsaa_mod.itp"}},
 
@@ -213,7 +212,7 @@ class LigandInit(BasicInit):
 
         self.steps.insert(9, "genrestr_lig")
         self.recipe["genrestr_lig"] = \
-            {"gromacs": "genrestr",
+            {"gromacs": "genrestr", 
              "options": {"src": "",
                          "tgt": "posre_lig.itp",
                          "index": "ligand_ha.ndx",
@@ -412,7 +411,6 @@ class BasicRelax(object):
                 {"gromacs": "grompp",  # 2, 5, 8, 11
                  "options": {"src": os.path.join(tgt_dir, "eq.mdp"),
                              "src2": os.path.join(src_dir, "confout.gro"),
-                             # top": os.path.join(tgt_dir, "topol.top"),
                              "top": "topol.top",
                              "tgt": os.path.join(tgt_dir, "topol.tpr"),
                              "index": "index.ndx"}}
@@ -555,8 +553,7 @@ class BasicCollectResults(object):
                       "rms3", "rmsf", "tot_ener", "temp", "pressure",
                       "volume", "set_end", "clean_topol", "set_end_2",
                       "set_end_3", "set_end_4", "set_end_5", "set_end_6",
-                      "tar_it"]  # ,
-        # "final_clean"] This is dangerous, could delete needed files.
+                      "tar_it"]
 
         self.recipe = {"trjcat":
                            {"gromacs": "trjcat",  # 1
@@ -613,10 +610,8 @@ class BasicCollectResults(object):
                                  "input": "1\n"},
 
                        "set_end":
-                           {"command": "set_stage_init",  # 8
+                           {"command": "set_stage_init",  # 12
                                    "options": {"src_dir": "eqProd",
-                                               #"src_files": ["traj.xtc",
-                                               # "confout.gro", "topol.tpr"],
                                                "src_files": ["confout.gro",
                                                              "topol.tpr"],
                                                "repo_files": ["popc.itp",
@@ -626,12 +621,12 @@ class BasicCollectResults(object):
                                                "tgt_dir": "finalOutput"}},
 
                        "clean_topol":
-                           {"command": "clean_topol",  # 9
+                           {"command": "clean_topol",  # 13
                                        "options": {"src": "topol.top",
                                                    "tgt": "finalOutput/topol.top"}},
 
                        "set_end_2":
-                           {"command": "set_stage_init",  # 10
+                           {"command": "set_stage_init",  # 14
                                      "options": {"src_dir": "",
                                                  "src_files": [
                                                      "ffoplsaa_mod.itp",
@@ -643,17 +638,14 @@ class BasicCollectResults(object):
                                                      "ions_local.itp",
                                                      "cho.itp",
                                                      "hoh.itp",
-                                                     "index.ndx", "traj_EQ.xtc",
+                                                     "index.ndx", 
+                                                     "traj_EQ.xtc",
                                                      "ener_EQ.edr",
-                                                     "rmsd-all-atom-vs-start.xvg",
-                                                     "rmsd-calpha-vs-start.xvg",
-                                                     "rmsd-backbone-vs-start.xvg",
-                                                     "rmsf-per-residue.xvg",
                                                      "traj_pymol.xtc"],
                                                  "tgt_dir": "finalOutput"}},
 
                        "set_end_3":
-                           {"command": "set_stage_init",  # 11
+                           {"command": "set_stage_init",  # 15
                                      "options": {"src_dir": "",
                                                  "src_files": ["tot_ener.xvg",
                                                                "tot_ener.log",
@@ -662,17 +654,21 @@ class BasicCollectResults(object):
                                                                "pressure.xvg",
                                                                "pressure.log",
                                                                "volume.xvg",
-                                                               "volume.log"],
+                                                               "volume.log"                                                     
+                                                               "rmsd-all-atom-vs-start.xvg",
+                                                               "rmsd-calpha-vs-start.xvg",
+                                                               "rmsd-backbone-vs-start.xvg",
+                                                               "rmsf-per-residue.xvg"],
                                                  "tgt_dir": "finalOutput/reports"}},
 
                        "set_end_4":
-                           {"command": "set_stage_init",  # 12
+                           {"command": "set_stage_init",  # 16
                                      "options": {"src_dir": "eq",
                                                  "src_files": ["md_eq1000.log"],
                                                  "tgt_dir": "finalOutput/logs"}},
 
                        "set_end_5":
-                           {"command": "set_stage_init",  # 13
+                           {"command": "set_stage_init",  # 17
                                      "options": {"src_dir": "eq",
                                                  "src_files": [
                                                      "{0}/md_eq{0}.log".format(
@@ -682,24 +678,21 @@ class BasicCollectResults(object):
                                                  "tgt_dir": "finalOutput/logs"}},
 
                        "set_end_6":
-                           {"command": "set_stage_init",  # 14
+                           {"command": "set_stage_init",  # 18
                                      "options": {"src_dir": "eqProd",
                                                  "src_files": ["md_eqProd.log"],
                                                  "tgt_dir": "finalOutput/logs"}},
 
                        "tar_it":
-                           {"command": "tar_out", # 15
+                           {"command": "tar_out", # 19
                                   "options": {"src_dir": "finalOutput",
-                                              "tgt": "MD_output.tgz"}},
-                       #   "final_clean": {"command": "clean_all",
-                       #       "options": {"target_dir": "",
-                       #           "exclude": ["MD_output.tgz", "GROMACS.log"]}},
+                                              "tgt": "MD_output.tgz"}}, 
                        }
 
         options = {"tot_ener": "13\n",
                    "temp": "15\n",
                    "pressure": "16\n",
-                   "volume": "21\n"} # 16 to 19
+                   "volume": "21\n"} # 8 to 11
 
         for option, gro_key in options.items():
             self.recipe[option] = \

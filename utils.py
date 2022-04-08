@@ -5,106 +5,6 @@ from string import Template
 import bw4posres
 
 
-def _arrange_dir(src_dir, new_dir, useful_files=[], useful_fixed=[]):
-    """
-    Copy the files in useful files from src_dir and
-    fixed files from self.own_dir to new dir, which is created if needed
-    """
-
-    if not os.path.isdir(new_dir):
-        os.makedirs(new_dir)
-
-    for u_f in [x for x in os.listdir(src_dir) if x in useful_files]:
-        src = os.path.join(src_dir, u_f)
-        tgt = os.path.join(new_dir, u_f)
-        shutil.copy(src, tgt)
-
-#    for u_f in [x for x in os.listdir(self.own_dir) if x in useful_fixed]:
-#        src = os.path.join(self.own_dir, u_f)
-#        tgt = os.path.join(new_dir, u_f)
-#        shutil.copy(src, tgt)
-
-    return True
-
-def check_forces(pdb, itp, ffield):
-    """
-    A force field must give a set of forces that matches every atom in
-    the pdb file. This showed particularly important to the ligands, as they
-    may vary along a very broad range of atoms.
-    """
-
-    # The itp matches each residue in the ligand pdb with the force field
-    atoms_def = False
-    molecules = {}
-    for line in open(itp, "r"):
-        if "[ atoms ]" in line:
-            atoms_def = True
-        if "[ bonds ]" in line:
-            atoms_def = False
-        if atoms_def and not line.startswith(";"):
-            data = line.split()
-            if len(data) > 6:
-                if data[3] not in molecules.keys():
-                    molecules[data[3]] = {}
-                # {"LIG": {"C1": "TC1"},}
-                molecules[data[3]][data[4]] = data[1]
-
-    atoms = {}
-    # The force field matches each atom in the pdb with one line
-    atomtypes = False
-    for line in open(ffield, "r"):
-        if "[ atomtypes ]" in line:
-            atomtypes = True
-        if atomtypes:
-            # We are inside the atomtypes definition, so add the defined atoms
-            if (len(line.split()) > 6):
-                #{"TC1": "C1"}
-                atoms[line.split()[0]] = line.split()[1]
-            
-    # The pdb has the name of the atom in the third position.
-    # Here we cross-check all three files to match their harvested values
-    for line in open(pdb, "r"):
-        data = line.split()
-        if len(data) > 6:
-            if molecules[data[3]][data[2]] not in atoms.keys():
-                # Some atoms in the pdb have no definition in force field
-                # TODO : add a guessing function
-                print ("Atom {0} has no field definition".format(data[1]))
-                # return False
-            if atoms[molecules[data[3]][data[2]]] not in\
-                molecules[data[3]].keys():
-                print ("Atom {0} has a wrong field definition".format(data[1]))
-                # return False
-
-    return True
-
-def clean_all(target_dir = "", exclude = []):
-        """
-        Remove all intermediate files from 'target_dir'  except that files
-         in 'exclude'
-        """
-        to_unlink_dir = os.path.join(os.getcwd(), target_dir)
-        # First a security check to not delete up a certain point
-        minimum = "/home/gpcruser/public"
-        if not to_unlink_dir.startswith(minimum): return False
-        if not "dynamic" in to_unlink_dir: return False
-
-        targets = os.listdir(to_unlink_dir)
-
-        for file_name in targets:
-            target = os.path.join(to_unlink_dir, file_name)
-            if file_name not in exclude:
-                # Deleting files
-                if os.path.isfile(target): os.unlink(target)
-                # Deleting subdirs
-                if os.path.isdir(target): shutil.rmtree(target)
-            else:
-                # Changing remaining files to be downloadable by web user
-                os.chmod(target, 0o755)
-                os.chown(target, -1, 8)
-
-        return True
-
 def clean_topol(src = [], tgt = []):
     """
     Clean the src topol of path specifics, and paste results in target
@@ -129,7 +29,6 @@ def concat(**kwargs):
     """
     Make a whole pdb file with all the pdb provided
     """
-#    for compound_class in ["ligand", "waters", "ions", "cho", "alosteric"]:
     for compound_class in ["ligand", "ions", "cho", "alosteric", "waters"]:
         # Does the complex carry the group?
         if hasattr(kwargs["tgt"], compound_class):
@@ -223,9 +122,6 @@ def make_topol(template_dir = \
     """
     Make the topol starting from our topol.top template
     """
-
-#    protein = dimer = lig = hoh = na = cho = alo = 0
-#    lig_name = hoh_name = ions_name = cho_name = alosteric_name = ""
     protein = bw =  dimer = lig = na = cho = alo = hoh = 0
     lig_name = ions_name = cho_name = alosteric_name = hoh_name = ""
     if hasattr(complex, "monomer"):
@@ -254,8 +150,6 @@ def make_topol(template_dir = \
             hoh = complex.waters.number
             hoh_name = complex.waters.itp
 
-
-#    order = ("protein", "dimer", "lig", "hoh", "na", "cho", "alo")
     order = ("protein", "bw", "dimer", "lig", "na", "cho", "alo", "hoh")
     comps = {"protein": {"itp_name": "protein.itp",
                          "ifdef_name": "POSRES",
@@ -305,9 +199,6 @@ def make_topol(template_dir = \
     itp_include = []
     for c in order:
         if locals()[c]:
-#            itp_name = comps[c]["itp_name"]
-#            print (c)
-#            print (comps[c].keys())
             if "itp_name" in comps[c].keys():
                 posre_name = comps[c]["posre_name"]
                 itp_include.append('#include "{0}"'.format(comps[c]["itp_name"]))
@@ -318,7 +209,6 @@ def make_topol(template_dir = \
                     comps[c]["posre_name"])),
                 '#endif'])
 
-            # if comps[c].has_key("name"):
             if ("name") in comps[c]:
                 comps[c]["line"] = "{0} {1}".format(
                     comps[c]["name"], locals()[c])
@@ -342,21 +232,6 @@ def make_topol(template_dir = \
 
     return True
 
-def make_topol_lines(itp_name = "",
-    ifdef_name = "",
-    posre_name = ""):
-    """
-    Make the topol lines to be included
-    """
-
-    return "\n".join(['#include "{it}"',
-        '; Include Position restraint file',
-        '#ifdef {id}',
-        '#include "{po}"',
-        '#endif']).format(it = itp_name,
-                          id = ifdef_name,
-                          po = posre_name)
-
 def tar_out(src_dir = [], tgt = []):
     """
     Tar everything in a src_dir to the tar_file
@@ -370,23 +245,3 @@ def tar_out(src_dir = [], tgt = []):
         t_f.add(to_tar)
     t_f.close()
     os.chdir(base_dir)
-
-def tune_mdp(groups):
-    """
-    Adjust the tc-groups of eq.mdp to be in line with our system
-    """
-    shutil.move("Rmin/eq.mdp", "Rmin/eq.mdp~")
-    eq = open("Rmin/eq.mdp~", "r")
-    eq_out = open("Rmin/eq.mdp", "w")
-    
-    for line in eq:
-        new_line = line
-        if line.startswith("tc-grps"):
-            new_line = line.replace("POP", groups["lipids"])
-            new_line = line.replace("wation", groups["solvent"])
-            new_line = line.replace("Protein", groups["complex"])
-        eq_out.write(new_line)
-    eq.close()
-    eq_out.close()
-
-    return True
