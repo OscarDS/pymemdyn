@@ -654,7 +654,7 @@ class BasicCollectResults(object):
                                                                "pressure.xvg",
                                                                "pressure.log",
                                                                "volume.xvg",
-                                                               "volume.log"                                                     
+                                                               "volume.log",                                                     
                                                                "rmsd-all-atom-vs-start.xvg",
                                                                "rmsd-calpha-vs-start.xvg",
                                                                "rmsd-backbone-vs-start.xvg",
