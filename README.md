@@ -131,9 +131,9 @@ To install **PyMemDyn** follow these steps:
 The following modules define the objects to be modeled.
 
 - **protein.py**.  This module defines the ProteinComplex, Protein, Monomer,
-Dimer, Compound, Ligand, CrystalWaters, Ions, Cholesterol, Lipids, 
-and Alosteric objects. These  objects are  started with  the required files, 
-and can then be passed  to other objects.   
+Dimer, Compound, Ligand, CrystalWaters, Ions, Cholesterol, and Alosteric 
+objects. These  objects are  started with  the required files, and can then 
+be passed  to other objects.   
 - **membrane.py**. Defines the cellular membrane.  
 - **complex.py**.  Defines the full complex, protein + membrane.   
   It can  include any  of the previous objects.
