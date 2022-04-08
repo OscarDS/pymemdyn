@@ -80,8 +80,8 @@ class Run(object):
 
         self.g = gromacs.Gromacs(membrane_complex=full_complex)
 
-        # NOTE: If not provided in command line, self.queue is set in
-        # settings.py
+        # NOTE: If not provided in command line, self.queue is set to
+        # NoQueue
         if self.queue:
             if self.queue == "slurm":
                 my_queue = queue.Slurm()
@@ -235,9 +235,7 @@ if __name__ == "__main__":
         print ("Created working dir {0}".format(args.own_dir))
     os.chdir(args.own_dir)
 
-    """
-    Removes files previously generated in Run()
-    """
+    # Removes files previously generated in Run()
     to_unlink = [''.join([args.pdb[:-4], "-his.pdb"]), 
                  ''.join([args.pdb, "~"])]
    
