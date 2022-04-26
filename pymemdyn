@@ -141,10 +141,10 @@ class Run(object):
         """
         if self.restraint == "bw":
             steps = ["Init", "Minimization", "Equilibration", "Relax", 
-                     "BWRelax", "CollectResults"]
+                     "BWRelax", "BWCollectResults"]
         elif self.restraint == "ca":
             steps = ["Init", "Minimization", "Equilibration", "Relax", 
-                     "CARelax", "CollectResults"]
+                     "CARelax", "CACollectResults"]
 
         for step in steps:
             self.g.select_recipe(stage=step, debug=self.debug)

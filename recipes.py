@@ -549,7 +549,7 @@ class BasicCollectResults(object):
         dict *breaks* as points where object calling can put their vars.
         """
         self.breaks = {}
-        self.steps = ["trjcat", "trjconv", "eneconv", "rms1", "rms2",
+        self.steps = ["trjcat", "trjconv", "rms1", "rms2",
                       "rms3", "rmsf", "tot_ener", "temp", "pressure",
                       "volume", "set_end", "clean_topol", "set_end_2",
                       "set_end_3", "set_end_4", "set_end_5", "set_end_6",
@@ -572,14 +572,6 @@ class BasicCollectResults(object):
                                                "skip": "2",
                                                "pbc": "mol"},
                                    "input": "1\n0\n"},
-
-                       "eneconv":
-                           {"gromacs": "eneconv",  # 3
-                            "options": {"dir1": "eq",
-                                        "dir2": "eqProd",
-                                        "name": "ener.edr",
-                                        "tgt": "ener_EQ.edr"},
-                            "input": "y\nc\nc\nc\nc\nc\nc\n"},
 
                        "rms1":
                            {"gromacs": "rms",  # 4
@@ -701,3 +693,61 @@ class BasicCollectResults(object):
                              "tgt": "{0}.xvg".format(option),
                              "log": "{0}.log".format(option)},
                  "input": gro_key}
+
+
+class BasicCACollectResults(BasicCollectResults):
+    def __init__(self, **kwargs):
+        super(BasicCACollectResults, self).__init__(**kwargs)
+        self.steps.insert(2, "eneconv")
+        self.recipe["eneconv"] = \
+                {"gromacs": "eneconv", 
+                 "options": {"dir1": "eq",
+                         "dir2": "eqProd",
+                         "name": "ener.edr",
+                         "tgt": "ener_EQ.edr"},
+                 "input": "y\nc\nc\nc\nc\nc\nc\n"}
+
+
+class BasicBWCollectResults(BasicCollectResults):
+    def __init__(self, **kwargs):
+        super(BasicBWCollectResults, self).__init__(**kwargs)
+        self.steps.insert(14, "set_end_BW")
+        self.recipe["set_end_BW"] = \
+                {"command": "set_stage_init",
+                          "options": {"src_dir": "",
+                                      "src_files": ["tot_ener2.xvg",
+                                                    "tot_ener2.log",
+                                                    "temp2.xvg",
+                                                    "temp2.log",
+                                                    "pressure2.xvg",
+                                                    "pressure2.log",
+                                                    "volume2.xvg",
+                                                    "volume2.log"],                                                     
+                                      "tgt_dir": "finalOutput/reports"}}
+
+        self.steps.insert(10, "volume2")
+        self.steps.insert(10, "pressure2")
+        self.steps.insert(10, "temp2")
+        self.steps.insert(10, "tot_ener2")
+            
+        options2 = {"tot_ener2": "14\n",
+                        "temp2": "16\n",
+                        "pressure2": "17\n",
+                        "volume2": "22\n"}
+
+        for option, gro_key in options2.items():
+            self.recipe[option] = \
+                {"gromacs": "energy",
+                 "options": {"src": "eqProd/ener.edr",
+                             "tgt": "{0}.xvg".format(option),
+                             "log": "{0}.log".format(option)},
+                 "input": gro_key}
+
+        self.steps.insert(2, "eneconv")
+        self.recipe["eneconv"] = \
+                {"gromacs": "eneconv", 
+                 "options": {"dir1": "eq",
+                             "dir2": "",
+                             "name": "ener.edr",
+                             "tgt": "ener_EQ.edr"},
+                 "input": "y\nc\nc\nc\nc\nc\nc\n"}
