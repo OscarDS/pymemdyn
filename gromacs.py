@@ -75,8 +75,6 @@ class Gromacs(object):
         """
         get_charge: Gets the total charge of a system using gromacs grompp command
         """
-        # wrapper = Wrapper()
-
         out, err = self.wrapper.run_command({"gromacs": "grompp",
                                              "options": kwargs})
 
@@ -85,9 +83,8 @@ class Gromacs(object):
         charge = 0
         for line in err.decode("utf-8").split("\n"):
             if "total charge" in line:
-                # In gromacs 4.6.5 the charge is not displayed in scientific notation.
+                # In gromacs the charge is not displayed in scientific notation.
                 # so this will result in giving a charge of 5, for a charge of 5.99999
-                #                charge = abs(int(float(line.split()[-1])))
                 charge = abs(int(round(float(line.split()[-1]))))
                 break
 
@@ -109,31 +106,25 @@ class Gromacs(object):
         """
         get_ndx_groups: Run make_ndx and set the total number of groups found
         """
-        # wrapper = Wrapper()
-
         out, err = self.wrapper.run_command({"gromacs": "make_ndx",
                                              "options": kwargs,
                                              "input": "q\n"})
 
         for line in out.decode("utf-8").split("\n"):
-            #            if "Water_and_ions" in line and "atoms" in line:
             if "atoms" in line:
                 self.n_groups = int(line.split()[0])
-                #                print int(line.split()[0])
-                #                return False
+
         return True
 
     def get_ndx_sol(self, **kwargs):
         """
         get_ndx_sol: Run make_ndx and set the last number id for SOL found
         """
-
         out, err = self.wrapper.run_command({"gromacs": "make_ndx",
                                              "options": kwargs,
                                              "input": "q\n"})
 
         for line in out.decode("utf-8").split("\n"):
-#        for line in out.decode().split():
             print(line)
             if "SOL" in line:
                 self.n_sol = int(line.split()[0])
@@ -145,7 +136,6 @@ class Gromacs(object):
         make_ndx: Wraps the make_ndx command tweaking the input to reflect the
         characteristics of the complex
         """
-
         if not (self.get_ndx_groups(**kwargs)): return False
         n_group = self.n_groups
 
@@ -153,12 +143,9 @@ class Gromacs(object):
         n_sol = self.n_sol
 
         # Create the solution with no crystal water, crossing fingers.
-        #        n_group += 1
         input = "r SOL \n"
         input += "name {0} SOL\n".format(n_sol)
         input += "del {0}\n".format(n_sol)
-        #        print n_group
-        #        print "{0}".format(input)
 
         # Create the "wation" group (always present)
         n_group += 1
@@ -167,19 +154,17 @@ class Gromacs(object):
 
         # Create the "protlig" group
         n_group += 1
-        #        input += "1 || r LIG || r ALO\n"  # LEGACY CODE gromacs 4.0.5
         input += " \"Protein\" | r LIG | r ALO \n"
         input += "name {0} protlig\n".format(n_group)
 
         # Create the "membr" group
         n_group += 1
-        input += " r POP | r CHO | r LIP \n"
+        input += " r POP* | r CHO | r LIP\n"
         input += "name {0} membr\n".format(n_group)
 
         # This makes a separate group for each chain (if more than one)
         if type(self.membrane_complex.complex.monomer) == protein.Dimer:
             for chain in self.membrane_complex.complex.monomer.chains:
-                # points = {'A': [1, 4530], 'B': [4532, 9061]}
                 n_group += 1
                 input += "a {0}-{1}\n".format(
                     self.membrane_complex.complex.monomer.points[chain][0],
@@ -189,7 +174,7 @@ class Gromacs(object):
                 input += "name {0} Protein_chain_{1}\n".format(n_group, chain)
 
         if hasattr(self.membrane_complex.membrane, "ions"):
-            # This makes the group ions TODO
+            # TODO This makes the group ions 
             # n_group += 1
             # input += "1 || r LIG\nname {0} protlig\n".format(n_group)
             pass
@@ -201,14 +186,8 @@ class Gromacs(object):
                                              "input": input})
 
         logging.debug("make_ndx command")
-#        logging.debug(err)
-#        logging.debug(out)
         logging.debug(err.decode().strip('\n'))
         logging.debug(out.decode().strip('\n'))
-
-        # We need to set the eq.mdp with these new groups
-        # NO LONGER NEEDED AS eq.mdp IS NOW GENERIC
-        # utils.tune_mdp(groups)
 
         return True
 
@@ -240,17 +219,10 @@ class Gromacs(object):
 
         return True
 
-    def passing(self):
-        """
-        passing: Do nothing, to respect some orders
-        """
-        return True
-
     def relax(self, **kwargs):
         """
         relax: Relax a protein
         """
-
         if not os.path.isdir(kwargs["tgt_dir"]): os.makedirs(kwargs["tgt_dir"])
         posres = kwargs.get("posres", [])
 
@@ -304,7 +276,6 @@ class Gromacs(object):
         if not hasattr(self, "recipe"):
             self.select_recipe(debug=debug)
 
-        # wrapper = Wrapper()
         self.repo_dir = self.wrapper.repo_dir
 
         for n, command_name in enumerate(self.recipe.steps):
@@ -320,7 +291,6 @@ class Gromacs(object):
                 n + 1, len(self.recipe.steps),
                 command_name))
             if ("gromacs") in command:
-#            if command.has_key("gromacs"):
                 # Either run a Gromacs pure command...
                 if hasattr(self, "queue"): command["queue"] = self.queue
                 out, err = self.wrapper.run_command(command)
@@ -333,7 +303,7 @@ class Gromacs(object):
 
                 # Some commands are unable to log via flag, so we catch and
                 # redirect stdout and stderr
-                if command["gromacs"] in ["g_energy"]:
+                if command["gromacs"] in ["energy"]:
                     self.manual_log(command, out)
 
             else:
@@ -345,7 +315,6 @@ class Gromacs(object):
                     # Fallback to the utils module
                     f = getattr(utils, command["command"])
 
-#                if command.has_key("options"):
                 if ("options") in command:
                     f(**command["options"])
                 else:
@@ -386,7 +355,6 @@ class Gromacs(object):
         """
         set_box_sizes: Set length values for different boxes
         """
-
         self.membrane_complex.complex.set_nanom()
         self.membrane_complex.trans_box_size = \
             [str(self.membrane_complex.complex.gmx_prot_xy),
@@ -549,6 +517,7 @@ class Gromacs(object):
         """
         shutil.copy(os.path.join(self.repo_dir, "steep.mdp"),
                     "steep.mdp")
+        
         return True
 
     def set_water(self, **kwargs):
@@ -611,7 +580,8 @@ class Wrapper(object):
             tgt = self._setDir(kwargs["options"]["tgt"])
         options = kwargs["options"]
 
-        command = [os.path.join(self.gromacs_dir, mode)]
+        command = [os.path.join(self.gromacs_dir, "gmx")]
+        command.extend([mode])
         if "queue" in kwargs.keys():
             if hasattr(kwargs["queue"], mode):
                 # If we got a queue enabled for this command, use it
@@ -622,7 +592,7 @@ class Wrapper(object):
 
         # Standard -f input -o output
         if mode in ["pdb2gmx", "editconf", "grompp", "trjconv",
-                    "make_ndx", "genrestr", "g_energy"]:
+                    "make_ndx", "genrestr", "energy"]:
             command.extend(self._common_io(src, tgt))
 
             if (mode == "pdb2gmx"):  # PDB2GMX
@@ -637,27 +607,24 @@ class Wrapper(object):
                 pass
             if (mode == "genrestr"):  # GENRSTR
                 command.extend(self._mode_genrest(options))
-            if (mode == "g_energy"):  # G_ENERGY
+            if (mode == "energy"):  # ENERGY
                 pass
 
         else:
             if (mode == "eneconv"):  # ENECONV
                 command.extend(self._mode_eneconv(options))
-            if (mode == "genbox"):  # GENBOX
-                command.extend(self._mode_genbox(options))
+            if (mode == "solvate"):  # SOLVATE
+                command.extend(self._mode_solvate(options))
             if (mode == "genion"):  # GENION
                 command.extend(self._mode_genion(options))
-            if (mode == "g_rms"):  # G_RMS
-                command.extend(self._mode_g_rms(options))
-            if (mode == "g_rmsf"):  # G_RMSF
-                command.extend(self._mode_g_rmsf(options))
-            if (mode == "tpbconv"):  # TPBCONV
-                command.extend(self._mode_tpbconv(options))
+            if (mode == "rms"):  # RMS
+                command.extend(self._mode_rms(options))
+            if (mode == "rmsf"):  # RMSF
+                command.extend(self._mode_rmsf(options))
             if (mode == "trjcat"):  # TRJCAT
                 command.extend(self._mode_trjcat(options))
             if (mode == "mdrun"):  # MDRUN_SLURM
                 pass
-                # command.extend(self._mode_mdrun(options))
 
         return command
 
@@ -696,30 +663,23 @@ class Wrapper(object):
 
         return command
 
-    def _mode_g_rms(self, kwargs):
+    def _mode_rms(self, kwargs):
         """
-        _mode_g_rms: Wrap the g_rms command options
+        _mode_rms: Wrap the rms command options
         """
         return ["-s", self._setDir(kwargs["src"]),
                 "-f", self._setDir(kwargs["src2"]),
                 "-o", self._setDir(kwargs["tgt"])]
 
-    def _mode_g_rmsf(self, kwargs):
+    def _mode_rmsf(self, kwargs):
         """
-        _mode_g_rmsf: Wrap the g_rmsf command options and report per
+        _mode_rmsf: Wrap the rmsf command options and report per
         residue RMSF
         """
         return ["-s", self._setDir(kwargs["src"]),
                 "-f", self._setDir(kwargs["src2"]),
                 "-o", self._setDir(kwargs["tgt"]),
                 "-res"]
-
-    def _mode_genbox(self, kwargs):
-        '''_mode_genbox: Wrap the genbox command options'''
-        return ["-cp", self._setDir(kwargs["cp"]),
-                "-cs", self._setDir(kwargs["cs"]),
-                "-p", self._setDir(kwargs["top"]),
-                "-o", self._setDir(kwargs["tgt"])]
 
     def _mode_genion(self, kwargs):
         """
@@ -733,9 +693,6 @@ class Wrapper(object):
         command = ["-s", kwargs["src"],
                    "-o", kwargs["tgt"],
                    "-p", self._setDir(kwargs["src2"]),
-                   # In version 4.6.5 of gromacs the log is generated
-                   # by default and the -g option doesn't exist anymore.
-                   # "-g", self._setDir("genion.log"),
                    "-n", kwargs["index"],
                    "-np", str(kwargs["np"]),
                    "-nn", str(kwargs["nn"]),
@@ -761,6 +718,7 @@ class Wrapper(object):
         """
         command = ["-maxwarn", " 2",
                    "-c", self._setDir(kwargs["src2"]),
+                   "-r", self._setDir(kwargs["src2"]),
                    "-p", self._setDir(kwargs["top"]),
                    "-po", self._setDir("mdout.mdp")]
         if "index" in kwargs.keys():
@@ -772,7 +730,6 @@ class Wrapper(object):
         """
         _mode_mdrun: Wrap the mdrun command options
         """
-
         command = ["-s", kwargs["src"],
                    "-o", kwargs["tgt"],
                    "-e", kwargs["energy"],
@@ -794,17 +751,15 @@ class Wrapper(object):
         return ["-p", self._setDir(kwargs["top"]),
                 "-i", self._setDir("posre.itp"),
                 "-ignh", "-ff", "oplsaa", "-water", "spc"]
-               # "-ignh", "-ff", "oplsaa", "-water", "spc", "-chainsep", \
-               # "id_or_ter", "-merge", "all"]
-               # "-ignh", "-ff", "oplsaa", "-water", "spc", "-ter"]  # addition for NPY-NH2 capping. Echo 0, or 1
 
-    def _mode_tpbconv(self, kwargs):
-        """
-        _mode_tpbconv: Wrap the tpbconv command options
-        """
-        return ["-s", self._setDir(kwargs["src"]),
-                "-o", self._setDir(kwargs["tgt"]),
-                "-extend", kwargs["extend"]]
+    def _mode_solvate(self, kwargs):
+        '''
+        _mode_solvate: Wrap the solvate command options
+        '''
+        return ["-cp", self._setDir(kwargs["cp"]),
+                "-cs", self._setDir(kwargs["cs"]),
+                "-p", self._setDir(kwargs["top"]),
+                "-o", self._setDir(kwargs["tgt"])]
 
     def _mode_trjcat(self, kwargs):
         """
@@ -843,14 +798,7 @@ class Wrapper(object):
         run_command: Run a command that comes in kwargs in a subprocess, and
         return the output as (output, errors)
         """
-
         command = self.generate_command(kwargs)
-
-        # my_dir = os.getcwd()
-
-        # if kwargs["gromacs"] == "mdrun":
-        # MDRUN depends on the local .mdp, no option to set it.
-        #    os.chdir(kwargs["options"]["dir"])
 
         if ("input" in kwargs.keys()):
             p = subprocess.Popen(command,
@@ -865,8 +813,6 @@ class Wrapper(object):
 
             gro_out, gro_errs = p.communicate()
 
-        # os.chdir(my_dir)
-
         return gro_out, gro_errs
 
     def _setDir(self, filename):
@@ -874,4 +820,3 @@ class Wrapper(object):
         _setDir: Expand a filename with the work dir to save code space
         """
         return os.path.join(self.work_dir, filename)
-

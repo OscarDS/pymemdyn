@@ -2,15 +2,18 @@ import os
 
 import settings
 
+# TODO: Queuing system requires additional look. Currently PyMemDyn 1.5 works 
+#       when queued (in Slurm/CBS) externally (bash-shell calling pymemdyn)
+#       Unknown if the same is the case for the other queuing systems.
 
 class Queue(object):
     def __init__(self, *args, **kwargs):
         # Default number of processors, nodes and time alloted in cluster.
-        self.num_proc   = getattr(settings, "QUEUE_NUM_PROCS") or 8
+        self.num_proc   = getattr(settings, "QUEUE_NUM_PROCS") or 16
         self.num_node   = getattr(settings, "QUEUE_NUM_NODES") or 1
-        self.max_time   = getattr(settings, "QUEUE_MAX_TIME") or "72:00:00"
-        self.ntasks     = getattr(settings, "QUEUE_NUM_TASK") or 8
-        self.ntaskpern  = getattr(settings, "QUEUE_NTS_NODE") or 8
+        self.max_time   = getattr(settings, "QUEUE_MAX_TIME") or "47:59:59"
+        self.ntasks     = getattr(settings, "QUEUE_NUM_TASK") or 16
+        self.ntaskpern  = getattr(settings, "QUEUE_NTS_NODE") or 16
         self.sh = "./mdrun.sh"
 
     def set_mdrun(self, value):
@@ -32,8 +35,8 @@ class NoQueue(Queue):
         super(NoQueue, self).__init__(self, *args, **kwargs)
         self.command = [self.sh]
 
-        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun")
-#        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") #For triolith
+        self._mdrun = os.path.join(settings.GROMACS_PATH, "gmx mdrun")
+#        self._mdrun = os.path.join(settings.GROMACS_PATH, "gmx mdrun_mpi") #For triolith
 
     def make_script(self, workdir, options):
         """
@@ -66,7 +69,7 @@ class Slurm(Queue):
             self.sh]
 
 #        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_slurm") #FOR CUELEBRE
-        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun") # FOR CSB
+        self._mdrun = os.path.join(settings.GROMACS_PATH, "gmx mdrun") # FOR CSB
 #        self._mdrun = os.path.join(settings.GROMACS_PATH, "mdrun_mpi") # FOR triolith
 
     def make_script(self, workdir, options):
@@ -114,7 +117,7 @@ class PBS(Queue):
         # XXX ##########################################################
 
 #        self._mdrun=os.path.join(settings.GROMACS_PATH, "mdrun_mpi")
-        self._mdrun=os.path.join(settings.GROMACS_PATH, "mdrun_")
+        self._mdrun=os.path.join(settings.GROMACS_PATH, "gmx mdrun_")
         self.command = [self.sh]
 
     def make_script(self, workdir, options):
@@ -153,7 +156,7 @@ class PBS_IB(Queue):
             self.sh]                                                        #
         #####################################################################
 
-        self._mdrun=os.path.join(settings.GROMACS_PATH, "mdrun_mpi")
+        self._mdrun=os.path.join(settings.GROMACS_PATH, "gmx mdrun_mpi")
         self.command = [self.sh]
 
     def make_script(self, workdir, options):
@@ -180,7 +183,7 @@ class Svgd(Queue):
     def __init__(self, *args, **kwargs):
         super(Svgd, self).__init__(self, *args, **kwargs)
         '''Setting the command to run mdrun in pbs queue with mpi'''
-        self._mdrun=os.path.join(settings.GROMACS_PATH, "mdrun")
+        self._mdrun=os.path.join(settings.GROMACS_PATH, "gmx mdrun")
         self.command = [self.sh]
 
     def make_script(self, workdir, options):
@@ -211,8 +214,3 @@ class Svgd(Queue):
         os.chmod(self.sh, 0o755)
 
         return True
-
-
-class Other(Queue):
-    def __init__(self):
-        pass

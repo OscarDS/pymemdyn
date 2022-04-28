@@ -233,7 +233,6 @@ class Ligand(Compound):
         the pdb file. This showed particularly important to the ligands, as they
         may vary along a very broad range of atoms
         """
-
         # The itp matches each residue in the ligand pdb with the force field
         atoms_def = False
         molecules = {}
@@ -270,7 +269,7 @@ class Ligand(Compound):
                     # to check consistency between the pdb file and the
                     # .ff (parameters) file
                     print ("Atom {0} has no field definition".format(data[1]))
-                    #return False
+
                 if atoms[molecules[data[3]][data[2]]] not in\
                     molecules[data[3]].keys():
                     print ("Atom {0} has a wrong field definition. Check .pdb \
@@ -280,7 +279,6 @@ class Ligand(Compound):
                     print (molecules[data[3]].keys())
                     print ("Atom name in lig.ff")
                     print (atoms[molecules[data[3]][data[2]]])
-                    #return False
 
         return True
 
@@ -314,7 +312,6 @@ class CrystalWaters(Compound):
        """
        Count and set the number of crystal waters in the pdb
        """
-#       return len([x for x in open(self.pdb, "r") if "OW" in x])
        return len([x for x in open(self.pdb, "r") if "HOH" in x])/3
 
     def _setITP(self):
@@ -460,98 +457,6 @@ class Cholesterol(Compound):
         tgt = open(self.posre_itp, "w")
         tgt.writelines(s)
         tgt.close()
-
-
-class Lipids(Compound):
-    def __init__(self, *args, **kwargs):
-        self.pdb = kwargs.get("pdb", "lip.pdb")
-        self.itp = kwargs.get("itp", "lip.itp")
-        super(Lipids, self).__init__(self, *args, **kwargs)
-
-        self.group = "membr"
-
-#        self.posre_itp = "posre_lip.itp"
-#        self._setITP()
-
-        self._n_lip = self.count_lip()
-
-    def setLip(self, value):
-        """
-        Sets the crystal lipids
-        """
-        self._n_lip = value
-
-    def getLip(self):
-        """
-        Get the crystal lipids
-        """
-        return self._n_lip
-    number = property(getLip, setLip)
-
-    def count_lip(self):
-       """
-       Count and set the number of lipids in the pdb
-       """
-       lip_count = []
-       for line in open(self.pdb, "r"):
-           if len(line.split()) > 2:
-               if (line.split()[3] == "LIP" and
-                   line.split()[4].isdigit() and
-                   line.split()[4] not in lip_count):
-                   #Lipid + number + new
-                   lip_count.append(line.split()[4])
-       return len(lip_count)
-
-    def _setITP(self):
-        """
-        Create the itp to this structure
-        """
-        s = "\n".join([
-            "; position restraints for lipids (resn LIP)",
-            "[ position_restraints ]",
-            ";  i funct       fcx        fcy        fcz",
-            "   1    1       1000       1000       1000"])
-
-        tgt = open(self.posre_itp, "w")
-        tgt.writelines(s)
-        tgt.close()
-
-
-class Oligo(Compound):
-    """
-    Class to insert oligopeptide into the complex.
-    TODO: All of it. This is just a starting non-functional scaffold
-    """
-    def __init__(self, *args, **kwargs):
-        self.pdb = kwargs.get("pdb", "oligo.pdb")
-        self.itp = kwargs.get("itp", "oligo.itp")
-        super(Oligo, self).__init__(self, *args, **kwargs)
-
-        self.check_pdb()
-
-        self.group = "protlig"
-        self.check_itp()
-
-        self.force_field = kwargs["ff"]
-
-        self.posre_itp = "posre_oligo.itp"
-        self._setITP()
-
-
-    def _setITP(self):
-        """
-        Create the itp for restraining this structure
-        """
-        s = "\n".join([
-            "; position restraints for oligopeptide ",
-            "[ position_restraints ]",
-            ";  i funct       fcx        fcy        fcz",
-            "   1    1       1000       1000       1000"])
-
-        tgt = open(self.posre_itp, "w")
-        tgt.writelines(s)
-        tgt.close()
-
 
 
 class Alosteric(Compound):

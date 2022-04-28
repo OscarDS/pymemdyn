@@ -7,8 +7,8 @@ class BasicInit(object):
         self.steps = ["pdb2gmx", "set_itp", "concat", "editconf",
                       "set_protein_size", "editconf2", "set_protein_size2",
                       "set_popc", "editconf3", "editconf4", "make_topol",
-                      "editconf5", "genbox", "set_water", "editconf6",
-                      "editconf7", "genbox2", "count_lipids", "make_topol2",
+                      "editconf5", "solvate", "set_water", "editconf6",
+                      "editconf7", "solvate2", "count_lipids", "make_topol2",
                       "make_topol_lipids", "make_ffoplsaanb", "set_grompp",
                       "set_chains", "make_ndx", "grompp", "trjconv",
                       "get_charge", "genion", "grompp2", "trjconv2",
@@ -59,7 +59,7 @@ class BasicInit(object):
 
              "editconf4": {"gromacs": "editconf",  # 10
                            "options": {"src": "popc.pdb",
-                                       "tgt": "popc.pdb",
+                                       "tgt": "popc.gro",
                                        "box": ""}},
 
              "make_topol": {"command": "make_topol",  # 11
@@ -70,9 +70,9 @@ class BasicInit(object):
                                        "tgt": "proteinopls.pdb",
                                        "translate": ["0", "0", "0"]}},
 
-             "genbox": {"gromacs": "genbox",  # 13
+             "solvate": {"gromacs": "solvate",  # 13
                         "options": {"cp": "proteinopls.pdb",
-                                    "cs": "popc.pdb",
+                                    "cs": "popc.gro",
                                     "tgt": "protpopc.pdb",
                                     "top": "topol.top"}},
 
@@ -81,7 +81,7 @@ class BasicInit(object):
 
              "editconf6": {"gromacs": "editconf",  # 15
                            "options": {"src": "water.pdb",
-                                       "tgt": "water.pdb",
+                                       "tgt": "water.gro",
                                        "box": ""}},
 
              "editconf7": {"gromacs": "editconf",  # 16
@@ -91,9 +91,9 @@ class BasicInit(object):
                                        "angles": ["90", "90", "120"],
                                        "bt": "tric"}},
 
-             "genbox2": {"gromacs": "genbox",  # 17
+             "solvate2": {"gromacs": "solvate",  # 17
                          "options": {"cp": "protpopc.pdb",
-                                     "cs": "water.pdb",
+                                     "cs": "water.gro",
                                      "tgt": "tmp.pdb",
                                      "top": "topol.top"}},
 
@@ -112,7 +112,8 @@ class BasicInit(object):
              "set_grompp": {"command": "set_grompp",  # 22
                             "options": {"steep.mdp": "steep.mdp",
                                         "popc.itp": "popc.itp",
-                                        # "ffoplsaanb_mod.itp": "ffoplsaanb_mod.itp",
+                                        "spc.itp": "spc.itp",
+                                        "ions.itp": "ions.itp",
                                         "ffoplsaabon_mod.itp": "ffoplsaabon_mod.itp",
                                         "ffoplsaa_mod.itp": "ffoplsaa_mod.itp"}},
 
@@ -211,7 +212,7 @@ class LigandInit(BasicInit):
 
         self.steps.insert(9, "genrestr_lig")
         self.recipe["genrestr_lig"] = \
-            {"gromacs": "genrestr",
+            {"gromacs": "genrestr", 
              "options": {"src": "",
                          "tgt": "posre_lig.itp",
                          "index": "ligand_ha.ndx",
@@ -410,7 +411,6 @@ class BasicRelax(object):
                 {"gromacs": "grompp",  # 2, 5, 8, 11
                  "options": {"src": os.path.join(tgt_dir, "eq.mdp"),
                              "src2": os.path.join(src_dir, "confout.gro"),
-                             # top": os.path.join(tgt_dir, "topol.top"),
                              "top": "topol.top",
                              "tgt": os.path.join(tgt_dir, "topol.tpr"),
                              "index": "index.ndx"}}
@@ -455,7 +455,7 @@ class BasicCARelax(object):
         self.recipe = {
             "set_stage_init": {"command": "set_stage_init",  # 1
                                "options": {"src_dir": "eq",
-                                           "tgt_dir": "eqCA",
+                                           "tgt_dir": "eqProd",
                                            "src_files": ["confout.gro"],
                                            "repo_files": ["eqCA.mdp"]}},
 
@@ -467,20 +467,20 @@ class BasicCARelax(object):
                          "input": "3\n"},
 
             "grompp": {"gromacs": "grompp",  # 3
-                       "options": {"src": "eqCA/eqCA.mdp",
-                                   "src2": "eqCA/confout.gro",
+                       "options": {"src": "eqProd/eqCA.mdp",
+                                   "src2": "eqProd/confout.gro",
                                    "top": "topol.top",
-                                   "tgt": "eqCA/topol.tpr",
+                                   "tgt": "eqProd/topol.tpr",
                                    "index": "index.ndx"}},
 
             "mdrun": {"gromacs": "mdrun",  # 4
-                      "options": {"dir": "eqCA",
+                      "options": {"dir": "eqProd",
                                   "src": "topol.tpr",
                                   "tgt": "traj.trr",
                                   "energy": "ener.edr",
                                   "conf": "confout.gro",
                                   "traj": "traj.xtc",
-                                  "log": "md_eqCA.log"}},
+                                  "log": "md_eqProd.log"}},
         }
 
         self.breaks = {}
@@ -488,7 +488,7 @@ class BasicCARelax(object):
         if kwargs["debug"] or False:
             self.recipe["set_stage_init"]["options"]["src_files"] = \
                 ["confout.gro", "eqDEBUG.mdp"]
-            self.recipe["grompp"]["options"]["src"] = "eqCA/eqDEBUG.mdp"
+            self.recipe["grompp"]["options"]["src"] = "eqProd/eqDEBUG.mdp"
 
 
 ##########################################################################
@@ -504,20 +504,20 @@ class BasicBWRelax(object):
 
             "set_stage_init": {"command": "set_stage_init",  # 2
                                "options": {"src_dir": "eq",
-                                           "tgt_dir": "eqBW",
+                                           "tgt_dir": "eqProd",
                                            "src_files": ["confout.gro",
                                                          "../disre.itp"],
                                            "repo_files": ["dres.mdp"]}},
 
             "grompp": {"gromacs": "grompp",  # 3
-                       "options": {"src": "eqBW/dres.mdp",
-                                   "src2": "eqBW/confout.gro",
+                       "options": {"src": "eqProd/dres.mdp",
+                                   "src2": "eqProd/confout.gro",
                                    "top": "topol.top",
-                                   "tgt": "eqBW/topol.tpr",
+                                   "tgt": "eqProd/topol.tpr",
                                    "index": "index.ndx"}},
 
             "mdrun": {"gromacs": "mdrun",  # 4
-                      "options": {"dir": "eqBW",
+                      "options": {"dir": "eqProd",
                                   "src": "topol.tpr",
                                   "tgt": "traj.trr",
                                   "energy": "ener.edr",
@@ -531,7 +531,7 @@ class BasicBWRelax(object):
         if kwargs["debug"] or False:
             self.recipe["set_stage_init"]["options"]["src_files"] = \
                 ["confout.gro", "eqDEBUG.mdp"]
-            self.recipe["grompp"]["options"]["src"] = "eqBW/eqDEBUG.mdp"
+            self.recipe["grompp"]["options"]["src"] = "eqProd/eqDEBUG.mdp"
 
 
 ##########################################################################
@@ -549,17 +549,16 @@ class BasicCollectResults(object):
         dict *breaks* as points where object calling can put their vars.
         """
         self.breaks = {}
-        self.steps = ["trjcat", "trjconv", "eneconv", "g_rms1", "g_rms2",
-                      "g_rms3", "g_rmsf", "tot_ener", "temp", "pressure",
+        self.steps = ["trjcat", "trjconv", "rms1", "rms2",
+                      "rms3", "rmsf", "tot_ener", "temp", "pressure",
                       "volume", "set_end", "clean_topol", "set_end_2",
                       "set_end_3", "set_end_4", "set_end_5", "set_end_6",
-                      "tar_it"]  # ,
-        # "final_clean"] This is dangerous, could delete needed files.
+                      "tar_it"]
 
         self.recipe = {"trjcat":
                            {"gromacs": "trjcat",  # 1
                             "options": {"dir1": "eq",
-                                        "dir2": "eqBW",
+                                        "dir2": "eqProd",
                                         "name": "traj.xtc",
                                         "tgt": "traj_EQ.xtc"},
                             "input": "c\n" * 6},
@@ -574,47 +573,37 @@ class BasicCollectResults(object):
                                                "pbc": "mol"},
                                    "input": "1\n0\n"},
 
-                       "eneconv":
-                           {"gromacs": "eneconv",  # 3
-                            "options": {"dir1": "eq",
-                                        "dir2": "eqBW",
-                                        "name": "ener.edr",
-                                        "tgt": "ener_EQ.edr"},
-                            "input": "y\nc\nc\nc\nc\nc\nc\n"},
-
-                       "g_rms1":
-                           {"gromacs": "g_rms",  # 4
+                       "rms1":
+                           {"gromacs": "rms",  # 4
                                  "options": {"src": "eq/topol.tpr",
                                              "src2": "traj_EQ.xtc",
                                              "tgt": "rmsd-all-atom-vs-start.xvg"},
                                  "input": "1\n1\n"},
 
-                       "g_rms2":
-                           {"gromacs": "g_rms",  # 5
+                       "rms2":
+                           {"gromacs": "rms",  # 5
                                  "options": {"src": "eq/topol.tpr",
                                              "src2": "traj_EQ.xtc",
                                              "tgt": "rmsd-backbone-vs-start.xvg"},
                                  "input": "4\n4\n"},
 
-                       "g_rms3":
-                           {"gromacs": "g_rms",  # 6
+                       "rms3":
+                           {"gromacs": "rms",  # 6
                                  "options": {"src": "eq/topol.tpr",
                                              "src2": "traj_EQ.xtc",
                                              "tgt": "rmsd-calpha-vs-start.xvg"},
                                  "input": "3\n3\n"},
 
-                       "g_rmsf":
-                           {"gromacs": "g_rmsf",  # 7
+                       "rmsf":
+                           {"gromacs": "rmsf",  # 7
                                  "options": {"src": "eq/topol.tpr",
                                              "src2": "traj_EQ.xtc",
                                              "tgt": "rmsf-per-residue.xvg"},
                                  "input": "1\n"},
 
                        "set_end":
-                           {"command": "set_stage_init",  # 8
-                                   "options": {"src_dir": "eqBW",
-                                               #"src_files": ["traj.xtc",
-                                               # "confout.gro", "topol.tpr"],
+                           {"command": "set_stage_init",  # 12
+                                   "options": {"src_dir": "eqProd",
                                                "src_files": ["confout.gro",
                                                              "topol.tpr"],
                                                "repo_files": ["popc.itp",
@@ -624,12 +613,12 @@ class BasicCollectResults(object):
                                                "tgt_dir": "finalOutput"}},
 
                        "clean_topol":
-                           {"command": "clean_topol",  # 9
+                           {"command": "clean_topol",  # 13
                                        "options": {"src": "topol.top",
                                                    "tgt": "finalOutput/topol.top"}},
 
                        "set_end_2":
-                           {"command": "set_stage_init",  # 10
+                           {"command": "set_stage_init",  # 14
                                      "options": {"src_dir": "",
                                                  "src_files": [
                                                      "ffoplsaa_mod.itp",
@@ -641,17 +630,14 @@ class BasicCollectResults(object):
                                                      "ions_local.itp",
                                                      "cho.itp",
                                                      "hoh.itp",
-                                                     "index.ndx", "traj_EQ.xtc",
+                                                     "index.ndx", 
+                                                     "traj_EQ.xtc",
                                                      "ener_EQ.edr",
-                                                     "rmsd-all-atom-vs-start.xvg",
-                                                     "rmsd-calpha-vs-start.xvg",
-                                                     "rmsd-backbone-vs-start.xvg",
-                                                     "rmsf-per-residue.xvg",
                                                      "traj_pymol.xtc"],
                                                  "tgt_dir": "finalOutput"}},
 
                        "set_end_3":
-                           {"command": "set_stage_init",  # 11
+                           {"command": "set_stage_init",  # 15
                                      "options": {"src_dir": "",
                                                  "src_files": ["tot_ener.xvg",
                                                                "tot_ener.log",
@@ -660,17 +646,21 @@ class BasicCollectResults(object):
                                                                "pressure.xvg",
                                                                "pressure.log",
                                                                "volume.xvg",
-                                                               "volume.log"],
+                                                               "volume.log",                                                     
+                                                               "rmsd-all-atom-vs-start.xvg",
+                                                               "rmsd-calpha-vs-start.xvg",
+                                                               "rmsd-backbone-vs-start.xvg",
+                                                               "rmsf-per-residue.xvg"],
                                                  "tgt_dir": "finalOutput/reports"}},
 
                        "set_end_4":
-                           {"command": "set_stage_init",  # 12
+                           {"command": "set_stage_init",  # 16
                                      "options": {"src_dir": "eq",
                                                  "src_files": ["md_eq1000.log"],
                                                  "tgt_dir": "finalOutput/logs"}},
 
                        "set_end_5":
-                           {"command": "set_stage_init",  # 13
+                           {"command": "set_stage_init",  # 17
                                      "options": {"src_dir": "eq",
                                                  "src_files": [
                                                      "{0}/md_eq{0}.log".format(
@@ -680,29 +670,84 @@ class BasicCollectResults(object):
                                                  "tgt_dir": "finalOutput/logs"}},
 
                        "set_end_6":
-                           {"command": "set_stage_init",  # 14
-                                     "options": {"src_dir": "eqBW",
-                                                 "src_files": ["md_eqBW.log"],
+                           {"command": "set_stage_init",  # 18
+                                     "options": {"src_dir": "eqProd",
+                                                 "src_files": ["md_eqProd.log"],
                                                  "tgt_dir": "finalOutput/logs"}},
 
                        "tar_it":
-                           {"command": "tar_out", # 15
+                           {"command": "tar_out", # 19
                                   "options": {"src_dir": "finalOutput",
-                                              "tgt": "MD_output.tgz"}},
-                       #   "final_clean": {"command": "clean_all",
-                       #       "options": {"target_dir": "",
-                       #           "exclude": ["MD_output.tgz", "GROMACS.log"]}},
+                                              "tgt": "MD_output.tgz"}}, 
                        }
 
         options = {"tot_ener": "13\n",
-                   "temp": "14\n",
-                   "pressure": "15\n",
-                   "volume": "20\n"} # 16 to 19
+                   "temp": "15\n",
+                   "pressure": "16\n",
+                   "volume": "21\n"} # 8 to 11
 
         for option, gro_key in options.items():
             self.recipe[option] = \
-                {"gromacs": "g_energy",
+                {"gromacs": "energy",
                  "options": {"src": "ener_EQ.edr",
                              "tgt": "{0}.xvg".format(option),
                              "log": "{0}.log".format(option)},
                  "input": gro_key}
+
+
+class BasicCACollectResults(BasicCollectResults):
+    def __init__(self, **kwargs):
+        super(BasicCACollectResults, self).__init__(**kwargs)
+        self.steps.insert(2, "eneconv")
+        self.recipe["eneconv"] = \
+                {"gromacs": "eneconv", 
+                 "options": {"dir1": "eq",
+                         "dir2": "eqProd",
+                         "name": "ener.edr",
+                         "tgt": "ener_EQ.edr"},
+                 "input": "y\nc\nc\nc\nc\nc\nc\n"}
+
+
+class BasicBWCollectResults(BasicCollectResults):
+    def __init__(self, **kwargs):
+        super(BasicBWCollectResults, self).__init__(**kwargs)
+        self.steps.insert(14, "set_end_BW")
+        self.recipe["set_end_BW"] = \
+                {"command": "set_stage_init",
+                          "options": {"src_dir": "",
+                                      "src_files": ["tot_ener2.xvg",
+                                                    "tot_ener2.log",
+                                                    "temp2.xvg",
+                                                    "temp2.log",
+                                                    "pressure2.xvg",
+                                                    "pressure2.log",
+                                                    "volume2.xvg",
+                                                    "volume2.log"],                                                     
+                                      "tgt_dir": "finalOutput/reports"}}
+
+        self.steps.insert(10, "volume2")
+        self.steps.insert(10, "pressure2")
+        self.steps.insert(10, "temp2")
+        self.steps.insert(10, "tot_ener2")
+            
+        options2 = {"tot_ener2": "14\n",
+                        "temp2": "16\n",
+                        "pressure2": "17\n",
+                        "volume2": "22\n"}
+
+        for option, gro_key in options2.items():
+            self.recipe[option] = \
+                {"gromacs": "energy",
+                 "options": {"src": "eqProd/ener.edr",
+                             "tgt": "{0}.xvg".format(option),
+                             "log": "{0}.log".format(option)},
+                 "input": gro_key}
+
+        self.steps.insert(2, "eneconv")
+        self.recipe["eneconv"] = \
+                {"gromacs": "eneconv", 
+                 "options": {"dir1": "eq",
+                             "dir2": "",
+                             "name": "ener.edr",
+                             "tgt": "ener_EQ.edr"},
+                 "input": "y\nc\nc\nc\nc\nc\nc\n"}

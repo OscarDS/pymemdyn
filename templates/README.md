@@ -11,15 +11,15 @@ The performed equilibration includes the following stages:
 
 |   STAGE    | RESTRAINED ATOMS        | FORCE CONSTANT       | TIME           |
 |:----------:|:-----------------------:|:--------------------:|:--------------:|
-|  -         |   -                     |kJ/(mol·nm^2)         | ns             |
+|  -         |   -                     |kJ/(mol·nm^2)        | ns             |
 |Minimization|   -                     | -                    |(Max. 500 steps)|
 |Equil. 1    |Protein Heavy Atoms      | 1000                 | 0.5            |
 |Equil. 2    |Protein Heavy Atoms      | 800                  | 0.5            |
 |Equil. 3    |Protein Heavy Atoms      | 600                  | 0.5            |
 |Equil. 4    |Protein Heavy Atoms      | 400                  | 0.5            |
 |Equil. 5    |Protein Heavy Atoms      | 200                  | 0.5            |
-|Equil. 6    |Venkatakrishnan Pairs    | 200                  | 2.5            |
-
+|Equil. 6    |Venkatakrishnan Pairs /  | 200 /                | 2.5 /          |
+|            |C-alpha Atoms            | 200                  | 2.5            |
 
 In this folder you will find several files related to this simulation:
 
@@ -34,7 +34,7 @@ INPUT:
     - topol.top             # Topology of the system
     - protein.itp           # Topology of the protein
     - index.ndx             # Index file with appropriate groups for GROMACS
-    - prod_example.mdp      # Example of a parameter file to configure a production run (see TIPS)
+    - prod.mdp              # Example of a parameter file to configure a production run (see TIPS)
 
 
 STRUCTURES:
@@ -59,6 +59,10 @@ In the "reports" subfolder, you will find the following files:
     - temp.xvg, temp.log            # System temperature plot and log
     - pressure.xvg, pressure.log    # System pressure plot and log
     - volume.xvg, volume.log        # System volume plot and log
+    - rmsd-all-atom-vs-start	    # All atoms RMSD plot
+    - rmsd-backbone-vs-start.xvg    # Backbone RMSD plot
+    - rmsd-calpha-vs-start.xvg      # C-Alpha RMSD plot
+    - rmsf-per-residue.xvg          # Residue RMSF plot
 
 LOGS:
 -----
@@ -83,9 +87,12 @@ explicitly stated in the Rodriguez et al. [1] publication.
 
 **TIPS**  
 
+NOTE: these tips work for GROMACS version >= 4.5 and < 5.0. For later 
+versions, adjustments are required, but the principle remains the same.
+
 - If you want to configure a .tpr input file for a **production** run, you
-can use the template 'prod_example.mdp' file by introducing the number
-of steps (nsteps), and thus the simulation time, you want to run.  
+can use the template 'prod.mdp' file by introducing the number of 
+steps (nsteps), and thus the simulation time, you want to run.  
 
 After that, you just have to type:  
 
@@ -108,9 +115,6 @@ request the last frame with:
 
     gmxcheck -f traj_pymol.xtc
     echo 1 | trjconv -b 5000 -e 5000 -f traj_pymol.xtc -o last51.pdb
-
-
-NOTE: these tips work for GROMACS version >= 4.5 and < 5.0  
 
 
 References

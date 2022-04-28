@@ -1,17 +1,17 @@
-pyMEMdyn Version 1.4
+PyMemDyn Version 1.5
 ================================================================================
 
-pyMEMdyn is  a standalone *python*  package to setup  membrane molecular
+PyMemDyn is  a standalone *python*  package to setup  membrane molecular
 dynamics  calculations  using the  **GROMACS**  set  of programs.  The
 package can be  used either in a desktop environment,  or in a cluster
 with popular queuing systems such as Torque/PBS or Slurm.  
 
 
-**py-MEMdyn** is hosted in github at:  
+**PyMemDyn** is hosted in github at:  
 
 <https://github.com/GPCR-ModSim/pymemdyn>  
 
-You can download any version of **py-MEMdyn** by cloning the repository
+You can download any version of **PyMemDyn** by cloning the repository
 to your local machine using git.  
 
 You will need to create a  free personal account at github and send
@@ -19,9 +19,9 @@ and  e-mail  to:  [gpcruser@gmail.com](gpcruser@gmail.com)  requesting
 access to the code. After request processing from us you will be
 given access to the free repository.  
 
-To install **py-MEMdyn** follow these steps:  
+To install **PyMemDyn** follow these steps:  
 
-1.  Clone **py-MEMdyn** for python 3.7 (for Python 2.7 clone stable/1.3):  
+1.  Clone **PyMemDyn** for python 3.7:  
 
         git clone https://username@github.com/GPCR-ModSim/pymemdyn.git
 
@@ -61,7 +61,8 @@ To install **py-MEMdyn** follow these steps:
     You should obtain the following help output:
 
         usage: pymemdyn [-h] [-v] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
-                        [-a ALOSTERIC] [-w WATERS] [-i IONS] [-c CHO] [-q QUEUE] [-d]
+                        [-a ALOSTERIC] [-w WATERS] [-i IONS] [-c CHO] 
+                        [--res RESTRAINT] [-q QUEUE] [-d]
 
          == Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
 
@@ -88,6 +89,9 @@ To install **py-MEMdyn** follow these steps:
           -i IONS, --ions IONS  Crystalized ions file name without extension.
           -c CHO, --cho CHO     Crystalized cholesterol molecules file name without
                                 extension.
+          --res RESTRAINT       Position restrains during MD production run. Options:
+                                bw (Ballesteros-Weinstein Restrained Relaxation -
+                                default), ca (C-Alpha Restrained Relaxation)
           -q QUEUE, --queue QUEUE
                                 Queueing system to use (slurm, pbs, pbs_ib and svgd
                                 supported)
@@ -95,31 +99,31 @@ To install **py-MEMdyn** follow these steps:
 
 
 3.  Updates are very easy thanks to the git versioning system. Once
-    **py-MEMdyn** has been downloaded (cloned) into its own *pymemdyn* folder 
+    **PyMemDyn** has been downloaded (cloned) into its own *pymemdyn* folder 
     you just have to move to it and pull the newest changes:
 
         cd /home/username/software/pymemdyn
         git pull   
 
-4.  You can also clone older stable versions of **py-MEMdyn**. For
-    example the stable version 1.0 which works well and has been tested
-    extensively again gromacs version 4.0.5 can be cloned with:
+4.  You can also clone older stable versions of **PyMemDyn**. For
+    example the stable version 1.4 which works well and has been tested
+    extensively again GROMACS version 4.6.7 can be cloned with:
 
         git clone https://username@github.com/GPCR-ModSim/pymemdyn.git \
-        --branch stable/1.0 --single-branch pymemdyn-1.0
+        --branch stable/1.4 --single-branch pymemdyn-1.4
 
     Now you will have to change your .bashrc or .cshrc files in your
     home folder accordingly.  
 
-5.  To make sure that your gromacs installation is understood by
-    **py-MEMdyn** you will need to specify the path to where Gromacs is
+5.  To make sure that your GROMACS installation is understood by
+    **PyMemDyn** you will need to specify the path to where GROMACS is
     installed in your system. To do this you will need to edit the
     settings.py file with any text editor (“vi” and “emacs” are common
     options in the unix environment). Make sure that only one line is
-    uncommented, looking like: GROMACS\_PATH = /opt/gromacs-4.6.7/bin
+    uncommented, looking like: GROMACS_PATH = /opt/gromacs-2021/bin
     Provided that in your case gromacs is installed in /opt. The program
     will prepend this line to the binaries names, so calling
-    “/opt/gromacs-4.6.7/bin/grompp” should point to that binary.  
+    “/opt/gromacs-2021/bin/gmx should point to that binary.  
 
 
 ### Modeling Modules 
@@ -127,9 +131,9 @@ To install **py-MEMdyn** follow these steps:
 The following modules define the objects to be modeled.
 
 - **protein.py**.  This module defines the ProteinComplex, Protein, Monomer,
-Dimer, Compound, Ligand, CrystalWaters, Ions, Cholesterol, Lipids, 
-and Alosteric objects. These  objects are  started with  the required files, 
-and can then be passed  to other objects.   
+Dimer, Compound, Ligand, CrystalWaters, Ions, Cholesterol, and Alosteric 
+objects. These  objects are  started with  the required files, and can then 
+be passed  to other objects.   
 - **membrane.py**. Defines the cellular membrane.  
 - **complex.py**.  Defines the full complex, protein + membrane.   
   It can  include any  of the previous objects.
@@ -159,16 +163,23 @@ and can then be passed  to other objects.
   to it this returns the command to be run.
 
 
-### Examples
-
-- **example.py**  An example  showing how  to use  the  previously defined
-  libraries.
+### Executable
 
 - **pymemdyn** The main program to call which sends the run to a cluster.
 
 
 Changelog
 --------------------------------------------------------------------------------
+
+### Changes from version 1.4 to 1.5
+
+- Thursday, April 7, 2022
+
+Now PyMemDyn runs with the current GROMACS versions (version 5.0 >). Has been
+tested only with GROMACS 2021, but should work for all GROMACS versions above
+5.0. Please report any issues encountered with GROMACS compatibility issues.
+In addition, --res was added to the command line to allow for position restraint
+selection for the production MD run.
 
 ### Changes from version 1.3 to 1.4
 

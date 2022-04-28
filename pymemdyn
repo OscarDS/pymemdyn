@@ -36,6 +36,7 @@ class Run(object):
         self.waters = kwargs.get("waters") or ""
         self.ions = kwargs.get("ions") or ""
         self.cho = kwargs.get("cho") or ""
+        self.restraint = kwargs.get("restraint") or ""
         self.queue = kwargs.get("queue") or ""
         self.debug = kwargs.get("debug") or False
 
@@ -79,8 +80,8 @@ class Run(object):
 
         self.g = gromacs.Gromacs(membrane_complex=full_complex)
 
-        # NOTE: If not provided in command line, self.queue is set in
-        # settings.py
+        # NOTE: If not provided in command line, self.queue is set to
+        # NoQueue
         if self.queue:
             if self.queue == "slurm":
                 my_queue = queue.Slurm()
@@ -99,29 +100,32 @@ class Run(object):
         """
         Removes all previously generated files
         """
-        to_unlink = ["*.fasta", "*.aln", "#index.ndx.1#", "#ligand_ha.ndx.1#",
-                     "#mdout.mdp.1#", "#mdout.mdp.2#", "#mdout.mdp.3#",
-                     "#mdout.mdp.4#", "#mdout.mdp.5#", "#mdout.mdp.6#",
-                     "#mdout.mdp.7#", "#mdout.mdp.8#", "#mdout.mdp.9#",
-                     "#output.pdb.1#", "#output.tpr.1#", "#popc.pdb.1#",
-                     "#posre.itp.1#", "#proteinopls.pdb.1#",
-                     "#proteinopls.pdb.2#",
-                     "#proteinopls.pdb.3#", "#proteinopls.pdb.4#",
-                     "#protein.top.1#", "#protpopc.pdb.1#", "#protpopc.pdb.2#",
-                     "#tmp.pdb.1#", "#topol.top.1#", "#topol.top.2#",
-                     "#topol.top.3#", "#topol.tpr.1#", "#topol.tpr.2#",
-                     "#topol.tpr.3#", "#topol.tpr.4#", "#water.pdb.1#",
-                     "ener_EQ.edr", "ffoplsaabon_mod.itp", "ffoplsaa_mod.itp",
-                     "ffoplsaanb_mod.itp", "genion.log", "hexagon.pdb",
-                     "index.ndx", "ligand_ha.ndx", "mdout.mdp", "min.pdb",
-                     "output.pdb", "output.tpr", "popc.pdb", "popc.itp",
-                     "posre.itp", "posre_lig.itp", "protein.itp", "protein.top",
-                     "protein_ca200.itp", "proteinopls.pdb",
-                     "proteinopls-ligand.pdb", "protpopc.pdb", "steep.mdp",
-                     "traj.xtc", "traj_EQ.xtc", "tmp.pdb", "topol.top",
-                     "topol.tpr", "tmp_proteinopls.pdb", "water.pdb"]
+        to_unlink = ["#index.ndx.1#", "#index.ndx.2#", "#index.ndx.3#", 
+                     "#index.ndx.4#", "#index.ndx.5#", "#output.pdb.1#", 
+                     "#proteinopls.pdb.1#", "#proteinopls.pdb.2#", 
+                     "#proteinopls.pdb.3#", "#proteinopls.pdb.4#", 
+                     "#protpopc.pdb.1#", "#tmp.pdb.1#", "#topol.top.1#", 
+                     "#topol.top.2#", "#topol.top.3#", "#topol.tpr.1#", 
+                     "#topol.tpr.2#", "#topol.tpr.3#", "#topol.tpr.4#", 
+                     "disre.itp", "ener_EQ.edr", "ffoplsaa_mod.itp", 
+                     "ffoplsaabon_mod.itp", "ffoplsaanb_mod.itp", 
+                     "hexagon.pdb", "index.ndx", "ions.itp", "ligand_ha.ndx", 
+                     "MD_output.tgz", "mdout.mdp", "mdrun.sh", "min.pdb", 
+                     "output.pdb", "popc.gro", "popc.itp", "popc.pdb", 
+                     "posre.itp", "posre_lig.itp", "pressure.log", 
+                     "pressure.xvg", "protein.itp", "protein.top", 
+                     "protein_ca200.itp", "proteinopls.fasta", 
+                     "proteinopls.pdb", "proteinopls_bw.aln", 
+                     "proteinopls_CA.pdb", "protpopc.pdb", 
+                     "rmsd-all-atom-vs-start.xvg", 
+                     "rmsd-backbone-vs-start.xvg", "rmsd-calpha-vs-start.xvg", 
+                     "rmsf-per-residue.xvg", "spc.itp", "steep.mdp", 
+                     "temp.log", "temp.xvg", "tmp.pdb", "tmp_proteinopls.pdb",
+                     "topol.top", "topol.tpr", "tot_ener.log", "tot_ener.xvg",
+                     "traj_EQ.xtc", "traj_pymol.xtc", "volume.log", 
+                     "volume.xvg", "water.gro", "water.pdb"]
 
-        dirs_to_unlink = ["Rmin", "eq", "eqCA", "eqBW"]
+        dirs_to_unlink = ["Rmin", "eq", "eqProd"]
 
         for target in to_unlink:
             if os.path.isfile(target): os.unlink(target)
@@ -135,8 +139,12 @@ class Run(object):
         """
         Run all steps in a molecular dynamics simulation of a membrane protein
         """
-        steps = ["Init", "Minimization", "Equilibration", "Relax", "BWRelax",
-                 "CollectResults"]
+        if self.restraint == "bw":
+            steps = ["Init", "Minimization", "Equilibration", "Relax", 
+                     "BWRelax", "BWCollectResults"]
+        elif self.restraint == "ca":
+            steps = ["Init", "Minimization", "Equilibration", "Relax", 
+                     "CARelax", "CACollectResults"]
 
         for step in steps:
             self.g.select_recipe(stage=step, debug=self.debug)
@@ -146,9 +154,9 @@ class Run(object):
         """
         This is a function to debug a run in steps
         """
-        #        steps = ["Init", "Minimization", "Equilibration", "Relax", "CARelax"]
-        #        steps = ["Equilibration","Relax"]
-        steps = ["CollectResults"]
+        steps = ["BWRelax", "CollectResults"]
+#        steps = ["CollectResults"]
+
         for step in steps:
             self.g.select_recipe(stage=step, debug=self.debug)
             self.g.run_recipe(debug = self.debug)
@@ -161,7 +169,7 @@ if __name__ == "__main__":
 
     parser.add_argument('-v', '--version',
                         action='version',
-                        version='%(prog)s 1.4')
+                        version='%(prog)s 1.5')
 
     parser.add_argument('-b',
                         dest = "own_dir",
@@ -193,29 +201,32 @@ if __name__ == "__main__":
             its itp and its force field.")
 
     parser.add_argument('-w','--waters',
-                        dest="waters",
+                        dest = "waters",
                         help = "Crystalized water molecules. File name without extension.")
 
     parser.add_argument('-i', '--ions',
-                        dest="ions",
+                        dest = "ions",
                         help = "Crystalized ions file name without extension.")
 
     parser.add_argument('-c', '--cho',
-                        dest="cho",
+                        dest = "cho",
                         help = "Crystalized cholesterol molecules file name\
             without extension.")
+
+    parser.add_argument('--res',
+                        dest = "restraint",
+                        help = "Position restrains during MD production run. Options: bw \
+            (Ballesteros-Weinstein Restrained Relaxation - default), ca (C-Alpha Restrained \
+            Relaxation)",
+                        default = "bw")
 
     parser.add_argument('-q', '--queue',
                         dest = "queue",
                         help = "Queueing system to use (slurm, pbs, pbs_ib and svgd supported)",
-                        default = settings.QUEUE)
+                        default = "")
 
     parser.add_argument('-d', '--debug',
                         action="store_true")
-
-    #    parser.add_argument('-cl', '--clean',
-    #        default=Run.clean)
-
 
     args = parser.parse_args()
 
@@ -223,6 +234,13 @@ if __name__ == "__main__":
         os.makedirs(args.own_dir)
         print ("Created working dir {0}".format(args.own_dir))
     os.chdir(args.own_dir)
+
+    # Removes files previously generated in Run()
+    to_unlink = [''.join([args.pdb[:-4], "-his.pdb"]), 
+                 ''.join([args.pdb, "~"])]
+   
+    for target in to_unlink:
+        if os.path.isfile(target): os.unlink(target)
 
     run = Run(own_dir = args.own_dir,
               repo_dir = args.repo_dir,
@@ -232,6 +250,7 @@ if __name__ == "__main__":
               waters = args.waters,
               ions = args.ions,
               cho = args.cho,
+              restraint = args.restraint,
               queue = args.queue,
               debug = args.debug)
 
@@ -241,14 +260,6 @@ if __name__ == "__main__":
     f = open("GROMACS.log", "w")
     f.close()
 
-#    if args.debug:
-#        logging.basicConfig(filename='GROMACS_debug.log',
-#                            level=logging.DEBUG)
-#    else:
-#        logging.basicConfig(filename='GROMACS.log',
-#                            format='%(asctime)s %(message)s',
-#                            datefmt='%m/%d/%Y %I:%M:%S',
-#                            level=logging.DEBUG)
 
     run.moldyn()
 #    run.light_moldyn()
