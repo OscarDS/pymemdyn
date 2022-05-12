@@ -60,53 +60,53 @@ To install **PyMemDyn** follow these steps:
 
     You should obtain the following help output:
 	
-	usage: pymemdyn [-h] [-v] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
-        	        [-a ALOSTERIC] [-w WATERS] [-i IONS] [-c CHO]
-                	[--lpg LIGPARGEN] [--lib LIBRARY] [--res RESTRAINT] [-q QUEUE]
-                	[-d]
+        usage: pymemdyn [-h] [-v] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
+        		[-a ALOSTERIC] [-w WATERS] [-i IONS] [-c CHO]
+        		[--lpg LIGPARGEN] [--lib LIBRARY] [--res RESTRAINT] [-q QUEUE]
+        		[-d]
 
-	== Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
+        == Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
 
-	optional arguments:
-	  -h, --help            show this help message and exit
-	  -v, --version         show program's version number and exit
- 	  -b OWN_DIR            Working dir if different from actual dir
-	  -r REPO_DIR           Path to templates of fixed files. If not provided,
-           	                take the value from settings.TEMPLATES_DIR.
-	  -p PDB                Name of the pdb to insert into membrane for MD
-                        	(mandatory). Use the pdb extension. (e.g. -p
-                        	myprot.pdb)
-	  -l LIGAND, --lig LIGAND
-                        	Name of the ligand, without extension. Three files
-                        	must be present along with the molecule pdb: the
-                        	ligand, its itp and its force field. (See --lpg and 
-				--lib for more information)
-	  -a ALOSTERIC, --alo ALOSTERIC
-                        	Name of the alosteric interaction, without extension.
-                        	Three files must be present along with the molecule
-                        	pdb: the alosteric, its itp and its force field. (See
-                        	--lpg and --lib for more information)
- 	  -w WATERS, --waters WATERS
-                        	Crystalized water molecules. File name without
-                        	extension.
-	  -i IONS, --ions IONS  Crystalized ions file name without extension.
-	  -c CHO, --cho CHO     Crystalized cholesterol molecules file name without
-                        	extension.
-	  --lpg LIGPARGEN       Indicate which ligand or cofactor pdb and topology
-                        	files are generated using LigParGen. Options: any
-                        	combination of l (ligand), a (allosteric), and c
-                        	(cholesterol)
-	  --lib LIBRARY         Indicate which ligand or cofactor itp and ff you wish
-                        	to retrieve from the PyMemDyn library. Options: any
-                        	combination of l (ligand), a (allosteric), w (waters),
-                        	i (ions), and c (cholesterol)
-	  --res RESTRAINT       Position restraints during MD production run. Options:
-                        	bw (Ballesteros-Weinstein Restrained Relaxation -
-                        	default), ca (C-Alpha Restrained Relaxation)
-	  -q QUEUE, --queue QUEUE
-                        	Queueing system to use (slurm, pbs, pbs_ib and svgd
-                        	supported)
-	  -d, --debug
+        optional arguments:
+          -h, --help            show this help message and exit
+          -v, --version         show program's version number and exit
+          -b OWN_DIR            Working dir if different from actual dir
+          -r REPO_DIR           Path to templates of fixed files. If not provided,
+        			take the value from settings.TEMPLATES_DIR.
+          -p PDB                Name of the pdb to insert into membrane for MD
+        			(mandatory). Use the pdb extension. (e.g. -p
+        			myprot.pdb)
+          -l LIGAND, --lig LIGAND
+        			Name of the ligand, without extension. Three files
+        			must be present along with the molecule pdb: the
+        			ligand, its itp and its force field. (See --lpg and 
+        			--lib for more information)
+          -a ALOSTERIC, --alo ALOSTERIC
+        			Name of the alosteric interaction, without extension.
+        			Three files must be present along with the molecule
+        			pdb: the alosteric, its itp and its force field. (See
+        			--lpg and --lib for more information)
+          -w WATERS, --waters WATERS
+	        		Crystalized water molecules. File name without
+        			extension.
+          -i IONS, --ions IONS  Crystalized ions file name without extension.
+          -c CHO, --cho CHO     Crystalized cholesterol molecules file name without
+        			extension.
+          --lpg LIGPARGEN       Indicate which ligand or cofactor pdb and topology
+        			files are generated using LigParGen. Options: any
+        			combination of l (ligand), a (allosteric), and c
+        			(cholesterol)
+          --lib LIBRARY         Indicate which ligand or cofactor itp and ff you wish
+        			to retrieve from the PyMemDyn library. Options: any
+        			combination of l (ligand), a (allosteric), w (waters),
+        			i (ions), and c (cholesterol)
+          --res RESTRAINT       Position restraints during MD production run. Options:
+        			bw (Ballesteros-Weinstein Restrained Relaxation -
+        			default), ca (C-Alpha Restrained Relaxation)
+          -q QUEUE, --queue QUEUE
+        			Queueing system to use (slurm, pbs, pbs_ib and svgd
+         			supported)
+          -d, --debug
 
 3.  Updates are very easy thanks to the git versioning system. Once
     **PyMemDyn** has been downloaded (cloned) into its own *pymemdyn* folder 
@@ -128,12 +128,12 @@ To install **PyMemDyn** follow these steps:
 5.  To make sure that your GROMACS installation is understood by
     **PyMemDyn** you will need to specify the path to where GROMACS is
     installed in your system. To do this you will need to edit the
-    settings.py file with any text editor (ìviî and ìemacsî are common
+    settings.py file with any text editor (‚Äúvi‚Äù and ‚Äúemacs‚Äù are common
     options in the unix environment). Make sure that only one line is
     uncommented, looking like: GROMACS_PATH = /opt/gromacs-2021/bin
     Provided that in your case gromacs is installed in /opt. The program
     will prepend this line to the binaries names, so calling
-    ì/opt/gromacs-2021/bin/gmx should point to that binary.  
+    ‚Äú/opt/gromacs-2021/bin/gmx should point to that binary.  
 
 
 ### Modeling Modules 
