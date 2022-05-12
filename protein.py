@@ -199,6 +199,119 @@ class Dimer(Monomer):
         return True
 
 
+class Sugar_prep(object):
+    def __init__(self, *args, **kwargs):
+        if self.ligpargen:
+            for sugar in self.ligpargen:
+                if sugar == "l": 
+                    Sugar_prep.lpg2pmd(self, self.ligand, sugar)
+                if sugar == "a": 
+                    Sugar_prep.lpg2pmd(self, self.alosteric, sugar)
+                if sugar == "c":
+                    Sugar_prep.lpg2pmd(self, self.cho, sugar)                
+                # Waters and Ions not possible through LigParGen
+                # Able to retrieve then through --lib
+        
+        if self.library:
+            for sugar in self.library:
+                if sugar == "l": 
+                    Sugar_prep.lib2pmd(self, self.ligand)
+                if sugar == "a": 
+                    Sugar_prep.lib2pmd(self, self.alosteric)
+                if sugar == "w": 
+                    Sugar_prep.lib2pmd(self, self.waters)
+                if sugar == "i": 
+                    Sugar_prep.lib2pmd(self, self.ions)
+                if sugar == "c":
+                    Sugar_prep.lib2pmd(self, self.cho)          
+
+    def lib2pmd(self, sugar, *args, **kwargs):
+        """
+        Retrieves library structure files
+        """     
+        shutil.copy(self.repo_dir + "/library/" + sugar + ".itp", self.own_dir + "/" + sugar + ".itp")
+        shutil.copy(self.repo_dir + "/library/" + sugar + ".ff", self.own_dir + "/" + sugar + ".ff")
+       
+    def lpg2pmd(self, sugar, sugar_type, *args, **kwargs):
+        """
+        Converts LigParGen structure files to PyMemDyn input files
+        """
+        shutil.copy(self.own_dir + "/" + sugar + ".itp", self.own_dir + "/" + sugar + "_backup.itp")
+        shutil.copy(self.own_dir + "/" + sugar + ".pdb", self.own_dir + "/" + sugar + "_backup.pdb")
+
+        old_itp = open(self.own_dir + "/" + sugar + ".itp", "r") 
+        old_pdb = open(self.own_dir + "/" + sugar + ".pdb", "r")
+        
+        lines_itp = old_itp.readlines()
+        lines_pdb = old_pdb.readlines()
+        old_itp.close()
+        old_pdb.close()
+                
+        new_itp = open(self.own_dir + "/" + sugar + ".itp", "w")
+        new_ff = open(self.own_dir + "/" + sugar + ".ff", "w")
+        new_pdb = open(self.own_dir + "/" + sugar + ".pdb", "w")
+
+        split = False
+        count = -1
+        tmp_ff = []
+        tmp_itp = []
+
+        for line in lines_itp:
+            if "[ moleculetype ]" in line:
+                split = True
+
+            if split == False: 
+                if line[2:6] != "opls": 
+                    new_ff.write(line)
+                else:
+                    tmp_ff.append(line.split())         
+                    
+            if split == True:
+                count += 1
+                if count == 2:
+                    if sugar_type == "l" and line[0:3] != "LIG":
+                        line = line.replace(line[0:3], "LIG")
+                    if sugar_type == "a" and line[0:3] != "ALO":
+                        line = line.replace(line[0:3], "ALO")
+                    if sugar_type == "c" and line[0:3] != "CHO":
+                        line = line.replace(line[0:3], "CHO")
+                    # Waters and Ions retrieved through library.
+                    # If not: ions: make distinction between Cl- and Na+
+                    
+                if line[9:13] == "opls":
+                    tmp_itp.append(line.split())
+                    if sugar_type == "l" and line[28:31] != "LIG":
+                        line = line.replace(line[28:31], "LIG")
+                    if sugar_type == "a" and line[28:31] != "ALO":
+                        line = line.replace(line[28:31], "ALO")
+                    if sugar_type == "c" and line[28:31] != "CHO":
+                        line = line.replace(line[28:31], "CHO")
+
+                new_itp.write(line)
+
+        for i in tmp_itp:
+            for j in tmp_ff:
+                if i[1] == j[0]:
+                    j[1] = i[4]
+                    j.insert(2, i[2])
+                    new_ff.write("\t".join(j) + "\n")
+
+        for line in lines_pdb:
+            if line[0:4] == "ATOM":
+                if sugar_type == "l" and line[17:20] != "LIG":
+                    line = line.replace(line[17:20], "LIG")
+                if sugar_type == "a" and line[17:20] != "ALO":
+                    line = line.replace(line[17:20], "ALO")
+                if sugar_type == "c" and line[17:20] != "CHO":
+                    line = line.replace(line[17:20], "CHO")
+                    
+            new_pdb.write(line)
+        
+        new_itp.close()
+        new_ff.close()
+        new_pdb.close()
+
+
 class Compound(object):
     """
     This is a super-class to provide common functions to added compounds
@@ -285,16 +398,15 @@ class Ligand(Compound):
 
 class CrystalWaters(Compound):
     def __init__(self, *args, **kwargs):
-        self.pdb = kwargs.get("pdb", "hoh.pdb")
-        self.itp = kwargs.get("itp", "hoh.itp")
+        self.pdb = kwargs["pdb"]
+        self.itp = kwargs["itp"]
         super(CrystalWaters, self).__init__(self, *args, **kwargs)
 
         self.group = "wation"
-
         self.posre_itp = "posre_hoh.itp"
         self._setITP()
         self._n_wats = self.count_waters()
-
+        
     def setWaters(self, value):
         """
         Set crystal waters
@@ -330,16 +442,14 @@ class CrystalWaters(Compound):
 
 
 class Ions(Compound):
-    def __init__(self, *args, **kwargs):
-        self.pdb = kwargs.get("pdb", "ions_local.pdb")
-        self.itp = kwargs.get("itp", "ions_local.itp")
+    def __init__(self, *args, **kwargs):      
+        self.pdb = kwargs["pdb"]
+        self.itp = kwargs["itp"]
         super(Ions, self).__init__(self, *args, **kwargs)
-
+        
         self.group = "wation"
-
         self.posre_itp = "posre_ion.itp"
         self._setITP()
-
         self._n_ions = self.count_ions()
 
     def setIons(self, value):
@@ -384,16 +494,13 @@ class Ions(Compound):
 
 class Cholesterol(Compound):
     def __init__(self, *args, **kwargs):
-        self.pdb = kwargs.get("pdb", "cho.pdb")
-        self.itp = kwargs.get("itp", "cho.itp")
+        self.pdb = kwargs["pdb"]
+        self.itp = kwargs["itp"]
         super(Cholesterol, self).__init__(self, *args, **kwargs)
-
+        
         self.group = "membr"
-
         self.posre_itp = "posre_cho.itp"
         self._setITP()
-
-        self.check_pdb()
         self._n_cho = self.count_cho()
 
     def setCho(self, value):

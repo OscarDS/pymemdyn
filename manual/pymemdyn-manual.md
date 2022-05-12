@@ -4,7 +4,7 @@
 setting up the simulation, via Molecular Dynamics (MD), of G-protein
 Coupled Receptors (GPCRs) embedded in a cell membrane. The protocol can
 be adapted to insert other transmembrane proteins, not only GPCRs. The
-library has been adapted from that described in Gutiérrez de Terán et
+library has been adapted from that described in Guti�rrez de Ter�n et
 al. (2011) [1], and is implemented in the web-based service
 for modeling and simulation of GPCRs available at
 <http://gpcr-modsim.org>.
@@ -38,7 +38,7 @@ modulator, or even specific cholesterol, lipid, water or ion molecules
 are key for a more comprehensive characterization of GPCRs.
 **PyMemDyn** can explicitly handle these elements allowing a broader
 audience in the field of GPCRs to use molecular dynamics simulations.
-These molecules should be uploaded in the same way theyâ€™re present in
+These molecules should be uploaded in the same way they’re present in
 the original PDB file of the receptor, so they are properly integrated
 into the membrane insertion protocol described above, together with
 force-field associated files (which can be either generated with
@@ -186,7 +186,7 @@ To install **PyMemDyn** follow these steps:
     uncommented, looking like: GROMACS_PATH = /opt/gromacs-2021/bin
     Provided that in your case gromacs is installed in /opt. The program
     will prepend this line to the binaries names, so calling
-    â€œ/opt/gromacs-2021/bin/gmx should point to that binary. 
+    “/opt/gromacs-2021/bin/gmx should point to that binary. 
 
 
 6.  Similarly, in that file you specify which queuing system you
@@ -279,7 +279,7 @@ Running with queues
 ===================
 
 $\approx$ 90% of the time you will want to use some queueing system. We
-deal with queue systems tweaks as we stumble into them and itâ€™s out of
+deal with queue systems tweaks as we stumble into them and it’s out of
 our scope to cover them all. If you take a look at the source code dir,
 you'll found some files called "run_pbs.sh", "run_svgd.sh" and so on.
 Also there are specific queue objects in the source file queue.py we
@@ -371,7 +371,7 @@ The performed equilibration includes the following stages:
 
 |   STAGE    | RESTRAINED ATOMS        | FORCE CONSTANT       | TIME           |
 |:----------:|:-----------------------:|:--------------------:|:--------------:|
-|  -         |   -                     |kJ/(molÂ·nm^2)        | ns             |
+|  -         |   -                     |kJ/(mol·nm^2)        | ns             |
 |Minimization|   -                     | -                    |(Max. 500 steps)|
 |Equil. 1    |Protein Heavy Atoms      | 1000                 | 0.5            |
 |Equil. 2    |Protein Heavy Atoms      | 800                  | 0.5            |
@@ -480,6 +480,6 @@ request the last frame with:
 References
 ----------
 
-[1] Rodríguez D., Piñeiro A. and Gutiérrez-de-Terán H.   
+[1] Rodr�guez D., Pi�eiro A. and Guti�rrez-de-Ter�n H.   
 Molecular Dynamics Simulations Reveal Insights into Key Structural Elements of Adenosine Receptors   
 Biochemistry (2011), 50, 4194-208.   

@@ -5,6 +5,32 @@ from string import Template
 import bw4posres
 
 
+def clean_pdb(src = [], tgt = []):
+    """
+    Remove incorrectly allocated atom identifiers in pdb file
+    """
+    source = open(src, "r")
+    lines_src = source.readlines() 
+    source.close()
+    
+    target = open(tgt, "w")
+    
+    count = -1
+    for line in lines_src:
+        if count <= 3:
+            count += 1
+            target.write(line)
+        else:
+            if len(line) >= 8:
+                line = line.replace(line[-3:], "\n")
+                target.write(line)
+            else:
+                target.write(line)
+    
+    target.close()
+
+    return True    
+    
 def clean_topol(src = [], tgt = []):
     """
     Clean the src topol of path specifics, and paste results in target
@@ -123,7 +149,7 @@ def make_topol(template_dir = \
     """
     Make the topol starting from our topol.top template
     """
-    protein = bw =  dimer = lig = na = cho = alo = hoh = 0
+    protein = bw =  dimer = lig = sod = cho = alo = hoh = 0
     lig_name = ions_name = cho_name = alosteric_name = hoh_name = ""
     if hasattr(complex, "monomer"):
         protein = 1
@@ -135,23 +161,23 @@ def make_topol(template_dir = \
             lig = 1
             lig_name = complex.ligand.itp
     if hasattr(complex, "ions"):
-        if hasattr(complex.ions, "number"):
-            na = complex.ions.number
+        if hasattr(complex.ions, "_n_ions"):
+            sod = complex.ions._n_ions
             ions_name = complex.ions.itp
     if hasattr(complex, "cho"):
-        if hasattr(complex.cho, "number"):
-            cho = complex.cho.number
+        if hasattr(complex.cho, "_n_cho"):
+            cho = complex.cho._n_cho
             cho_name = complex.cho.itp
     if hasattr(complex, "alosteric"):
         if complex.alosteric:
             alo = 1
             alosteric_name = complex.alosteric.itp
     if hasattr(complex, "waters"):
-        if hasattr(complex.waters, "number"):
-            hoh = complex.waters.number
+        if hasattr(complex.waters, "_n_wats"):
+            hoh = complex.waters._n_wats
             hoh_name = complex.waters.itp
 
-    order = ("protein", "bw", "dimer", "lig", "na", "cho", "alo", "hoh")
+    order = ("protein", "bw", "dimer", "lig", "sod", "cho", "alo", "hoh")
     comps = {"protein": {"itp_name": "protein.itp",
                          "ifdef_name": "POSRES",
                          "posre_name": "posre.itp"},
@@ -168,7 +194,7 @@ def make_topol(template_dir = \
                  "ifdef_name": "POSRESLIG",
                  "posre_name": "posre_lig.itp"},
 
-             "na": {"itp_name": ions_name,
+             "sod": {"itp_name": ions_name,
                  "ifdef_name": "POSRESION",
                  "posre_name": "posre_ion.itp"},
 
@@ -224,7 +250,7 @@ def make_topol(template_dir = \
                            protein = comps["protein"]["line"],
                            dimer = comps["dimer"]["line"],
                            lig = comps["lig"]["line"],
-                           na = comps["na"]["line"],
+                           sod = comps["sod"]["line"],
                            cho = comps["cho"]["line"],
                            alosteric = comps["alo"]["line"],
                            hoh = comps["hoh"]["line"],

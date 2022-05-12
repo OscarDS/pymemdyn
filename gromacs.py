@@ -149,7 +149,7 @@ class Gromacs(object):
 
         # Create the "wation" group (always present)
         n_group += 1
-        input += " r SOL | r HOH | r Cl* | r Na* \n"
+        input += " r SOL | r HOH | r CHL | r Cl* | r SOD | r Na* \n"
         input += "name {0} wation\n".format(n_group)
 
         # Create the "protlig" group

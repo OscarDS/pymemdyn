@@ -12,7 +12,7 @@ class BasicInit(object):
                       "make_topol_lipids", "make_ffoplsaanb", "set_grompp",
                       "set_chains", "make_ndx", "grompp", "trjconv",
                       "get_charge", "genion", "grompp2", "trjconv2",
-                      "grompp3", "trjconv3"]
+                      "grompp3", "trjconv3", "clean_pdb"]
 
         # And then we define each step
         self.recipe = \
@@ -182,6 +182,10 @@ class BasicInit(object):
                                       "ur": "compact",
                                       "pbc": "mol"},
                           "input": "1\n0\n"},
+             
+             "clean_pdb": {"command": "clean_pdb", # 33
+                           "options": {"src": "hexagon.pdb",
+                                       "tgt": "hexagon.pdb"}}
              }
 
         self.breaks = \
@@ -681,10 +685,10 @@ class BasicCollectResults(object):
                                               "tgt": "MD_output.tgz"}}, 
                        }
 
-        options = {"tot_ener": "13\n",
-                   "temp": "15\n",
-                   "pressure": "16\n",
-                   "volume": "21\n"} # 8 to 11
+        options = {"tot_ener": "Total-Energy\n",
+                   "temp": "Temperature\n",
+                   "pressure": "Pressure\n",
+                   "volume": "Volume\n"} # 8 to 11
 
         for option, gro_key in options.items():
             self.recipe[option] = \
@@ -730,10 +734,10 @@ class BasicBWCollectResults(BasicCollectResults):
         self.steps.insert(10, "temp2")
         self.steps.insert(10, "tot_ener2")
             
-        options2 = {"tot_ener2": "14\n",
-                        "temp2": "16\n",
-                        "pressure2": "17\n",
-                        "volume2": "22\n"}
+        options2 = {"tot_ener2": "Total-Energy\n",
+                        "temp2": "Temperature\n",
+                        "pressure2": "Pressure\n",
+                        "volume2": "Volume\n"}
 
         for option, gro_key in options2.items():
             self.recipe[option] = \

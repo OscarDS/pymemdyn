@@ -1,8 +1,8 @@
 #include "ffoplsaa_mod.itp"
 $itp_includes
 #include "${working_dir}popc.itp"
-#include "spc.itp"
 #include "ions.itp"
+#include "spc.itp"
 [ system ]
 ; Name
 Membrane protein
@@ -11,7 +11,7 @@ Membrane protein
 $protein
 $dimer
 $lig
-$na
+$sod
 $cho
 $alosteric
 $hoh
