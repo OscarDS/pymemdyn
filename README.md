@@ -87,7 +87,7 @@ To install **PyMemDyn** follow these steps:
         			pdb: the alosteric, its itp and its force field. (See
         			--lpg and --lib for more information)
           -w WATERS, --waters WATERS
-	        		Crystalized water molecules. File name without
+        			Crystalized water molecules. File name without
         			extension.
           -i IONS, --ions IONS  Crystalized ions file name without extension.
           -c CHO, --cho CHO     Crystalized cholesterol molecules file name without
