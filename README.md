@@ -181,7 +181,7 @@ and can then be passed  to other objects.
 Manual
 --------------------------------------------------------------------------------
 
-PyMemDyn execution manuals are found within the /exmples directory. These
+PyMemDyn execution manuals are found within the /exmaples directory. These
 include input file generation/processing and data processing.
 
 
