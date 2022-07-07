@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3
 import argparse
 import os
 import shutil
@@ -50,8 +50,7 @@ class Run(object):
                   "ions": "Ions",
                   "cho": "Cholesterol"}
 
-        if self.ligpargen or self.library:
-            protein.Sugar_prep.__init__(self)
+        protein.Sugar_prep.__init__(self)
 
         for sugar_type, class_name in sugars.items():
             if getattr(self, sugar_type):
@@ -75,8 +74,8 @@ class Run(object):
 
         full_complex = complex.MembraneComplex()
 
-        if self.pdb.__class__.__name__ == "Dimer":
-            '''The box for the dimers is slightly bigger'''
+        if self.pdb.__class__.__name__ != "Monomer":
+            '''The box for the oligomers is slightly bigger'''
             full_complex.box_height = 3.5
             full_complex.box_width = 1.2
         full_complex.complex = prot_complex

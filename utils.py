@@ -149,13 +149,15 @@ def make_topol(template_dir = \
     """
     Make the topol starting from our topol.top template
     """
-    protein = bw =  dimer = lig = sod = cho = alo = hoh = 0
+    protein = pc1 = pc2 = pc3 = pc4 = pc5 = pc6 = pc7 = pc8 = 0 
+    bw = oligomer = lig = sod = cho = alo = hoh = 0
     lig_name = ions_name = cho_name = alosteric_name = hoh_name = ""
     if hasattr(complex, "monomer"):
         protein = 1
         bw = 1
-        if getattr(complex, "monomer").__class__.__name__ == "Dimer":
-            dimer = 1
+        if getattr(complex, "monomer").__class__.__name__ == "Oligomer":
+            protein = 0
+            oligomer = 1      
     if hasattr(complex, "ligand"):
         if complex.ligand:
             lig = 1
@@ -177,18 +179,24 @@ def make_topol(template_dir = \
             hoh = complex.waters._n_wats
             hoh_name = complex.waters.itp
 
-    order = ("protein", "bw", "dimer", "lig", "sod", "cho", "alo", "hoh")
+
+    order = ("protein", "pc1", "pc2", "pc3", "pc4", "pc5", "pc6", "pc7", "pc8",
+                 "bw", "lig", "sod", "cho", "alo", "hoh")
     comps = {"protein": {"itp_name": "protein.itp",
                          "ifdef_name": "POSRES",
                          "posre_name": "posre.itp"},
+             
+             "pc1": {},
+             "pc2": {},
+             "pc3": {},
+             "pc4": {},
+             "pc5": {},
+             "pc6": {},
+             "pc7": {},
+             "pc8": {},
 
              "bw": {"ifdef_name": "DISRE",
                     "posre_name": "disre.itp"},
-
-             "dimer": {"name": "Protein_chain_B",
-                 "itp_name": "protein_Protein_chain_B.itp",
-                 "ifdef_name": "POSRES",
-                 "posre_name": "posre_Protein_chain_B.itp"},
 
              "lig": {"itp_name": lig_name,
                  "ifdef_name": "POSRESLIG",
@@ -210,12 +218,39 @@ def make_topol(template_dir = \
                  "ifdef_name": "POSRESHOH",
                  "posre_name": "posre_hoh.itp"},
              }
+    
+    if oligomer:
+        chainID = complex.monomer.chains
+        if len(chainID) >= 2:
+            pc1 = pc2 = 1
+        if len(chainID) >= 3:
+            pc3 = 1
+        if len(chainID) >= 4:
+            pc4 = 1
+        if len(chainID) >= 5:
+            pc5 = 1      
+        if len(chainID) >= 6:
+            pc6 = 1              
+        if len(chainID) >= 7:
+            pc7 = 1              
+        if len(chainID) >= 8:
+            pc8 = 1  
 
-    if dimer:
-        comps["protein"] = {"name": "Protein_chain_A",
-            "itp_name": "protein_Protein_chain_A.itp",
-            "ifdef_name": "POSRES",
-            "posre_name": "posre_Protein_chain_A.itp"}
+        prot_name = prot_itp = prot_posre = ""
+        count = -1
+        for ID in chainID:
+            count += 1
+            comp = "protein_" + str(count)
+            
+            prot_name = ("Protein_chain_" + ID)
+            prot_itp = ("protein_Protein_chain_" + ID + ".itp")
+            prot_posre = ("posre_Protein_chain_" + ID + ".itp")            
+            
+            comps[comp] =  {"name": prot_name,
+                            "itp_name": prot_itp,
+                            "ifdef_name": "POSRES",
+                            "posre_name": prot_posre}
+            
 
     src = open(os.path.join(template_dir, "topol.top"), "r")
     tgt = open(os.path.join(target_dir, "topol.top"), "w")
@@ -248,7 +283,16 @@ def make_topol(template_dir = \
 
     tgt.write(t.substitute(working_dir = working_dir,
                            protein = comps["protein"]["line"],
-                           dimer = comps["dimer"]["line"],
+                           pc1 = comps["pc1"]["line"],
+                           pc2 = comps["pc2"]["line"],
+                           pc3 = comps["pc3"]["line"],
+                           pc4 = comps["pc4"]["line"],
+                           pc5 = comps["pc5"]["line"],
+                           pc6 = comps["pc6"]["line"],
+                           pc7 = comps["pc7"]["line"],
+                           pc8 = comps["pc8"]["line"],
+                           # If oligomer consists of more than 8 protein chains, add pc9 etc. 
+                           # Also add pc9 etc. in topol.top in templates
                            lig = comps["lig"]["line"],
                            sod = comps["sod"]["line"],
                            cho = comps["cho"]["line"],

@@ -113,12 +113,9 @@ class Protein(object):
     
         if len(chains) < 2:
             return Monomer(pdb = self.pdb)
-        elif len(chains) == 2:
-            return Dimer(pdb = self.pdb, chains = chains)
-        elif len(chains) > 2:
-            print ("\nError: Your file {0} has more than two protein \n"
-                   "chains. This is more than what pymemdyn can handle now.\n".format(self.pdb))
-
+        elif len(chains) >= 2:
+            return Oligomer(pdb = self.pdb, chains = chains)
+        
 
 class Monomer(object):
     def __init__(self, *args, **kwargs):
@@ -128,6 +125,7 @@ class Monomer(object):
 
         self.group = "protlig"
         self.delete_chain()
+        self.chains = []
         self._setHist()
 
     def delete_chain(self):
@@ -184,10 +182,9 @@ class Monomer(object):
 
         return True
 
-
-class Dimer(Monomer):
+class Oligomer(Monomer):
     def __init__(self, *args, **kwargs):
-        super(Dimer, self).__init__(self, *args, **kwargs)
+        super(Oligomer, self).__init__(self, *args, **kwargs)
 
         self.chains = kwargs.get("chains")
         self.points = dict.fromkeys(self.chains, [])
@@ -201,29 +198,47 @@ class Dimer(Monomer):
 
 class Sugar_prep(object):
     def __init__(self, *args, **kwargs):
-        if self.ligpargen:
-            for sugar in self.ligpargen:
-                if sugar == "l": 
-                    Sugar_prep.lpg2pmd(self, self.ligand, sugar)
-                if sugar == "a": 
-                    Sugar_prep.lpg2pmd(self, self.alosteric, sugar)
-                if sugar == "c":
-                    Sugar_prep.lpg2pmd(self, self.cho, sugar)                
-                # Waters and Ions not possible through LigParGen
-                # Able to retrieve then through --lib
+        sugars = []
+        if self.ligand:
+            sugars.append(self.ligand)
+        if self.alosteric:
+            sugars.append(self.alosteric)
+            
+        for sugar in sugars:
+            if os.path.exists(sugar + ".ff") == True:
+                pass
+            else:
+                if os.path.exists(sugar + ".itp") == False:
+                    pass # LigParGen
+                    
+                Sugar_prep.lpg2pmd(self, sugar)
+                
         
-        if self.library:
-            for sugar in self.library:
-                if sugar == "l": 
-                    Sugar_prep.lib2pmd(self, self.ligand)
-                if sugar == "a": 
-                    Sugar_prep.lib2pmd(self, self.alosteric)
-                if sugar == "w": 
-                    Sugar_prep.lib2pmd(self, self.waters)
-                if sugar == "i": 
-                    Sugar_prep.lib2pmd(self, self.ions)
-                if sugar == "c":
-                    Sugar_prep.lib2pmd(self, self.cho)          
+        
+        
+        # if self.ligpargen:
+        #     for sugar in self.ligpargen:
+        #         if sugar == "l": 
+        #             Sugar_prep.lpg2pmd(self, self.ligand, sugar)
+        #         if sugar == "a": 
+        #             Sugar_prep.lpg2pmd(self, self.alosteric, sugar)
+        #         # if sugar == "c":
+        #         #     Sugar_prep.lpg2pmd(self, self.cho, sugar)                
+        #         # Waters and Ions not possible through LigParGen
+        #         # Able to retrieve then through --lib
+        
+        # if self.library:
+        #     for sugar in self.library:
+        #         if sugar == "l": 
+        #             Sugar_prep.lib2pmd(self, self.ligand)
+        #         if sugar == "a": 
+        #             Sugar_prep.lib2pmd(self, self.alosteric)
+        #         if sugar == "w": 
+        #             Sugar_prep.lib2pmd(self, self.waters)
+        #         if sugar == "i": 
+        #             Sugar_prep.lib2pmd(self, self.ions)
+        #         if sugar == "c":
+        #             Sugar_prep.lib2pmd(self, self.cho)          
 
     def lib2pmd(self, sugar, *args, **kwargs):
         """
@@ -232,7 +247,7 @@ class Sugar_prep(object):
         shutil.copy(self.repo_dir + "/library/" + sugar + ".itp", self.own_dir + "/" + sugar + ".itp")
         shutil.copy(self.repo_dir + "/library/" + sugar + ".ff", self.own_dir + "/" + sugar + ".ff")
        
-    def lpg2pmd(self, sugar, sugar_type, *args, **kwargs):
+    def lpg2pmd(self, sugar, *args, **kwargs):
         """
         Converts LigParGen structure files to PyMemDyn input files
         """
@@ -259,6 +274,11 @@ class Sugar_prep(object):
             tmp_itp = []
     
             for line in lines_itp:
+                if sugar == self.alosteric:
+                    line = line.replace("opls_8", "opls_a")
+                # if sugar_type == "c":
+                #     line = line.replace("opls_8", "opls_c")
+                
                 if "[ moleculetype ]" in line:
                     split = True
     
@@ -271,23 +291,23 @@ class Sugar_prep(object):
                 if split == True:
                     count += 1
                     if count == 2:
-                        if sugar_type == "l" and line[0:3] != "LIG":
+                        if sugar == self.ligand and line[0:3] != "LIG":
                             line = line.replace(line[0:3], "LIG")
-                        if sugar_type == "a" and line[0:3] != "ALO":
+                        if sugar == self.alosteric and line[0:3] != "ALO":
                             line = line.replace(line[0:3], "ALO")
-                        if sugar_type == "c" and line[0:3] != "CHO":
-                            line = line.replace(line[0:3], "CHO")
+                        # if sugar_type == "c" and line[0:3] != "CHO":
+                        #     line = line.replace(line[0:3], "CHO")
                         # Waters and Ions retrieved through library.
                         # If not: ions: make distinction between Cl- and Na+
                         
                     if line[9:13] == "opls":
                         tmp_itp.append(line.split())
-                        if sugar_type == "l" and line[28:31] != "LIG":
+                        if sugar == self.ligand and line[28:31] != "LIG":
                             line = line.replace(line[28:31], "LIG")
-                        if sugar_type == "a" and line[28:31] != "ALO":
+                        if sugar == self.alosteric and line[28:31] != "ALO":
                             line = line.replace(line[28:31], "ALO")
-                        if sugar_type == "c" and line[28:31] != "CHO":
-                            line = line.replace(line[28:31], "CHO")
+                        # if sugar_type == "c" and line[28:31] != "CHO":
+                        #     line = line.replace(line[28:31], "CHO")
     
                     new_itp.write(line)
     
@@ -300,12 +320,12 @@ class Sugar_prep(object):
     
             for line in lines_pdb:
                 if line[0:4] == "ATOM":
-                    if sugar_type == "l" and line[17:20] != "LIG":
+                    if sugar == self.ligand and line[17:20] != "LIG":
                         line = line.replace(line[17:20], "LIG")
-                    if sugar_type == "a" and line[17:20] != "ALO":
+                    if sugar == self.alosteric and line[17:20] != "ALO":
                         line = line.replace(line[17:20], "ALO")
-                    if sugar_type == "c" and line[17:20] != "CHO":
-                        line = line.replace(line[17:20], "CHO")
+                    # if sugar_type == "c" and line[17:20] != "CHO":
+                    #     line = line.replace(line[17:20], "CHO")
                         
                 new_pdb.write(line)
             
@@ -595,12 +615,16 @@ class Alosteric(Compound):
 
        replacing = False
        for line in pdb:
-           new_line = line
-           if len(line.split()) > 2:
+           new_line = line          
+           line = line.split()
+           try:
+               line[3]
                #Ensure the alosteric compound is labeled as ALO
-               if line.split()[3] != "ALO":
+               if line[3] != "ALO":
                    replacing = True
-                   new_line = new_line.replace(line.split()[3], "ALO")
+                   new_line = new_line.replace(line[3], "ALO")
+           except: IndexError
+            
            pdb_out.write(new_line)
 
        if replacing: print ("Made some ALO replacements in %s!" % self.pdb)

@@ -163,7 +163,7 @@ class Gromacs(object):
         input += "name {0} membr\n".format(n_group)
 
         # This makes a separate group for each chain (if more than one)
-        if type(self.membrane_complex.complex.monomer) == protein.Dimer:
+        if type(self.membrane_complex.complex.monomer) == protein.Oligomer:
             for chain in self.membrane_complex.complex.monomer.chains:
                 n_group += 1
                 input += "a {0}-{1}\n".format(
@@ -344,10 +344,10 @@ class Gromacs(object):
         # Init, Minimization, Equilibration...
 
         if hasattr(recipes, recipe):
-            self.recipe = getattr(recipes, recipe)(debug=debug)
+            self.recipe = getattr(recipes, recipe)(debug=debug, chains=self.membrane_complex.complex.monomer.chains)
         elif hasattr(recipes, "Basic" + stage):
             # Fall back to Basic recipe if no specific where found
-            self.recipe = getattr(recipes, "Basic" + stage)(debug=debug)
+            self.recipe = getattr(recipes, "Basic" + stage)(debug=debug, chains=self.membrane_complex.complex.monomer.chains)
 
         return True
 
@@ -381,7 +381,7 @@ class Gromacs(object):
         """
         src = kwargs.get("src")
 
-        if type(self.membrane_complex.complex.monomer) == protein.Dimer:
+        if type(self.membrane_complex.complex.monomer) == protein.Oligomer:
             points = self.membrane_complex.complex.monomer.points
             with open(src, "r") as pdb_fp:
                 for line in pdb_fp:

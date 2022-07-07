@@ -337,8 +337,6 @@ class BasicEquilibration(object):
                                 "options": {"src_dir": "",
                                             "src_files": ["topol.tpr",
                                                           "posre.itp",
-                                                          "posre_Protein_chain_A.itp",
-                                                          "posre_Protein_chain_B.itp",
                                                           "posre_hoh.itp",
                                                           "posre_ion.itp",
                                                           "posre_lig.itp",
@@ -356,6 +354,11 @@ class BasicEquilibration(object):
                                   "log": "md_eq1000.log"}},
         }
         self.breaks = {}
+
+        if kwargs["chains"]:
+            for chain in kwargs["chains"]:
+                self.recipe["set_stage_init2"]["options"]["src_files"].append(
+                                                    "posre_Protein_chain_" + chain + ".itp")
 
         if kwargs["debug"] or False:
             self.recipe["grompp"]["options"]["src"] = "Rmin/eqDEBUG.mdp"
