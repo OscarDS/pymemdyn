@@ -88,6 +88,10 @@ class ProteinComplex(object):
         nanometer = 10
         self.gmx_prot_xy = self.prot_xy / nanometer
         self.gmx_prot_z = self.prot_z / nanometer
+        if self.gmx_prot_z <= 15.565:
+            self.gmx_emb_z = self.gmx_prot_z
+        else:
+            self.gmx_emb_z = 15.565
 
 
 class Protein(object):
@@ -206,47 +210,14 @@ class Sugar_prep(object):
             
         for sugar in sugars:
             if os.path.exists(sugar + ".ff") == True:
-                pass
+                pass # all files exist, so no files need to be generated
             else:
                 if os.path.exists(sugar + ".itp") == False:
-                    pass # LigParGen
+                    pass # TODO: LigParGen communication can be set here
                     
-                Sugar_prep.lpg2pmd(self, sugar)
-                
-        
-        
-        
-        # if self.ligpargen:
-        #     for sugar in self.ligpargen:
-        #         if sugar == "l": 
-        #             Sugar_prep.lpg2pmd(self, self.ligand, sugar)
-        #         if sugar == "a": 
-        #             Sugar_prep.lpg2pmd(self, self.alosteric, sugar)
-        #         # if sugar == "c":
-        #         #     Sugar_prep.lpg2pmd(self, self.cho, sugar)                
-        #         # Waters and Ions not possible through LigParGen
-        #         # Able to retrieve then through --lib
-        
-        # if self.library:
-        #     for sugar in self.library:
-        #         if sugar == "l": 
-        #             Sugar_prep.lib2pmd(self, self.ligand)
-        #         if sugar == "a": 
-        #             Sugar_prep.lib2pmd(self, self.alosteric)
-        #         if sugar == "w": 
-        #             Sugar_prep.lib2pmd(self, self.waters)
-        #         if sugar == "i": 
-        #             Sugar_prep.lib2pmd(self, self.ions)
-        #         if sugar == "c":
-        #             Sugar_prep.lib2pmd(self, self.cho)          
+                Sugar_prep.lpg2pmd(self, sugar)     
 
-    def lib2pmd(self, sugar, *args, **kwargs):
-        """
-        Retrieves library structure files
-        """     
-        shutil.copy(self.repo_dir + "/library/" + sugar + ".itp", self.own_dir + "/" + sugar + ".itp")
-        shutil.copy(self.repo_dir + "/library/" + sugar + ".ff", self.own_dir + "/" + sugar + ".ff")
-       
+
     def lpg2pmd(self, sugar, *args, **kwargs):
         """
         Converts LigParGen structure files to PyMemDyn input files
@@ -275,13 +246,9 @@ class Sugar_prep(object):
     
             for line in lines_itp:
                 if sugar == self.alosteric:
-                    line = line.replace("opls_8", "opls_a")
-                # if sugar_type == "c":
-                #     line = line.replace("opls_8", "opls_c")
-                
+                    line = line.replace("opls_8", "opls_a")                
                 if "[ moleculetype ]" in line:
-                    split = True
-    
+                    split = True    
                 if split == False: 
                     if line[2:6] != "opls": 
                         new_ff.write(line)
@@ -295,10 +262,6 @@ class Sugar_prep(object):
                             line = line.replace(line[0:3], "LIG")
                         if sugar == self.alosteric and line[0:3] != "ALO":
                             line = line.replace(line[0:3], "ALO")
-                        # if sugar_type == "c" and line[0:3] != "CHO":
-                        #     line = line.replace(line[0:3], "CHO")
-                        # Waters and Ions retrieved through library.
-                        # If not: ions: make distinction between Cl- and Na+
                         
                     if line[9:13] == "opls":
                         tmp_itp.append(line.split())
@@ -306,8 +269,6 @@ class Sugar_prep(object):
                             line = line.replace(line[28:31], "LIG")
                         if sugar == self.alosteric and line[28:31] != "ALO":
                             line = line.replace(line[28:31], "ALO")
-                        # if sugar_type == "c" and line[28:31] != "CHO":
-                        #     line = line.replace(line[28:31], "CHO")
     
                     new_itp.write(line)
     
@@ -324,8 +285,6 @@ class Sugar_prep(object):
                         line = line.replace(line[17:20], "LIG")
                     if sugar == self.alosteric and line[17:20] != "ALO":
                         line = line.replace(line[17:20], "ALO")
-                    # if sugar_type == "c" and line[17:20] != "CHO":
-                    #     line = line.replace(line[17:20], "CHO")
                         
                 new_pdb.write(line)
             
@@ -339,7 +298,9 @@ class Compound(object):
     This is a super-class to provide common functions to added compounds
     """
     def __init__(self, *args, **kwargs):
-        self.check_files(self.pdb, self.itp)
+        self.check_files(self.pdb, 
+                         # self.itp
+                         )
 
     def check_files(self, *files):
         """

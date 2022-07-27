@@ -149,7 +149,8 @@ def make_topol(template_dir = \
     """
     Make the topol starting from our topol.top template
     """
-    protein = pc1 = pc2 = pc3 = pc4 = pc5 = pc6 = pc7 = pc8 = 0 
+    protein = pc1 = pc2 = pc3 = pc4 = pc5 = pc6 = pc7 = pc8 = pc9 = pc10 = 0 
+    # if extending the number of proteins beyond 10, add pc's here (e.g. pc11)
     bw = oligomer = lig = sod = cho = alo = hoh = 0
     lig_name = ions_name = cho_name = alosteric_name = hoh_name = ""
     if hasattr(complex, "monomer"):
@@ -176,12 +177,13 @@ def make_topol(template_dir = \
             alosteric_name = complex.alosteric.itp
     if hasattr(complex, "waters"):
         if hasattr(complex.waters, "_n_wats"):
-            hoh = complex.waters._n_wats
+            hoh = int(complex.waters._n_wats)
             hoh_name = complex.waters.itp
 
 
-    order = ("protein", "pc1", "pc2", "pc3", "pc4", "pc5", "pc6", "pc7", "pc8",
+    order = ("protein", "pc1", "pc2", "pc3", "pc4", "pc5", "pc6", "pc7", "pc8", "pc9", "pc10",
                  "bw", "lig", "sod", "cho", "alo", "hoh")
+    # if extending the number of proteins beyond 10, add pc's here (e.g. pc11)
     comps = {"protein": {"itp_name": "protein.itp",
                          "ifdef_name": "POSRES",
                          "posre_name": "posre.itp"},
@@ -194,6 +196,9 @@ def make_topol(template_dir = \
              "pc6": {},
              "pc7": {},
              "pc8": {},
+             "pc9": {},
+             "pc10": {},
+             # if extending the number of proteins beyond 10, add pc's here (e.g. pc11)
 
              "bw": {"ifdef_name": "DISRE",
                     "posre_name": "disre.itp"},
@@ -202,11 +207,11 @@ def make_topol(template_dir = \
                  "ifdef_name": "POSRESLIG",
                  "posre_name": "posre_lig.itp"},
 
-             "sod": {"itp_name": ions_name,
+             "sod": {#"itp_name": ions_name,
                  "ifdef_name": "POSRESION",
                  "posre_name": "posre_ion.itp"},
 
-             "cho": {"itp_name": cho_name,
+             "cho": {#"itp_name": cho_name,
                  "ifdef_name": "POSRESCHO",
                  "posre_name": "posre_cho.itp"},
 
@@ -214,7 +219,7 @@ def make_topol(template_dir = \
                  "ifdef_name": "POSRESALO",
                  "posre_name": "posre_alo.itp"},
 
-             "hoh": {"itp_name": hoh_name,
+             "hoh": {#"itp_name": hoh_name,
                  "ifdef_name": "POSRESHOH",
                  "posre_name": "posre_hoh.itp"},
              }
@@ -235,12 +240,17 @@ def make_topol(template_dir = \
             pc7 = 1              
         if len(chainID) >= 8:
             pc8 = 1  
+        if len(chainID) >= 9:
+            pc9 = 1  
+        if len(chainID) >= 10:
+            pc10 = 1  
+        # if extending the number of proteins beyond 10, add pc's here (e.g. pc11)
 
         prot_name = prot_itp = prot_posre = ""
-        count = -1
+        count = 0
         for ID in chainID:
             count += 1
-            comp = "protein_" + str(count)
+            comp = "pc" + str(count)
             
             prot_name = ("Protein_chain_" + ID)
             prot_itp = ("protein_Protein_chain_" + ID + ".itp")
@@ -291,8 +301,10 @@ def make_topol(template_dir = \
                            pc6 = comps["pc6"]["line"],
                            pc7 = comps["pc7"]["line"],
                            pc8 = comps["pc8"]["line"],
-                           # If oligomer consists of more than 8 protein chains, add pc9 etc. 
-                           # Also add pc9 etc. in topol.top in templates
+                           pc9 = comps["pc9"]["line"],
+                           pc10 = comps["pc10"]["line"],
+                           # If oligomer consists of more than 10 protein chains, add pc9 etc. 
+                           # Also add pc11 etc. in topol.top in templates
                            lig = comps["lig"]["line"],
                            sod = comps["sod"]["line"],
                            cho = comps["cho"]["line"],

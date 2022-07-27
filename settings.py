@@ -16,6 +16,7 @@ TEMPLATES_DIR = os.path.join(ROOT_DIR, "templates")
 # Define a path to the GROMACS (version 5.0>) binaries. See examples of GROMACS_PATHs below:
 #GROMACS_PATH = {your_GROMACS_PATH}
 
+# example GROMACS_PATHs:
 GROMACS_PATH = "/home/apps/apps/.spack/sandybridge/gcc-10.2.0/gromacs-2021-lx52hldze4odq56frfkrf4vdhifqb7do/bin/"                 
                                                                      #csb.bmc.uu.se
 

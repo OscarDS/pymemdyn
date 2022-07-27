@@ -168,9 +168,9 @@ class Gromacs(object):
                 n_group += 1
                 input += "a {0}-{1}\n".format(
                     self.membrane_complex.complex.monomer.points[chain][0],
-                    # points of chain A
-                    self.membrane_complex.complex.monomer.points[chain][
-                        1])  # points of chain B
+                    # start point of chain X
+                    self.membrane_complex.complex.monomer.points[chain][1])  
+                    # end point of chain X
                 input += "name {0} Protein_chain_{1}\n".format(n_group, chain)
 
         if hasattr(self.membrane_complex.membrane, "ions"):
@@ -228,9 +228,9 @@ class Gromacs(object):
 
         if type(self.membrane_complex.complex.monomer) == protein.Monomer:
             posres.append("posre.itp")
-        elif type(self.membrane_complex.complex.monomer) == protein.Dimer:
-            posres.extend(
-                ["posre_Protein_chain_A.itp", "posre_Protein_chain_B.itp"])
+        elif type(self.membrane_complex.complex.monomer) == protein.Oligomer:
+            for chain in self.membrane_complex.complex.monomer.chains:
+                posres.extend(["posre_Protein_chain_"+chain+".itp"])
 
         if hasattr(self.membrane_complex.complex, "waters") and \
                 self.membrane_complex.complex.waters:
@@ -367,7 +367,7 @@ class Gromacs(object):
         self.membrane_complex.embeded_box_size = \
             [str(self.membrane_complex.membrane.gmx_bilayer_x),
              str(self.membrane_complex.membrane.gmx_bilayer_y),
-             str(self.membrane_complex.complex.gmx_prot_z)]
+             str(self.membrane_complex.complex.gmx_emb_z)]
         self.membrane_complex.protein_box_size = \
             [str(self.membrane_complex.complex.gmx_prot_xy),
              str(self.membrane_complex.complex.gmx_prot_xy),
@@ -388,12 +388,14 @@ class Gromacs(object):
                     if len(line) > 21 and line.startswith(("ATOM", "HETATM")):
                         atom_serial = int(line[6:11])
                         chain_id = line[21]
-                        if points[chain_id]:
-                            points[chain_id] = [
-                                min(atom_serial, points[chain_id][0]),
-                                max(atom_serial, points[chain_id][1])]
-                        else:
-                            points[chain_id] = [atom_serial, atom_serial]
+                        if chain_id != ' ':
+                            if points[chain_id]:
+                                points[chain_id] = [
+                                    min(atom_serial, points[chain_id][0]),
+                                    max(atom_serial, points[chain_id][1])]
+                            else:
+                                points[chain_id] = [atom_serial, atom_serial]
+                        
 
             self.membrane_complex.complex.monomer.points = points
 
@@ -471,6 +473,38 @@ class Gromacs(object):
         tgt.close()
         self.membrane_complex.membrane.bilayer_z = max(pops) - min(pops)
 
+        return True
+
+    def set_protein_height(self, **kwargs):
+        """
+        set_protein_height: Get the z-axis center from a pdb file for membrane or
+        solvent alignment
+        """
+        z_tot = []
+        z_mem = []
+        
+        for line in open(kwargs["src"], "r"):
+            if line[:4] == "ATOM":
+                z_tot.append(float(line[46:54]))
+                
+                if line[17:20] == "POP" and line[13:15] == "N4":
+                    z_mem.append(float(line[46:54]))
+        
+        if "solvate2" in kwargs.keys():
+            correction = (sum(z_tot)/len(z_tot)-sum(z_mem)/len(z_mem))/10
+            if correction <= 0:
+                self.membrane_complex.complex.center_z = correction
+            else:
+                self.membrane_complex.complex.center_z = 0
+            # Correction allows protpopc to be aligned correctly with water.gro.
+            # Editconf translates the system, but it seems to only misalign 
+            # water.gro and protpopc.pdb when the protein center is intracellular.
+            
+            # For any misalignment issues, look here
+                
+        else:
+            self.membrane_complex.complex.center_z = (sum(z_tot)/len(z_tot))/10
+        
         return True
 
     def set_protein_size(self, **kwargs):
@@ -643,9 +677,13 @@ class Wrapper(object):
             command.extend(["-angles"])
             command.extend(kwargs["angles"])
             command.extend(["-bt", kwargs["bt"]])
-        if "translate" in kwargs.keys():
-            command.extend(["-translate"])
-            command.extend(kwargs["translate"])
+        if "center" in kwargs.keys():
+            command.extend(["-center"])
+            command.extend(kwargs["center"])
+        if "translate_z" in kwargs.keys():
+            command.extend(["-translate", "0", "0"])
+            command.extend([str(kwargs["translate_z"])])
+        
 
         return command
 
