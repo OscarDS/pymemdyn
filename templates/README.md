@@ -11,7 +11,7 @@ The performed equilibration includes the following stages:
 
 |   STAGE    | RESTRAINED ATOMS        | FORCE CONSTANT       | TIME           |
 |:----------:|:-----------------------:|:--------------------:|:--------------:|
-|  -         |   -                     |kJ/(mol¬∑nm^2)        | ns             |
+|  -         |   -                     |kJ/(mol∑nm^2)        | ns             |
 |Minimization|   -                     | -                    |(Max. 500 steps)|
 |Equil. 1    |Protein Heavy Atoms      | 1000                 | 0.5            |
 |Equil. 2    |Protein Heavy Atoms      | 800                  | 0.5            |
@@ -120,7 +120,6 @@ request the last frame with:
 References
 ----------
 
-[1] Rodr√≠guez D., Pi√±eiro √Å. and Guti√©rrez-de-Ter√°n H.   
+[1] RodrÌguez D., PiÒeiro ¡. and GutiÈrrez-de-Ter·n H.   
 Molecular Dynamics Simulations Reveal Insights into Key Structural Elements of Adenosine Receptors   
 Biochemistry (2011), 50, 4194-208.   
-

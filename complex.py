@@ -1,7 +1,7 @@
 class MembraneComplex(object):
     def __init__(self, *args, **kwargs):
-        self.box_height = 2.0  # Min xy
-        self.box_width  = 0.8
+        self.box_height = 3.5  # Min xy
+        self.box_width  = 1.2
 
     def setMembrane(self, membrane):
         """

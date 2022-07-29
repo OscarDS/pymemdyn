@@ -1,0 +1,74 @@
+This input guide assumes the user has performed all the steps specified in README.md regarding PyMemDyn installation, and GROMACS_PATH definition in settings.py.
+
+###########################################################
+###      Input Files                                    ###
+###########################################################
+
+Protein (-p):
+1) The protein structure should be in .pdb format containing only the protein. 
+	If you have an oligomer: 
+	 - Place all proteins in the same PDB file with different chain identifiers.
+2) Make sure there are no breaks within the structure.
+	If breaks are present: 
+	 - Recommended: use MODELLER to fill loops
+
+3) Make sure the protein is orientated with the z-axis perpendicular to the membrane and it is aligned with z-axis = 0 corresponding with the middle of the membrane. 
+	If misaligned:
+	 - Recommended: use PPM to calculate the membrane position (it also aligns the protein)
+	 - Other: Superpose your structure with one of the example structures.
+
+Reference protein input file (basic): 
+	/examples/basic_gpcra/aa2ar_human.pdb
+	/examples/basic_other/sc6a2_human.pdb
+Reference protein input file (Xray structure):
+	/examples/ligand_allosteric/cnr1_human.pdb
+Reference protein input file (Oligomer):
+	/examples/oligomer_cofactors/10mer_prot.pdb
+
+
+Ligand (-l, -a):
+1) The (allosteric) ligand should be in .pdb format containing only the ligand. (with hydrogens)
+2) The ligand should be from the same complex file as the protein structure. For example, the ligand and the protein .pdb files should be retrieved from the same crystal structure, or the ligand was docked into the protein structure. This is to ensure the coordinates are matching when combining the files.
+
+Once the .pdb file of the ligand is obtained the structure (.pdb) and topology (.itp) file can be generated using LigParGen. 
+
+--  LigParGen
+1) Upload your .pdb file to the LigParGen webserver (http://zarbi.chem.yale.edu/ligpargen/).
+2) Submit your ligand.
+3) Download the .pdb (PDB, OpenMM) and .itp (TOP, GROMACS) files.
+
+Reference ligand input files for PyMemDyn: 
+	/examples/ligand_allosteric/9gf.pdb
+	/examples/ligand_allosteric/9gf.itp
+	/examples/ligand_allosteric/9gl.pdb
+	/examples/ligand_allosteric/9gl.itp
+
+
+Cofactor (-w, -i, -c)
+1) The cofactor (crystalized water, ion or cholesterol) should be in .pdb format containing only the cofactor (it can contain more than one molecule of the same kind).
+2) The cofactor should be from the same complex file as the protein structure. For example, the cofactor and the protein .pdb files should be retrieved from the same crystal structure.
+3) The PDB file should be in the correct format.
+
+Waters:
+The residue (SOL) and atom (OW/HW1/HW2) identifiers should be correct.
+See /templates/spc.itp if in doubt.
+Reference water input file:
+	/examples/oligomer_cofactors/10mer_water.pdb
+
+Ions:
+The residue (residu name) and atom (at name) identifiers should be correct.
+See /templates/ions.itp if in doubt.
+Reference water input file:
+	/examples/oligomer_cofactors/10mer_ions.pdb
+
+Cholesterol:
+The residue (residu name) and atom (at name) identifiers should be correct.
+See /templates/ffoplsaanb_cho.itp if in doubt.
+
+###########################################################
+###      Examples                                       ###
+###########################################################
+
+Examples are found in /examples. 
+Advanced structures contain a protocol.txt file to guide though the process of obtaining the correct input files.
+

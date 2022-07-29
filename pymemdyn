@@ -1,6 +1,5 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3
 import argparse
-import logging
 import os
 import shutil
 
@@ -49,6 +48,8 @@ class Run(object):
                   "ions": "Ions",
                   "cho": "Cholesterol"}
 
+        protein.Sugar_prep.__init__(self)
+
         for sugar_type, class_name in sugars.items():
             if getattr(self, sugar_type):
                 base_name = getattr(self, sugar_type)
@@ -71,10 +72,6 @@ class Run(object):
 
         full_complex = complex.MembraneComplex()
 
-        if self.pdb.__class__.__name__ == "Dimer":
-            '''The box for the dimers is slightly bigger'''
-            full_complex.box_height = 3.5
-            full_complex.box_width = 1.2
         full_complex.complex = prot_complex
         full_complex.membrane = self.membr
 
@@ -104,26 +101,29 @@ class Run(object):
                      "#index.ndx.4#", "#index.ndx.5#", "#output.pdb.1#", 
                      "#proteinopls.pdb.1#", "#proteinopls.pdb.2#", 
                      "#proteinopls.pdb.3#", "#proteinopls.pdb.4#", 
-                     "#protpopc.pdb.1#", "#tmp.pdb.1#", "#topol.top.1#", 
-                     "#topol.top.2#", "#topol.top.3#", "#topol.tpr.1#", 
-                     "#topol.tpr.2#", "#topol.tpr.3#", "#topol.tpr.4#", 
-                     "disre.itp", "ener_EQ.edr", "ffoplsaa_mod.itp", 
-                     "ffoplsaabon_mod.itp", "ffoplsaanb_mod.itp", 
-                     "hexagon.pdb", "index.ndx", "ions.itp", "ligand_ha.ndx", 
-                     "MD_output.tgz", "mdout.mdp", "mdrun.sh", "min.pdb", 
-                     "output.pdb", "popc.gro", "popc.itp", "popc.pdb", 
-                     "posre.itp", "posre_lig.itp", "pressure.log", 
-                     "pressure.xvg", "protein.itp", "protein.top", 
-                     "protein_ca200.itp", "proteinopls.fasta", 
-                     "proteinopls.pdb", "proteinopls_bw.aln", 
-                     "proteinopls_CA.pdb", "protpopc.pdb", 
+                     "#protpopc.pdb.1#", "#protpopc.pdb.2#" ,"#tmp.pdb.1#", 
+                     "#topol.top.1#", "#topol.top.2#", "#topol.top.3#", 
+                     "#topol.tpr.1#", "#topol.tpr.2#", "#topol.tpr.3#", 
+                     "#topol.tpr.4#", "disre.itp", "ener_EQ.edr", 
+                     "ffoplsaa_mod.itp", "ffoplsaabon_mod.itp", 
+                     "ffoplsaanb_mod.itp", "hexagon.pdb", "index.ndx", 
+                     "ions.itp", "ligand_ha.ndx", "MD_output.tgz", "mdout.mdp", 
+                     "mdrun.sh", "min.pdb", "output.pdb", "popc.gro", 
+                     "popc.itp", "popc.pdb", "posre.itp", "posre_lig.itp", 
+                     "posre_alo.itp","pressure.log", "pressure.xvg", 
+                     "pressure2.log", "pressure2.xvg", "protein.itp", 
+                     "protein.top", "protein_ca200.itp", "proteinopls.fasta", 
+                     "proteinopls.pdb", "proteinopls_bw.aln",
+                     "proteinopls_CA.pdb", "protpopc.pdb",
                      "rmsd-all-atom-vs-start.xvg", 
                      "rmsd-backbone-vs-start.xvg", "rmsd-calpha-vs-start.xvg", 
                      "rmsf-per-residue.xvg", "spc.itp", "steep.mdp", 
-                     "temp.log", "temp.xvg", "tmp.pdb", "tmp_proteinopls.pdb",
-                     "topol.top", "topol.tpr", "tot_ener.log", "tot_ener.xvg",
-                     "traj_EQ.xtc", "traj_pymol.xtc", "volume.log", 
-                     "volume.xvg", "water.gro", "water.pdb"]
+                     "temp.log", "temp.xvg", "temp2.log", "temp2.xvg", 
+                     "tmp.pdb", "tmp_proteinopls.pdb", "topol.top", 
+                     "topol.tpr", "tot_ener.log", "tot_ener.xvg", 
+                     "tot_ener2.log", "tot_ener2.xvg", "traj_EQ.xtc", 
+                     "traj_pymol.xtc", "volume.log", "volume.xvg", 
+                     "volume2.log", "volume2.xvg", "water.gro", "water.pdb"]
 
         dirs_to_unlink = ["Rmin", "eq", "eqProd"]
 
@@ -154,8 +154,8 @@ class Run(object):
         """
         This is a function to debug a run in steps
         """
-        steps = ["BWRelax", "CollectResults"]
-#        steps = ["CollectResults"]
+        steps = ["BWRelax", "BWCollectResults"]
+#        steps = ["CACollectResults"]
 
         for step in steps:
             self.g.select_recipe(stage=step, debug=self.debug)
@@ -169,7 +169,7 @@ if __name__ == "__main__":
 
     parser.add_argument('-v', '--version',
                         action='version',
-                        version='%(prog)s 1.5')
+                        version='%(prog)s 1.5.2')
 
     parser.add_argument('-b',
                         dest = "own_dir",
@@ -186,19 +186,17 @@ if __name__ == "__main__":
                         dest = "pdb",
                         required = True,
                         help = "Name of the pdb to insert into membrane for MD (mandatory). \
-        Use the pdb extension. (e.g. -p myprot.pdb)")
+            Use the pdb extension. (e.g. -p myprot.pdb)")
 
     parser.add_argument('-l', '--lig',
                         dest = "ligand",
-                        help = "Name of the ligand, without extension. Three files must be \
-            present along with the molecule pdb: the ligand, its itp and \
-            its force field.")
+                        help = "Name of the ligand, without extension. See input_guide.txt \
+            for details on how to generate the required pdb and forcefield files.")
 
     parser.add_argument('-a', "--alo",
                         dest = "alosteric",
-                        help = "Name of the alosteric interaction, without extension. Three \
-            files must be present along with the molecule pdb: the alosteric, \
-            its itp and its force field.")
+                        help = "Name of the allosteric, without extension. See input_guide.txt \
+            for details on how to generate the required pdb and forcefield files.")
 
     parser.add_argument('-w','--waters',
                         dest = "waters",
@@ -212,10 +210,10 @@ if __name__ == "__main__":
                         dest = "cho",
                         help = "Crystalized cholesterol molecules file name\
             without extension.")
-
+            
     parser.add_argument('--res',
                         dest = "restraint",
-                        help = "Position restrains during MD production run. Options: bw \
+                        help = "Position restraints during MD production run. Options: bw \
             (Ballesteros-Weinstein Restrained Relaxation - default), ca (C-Alpha Restrained \
             Relaxation)",
                         default = "bw")

@@ -88,6 +88,10 @@ class ProteinComplex(object):
         nanometer = 10
         self.gmx_prot_xy = self.prot_xy / nanometer
         self.gmx_prot_z = self.prot_z / nanometer
+        if self.gmx_prot_z <= 15.565:
+            self.gmx_emb_z = self.gmx_prot_z
+        else:
+            self.gmx_emb_z = 15.565
 
 
 class Protein(object):
@@ -113,12 +117,9 @@ class Protein(object):
     
         if len(chains) < 2:
             return Monomer(pdb = self.pdb)
-        elif len(chains) == 2:
-            return Dimer(pdb = self.pdb, chains = chains)
-        elif len(chains) > 2:
-            print ("\nError: Your file {0} has more than two protein \n"
-                   "chains. This is more than what pymemdyn can handle now.\n".format(self.pdb))
-
+        elif len(chains) >= 2:
+            return Oligomer(pdb = self.pdb, chains = chains)
+        
 
 class Monomer(object):
     def __init__(self, *args, **kwargs):
@@ -128,6 +129,7 @@ class Monomer(object):
 
         self.group = "protlig"
         self.delete_chain()
+        self.chains = []
         self._setHist()
 
     def delete_chain(self):
@@ -184,10 +186,9 @@ class Monomer(object):
 
         return True
 
-
-class Dimer(Monomer):
+class Oligomer(Monomer):
     def __init__(self, *args, **kwargs):
-        super(Dimer, self).__init__(self, *args, **kwargs)
+        super(Oligomer, self).__init__(self, *args, **kwargs)
 
         self.chains = kwargs.get("chains")
         self.points = dict.fromkeys(self.chains, [])
@@ -199,12 +200,107 @@ class Dimer(Monomer):
         return True
 
 
+class Sugar_prep(object):
+    def __init__(self, *args, **kwargs):
+        sugars = []
+        if self.ligand:
+            sugars.append(self.ligand)
+        if self.alosteric:
+            sugars.append(self.alosteric)
+            
+        for sugar in sugars:
+            if os.path.exists(sugar + ".ff") == True:
+                pass # all files exist, so no files need to be generated
+            else:
+                if os.path.exists(sugar + ".itp") == False:
+                    pass # TODO: LigParGen communication can be set here
+                    
+                Sugar_prep.lpg2pmd(self, sugar)     
+
+
+    def lpg2pmd(self, sugar, *args, **kwargs):
+        """
+        Converts LigParGen structure files to PyMemDyn input files
+        """
+        # Safeguard for deleting files
+        if not os.path.isfile(self.own_dir + "/" + sugar + ".ff"):    
+            shutil.copy(self.own_dir + "/" + sugar + ".itp", self.own_dir + "/" + sugar + "_backup.itp")
+            shutil.copy(self.own_dir + "/" + sugar + ".pdb", self.own_dir + "/" + sugar + "_backup.pdb")
+    
+            old_itp = open(self.own_dir + "/" + sugar + ".itp", "r") 
+            old_pdb = open(self.own_dir + "/" + sugar + ".pdb", "r")
+            
+            lines_itp = old_itp.readlines()
+            lines_pdb = old_pdb.readlines()
+            old_itp.close()
+            old_pdb.close()
+                    
+            new_itp = open(self.own_dir + "/" + sugar + ".itp", "w")
+            new_ff = open(self.own_dir + "/" + sugar + ".ff", "w")
+            new_pdb = open(self.own_dir + "/" + sugar + ".pdb", "w")
+    
+            split = False
+            count = -1
+            tmp_ff = []
+            tmp_itp = []
+    
+            for line in lines_itp:
+                if sugar == self.alosteric:
+                    line = line.replace("opls_8", "opls_a")                
+                if "[ moleculetype ]" in line:
+                    split = True    
+                if split == False: 
+                    if line[2:6] != "opls": 
+                        new_ff.write(line)
+                    else:
+                        tmp_ff.append(line.split())         
+                        
+                if split == True:
+                    count += 1
+                    if count == 2:
+                        if sugar == self.ligand and line[0:3] != "LIG":
+                            line = line.replace(line[0:3], "LIG")
+                        if sugar == self.alosteric and line[0:3] != "ALO":
+                            line = line.replace(line[0:3], "ALO")
+                        
+                    if line[9:13] == "opls":
+                        tmp_itp.append(line.split())
+                        if sugar == self.ligand and line[28:31] != "LIG":
+                            line = line.replace(line[28:31], "LIG")
+                        if sugar == self.alosteric and line[28:31] != "ALO":
+                            line = line.replace(line[28:31], "ALO")
+    
+                    new_itp.write(line)
+    
+            for i in tmp_itp:
+                for j in tmp_ff:
+                    if i[1] == j[0]:
+                        j[1] = i[4]
+                        j.insert(2, i[2])
+                        new_ff.write("\t".join(j) + "\n")
+    
+            for line in lines_pdb:
+                if line[0:4] == "ATOM":
+                    if sugar == self.ligand and line[17:20] != "LIG":
+                        line = line.replace(line[17:20], "LIG")
+                    if sugar == self.alosteric and line[17:20] != "ALO":
+                        line = line.replace(line[17:20], "ALO")
+                        
+                new_pdb.write(line)
+            
+            new_itp.close()
+            new_ff.close()
+            new_pdb.close()
+
+
 class Compound(object):
     """
     This is a super-class to provide common functions to added compounds
     """
     def __init__(self, *args, **kwargs):
-        self.check_files(self.pdb, self.itp)
+        self.check_files(self.pdb, 
+                         # self.itp
+                         )
 
     def check_files(self, *files):
         """
@@ -285,16 +381,15 @@ class Ligand(Compound):
 
 class CrystalWaters(Compound):
     def __init__(self, *args, **kwargs):
-        self.pdb = kwargs.get("pdb", "hoh.pdb")
-        self.itp = kwargs.get("itp", "hoh.itp")
+        self.pdb = kwargs["pdb"]
+        self.itp = kwargs["itp"]
         super(CrystalWaters, self).__init__(self, *args, **kwargs)
 
         self.group = "wation"
-
         self.posre_itp = "posre_hoh.itp"
         self._setITP()
         self._n_wats = self.count_waters()
-
+        
     def setWaters(self, value):
         """
         Set crystal waters
@@ -330,16 +425,14 @@ class CrystalWaters(Compound):
 
 
 class Ions(Compound):
-    def __init__(self, *args, **kwargs):
-        self.pdb = kwargs.get("pdb", "ions_local.pdb")
-        self.itp = kwargs.get("itp", "ions_local.itp")
+    def __init__(self, *args, **kwargs):      
+        self.pdb = kwargs["pdb"]
+        self.itp = kwargs["itp"]
         super(Ions, self).__init__(self, *args, **kwargs)
-
+        
         self.group = "wation"
-
         self.posre_itp = "posre_ion.itp"
         self._setITP()
-
         self._n_ions = self.count_ions()
 
     def setIons(self, value):
@@ -384,16 +477,13 @@ class Ions(Compound):
 
 class Cholesterol(Compound):
     def __init__(self, *args, **kwargs):
-        self.pdb = kwargs.get("pdb", "cho.pdb")
-        self.itp = kwargs.get("itp", "cho.itp")
+        self.pdb = kwargs["pdb"]
+        self.itp = kwargs["itp"]
         super(Cholesterol, self).__init__(self, *args, **kwargs)
-
+        
         self.group = "membr"
-
         self.posre_itp = "posre_cho.itp"
         self._setITP()
-
-        self.check_pdb()
         self._n_cho = self.count_cho()
 
     def setCho(self, value):
@@ -486,12 +576,16 @@ class Alosteric(Compound):
 
        replacing = False
        for line in pdb:
-           new_line = line
-           if len(line.split()) > 2:
+           new_line = line          
+           line = line.split()
+           try:
+               line[3]
                #Ensure the alosteric compound is labeled as ALO
-               if line.split()[3] != "ALO":
+               if line[3] != "ALO":
                    replacing = True
-                   new_line = new_line.replace(line.split()[3], "ALO")
+                   new_line = new_line.replace(line[3], "ALO")
+           except: IndexError
+            
            pdb_out.write(new_line)
 
        if replacing: print ("Made some ALO replacements in %s!" % self.pdb)

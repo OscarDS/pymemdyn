@@ -1,0 +1,70 @@
+ORIGINAL DATA
+X-ray structure:
+	- 6kqi.pdb
+
+--------------
+
+PDB PREPARATION (1)
+
+removed G protein (resn >= 1000)
+removed irrelevant cofactors (lipids)
+	- 6kqi_raw.pdb
+
+removed ligand and allosteric
+	- 6kqi_raw_prot
+
+--------------
+
+MODELLER
+
+alignment.pir was made using Uniprot sequence (CNR1_HUMAN)
+	- missing loop so cut short:
+		3 original AAs on both sides + 3 ALA as linker
+
+MODELLER executed using modeller_loopfill.py
+	- 6kqi_ref_prot.B99990001.pdb
+
+--------------
+
+PPM
+
+6kqi_ref_prot.B99990001.pdb aligned to membrane using PPM
+N-term = out (UniProt)
+
+pymodsim -n 3 -p 6kqi_ref_prot.B99990001.pdb -t out
+	- homology.pdb (cnr1_human.pdb)
+
+--------------
+
+PDB PREPARATION (2)
+
+aligned 6kqi_raw to homology.pdb:
+make structure with refined protein and lig+alo.
+	- 6kqi_ref
+
+from 6kqi_ref extracted cofactors:
+hydrogens were added using PyMol:
+	9gf_raw.pdb
+	9gl_raw.pdb
+
+--------------
+
+LIGPARGEN
+
+submitted ligand and allosteric to LigParGen Webserver
+download OpenMM>PDB, and GROMACS>TOP
+	- 9gf.pdb
+	- 9gf.itp
+	- 9gl.pdb
+	- 9gl.itp
+
+
+--------------
+
+PYMEMDYN
+
+input:
+-p homology.pdb
+-l 9gf
+-a 9gl
+--res bw 	

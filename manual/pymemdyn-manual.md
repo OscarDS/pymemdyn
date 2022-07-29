@@ -4,7 +4,7 @@
 setting up the simulation, via Molecular Dynamics (MD), of G-protein
 Coupled Receptors (GPCRs) embedded in a cell membrane. The protocol can
 be adapted to insert other transmembrane proteins, not only GPCRs. The
-library has been adapted from that described in Gutiérrez de Terán et
+library has been adapted from that described in Guti�rrez de Ter�n et
 al. (2011) [1], and is implemented in the web-based service
 for modeling and simulation of GPCRs available at
 <http://gpcr-modsim.org>.
@@ -38,7 +38,7 @@ modulator, or even specific cholesterol, lipid, water or ion molecules
 are key for a more comprehensive characterization of GPCRs.
 **PyMemDyn** can explicitly handle these elements allowing a broader
 audience in the field of GPCRs to use molecular dynamics simulations.
-These molecules should be uploaded in the same way theyâ€™re present in
+These molecules should be uploaded in the same way they’re present in
 the original PDB file of the receptor, so they are properly integrated
 into the membrane insertion protocol described above, together with
 force-field associated files (which can be either generated with
@@ -124,42 +124,42 @@ To install **PyMemDyn** follow these steps:
 
     You should obtain the following help output:
 
-        usage: pymemdyn [-h] [-v] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
-                        [-a ALOSTERIC] [-w WATERS] [-i IONS] [-c CHO] 
-                        [--res RESTRAINT] [-q QUEUE] [-d]
-
-         == Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
-
-        optional arguments:
-          -h, --help            show this help message and exit
-          -v, --version         show program's version number and exit
-          -b OWN_DIR            Working dir if different from actual dir
-          -r REPO_DIR           Path to templates of fixed files. If not provided,
-                                take the value from settings.TEMPLATES_DIR.
-          -p PDB                Name of the pdb to insert into membrane for MD
-                                (mandatory). Use the pdb extension. (e.g. -p
-                                myprot.pdb)
-          -l LIGAND, --lig LIGAND
-                                Name of the ligand, without extension. Three files
-                                must be present along with the molecule pdb: the
-                                ligand, its itp and its force field.
-          -a ALOSTERIC, --alo ALOSTERIC
-                                Name of the alosteric interaction, without extension.
-                                Three files must be present along with the molecule
-                                pdb: the alosteric, its itp and its force field.
-          -w WATERS, --waters WATERS
-                                Crystalized water molecules. File name without
-                                extension.
-          -i IONS, --ions IONS  Crystalized ions file name without extension.
-          -c CHO, --cho CHO     Crystalized cholesterol molecules file name without
-                                extension.
-          --res RESTRAINT       Position restrains during MD production run. Options:
-                                bw (Ballesteros-Weinstein Restrained Relaxation -
-                                default), ca (C-Alpha Restrained Relaxation)
-          -q QUEUE, --queue QUEUE
-                                Queueing system to use (slurm, pbs, pbs_ib and svgd
-                                supported)
-          -d, --debug
+	usage: pymemdyn [-h] [-v] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
+	                [-a ALOSTERIC] [-w WATERS] [-i IONS] [-c CHO]
+	                [--res RESTRAINT] [-q QUEUE] [-d]
+	
+	== Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
+	
+	optional arguments:
+	  -h, --help            show this help message and exit
+	  -v, --version         show program's version number and exit
+	  -b OWN_DIR            Working dir if different from actual dir
+	  -r REPO_DIR           Path to templates of fixed files. If not provided,
+	                        take the value from settings.TEMPLATES_DIR.
+	  -p PDB                Name of the pdb to insert into membrane for MD
+	                        (mandatory). Use the pdb extension. (e.g. -p
+	                        myprot.pdb)
+	  -l LIGAND, --lig LIGAND
+	                        Name of the ligand, without extension. See
+	                        input_guide.txt for details on how to generate the
+	                        required pdb and forcefield files.
+	  -a ALOSTERIC, --alo ALOSTERIC
+	                        Name of the allosteric, without extension. See
+	                        input_guide.txt for details on how to generate the
+	                        required pdb and forcefield files.
+	  -w WATERS, --waters WATERS
+	                        Crystalized water molecules. File name without
+	                        extension.
+	  -i IONS, --ions IONS  Crystalized ions file name without extension.
+	  -c CHO, --cho CHO     Crystalized cholesterol molecules file name without
+	                        extension.
+	  --res RESTRAINT       Position restraints during MD production run. Options:
+	                        bw (Ballesteros-Weinstein Restrained Relaxation -
+	                        default), ca (C-Alpha Restrained Relaxation)
+	  -q QUEUE, --queue QUEUE
+	                        Queueing system to use (slurm, pbs, pbs_ib and svgd
+	                        supported)
+	  -d, --debug
 
 3.  Updates are very easy thanks to the git versioning system. Once
     **PyMemDyn** has been downloaded (cloned) into its own *pymemdyn* folder 
@@ -186,7 +186,7 @@ To install **PyMemDyn** follow these steps:
     uncommented, looking like: GROMACS_PATH = /opt/gromacs-2021/bin
     Provided that in your case gromacs is installed in /opt. The program
     will prepend this line to the binaries names, so calling
-    â€œ/opt/gromacs-2021/bin/gmx should point to that binary. 
+    “/opt/gromacs-2021/bin/gmx should point to that binary. 
 
 
 6.  Similarly, in that file you specify which queuing system you
@@ -279,7 +279,7 @@ Running with queues
 ===================
 
 $\approx$ 90% of the time you will want to use some queueing system. We
-deal with queue systems tweaks as we stumble into them and itâ€™s out of
+deal with queue systems tweaks as we stumble into them and it’s out of
 our scope to cover them all. If you take a look at the source code dir,
 you'll found some files called "run_pbs.sh", "run_svgd.sh" and so on.
 Also there are specific queue objects in the source file queue.py we
@@ -371,7 +371,7 @@ The performed equilibration includes the following stages:
 
 |   STAGE    | RESTRAINED ATOMS        | FORCE CONSTANT       | TIME           |
 |:----------:|:-----------------------:|:--------------------:|:--------------:|
-|  -         |   -                     |kJ/(molÂ·nm^2)        | ns             |
+|  -         |   -                     |kJ/(mol·nm^2)        | ns             |
 |Minimization|   -                     | -                    |(Max. 500 steps)|
 |Equil. 1    |Protein Heavy Atoms      | 1000                 | 0.5            |
 |Equil. 2    |Protein Heavy Atoms      | 800                  | 0.5            |
@@ -480,6 +480,6 @@ request the last frame with:
 References
 ----------
 
-[1] Rodríguez D., Piñeiro A. and Gutiérrez-de-Terán H.   
+[1] Rodr�guez D., Pi�eiro A. and Guti�rrez-de-Ter�n H.   
 Molecular Dynamics Simulations Reveal Insights into Key Structural Elements of Adenosine Receptors   
 Biochemistry (2011), 50, 4194-208.   

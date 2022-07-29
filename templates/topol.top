@@ -1,17 +1,26 @@
 #include "ffoplsaa_mod.itp"
 $itp_includes
 #include "${working_dir}popc.itp"
-#include "spc.itp"
 #include "ions.itp"
+#include "spc.itp"
 [ system ]
 ; Name
 Membrane protein
 [ molecules ]
 ; Compound  #mols
 $protein
-$dimer
+$pc1
+$pc2
+$pc3
+$pc4
+$pc5
+$pc6
+$pc7
+$pc8
+$pc9
+$pc10
 $lig
-$na
+$sod
 $cho
 $alosteric
 $hoh

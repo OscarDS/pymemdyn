@@ -4,23 +4,24 @@ import os
 class BasicInit(object):
     def __init__(self, **kwargs):
         # First we make a list of ordered steps
-        self.steps = ["pdb2gmx", "set_itp", "concat", "editconf",
+        self.steps = ["pdb2gmx", "set_itp", "concat", "set_protein_height", "editconf",
                       "set_protein_size", "editconf2", "set_protein_size2",
                       "set_popc", "editconf3", "editconf4", "make_topol",
-                      "editconf5", "solvate", "set_water", "editconf6",
-                      "editconf7", "solvate2", "count_lipids", "make_topol2",
+                      "editconf5", "solvate", "set_protein_height2", "set_water", 
+                      "editconf6", "editconf7", "editconf8", 
+                      "solvate2", "count_lipids", "make_topol2",
                       "make_topol_lipids", "make_ffoplsaanb", "set_grompp",
                       "set_chains", "make_ndx", "grompp", "trjconv",
                       "get_charge", "genion", "grompp2", "trjconv2",
-                      "grompp3", "trjconv3"]
+                      "grompp3", "trjconv3", "clean_pdb"]
 
         # And then we define each step
         self.recipe = \
             {"pdb2gmx": {"gromacs": "pdb2gmx",  # 1
                          "options": {"src": "",
                                      "tgt": "proteinopls.pdb",
-                                     "top": "protein.top"}},
-
+                                     "top": "protein.top"}},             
+             
              "set_itp": {"command": "set_itp",  # 2
                          "options": {"src": "protein.top",
                                      "tgt": "protein.itp"}},
@@ -29,87 +30,99 @@ class BasicInit(object):
                         "options": {"src": "proteinopls.pdb",
                                     "tgt": ""}},
 
-             "editconf": {"gromacs": "editconf",  # 4
+             "set_protein_height": {"command": "set_protein_height",  # 4
+                                    "options": {"src": "proteinopls.pdb"}},
+
+             "editconf": {"gromacs": "editconf",  # 5
                           "options": {"src": "proteinopls.pdb",
                                       "tgt": "proteinopls.pdb",
                                       "dist": ""}},
 
-             "set_protein_size": {"command": "set_protein_size",  # 5
+             "set_protein_size": {"command": "set_protein_size",  # 6
                                   "options": {"src": "proteinopls.pdb",
                                               "dir": "xy"}},
 
-             "editconf2": {"gromacs": "editconf",  # 6
+             "editconf2": {"gromacs": "editconf",  # 7
                            "options": {"src": "proteinopls.pdb",
                                        "tgt": "proteinopls.pdb",
                                        "dist": ""}},
 
-             "set_protein_size2": {"command": "set_protein_size",  # 7
+             "set_protein_size2": {"command": "set_protein_size",  # 8
                                    "options": {"src": "proteinopls.pdb",
                                                "dir": "z"}},
 
-             "set_popc": {"command": "set_popc",  # 8
+             "set_popc": {"command": "set_popc",  # 9
                           "options": {"tgt": "popc.pdb"}},
 
-             "editconf3": {"gromacs": "editconf",  # 9
+             "editconf3": {"gromacs": "editconf",  # 10
                            "options": {"src": "proteinopls.pdb",
                                        "tgt": "proteinopls.pdb",
                                        "box": "",
                                        "angles": ["90", "90", "120"],
                                        "bt": "tric"}},
 
-             "editconf4": {"gromacs": "editconf",  # 10
+             "editconf4": {"gromacs": "editconf",  # 11
                            "options": {"src": "popc.pdb",
                                        "tgt": "popc.gro",
                                        "box": ""}},
 
-             "make_topol": {"command": "make_topol",  # 11
+             "make_topol": {"command": "make_topol",  # 12
                             "options": {}},
 
-             "editconf5": {"gromacs": "editconf",  # 12
+             "editconf5": {"gromacs": "editconf",  # 13
                            "options": {"src": "proteinopls.pdb",
                                        "tgt": "proteinopls.pdb",
-                                       "translate": ["0", "0", "0"]}},
+                                       "translate_z": ""}},
 
-             "solvate": {"gromacs": "solvate",  # 13
+             "solvate": {"gromacs": "solvate",  # 14
                         "options": {"cp": "proteinopls.pdb",
                                     "cs": "popc.gro",
                                     "tgt": "protpopc.pdb",
                                     "top": "topol.top"}},
 
-             "set_water": {"command": "set_water",  # 14
+             "set_protein_height2": {"command": "set_protein_height",  # 15
+                                    "options": {"src": "protpopc.pdb",
+                                                "solvate2": "True"}}, 
+             
+             "set_water": {"command": "set_water",  # 16
                            "options": {"tgt": "water.pdb"}},
 
-             "editconf6": {"gromacs": "editconf",  # 15
+             "editconf6": {"gromacs": "editconf",  # 17
                            "options": {"src": "water.pdb",
                                        "tgt": "water.gro",
                                        "box": ""}},
 
-             "editconf7": {"gromacs": "editconf",  # 16
+             "editconf7": {"gromacs": "editconf",  # 18
                            "options": {"src": "protpopc.pdb",
                                        "tgt": "protpopc.pdb",
                                        "box": "",
                                        "angles": ["90", "90", "120"],
                                        "bt": "tric"}},
+             
+             "editconf8": {"gromacs": "editconf",  # 19
+                           "options": {"src": "protpopc.pdb",
+                                       "tgt": "protpopc.pdb",
+                                       "translate_z": ""}},
 
-             "solvate2": {"gromacs": "solvate",  # 17
+             "solvate2": {"gromacs": "solvate",  # 20
                          "options": {"cp": "protpopc.pdb",
                                      "cs": "water.gro",
                                      "tgt": "tmp.pdb",
                                      "top": "topol.top"}},
 
-             "count_lipids": {"command": "count_lipids",  # 18
+             "count_lipids": {"command": "count_lipids",  # 21
                               "options": {"src": "tmp.pdb",
                                           "tgt": "popc.pdb"}},
 
-             "make_topol2": {"command": "make_topol",  # 19
+             "make_topol2": {"command": "make_topol",  # 22
                              "options": {}},
 
-             "make_topol_lipids": {"command": "make_topol_lipids"},  # 20
+             "make_topol_lipids": {"command": "make_topol_lipids"},  # 23
 
-             "make_ffoplsaanb": {"command": "make_ffoplsaanb",  # 21
+             "make_ffoplsaanb": {"command": "make_ffoplsaanb",  # 24
                                  "options": {}},
 
-             "set_grompp": {"command": "set_grompp",  # 22
+             "set_grompp": {"command": "set_grompp",  # 25
                             "options": {"steep.mdp": "steep.mdp",
                                         "popc.itp": "popc.itp",
                                         "spc.itp": "spc.itp",
@@ -117,21 +130,21 @@ class BasicInit(object):
                                         "ffoplsaabon_mod.itp": "ffoplsaabon_mod.itp",
                                         "ffoplsaa_mod.itp": "ffoplsaa_mod.itp"}},
 
-             "set_chains": {"command": "set_chains",  # 23
+             "set_chains": {"command": "set_chains",  # 26
                             "options": {"src": "proteinopls.pdb"}},
 
-             "make_ndx": {"command": "make_ndx",  # 24
+             "make_ndx": {"command": "make_ndx",  # 27
                           "options": {"src": "tmp.pdb",
                                       "tgt": "index.ndx"}},
 
-             "grompp": {"gromacs": "grompp",  # 25
+             "grompp": {"gromacs": "grompp",  # 28
                         "options": {"src": "steep.mdp",
                                     "src2": "tmp.pdb",
                                     "tgt": "topol.tpr",
                                     "top": "topol.top",
                                     "index": "index.ndx"}},
 
-             "trjconv": {"gromacs": "trjconv",  # 26
+             "trjconv": {"gromacs": "trjconv",  # 29
                          "options": {"src": "tmp.pdb",
                                      "src2": "topol.tpr",
                                      "tgt": "tmp.pdb",
@@ -139,14 +152,14 @@ class BasicInit(object):
                                      "index": "index.ndx"},
                          "input": "1\n0\n"},
 
-             "get_charge": {"command": "get_charge",  # 27
+             "get_charge": {"command": "get_charge",  # 30
                             "options": {"src": "steep.mdp",
                                         "src2": "tmp.pdb",
                                         "tgt": "topol.tpr",
                                         "top": "topol.top",
                                         "index": "index.ndx"}},
 
-             "genion": {"gromacs": "genion",  # 28
+             "genion": {"gromacs": "genion",  # 31
                         "options": {"src": "topol.tpr",
                                     "tgt": "output.pdb",
                                     "src2": "topol.top",
@@ -155,13 +168,13 @@ class BasicInit(object):
                                     "nn": ""},
                         "input": " SOL \n"},
 
-             "grompp2": {"gromacs": "grompp",  # 29
+             "grompp2": {"gromacs": "grompp",  # 32
                          "options": {"src": "steep.mdp",
                                      "src2": "output.pdb",
                                      "tgt": "topol.tpr",
                                      "top": "topol.top"}},
 
-             "trjconv2": {"gromacs": "trjconv",  # 30
+             "trjconv2": {"gromacs": "trjconv",  # 33
                           "options": {"src": "output.pdb",
                                       "src2": "topol.tpr",
                                       "tgt": "output.pdb",
@@ -169,19 +182,23 @@ class BasicInit(object):
                                       "pbc": "mol"},
                           "input": "0\n"},
 
-             "grompp3": {"gromacs": "grompp",  # 31
+             "grompp3": {"gromacs": "grompp",  # 34
                          "options": {"src": "steep.mdp",
                                      "src2": "output.pdb",
                                      "tgt": "topol.tpr",
                                      "top": "topol.top"}},
 
-             "trjconv3": {"gromacs": "trjconv",  # 32
+             "trjconv3": {"gromacs": "trjconv",  # 35
                           "options": {"src": "output.pdb",
                                       "src2": "topol.tpr",
                                       "tgt": "hexagon.pdb",
                                       "ur": "compact",
                                       "pbc": "mol"},
                           "input": "1\n0\n"},
+             
+             "clean_pdb": {"command": "clean_pdb", # 36
+                           "options": {"src": "hexagon.pdb",
+                                       "tgt": "hexagon.pdb"}}
              }
 
         self.breaks = \
@@ -191,8 +208,10 @@ class BasicInit(object):
              "editconf2": {"dist": "membrane_complex.box_width"},
              "editconf3": {"box": "membrane_complex.trans_box_size"},
              "editconf4": {"box": "membrane_complex.bilayer_box_size"},
+             "editconf5": {"translate_z": "membrane_complex.complex.center_z"},
              "editconf6": {"box": "membrane_complex.embeded_box_size"},
              "editconf7": {"box": "membrane_complex.protein_box_size"},
+             "editconf8": {"translate_z": "membrane_complex.complex.center_z"},
              "genion": {"nn": "membrane_complex.complex.positive_charge",
                         "np": "membrane_complex.complex.negative_charge"},
              "make_topol": {"complex": "membrane_complex.complex"},
@@ -333,8 +352,6 @@ class BasicEquilibration(object):
                                 "options": {"src_dir": "",
                                             "src_files": ["topol.tpr",
                                                           "posre.itp",
-                                                          "posre_Protein_chain_A.itp",
-                                                          "posre_Protein_chain_B.itp",
                                                           "posre_hoh.itp",
                                                           "posre_ion.itp",
                                                           "posre_lig.itp",
@@ -352,6 +369,11 @@ class BasicEquilibration(object):
                                   "log": "md_eq1000.log"}},
         }
         self.breaks = {}
+
+        if kwargs["chains"]:
+            for chain in kwargs["chains"]:
+                self.recipe["set_stage_init2"]["options"]["src_files"].append(
+                                                    "posre_Protein_chain_" + chain + ".itp")
 
         if kwargs["debug"] or False:
             self.recipe["grompp"]["options"]["src"] = "Rmin/eqDEBUG.mdp"
@@ -681,10 +703,10 @@ class BasicCollectResults(object):
                                               "tgt": "MD_output.tgz"}}, 
                        }
 
-        options = {"tot_ener": "13\n",
-                   "temp": "15\n",
-                   "pressure": "16\n",
-                   "volume": "21\n"} # 8 to 11
+        options = {"tot_ener": "Total-Energy\n",
+                   "temp": "Temperature\n",
+                   "pressure": "Pressure\n",
+                   "volume": "Volume\n"} # 8 to 11
 
         for option, gro_key in options.items():
             self.recipe[option] = \
@@ -730,10 +752,10 @@ class BasicBWCollectResults(BasicCollectResults):
         self.steps.insert(10, "temp2")
         self.steps.insert(10, "tot_ener2")
             
-        options2 = {"tot_ener2": "14\n",
-                        "temp2": "16\n",
-                        "pressure2": "17\n",
-                        "volume2": "22\n"}
+        options2 = {"tot_ener2": "Total-Energy\n",
+                        "temp2": "Temperature\n",
+                        "pressure2": "Pressure\n",
+                        "volume2": "Volume\n"}
 
         for option, gro_key in options2.items():
             self.recipe[option] = \
