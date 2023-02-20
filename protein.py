@@ -223,6 +223,7 @@ class Sugar_prep(object):
         Converts LigParGen structure files to PyMemDyn input files
         """
         # Safeguard for deleting files
+        print("! ! ! lpg2pmd function from sugar class activated ! ! !")
         if not os.path.isfile(self.own_dir + "/" + sugar + ".ff"):    
             shutil.copy(self.own_dir + "/" + sugar + ".itp", self.own_dir + "/" + sugar + "_backup.itp")
             shutil.copy(self.own_dir + "/" + sugar + ".pdb", self.own_dir + "/" + sugar + "_backup.pdb")
@@ -257,11 +258,11 @@ class Sugar_prep(object):
                         
                 if split == True:
                     count += 1
-                    if count == 2:
-                        if sugar == self.ligand and line[0:3] != "LIG":
-                            line = line.replace(line[0:3], "LIG")
-                        if sugar == self.alosteric and line[0:3] != "ALO":
-                            line = line.replace(line[0:3], "ALO")
+                    if count == 2:# Added lstrip() to not take starting whitespace into account
+                        if sugar == self.ligand and line.lstrip()[0:3] != "LIG": 
+                            line = line.replace(line.lstrip()[0:3], "LIG")
+                        if sugar == self.alosteric and line.lstrip()[0:3] != "ALO":
+                            line = line.replace(line.lstrip()[0:3], "ALO")
                         
                     if line[9:13] == "opls":
                         tmp_itp.append(line.split())
@@ -332,11 +333,12 @@ class Ligand(Compound):
         # The itp matches each residue in the ligand pdb with the force field
         atoms_def = False
         molecules = {}
+        print('! ! ! ligand itp being checked ! ! !')
         for line in open(self.itp, "r"):
             if "[ atoms ]" in line:
                 atoms_def = True
-            if "[ bonds ]" in line:
-                atoms_def = False
+            if "[ bonds ]" in line: # Assuming here that '[ bonds ]' immediately 
+                atoms_def = False   # follows '[ atoms ]'.
             if atoms_def and not line.startswith(";"):
                 data = line.split()
                 if len(data) > 6:
@@ -598,6 +600,7 @@ class Alosteric(Compound):
         """
         Check the force field is correct
         """
+        print('alosteric itp being checked')
         shutil.move(self.itp, self.itp + "~")
         itp = open(self.itp + "~", "r")
         itp_out = open(self.itp, "w")
