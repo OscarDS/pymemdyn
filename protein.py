@@ -223,7 +223,6 @@ class Sugar_prep(object):
         Converts LigParGen structure files to PyMemDyn input files
         """
         # Safeguard for deleting files
-        print("! ! ! lpg2pmd function from sugar class activated ! ! !")
         if not os.path.isfile(self.own_dir + "/" + sugar + ".ff"):    
             shutil.copy(self.own_dir + "/" + sugar + ".itp", self.own_dir + "/" + sugar + "_backup.itp")
             shutil.copy(self.own_dir + "/" + sugar + ".pdb", self.own_dir + "/" + sugar + "_backup.pdb")
@@ -246,6 +245,13 @@ class Sugar_prep(object):
             tmp_itp = []
     
             for line in lines_itp:
+                if "[ defaults ]" in line:
+                    # find location of defaults content
+                    loc_content_of_defaults = lines_itp.index(line)
+                    # also remove content
+                    lines_itp.pop(loc_content_of_defaults)
+                    # now also do nothing else on this line
+                    continue
                 if sugar == self.alosteric:
                     line = line.replace("opls_8", "opls_a")                
                 if "[ moleculetype ]" in line:
@@ -333,7 +339,6 @@ class Ligand(Compound):
         # The itp matches each residue in the ligand pdb with the force field
         atoms_def = False
         molecules = {}
-        print('! ! ! ligand itp being checked ! ! !')
         for line in open(self.itp, "r"):
             if "[ atoms ]" in line:
                 atoms_def = True
