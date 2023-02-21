@@ -247,7 +247,7 @@ class Sugar_prep(object):
             for line in lines_itp:
                 if "[ defaults ]" in line:
                     # find location of defaults content
-                    loc_content_of_defaults = lines_itp.index(line)
+                    loc_content_of_defaults = lines_itp.index(line) + 2
                     # also remove content
                     lines_itp.pop(loc_content_of_defaults)
                     # now also do nothing else on this line
