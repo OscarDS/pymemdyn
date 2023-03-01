@@ -1,5 +1,6 @@
 import os
 import shutil
+from utils import create_itp
 
 
 class ProteinComplex(object):
@@ -202,6 +203,7 @@ class Oligomer(Monomer):
 
 class Sugar_prep(object):
     def __init__(self, *args, **kwargs):
+        print('initialization of Sugar_prep started')
         sugars = []
         if self.ligand:
             sugars.append(self.ligand)
@@ -213,10 +215,14 @@ class Sugar_prep(object):
                 pass # all files exist, so no files need to be generated
             else:
                 if os.path.exists(sugar + ".itp") == False:
-                    pass # TODO: LigParGen communication can be set here
+                    print('no .itp found, it will be generated for '+str(sugar))
+                    print('current workdir= '+str(os.getcwd()))
+                    create_itp(sugar + ".pdb", 0, 3)
+                    # pass # TODO: LigParGen communication can be set here
                     
                 Sugar_prep.lpg2pmd(self, sugar)     
 
+   
 
     def lpg2pmd(self, sugar, *args, **kwargs):
         """
@@ -536,6 +542,7 @@ class Cholesterol(Compound):
        """
        cho_count = 0
        for line in open(self.pdb, "r"):
+           print(line.split())
            if len(line.split()) > 2:
                if line.split()[3] in ["CHO", "CLR"]:
                    cho_count += 1

@@ -11,6 +11,7 @@ import queue
 import settings
 
 
+
 class Run(object):
     def __init__(self, pdb, *args, **kwargs):
         """
@@ -38,15 +39,25 @@ class Run(object):
         self.restraint = kwargs.get("restraint") or ""
         self.queue = kwargs.get("queue") or ""
         self.debug = kwargs.get("debug") or False
+        print('arguments initialized')
+
+        print('self.ligand = '+str(self.ligand))
+
+
 
         if self.pdb:
+            print('self.pdb dectected. Checking nr of chains of '+ str(self.pdb))
             self.pdb = protein.Protein(pdb=self.pdb).check_number_of_chains()
+            print('nr of chains ok!')
 
         sugars = {"ligand": "Ligand",
                   "alosteric": "Alosteric",
                   "waters": "CrystalWaters",
                   "ions": "Ions",
                   "cho": "Cholesterol"}
+        print("dict 'sugars' initialized")
+
+        print('starting sugar prep')
 
         protein.Sugar_prep.__init__(self)
 
@@ -227,6 +238,8 @@ if __name__ == "__main__":
                         action="store_true")
 
     args = parser.parse_args()
+
+
 
     if not (os.path.isdir(args.own_dir)):
         os.makedirs(args.own_dir)
