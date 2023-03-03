@@ -213,8 +213,10 @@ class Sugar_prep(object):
                 pass # all files exist, so no files need to be generated
             else:
                 if os.path.exists(sugar + ".itp") == False:
-                    pass # TODO: LigParGen communication can be set here
+                    print("no .ff and .itp")
+                
                     
+                
                 Sugar_prep.lpg2pmd(self, sugar)     
 
 
@@ -245,12 +247,14 @@ class Sugar_prep(object):
             tmp_itp = []
     
             for line in lines_itp:
+                if sugar == self.ligand:
+                    line = line.replace("opls_", "oplsl")
                 if sugar == self.alosteric:
-                    line = line.replace("opls_8", "opls_a")                
+                    line = line.replace("opls_", "oplsa")                
                 if "[ moleculetype ]" in line:
                     split = True    
                 if split == False: 
-                    if line[2:6] != "opls": 
+                    if "opls" not in line:
                         new_ff.write(line)
                     else:
                         tmp_ff.append(line.split())         
@@ -263,7 +267,7 @@ class Sugar_prep(object):
                         if sugar == self.alosteric and line[0:3] != "ALO":
                             line = line.replace(line[0:3], "ALO")
                         
-                    if line[9:13] == "opls":
+                    if "opls" in line:
                         tmp_itp.append(line.split())
                         if sugar == self.ligand and line[28:31] != "LIG":
                             line = line.replace(line[28:31], "LIG")
@@ -529,7 +533,7 @@ class Cholesterol(Compound):
        """
        cho_count = 0
        for line in open(self.pdb, "r"):
-           if len(line.split()) > 3:
+           if len(line.split()) > 2:
                if line.split()[3] in ["CHO", "CLR"]:
                    cho_count += 1
        return cho_count / 74 #Each CHO has 74 atoms
