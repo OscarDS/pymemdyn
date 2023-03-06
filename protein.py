@@ -208,20 +208,22 @@ class Sugar_prep(object):
             if os.path.exists(self.ligand + ".ff") == True:
                 pass
             else:
-                create_itp(self.ligand + ".pdb", 
-                           self.ligpargen_ligand_charge, 
-                           self.ligpargen_ligand_nrOfOptimizations
-                           )
+                if os.path.exists(self.ligand + ".itp") == False:
+                    create_itp(self.ligand + ".pdb", 
+                            self.ligpargen_ligand_charge, 
+                            self.ligpargen_ligand_nrOfOptimizations
+                            )
             Sugar_prep.lpg2pmd(self, self.ligand)
                 
         if self.allosteric:
             if os.path.exists(self.allosteric + ".ff") == True:
                 pass
             else:
-                create_itp(self.allosteric + ".pdb", 
-                           self.ligpargen_allosteric_charge, 
-                           self.ligpargen_allosteric_nrOfOptimizations
-                           )
+                if os.path.exists(self.allosteric + ".itp") == False:
+                    create_itp(self.allosteric + ".pdb", 
+                            self.ligpargen_allosteric_charge, 
+                            self.ligpargen_allosteric_nrOfOptimizations
+                            )
             Sugar_prep.lpg2pmd(self, self.allosteric)
 
         # for sugar in sugars:

@@ -4,7 +4,12 @@ from string import Template
 
 import bw4posres
 
-import ligpargen.ligpargen as ligpar
+try:
+    import ligpargen.ligpargen as ligpar
+except:
+    print("""!! WARNING !! : No installation of ligpargen was found. 
+          itp files for ligands and/or allosterics cannot be automatically
+          generated and must be provided manually.""")
 
 
 def clean_pdb(src = [], tgt = []):

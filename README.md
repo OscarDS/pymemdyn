@@ -1,4 +1,4 @@
-PyMemDyn Version 1.5.2
+PyMemDyn Version 1.5.3
 ================================================================================
 
 PyMemDyn is  a standalone *python*  package to setup  membrane molecular
@@ -18,6 +18,15 @@ You will need to create a  free personal account at github and send
 and  e-mail  to:  [gpcruser@gmail.com](gpcruser@gmail.com)  requesting
 access to the code. After request processing from us you will be
 given access to the free repository.  
+
+## Dependencies
+In order to automatically generate .itp files for ligands and allosterics, the program ligpargen is used. Install using their instructions: <https://github.com/Isra3l/ligpargen>.
+
+Testing was done using LigParGen v2.1 using BOSS5.0.
+
+Pymemdyn can also be used without ligpargen installation, but then .itp files containing the parameters for the ligand and the allosteric should be provided in the same folder as their respective .pdb's.
+
+## Installation
 
 To install **PyMemDyn** follow these steps:  
 
@@ -67,35 +76,50 @@ To install **PyMemDyn** follow these steps:
         == Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
         
         optional arguments:
-          -h, --help            show this help message and exit
-          -v, --version         show program's version number and exit
-          -b OWN_DIR            Working dir if different from actual dir
-          -r REPO_DIR           Path to templates of fixed files. If not provided,
-                                take the value from settings.TEMPLATES_DIR.
-          -p PDB                Name of the pdb to insert into membrane for MD
-                                (mandatory). Use the pdb extension. (e.g. -p
-                                myprot.pdb)
-          -l LIGAND, --lig LIGAND
-                                Name of the ligand, without extension. See
-                                input_guide.txt for details on how to generate the
-                                required pdb and forcefield files.
-          -a ALOSTERIC, --alo ALOSTERIC
-                                Name of the allosteric, without extension. See
-                                input_guide.txt for details on how to generate the
-                                required pdb and forcefield files.
-          -w WATERS, --waters WATERS
-                                Crystalized water molecules. File name without
-                                extension.
-          -i IONS, --ions IONS  Crystalized ions file name without extension.
-          -c CHO, --cho CHO     Crystalized cholesterol molecules file name without
-                                extension.
-          --res RESTRAINT       Position restraints during MD production run. Options:
-                                bw (Ballesteros-Weinstein Restrained Relaxation -
-                                default), ca (C-Alpha Restrained Relaxation)
-          -q QUEUE, --queue QUEUE
-                                Queueing system to use (slurm, pbs, pbs_ib and svgd
-                                supported)
-          -d, --debug
+           -h, --help            show this help message and exit
+           -v, --version         show program's version number and exit
+           -b OWN_DIR            Working dir if different from actual dir
+           -r REPO_DIR           Path to templates of fixed files. If not provided,
+                                 take the value from settings.TEMPLATES_DIR.
+           -p PDB                Name of the pdb to insert into membrane for MD
+                                 (mandatory). Use the pdb extension. (e.g. -p
+                                 myprot.pdb)
+           -l LIGAND, --lig LIGAND
+                                 Name of the ligand, without extension. See
+                                 input_guide.txt for details on how to generate the
+                                 required pdb and forcefield files.
+           -a ALLOSTERIC, --alo ALLOSTERIC
+                                 Name of the allosteric, without extension. See
+                                 input_guide.txt for details on how to generate the
+                                 required pdb and forcefield files.
+           -w WATERS, --waters WATERS
+                                 Crystalized water molecules. File name without
+                                 extension.
+           -i IONS, --ions IONS  Crystalized ions file name without extension.
+           -c CHO, --cho CHO     Crystalized cholesterol molecules file name without
+                                 extension.
+           --res RESTRAINT       Position restraints during MD production run. Options:
+                                 bw (Ballesteros-Weinstein Restrained Relaxation -
+                                 default), ca (C-Alpha Restrained Relaxation)
+           --llc LIGPARGEN_LIGAND_CHARGE
+                                 Charge of ligand for ligpargen (when itp file should
+                                 be generated)
+           --llo LIGPARGEN_LIGAND_NROFOPTIMIZATIONS
+                                 Number of optimizations that ligpargen should use to
+                                 generate itp file for ligand (only needed when itp is
+                                 not provided)
+           --lac LIGPARGEN_ALLOSTERIC_CHARGE
+                                 Charge of allosteric for ligpargen (when itp file
+                                 should be generated)
+           --lao LIGPARGEN_ALLOSTERIC_NROFOPTIMIZATIONS
+                                 Number of optimizations that ligpargen should use to
+                                 generate itp file for allosteric (only needed when itp
+                                 is not provided)
+           -q QUEUE, --queue QUEUE
+                                 Queueing system to use (slurm, pbs, pbs_ib and svgd
+                                 supported)
+           -d, --debug
+
 
 
 3.  Updates are very easy thanks to the git versioning system. Once
