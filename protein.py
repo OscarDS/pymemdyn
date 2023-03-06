@@ -204,23 +204,37 @@ class Oligomer(Monomer):
 class Sugar_prep(object):
     def __init__(self, *args, **kwargs):
         print('initialization of Sugar_prep started')
-        sugars = []
         if self.ligand:
-            sugars.append(self.ligand)
-        if self.alosteric:
-            sugars.append(self.alosteric)
-            
-        for sugar in sugars:
-            if os.path.exists(sugar + ".ff") == True:
-                pass # all files exist, so no files need to be generated
+            if os.path.exists(self.ligand + ".ff") == True:
+                pass
             else:
-                if os.path.exists(sugar + ".itp") == False:
-                    print('no .itp found, it will be generated for '+str(sugar))
-                    print('current workdir= '+str(os.getcwd()))
-                    create_itp(sugar + ".pdb", 0, 3)
-                    # pass # TODO: LigParGen communication can be set here
+                create_itp(self.ligand + ".pdb", 
+                           self.ligpargen_ligand_charge, 
+                           self.ligpargen_ligand_nrOfOptimizations
+                           )
+            Sugar_prep.lpg2pmd(self, self.ligand)
+                
+        if self.alosteric:
+            if os.path.exists(self.allosteric + ".ff") == True:
+                pass
+            else:
+                create_itp(self.allosteric + ".pdb", 
+                           self.ligpargen_allosteric_charge, 
+                           self.ligpargen_allosteric_nrOfOptimizations
+                           )
+            Sugar_prep.lpg2pmd(self, self.allosteric)
+
+        # for sugar in sugars:
+        #     if os.path.exists(sugar + ".ff") == True:
+        #         pass # all files exist, so no files need to be generated
+        #     else:
+        #         if os.path.exists(sugar + ".itp") == False:
+        #             # print('no .itp found, it will be generated for '+str(sugar))
+        #             # print('current workdir= '+str(os.getcwd()))
+        #             create_itp(sugar + ".pdb", 0, 3)
                     
-                Sugar_prep.lpg2pmd(self, sugar)     
+                    
+                # Sugar_prep.lpg2pmd(self, sugar)     
 
    
 
@@ -523,7 +537,7 @@ class Cholesterol(Compound):
        replacing = False
        for line in pdb:
            new_line = line
-           if len(line.split()) > 2:
+           if len(line.split()) > 3:
                #Ensure the cholesterol is labeled as CHO
                if line.split()[3] != "CHO":
                    replacing = True
@@ -542,8 +556,7 @@ class Cholesterol(Compound):
        """
        cho_count = 0
        for line in open(self.pdb, "r"):
-           print(line.split())
-           if len(line.split()) > 2:
+           if len(line.split()) > 3:
                if line.split()[3] in ["CHO", "CLR"]:
                    cho_count += 1
        return cho_count / 74 #Each CHO has 74 atoms

@@ -37,6 +37,10 @@ class Run(object):
         self.ions = kwargs.get("ions") or ""
         self.cho = kwargs.get("cho") or ""
         self.restraint = kwargs.get("restraint") or ""
+        self.ligpargen_ligand_charge = kwargs.get("ligpargen_ligand_charge") or 0
+        self.ligpargen_ligand_nrOfOptimizations = kwargs.get("ligpargen_ligand_nrOfOptimizations") or 3
+        self.ligpargen_allosteric_charge = kwargs.get("ligpargen_allosteric_charge") or 0
+        self.ligpargen_allosteric_nrOfOptimizations = kwargs.get("ligpargen_allosteric_nrOfOptimizations") or 3
         self.queue = kwargs.get("queue") or ""
         self.debug = kwargs.get("debug") or False
         print('arguments initialized')
@@ -228,7 +232,27 @@ if __name__ == "__main__":
             (Ballesteros-Weinstein Restrained Relaxation - default), ca (C-Alpha Restrained \
             Relaxation)",
                         default = "bw")
-
+    
+    parser.add_argument('--llc',
+                        dest = "ligpargen_ligand_charge",
+                        help = "Charge of ligand for ligpargen (when itp file should be \
+            generated)")
+    
+    parser.add_argument('--llo',
+                        dest = "ligpargen_ligand_nrOfOptimizations",
+                        help = "Number of optimizations that ligpargen should use to generate \
+            itp file for ligand (only needed when itp is not provided)")
+    
+    parser.add_argument('--lac',
+                        dest = "ligpargen_allosteric_charge",
+                        help = "Charge of allosteric for ligpargen (when itp file should be \
+            generated)")
+    
+    parser.add_argument('--lao',
+                        dest = "ligpargen_allosteric_nrOfOptimizations",
+                        help = "Number of optimizations that ligpargen should use to generate \
+            itp file for allosteric (only needed when itp is not provided)")
+    
     parser.add_argument('-q', '--queue',
                         dest = "queue",
                         help = "Queueing system to use (slurm, pbs, pbs_ib and svgd supported)",
