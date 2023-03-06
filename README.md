@@ -1,4 +1,4 @@
-PyMemDyn Version 1.5.3
+PyMemDyn Version 1.6
 ================================================================================
 
 PyMemDyn is  a standalone *python*  package to setup  membrane molecular
