@@ -202,6 +202,12 @@ include input file generation/processing and data processing.
 Changelog
 --------------------------------------------------------------------------------
 
+### Changes from version 1.5.2 to 1.6
+- t.b.d, 2023
+
+Added feature for automatic generation of itp file from pdb file (ligand and allosteric) with ligpargen.
+
+
 ### Changes from version 1.5.1 to 1.5.2
 
 - Wednesday, July 27, 2022
