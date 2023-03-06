@@ -19,8 +19,8 @@ class ProteinComplex(object):
             self.setIons(kwargs["ions"])
         if "cho" in kwargs.keys():
             self.setCho(kwargs["cho"])
-        if "alosteric" in kwargs.keys():
-            self.setAlosteric(kwargs["alosteric"])
+        if "allosteric" in kwargs.keys():
+            self.setAlosteric(kwargs["allosteric"])
 
     def setMonomer(self, value):
         """
@@ -74,12 +74,12 @@ class ProteinComplex(object):
 
     def setAlosteric(self, value):
         """
-        Sets the alosteric object
+        Sets the allosteric object
         """
-        self.alosteric = value
+        self.allosteric = value
 
     def getAlosteric(self):
-        return self.alosteric
+        return self.allosteric
     property(getAlosteric, setAlosteric)
 
     def set_nanom(self):
@@ -214,7 +214,7 @@ class Sugar_prep(object):
                            )
             Sugar_prep.lpg2pmd(self, self.ligand)
                 
-        if self.alosteric:
+        if self.allosteric:
             if os.path.exists(self.allosteric + ".ff") == True:
                 pass
             else:
@@ -272,7 +272,7 @@ class Sugar_prep(object):
                     lines_itp.pop(loc_content_of_defaults)
                     # now also do nothing else on this line
                     continue
-                if sugar == self.alosteric:
+                if sugar == self.allosteric:
                     line = line.replace("opls_8", "opls_a")                
                 if "[ moleculetype ]" in line:
                     split = True    
@@ -287,14 +287,14 @@ class Sugar_prep(object):
                     if count == 2:# Added lstrip() to not take starting whitespace into account
                         if sugar == self.ligand and line.lstrip()[0:3] != "LIG": 
                             line = line.replace(line.lstrip()[0:3], "LIG")
-                        if sugar == self.alosteric and line.lstrip()[0:3] != "ALO":
+                        if sugar == self.allosteric and line.lstrip()[0:3] != "ALO":
                             line = line.replace(line.lstrip()[0:3], "ALO")
                         
                     if line[9:13] == "opls":
                         tmp_itp.append(line.split())
                         if sugar == self.ligand and line[28:31] != "LIG":
                             line = line.replace(line[28:31], "LIG")
-                        if sugar == self.alosteric and line[28:31] != "ALO":
+                        if sugar == self.allosteric and line[28:31] != "ALO":
                             line = line.replace(line[28:31], "ALO")
     
                     new_itp.write(line)
@@ -310,7 +310,7 @@ class Sugar_prep(object):
                 if line[0:4] == "ATOM":
                     if sugar == self.ligand and line[17:20] != "LIG":
                         line = line.replace(line[17:20], "LIG")
-                    if sugar == self.alosteric and line[17:20] != "ALO":
+                    if sugar == self.allosteric and line[17:20] != "ALO":
                         line = line.replace(line[17:20], "ALO")
                         
                 new_pdb.write(line)
@@ -578,7 +578,7 @@ class Cholesterol(Compound):
 
 class Alosteric(Compound):
     """
-    This is a compound that goes as a ligand but it's placed in an alosteric
+    This is a compound that goes as a ligand but it's placed in an allosteric
     site rather than an orthosteric one.
     """
     def __init__(self, *args, **kwargs):
@@ -595,7 +595,7 @@ class Alosteric(Compound):
 
     def check_pdb(self):
        """
-       Check the alosteric file meets some standards
+       Check the allosteric file meets some standards
        """
        shutil.move(self.pdb, self.pdb + "~")
        pdb = open(self.pdb + "~", "r")
@@ -607,7 +607,7 @@ class Alosteric(Compound):
            line = line.split()
            try:
                line[3]
-               #Ensure the alosteric compound is labeled as ALO
+               #Ensure the allosteric compound is labeled as ALO
                if line[3] != "ALO":
                    replacing = True
                    new_line = new_line.replace(line[3], "ALO")
@@ -625,7 +625,7 @@ class Alosteric(Compound):
         """
         Check the force field is correct
         """
-        print('alosteric itp being checked')
+        print('allosteric itp being checked')
         shutil.move(self.itp, self.itp + "~")
         itp = open(self.itp + "~", "r")
         itp_out = open(self.itp, "w")

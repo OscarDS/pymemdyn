@@ -252,7 +252,7 @@ class LigandInit(BasicInit):
             {"src": "membrane_complex.complex.ligand.pdb"}
 
 
-# This recipe modifies the previous one taking an alosteric ligand into account
+# This recipe modifies the previous one taking an allosteric ligand into account
 class LigandAlostericInit(LigandInit):
     def __init__(self, **kwargs):
         super(LigandAlostericInit, self).__init__(**kwargs)
@@ -262,7 +262,7 @@ class LigandAlostericInit(LigandInit):
             {"gromacs": "genrestr",
              "options": {"src": "",
                          "tgt": "posre_alo.itp",
-                         "index": "alosteric_ha.ndx",
+                         "index": "allosteric_ha.ndx",
                          "forces": ["1000", "1000", "1000"]},
              "input": "2\n"}
 
@@ -270,14 +270,14 @@ class LigandAlostericInit(LigandInit):
         self.recipe["make_ndx_alo"] = \
             {"gromacs": "make_ndx",
              "options": {"src": "",
-                         "tgt": "alosteric_ha.ndx",
-                         "alosteric": True},
+                         "tgt": "allosteric_ha.ndx",
+                         "allosteric": True},
              "input": "! a H*\nq\n"}
 
         self.breaks["make_ndx_alo"] = \
-            {"src": "membrane_complex.complex.alosteric.pdb"}
+            {"src": "membrane_complex.complex.allosteric.pdb"}
         self.breaks["genrestr_alo"] = \
-            {"src": "membrane_complex.complex.alosteric.pdb"}
+            {"src": "membrane_complex.complex.allosteric.pdb"}
 
 
 ##########################################################################
