@@ -238,6 +238,7 @@ class Sugar_prep(object):
                     
                 # Sugar_prep.lpg2pmd(self, sugar)     
 
+
    
 
     def lpg2pmd(self, sugar, *args, **kwargs):
@@ -279,7 +280,7 @@ class Sugar_prep(object):
                 if "[ moleculetype ]" in line:
                     split = True    
                 if split == False: 
-                    if line[2:6] != "opls": 
+                    if "opls" not in line:
                         new_ff.write(line)
                     else:
                         tmp_ff.append(line.split())         
@@ -292,7 +293,7 @@ class Sugar_prep(object):
                         if sugar == self.allosteric and line.lstrip()[0:3] != "ALO":
                             line = line.replace(line.lstrip()[0:3], "ALO")
                         
-                    if line[9:13] == "opls":
+                    if "opls" in line:
                         tmp_itp.append(line.split())
                         if sugar == self.ligand and line[28:31] != "LIG":
                             line = line.replace(line[28:31], "LIG")
