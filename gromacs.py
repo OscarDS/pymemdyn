@@ -336,8 +336,8 @@ class Gromacs(object):
             if hasattr(self.membrane_complex.complex, "ligand"):
                 if self.membrane_complex.complex.ligand:
                     recipe += "Ligand"
-            if hasattr(self.membrane_complex.complex, "alosteric"):
-                if self.membrane_complex.complex.alosteric:
+            if hasattr(self.membrane_complex.complex, "allosteric"):
+                if self.membrane_complex.complex.allosteric:
                     recipe += "Alosteric"
 
         recipe += stage  # This kwarg carries the proper recipe:

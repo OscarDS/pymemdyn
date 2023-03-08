@@ -1,5 +1,6 @@
 import os
 import shutil
+from utils import create_itp
 
 
 class ProteinComplex(object):
@@ -18,8 +19,8 @@ class ProteinComplex(object):
             self.setIons(kwargs["ions"])
         if "cho" in kwargs.keys():
             self.setCho(kwargs["cho"])
-        if "alosteric" in kwargs.keys():
-            self.setAlosteric(kwargs["alosteric"])
+        if "allosteric" in kwargs.keys():
+            self.setAlosteric(kwargs["allosteric"])
 
     def setMonomer(self, value):
         """
@@ -73,12 +74,12 @@ class ProteinComplex(object):
 
     def setAlosteric(self, value):
         """
-        Sets the alosteric object
+        Sets the allosteric object
         """
-        self.alosteric = value
+        self.allosteric = value
 
     def getAlosteric(self):
-        return self.alosteric
+        return self.allosteric
     property(getAlosteric, setAlosteric)
 
     def set_nanom(self):
@@ -202,23 +203,43 @@ class Oligomer(Monomer):
 
 class Sugar_prep(object):
     def __init__(self, *args, **kwargs):
-        sugars = []
+        print('initialization of Sugar_prep started')
         if self.ligand:
-            sugars.append(self.ligand)
-        if self.alosteric:
-            sugars.append(self.alosteric)
-            
-        for sugar in sugars:
-            if os.path.exists(sugar + ".ff") == True:
-                pass # all files exist, so no files need to be generated
+            if os.path.exists(self.ligand + ".ff") == True:
+                pass
             else:
-                if os.path.exists(sugar + ".itp") == False:
-                    print("no .ff and .itp")
+                if os.path.exists(self.ligand + ".itp") == False:
+                    create_itp(self.ligand + ".pdb", 
+                            self.ligpargen_ligand_charge, 
+                            self.ligpargen_ligand_nrOfOptimizations
+                            )
+            Sugar_prep.lpg2pmd(self, self.ligand)
                 
-                    
-                
-                Sugar_prep.lpg2pmd(self, sugar)     
+        if self.allosteric:
+            if os.path.exists(self.allosteric + ".ff") == True:
+                pass
+            else:
+                if os.path.exists(self.allosteric + ".itp") == False:
+                    create_itp(self.allosteric + ".pdb", 
+                            self.ligpargen_allosteric_charge, 
+                            self.ligpargen_allosteric_nrOfOptimizations
+                            )
+            Sugar_prep.lpg2pmd(self, self.allosteric)
 
+        # for sugar in sugars:
+        #     if os.path.exists(sugar + ".ff") == True:
+        #         pass # all files exist, so no files need to be generated
+        #     else:
+        #         if os.path.exists(sugar + ".itp") == False:
+        #             # print('no .itp found, it will be generated for '+str(sugar))
+        #             # print('current workdir= '+str(os.getcwd()))
+        #             create_itp(sugar + ".pdb", 0, 3)
+                    
+                    
+                # Sugar_prep.lpg2pmd(self, sugar)     
+
+
+   
 
     def lpg2pmd(self, sugar, *args, **kwargs):
         """
@@ -247,10 +268,15 @@ class Sugar_prep(object):
             tmp_itp = []
     
             for line in lines_itp:
-                if sugar == self.ligand:
-                    line = line.replace("opls_", "oplsl")
-                if sugar == self.alosteric:
-                    line = line.replace("opls_", "oplsa")                
+                if "[ defaults ]" in line:
+                    # find location of defaults content
+                    loc_content_of_defaults = lines_itp.index(line) + 2
+                    # also remove content
+                    lines_itp.pop(loc_content_of_defaults)
+                    # now also do nothing else on this line
+                    continue
+                if sugar == self.allosteric:
+                    line = line.replace("opls_8", "opls_a")                
                 if "[ moleculetype ]" in line:
                     split = True    
                 if split == False: 
@@ -261,17 +287,17 @@ class Sugar_prep(object):
                         
                 if split == True:
                     count += 1
-                    if count == 2:
-                        if sugar == self.ligand and line[0:3] != "LIG":
-                            line = line.replace(line[0:3], "LIG")
-                        if sugar == self.alosteric and line[0:3] != "ALO":
-                            line = line.replace(line[0:3], "ALO")
+                    if count == 2:# Added lstrip() to not take starting whitespace into account
+                        if sugar == self.ligand and line.lstrip()[0:3] != "LIG": 
+                            line = line.replace(line.lstrip()[0:3], "LIG")
+                        if sugar == self.allosteric and line.lstrip()[0:3] != "ALO":
+                            line = line.replace(line.lstrip()[0:3], "ALO")
                         
                     if "opls" in line:
                         tmp_itp.append(line.split())
                         if sugar == self.ligand and line[28:31] != "LIG":
                             line = line.replace(line[28:31], "LIG")
-                        if sugar == self.alosteric and line[28:31] != "ALO":
+                        if sugar == self.allosteric and line[28:31] != "ALO":
                             line = line.replace(line[28:31], "ALO")
     
                     new_itp.write(line)
@@ -287,7 +313,7 @@ class Sugar_prep(object):
                 if line[0:4] == "ATOM":
                     if sugar == self.ligand and line[17:20] != "LIG":
                         line = line.replace(line[17:20], "LIG")
-                    if sugar == self.alosteric and line[17:20] != "ALO":
+                    if sugar == self.allosteric and line[17:20] != "ALO":
                         line = line.replace(line[17:20], "ALO")
                         
                 new_pdb.write(line)
@@ -339,8 +365,8 @@ class Ligand(Compound):
         for line in open(self.itp, "r"):
             if "[ atoms ]" in line:
                 atoms_def = True
-            if "[ bonds ]" in line:
-                atoms_def = False
+            if "[ bonds ]" in line: # Assuming here that '[ bonds ]' immediately 
+                atoms_def = False   # follows '[ atoms ]'.
             if atoms_def and not line.startswith(";"):
                 data = line.split()
                 if len(data) > 6:
@@ -514,7 +540,7 @@ class Cholesterol(Compound):
        replacing = False
        for line in pdb:
            new_line = line
-           if len(line.split()) > 2:
+           if len(line.split()) > 3:
                #Ensure the cholesterol is labeled as CHO
                if line.split()[3] != "CHO":
                    replacing = True
@@ -533,7 +559,7 @@ class Cholesterol(Compound):
        """
        cho_count = 0
        for line in open(self.pdb, "r"):
-           if len(line.split()) > 2:
+           if len(line.split()) > 3:
                if line.split()[3] in ["CHO", "CLR"]:
                    cho_count += 1
        return cho_count / 74 #Each CHO has 74 atoms
@@ -555,7 +581,7 @@ class Cholesterol(Compound):
 
 class Alosteric(Compound):
     """
-    This is a compound that goes as a ligand but it's placed in an alosteric
+    This is a compound that goes as a ligand but it's placed in an allosteric
     site rather than an orthosteric one.
     """
     def __init__(self, *args, **kwargs):
@@ -572,7 +598,7 @@ class Alosteric(Compound):
 
     def check_pdb(self):
        """
-       Check the alosteric file meets some standards
+       Check the allosteric file meets some standards
        """
        shutil.move(self.pdb, self.pdb + "~")
        pdb = open(self.pdb + "~", "r")
@@ -584,7 +610,7 @@ class Alosteric(Compound):
            line = line.split()
            try:
                line[3]
-               #Ensure the alosteric compound is labeled as ALO
+               #Ensure the allosteric compound is labeled as ALO
                if line[3] != "ALO":
                    replacing = True
                    new_line = new_line.replace(line[3], "ALO")
@@ -602,6 +628,7 @@ class Alosteric(Compound):
         """
         Check the force field is correct
         """
+        print('allosteric itp being checked')
         shutil.move(self.itp, self.itp + "~")
         itp = open(self.itp + "~", "r")
         itp_out = open(self.itp, "w")

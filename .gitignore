@@ -3,3 +3,7 @@
 *.aux
 *.out
 *.idea
+*~
+*.swp
+*test*
+.vscode*

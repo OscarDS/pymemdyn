@@ -4,6 +4,13 @@ from string import Template
 
 import bw4posres
 
+try:
+    import ligpargen.ligpargen as ligpar
+except:
+    print("""!! WARNING !! : No installation of ligpargen was found. 
+          itp files for ligands and/or allosterics cannot be automatically
+          generated and must be provided manually.""")
+
 
 def clean_pdb(src = [], tgt = []):
     """
@@ -55,7 +62,7 @@ def concat(**kwargs):
     """
     Make a whole pdb file with all the pdb provided
     """
-    for compound_class in ["ligand", "ions", "cho", "alosteric", "waters"]:
+    for compound_class in ["ligand", "ions", "cho", "allosteric", "waters"]:
         # Does the complex carry the group?
         if hasattr(kwargs["tgt"], compound_class):
             if getattr(kwargs["tgt"], compound_class):
@@ -124,9 +131,9 @@ def make_ffoplsaanb(complex = None):
     if hasattr(complex, "ligand"):
         if hasattr(complex.ligand, "force_field"):
             to_concat.append(complex.ligand.force_field)
-    if hasattr(complex, "alosteric"):
-        if hasattr(complex.alosteric, "force_field"):
-            to_concat.append(complex.alosteric.force_field)
+    if hasattr(complex, "allosteric"):
+        if hasattr(complex.allosteric, "force_field"):
+            to_concat.append(complex.allosteric.force_field)
     if hasattr(complex, "cho"):
         to_concat.append(cho)
 
@@ -152,7 +159,7 @@ def make_topol(template_dir = \
     protein = pc1 = pc2 = pc3 = pc4 = pc5 = pc6 = pc7 = pc8 = pc9 = pc10 = 0 
     # if extending the number of proteins beyond 10, add pc's here (e.g. pc11)
     bw = oligomer = lig = sod = cho = alo = hoh = 0
-    lig_name = ions_name = cho_name = alosteric_name = hoh_name = ""
+    lig_name = ions_name = cho_name = allosteric_name = hoh_name = ""
     if hasattr(complex, "monomer"):
         protein = 1
         bw = 1
@@ -171,10 +178,10 @@ def make_topol(template_dir = \
         if hasattr(complex.cho, "_n_cho"):
             cho = complex.cho._n_cho
             cho_name = complex.cho.itp
-    if hasattr(complex, "alosteric"):
-        if complex.alosteric:
+    if hasattr(complex, "allosteric"):
+        if complex.allosteric:
             alo = 1
-            alosteric_name = complex.alosteric.itp
+            allosteric_name = complex.allosteric.itp
     if hasattr(complex, "waters"):
         if hasattr(complex.waters, "_n_wats"):
             hoh = int(complex.waters._n_wats)
@@ -215,7 +222,7 @@ def make_topol(template_dir = \
                  "ifdef_name": "POSRESCHO",
                  "posre_name": "posre_cho.itp"},
 
-             "alo": {"itp_name": alosteric_name,
+             "alo": {"itp_name": allosteric_name,
                  "ifdef_name": "POSRESALO",
                  "posre_name": "posre_alo.itp"},
 
@@ -308,7 +315,7 @@ def make_topol(template_dir = \
                            lig = comps["lig"]["line"],
                            sod = comps["sod"]["line"],
                            cho = comps["cho"]["line"],
-                           alosteric = comps["alo"]["line"],
+                           allosteric = comps["alo"]["line"],
                            hoh = comps["hoh"]["line"],
                            itp_includes = "\n".join(itp_include)))
     tgt.close()
@@ -328,3 +335,38 @@ def tar_out(src_dir = [], tgt = []):
         t_f.add(to_tar)
     t_f.close()
     os.chdir(base_dir)
+
+def create_itp(pdbfile: str, charge: int, numberOfOptimizations: int) -> None:
+    """Call ligpargen to create gromacs itp file and corresponding openmm
+    pdb file. Note that original pdb file will be replaced by opnemm pdb
+    file.
+
+    parameters:
+    - pdbfile: string containing local path to pdb of molecule. In commandline -i.
+    - charge: interger charge of molecule. In commandline -c.
+    - numberOfOptimizations: number of optimizations done by ligpargen. In cmdline -o.
+
+    returns:
+    - None
+
+    writes itp file and new pdf file to current dir. old pdb is saved in dir ligpargenInput. 
+    unneccessary ligpargen output is saved in dir ligpargenOutput.
+    """
+    dot = pdbfile.find(".")
+    print(pdbfile)
+    name = pdbfile[:dot]
+    workdir = 'ligpargenOutput_' + name
+    inputdir = 'ligpargenInput_' + name
+    mol = ligpar.LigParGen(ifile=pdbfile, molname=name, workdir=workdir, 
+                           resname='LIG', charge=charge, 
+                           numberOfOptimizations=numberOfOptimizations,
+                           debug=True)
+    mol.writeAllOuputs()
+
+    # Only save necessary files
+    os.mkdir(inputdir)
+    os.rename(pdbfile, inputdir+'/'+pdbfile)
+    os.rename(workdir+'/'+name+'.gmx.itp', name+'.itp')
+    os.rename(workdir+'/'+name+'.openmm.pdb', name+'.pdb')
+
+    return
