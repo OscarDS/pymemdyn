@@ -20,7 +20,13 @@ access to the code. After request processing from us you will be
 given access to the free repository.  
 
 ## Dependencies
+**GROMACS**  
+Pymemdyn is dependent on GROMACS. Download GROMACS [here](https://manual.gromacs.org/current/download.html). Instructions for installation are [here](https://manual.gromacs.org/current/install-guide/index.html).
+
+**LigParGen**  
 In order to automatically generate .itp files for ligands and allosterics, the program ligpargen is used. Install using their instructions: <https://github.com/Isra3l/ligpargen>.
+Do not forget to activate the conda environment in which you installed ligpargen (`conda install py37` if you followed the instructions) before running pymemdyn. In case you are using a bash script, this should be done inside the script. 
+See also "ligpargen_example" in the folder examples.
 
 Testing was done using LigParGen v2.1 using BOSS5.0.
 
