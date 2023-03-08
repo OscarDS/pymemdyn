@@ -310,11 +310,17 @@ class Sugar_prep(object):
                         new_ff.write("\t".join(j) + "\n")
     
             for line in lines_pdb:
-                if line[0:4] == "ATOM":
-                    if sugar == self.ligand and line[17:20] != "LIG":
-                        line = line.replace(line[17:20], "LIG")
-                    if sugar == self.allosteric and line[17:20] != "ALO":
-                        line = line.replace(line[17:20], "ALO")
+                cols = line.split()
+                if cols[0] == "HETATM":     # Maestro does this.
+                    line = line.replace("HETATM", "ATOM  ")
+                    cols[0] = "ATOM  "
+                if "ATOM" in cols[0]: # could be either "ATOM" or "ATOM  " now.
+                    if sugar == self.ligand and cols[3] != "LIG":
+                        line = line.replace(cols[3], "LIG")
+                    if sugar == self.allosteric and cols[3] != "ALO":
+                        line = line.replace(cols[3], "ALO")
+                if "REMARK" in cols[0]:
+                    continue # Do not write remarks in new pdb file
                         
                 new_pdb.write(line)
             
