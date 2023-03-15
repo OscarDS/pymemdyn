@@ -649,7 +649,9 @@ class BasicCollectResults(object):
                                                      "hexagon.pdb",
                                                      "protein.itp",
                                                      "lig.itp",
-                                                     "ions_local.itp",
+                                                     "alo.itp"
+                                                     "ions.itp",
+                                                     "spc.itp"
                                                      "cho.itp",
                                                      "hoh.itp",
                                                      "index.ndx", 

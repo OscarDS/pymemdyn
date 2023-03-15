@@ -213,6 +213,8 @@ class Sugar_prep(object):
                             self.ligpargen_ligand_charge, 
                             self.ligpargen_ligand_nrOfOptimizations
                             )
+            if self.ligand != 'lig':
+                shutil.copyfile(self.ligand + ".itp", 'lig.itp')
             Sugar_prep.lpg2pmd(self, self.ligand)
                 
         if self.allosteric:
@@ -224,19 +226,9 @@ class Sugar_prep(object):
                             self.ligpargen_allosteric_charge, 
                             self.ligpargen_allosteric_nrOfOptimizations
                             )
+            if self.ligand != 'alo':
+                shutil.copyfile(self.ligand + ".itp", 'alo.itp')                    
             Sugar_prep.lpg2pmd(self, self.allosteric)
-
-        # for sugar in sugars:
-        #     if os.path.exists(sugar + ".ff") == True:
-        #         pass # all files exist, so no files need to be generated
-        #     else:
-        #         if os.path.exists(sugar + ".itp") == False:
-        #             # print('no .itp found, it will be generated for '+str(sugar))
-        #             # print('current workdir= '+str(os.getcwd()))
-        #             create_itp(sugar + ".pdb", 0, 3)
-                    
-                    
-                # Sugar_prep.lpg2pmd(self, sugar)     
 
 
    
