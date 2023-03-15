@@ -213,9 +213,12 @@ class Sugar_prep(object):
                             self.ligpargen_ligand_charge, 
                             self.ligpargen_ligand_nrOfOptimizations
                             )
+            Sugar_prep.lpg2pmd(self, self.ligand)
             if self.ligand != 'lig':
                 shutil.copyfile(self.ligand + ".itp", 'lig.itp')
-            Sugar_prep.lpg2pmd(self, self.ligand)
+                shutil.copyfile(self.ligand + ".pdb", 'lig.pdb')
+                shutil.copyfile(self.ligand + ".ff", 'lig.ff')
+                self.ligand = 'lig'
                 
         if self.allosteric:
             if os.path.exists(self.allosteric + ".ff") == True:
@@ -226,9 +229,12 @@ class Sugar_prep(object):
                             self.ligpargen_allosteric_charge, 
                             self.ligpargen_allosteric_nrOfOptimizations
                             )
-            if self.ligand != 'alo':
-                shutil.copyfile(self.ligand + ".itp", 'alo.itp')                    
             Sugar_prep.lpg2pmd(self, self.allosteric)
+            if self.allosteric != 'alo':
+                shutil.copyfile(self.allosteric + ".itp", 'alo.itp')        
+                shutil.copyfile(self.allosteric + ".pdb", 'alo.pdb')
+                shutil.copyfile(self.allosteric + ".ff", 'alo.ff')    
+                self.allosteric = 'alo'
 
 
    
