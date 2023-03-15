@@ -631,7 +631,9 @@ class BasicCollectResults(object):
                                                "repo_files": ["popc.itp",
                                                               "README.md",
                                                               "prod.mdp",
-                                                              "load_gpcr.pml"],
+                                                              "load_gpcr.pml",
+                                                              "ions.itp",
+                                                              "spc.itp"],
                                                "tgt_dir": "finalOutput"}},
 
                        "clean_topol":
@@ -650,8 +652,6 @@ class BasicCollectResults(object):
                                                      "protein.itp",
                                                      "lig.itp",
                                                      "alo.itp"
-                                                     "ions.itp",
-                                                     "spc.itp"
                                                      "cho.itp",
                                                      "hoh.itp",
                                                      "index.ndx", 
