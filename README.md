@@ -1,4 +1,4 @@
-PyMemDyn Version 1.6
+PyMemDyn Version 1.6.1
 ================================================================================
 
 PyMemDyn is  a standalone *python*  package to setup  membrane molecular
@@ -207,9 +207,15 @@ include input file generation/processing and data processing.
 
 Changelog
 --------------------------------------------------------------------------------
+### Changes from version 1.6 to 1.6.1
+- March, 2023
+
+Added support for Maestro ligand and allosteric .pdb files. (#15)  
+Fixed bug in prod.mdp for gromacs (#16)  
+Added .itp files required by topol.top to folder finalOutput so gromp command can be run from there (#17)  
 
 ### Changes from version 1.5.2 to 1.6
-- t.b.d, 2023
+- March 8, 2023
 
 Added feature for automatic generation of itp file from pdb file (ligand and allosteric) with ligpargen.
 
