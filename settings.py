@@ -1,3 +1,7 @@
+"""This module handles the local settings for pymemdyn on your machine. 
+The settings are mostly paths and run settings.
+"""
+
 import os
 
 # This is the folder where pymemdyn git repo has been deployed,

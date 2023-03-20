@@ -1,3 +1,14 @@
+"""This module describes the commandline or python commands for all the 
+phases of pymemdyn. It consists of: 
+
+    - Init
+    - Minimization
+    - Equilibration
+    - Relaxation
+    - Collecting results
+    
+"""
+
 import os
 
 

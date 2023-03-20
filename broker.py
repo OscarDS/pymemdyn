@@ -1,7 +1,9 @@
-# This is a lame broker (or message dispatcher). When Gromacs enters a run, 
-# it should choose a broker from here and dispatch messages through it.
-#
-# Depending on the broker, the messages may be just printed or something else
+"""
+This is a lame broker (or message dispatcher). When Gromacs enters a run, 
+it should choose a broker from here and dispatch messages through it.
+
+Depending on the broker, the messages may be just printed or something else
+"""
 
 class Printing(object):
     def __init__(self):
