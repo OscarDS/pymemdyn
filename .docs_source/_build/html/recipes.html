@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recipes module &mdash; pymemdyn 1.6.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Gromacs module" href="gromacs.html" />
+    <link rel="prev" title="Queue module" href="queue.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pymemdyn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pymemdyn.html">Pymemdyn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protein.html">Protein module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="membrane.html">Membrane module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bw4posres.html">Bw4posres module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="complex.html">Complex module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queue.html">Queue module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Recipes module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.BasicInit"><code class="docutils literal notranslate"><span class="pre">BasicInit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.LigandInit"><code class="docutils literal notranslate"><span class="pre">LigandInit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.LigandAlostericInit"><code class="docutils literal notranslate"><span class="pre">LigandAlostericInit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.BasicMinimization"><code class="docutils literal notranslate"><span class="pre">BasicMinimization</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.LigandMinimization"><code class="docutils literal notranslate"><span class="pre">LigandMinimization</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.LigandAlostericMinimization"><code class="docutils literal notranslate"><span class="pre">LigandAlostericMinimization</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.BasicEquilibration"><code class="docutils literal notranslate"><span class="pre">BasicEquilibration</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.LigandEquilibration"><code class="docutils literal notranslate"><span class="pre">LigandEquilibration</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.LigandAlostericEquilibration"><code class="docutils literal notranslate"><span class="pre">LigandAlostericEquilibration</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.BasicRelax"><code class="docutils literal notranslate"><span class="pre">BasicRelax</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.LigandRelax"><code class="docutils literal notranslate"><span class="pre">LigandRelax</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.LigandAlostericRelax"><code class="docutils literal notranslate"><span class="pre">LigandAlostericRelax</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.BasicCARelax"><code class="docutils literal notranslate"><span class="pre">BasicCARelax</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.BasicBWRelax"><code class="docutils literal notranslate"><span class="pre">BasicBWRelax</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.BasicCollectResults"><code class="docutils literal notranslate"><span class="pre">BasicCollectResults</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.BasicCACollectResults"><code class="docutils literal notranslate"><span class="pre">BasicCACollectResults</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recipes.BasicBWCollectResults"><code class="docutils literal notranslate"><span class="pre">BasicBWCollectResults</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="gromacs.html">Gromacs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groerrors.html">Groerrors module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broker.html">Broker module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html">Settings module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymemdyn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">Recipes module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/recipes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-recipes">
+<span id="recipes-module"></span><h1>Recipes module<a class="headerlink" href="#module-recipes" title="Permalink to this heading"></a></h1>
+<p>This module describes the commandline or python commands for all the 
+phases of pymemdyn. It consists of:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Init</p></li>
+<li><p>Minimization</p></li>
+<li><p>Equilibration</p></li>
+<li><p>Relaxation</p></li>
+<li><p>Collecting results</p></li>
+</ul>
+</div></blockquote>
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.BasicInit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">BasicInit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.BasicInit" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.LigandInit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">LigandInit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.LigandInit" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.BasicInit" title="recipes.BasicInit"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicInit</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.LigandAlostericInit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">LigandAlostericInit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.LigandAlostericInit" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.LigandInit" title="recipes.LigandInit"><code class="xref py py-class docutils literal notranslate"><span class="pre">LigandInit</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.BasicMinimization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">BasicMinimization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.BasicMinimization" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.LigandMinimization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">LigandMinimization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.LigandMinimization" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.BasicMinimization" title="recipes.BasicMinimization"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMinimization</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.LigandAlostericMinimization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">LigandAlostericMinimization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.LigandAlostericMinimization" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.BasicMinimization" title="recipes.BasicMinimization"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicMinimization</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.BasicEquilibration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">BasicEquilibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.BasicEquilibration" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.LigandEquilibration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">LigandEquilibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.LigandEquilibration" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.BasicEquilibration" title="recipes.BasicEquilibration"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicEquilibration</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.LigandAlostericEquilibration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">LigandAlostericEquilibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.LigandAlostericEquilibration" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.LigandEquilibration" title="recipes.LigandEquilibration"><code class="xref py py-class docutils literal notranslate"><span class="pre">LigandEquilibration</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.BasicRelax">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">BasicRelax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.BasicRelax" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.LigandRelax">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">LigandRelax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.LigandRelax" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.BasicRelax" title="recipes.BasicRelax"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicRelax</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.LigandAlostericRelax">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">LigandAlostericRelax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.LigandAlostericRelax" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.LigandRelax" title="recipes.LigandRelax"><code class="xref py py-class docutils literal notranslate"><span class="pre">LigandRelax</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.BasicCARelax">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">BasicCARelax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.BasicCARelax" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.BasicBWRelax">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">BasicBWRelax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.BasicBWRelax" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.BasicCollectResults">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">BasicCollectResults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.BasicCollectResults" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.BasicCACollectResults">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">BasicCACollectResults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.BasicCACollectResults" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.BasicCollectResults" title="recipes.BasicCollectResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicCollectResults</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="recipes.BasicBWCollectResults">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">recipes.</span></span><span class="sig-name descname"><span class="pre">BasicBWCollectResults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#recipes.BasicBWCollectResults" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipes.BasicCollectResults" title="recipes.BasicCollectResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicCollectResults</span></code></a></p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="queue.html" class="btn btn-neutral float-left" title="Queue module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gromacs.html" class="btn btn-neutral float-right" title="Gromacs module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, H. Gutierrez de Teran, X. Bello, M. Esguerra, R. L. van den Broek, R.V. Küpper.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

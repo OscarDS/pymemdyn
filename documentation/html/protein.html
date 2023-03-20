@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Protein module &mdash; pymemdyn 1.6.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Membrane module" href="membrane.html" />
+    <link rel="prev" title="Pymemdyn module" href="pymemdyn.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pymemdyn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pymemdyn.html">Pymemdyn module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Protein module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#protein.ProteinComplex"><code class="docutils literal notranslate"><span class="pre">ProteinComplex</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#protein.ProteinComplex.setMonomer"><code class="docutils literal notranslate"><span class="pre">ProteinComplex.setMonomer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.ProteinComplex.getMonomer"><code class="docutils literal notranslate"><span class="pre">ProteinComplex.getMonomer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.ProteinComplex.setLigand"><code class="docutils literal notranslate"><span class="pre">ProteinComplex.setLigand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.ProteinComplex.getLigand"><code class="docutils literal notranslate"><span class="pre">ProteinComplex.getLigand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.ProteinComplex.setWaters"><code class="docutils literal notranslate"><span class="pre">ProteinComplex.setWaters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.ProteinComplex.getWaters"><code class="docutils literal notranslate"><span class="pre">ProteinComplex.getWaters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.ProteinComplex.setIons"><code class="docutils literal notranslate"><span class="pre">ProteinComplex.setIons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.ProteinComplex.getIons"><code class="docutils literal notranslate"><span class="pre">ProteinComplex.getIons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.ProteinComplex.setCho"><code class="docutils literal notranslate"><span class="pre">ProteinComplex.setCho()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.ProteinComplex.getCho"><code class="docutils literal notranslate"><span class="pre">ProteinComplex.getCho()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.ProteinComplex.setAlosteric"><code class="docutils literal notranslate"><span class="pre">ProteinComplex.setAlosteric()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.ProteinComplex.getAlosteric"><code class="docutils literal notranslate"><span class="pre">ProteinComplex.getAlosteric()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.ProteinComplex.set_nanom"><code class="docutils literal notranslate"><span class="pre">ProteinComplex.set_nanom()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#protein.Protein"><code class="docutils literal notranslate"><span class="pre">Protein</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Protein.check_number_of_chains"><code class="docutils literal notranslate"><span class="pre">Protein.check_number_of_chains()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#protein.Monomer"><code class="docutils literal notranslate"><span class="pre">Monomer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Monomer.delete_chain"><code class="docutils literal notranslate"><span class="pre">Monomer.delete_chain()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#protein.Oligomer"><code class="docutils literal notranslate"><span class="pre">Oligomer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Oligomer.delete_chain"><code class="docutils literal notranslate"><span class="pre">Oligomer.delete_chain()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#protein.Sugar_prep"><code class="docutils literal notranslate"><span class="pre">Sugar_prep</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Sugar_prep.create_itp"><code class="docutils literal notranslate"><span class="pre">Sugar_prep.create_itp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Sugar_prep.lpg2pmd"><code class="docutils literal notranslate"><span class="pre">Sugar_prep.lpg2pmd()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#protein.Compound"><code class="docutils literal notranslate"><span class="pre">Compound</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Compound.check_files"><code class="docutils literal notranslate"><span class="pre">Compound.check_files()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#protein.Ligand"><code class="docutils literal notranslate"><span class="pre">Ligand</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Ligand.check_forces"><code class="docutils literal notranslate"><span class="pre">Ligand.check_forces()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#protein.CrystalWaters"><code class="docutils literal notranslate"><span class="pre">CrystalWaters</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#protein.CrystalWaters.setWaters"><code class="docutils literal notranslate"><span class="pre">CrystalWaters.setWaters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.CrystalWaters.getWaters"><code class="docutils literal notranslate"><span class="pre">CrystalWaters.getWaters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.CrystalWaters.number"><code class="docutils literal notranslate"><span class="pre">CrystalWaters.number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.CrystalWaters.count_waters"><code class="docutils literal notranslate"><span class="pre">CrystalWaters.count_waters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#protein.Ions"><code class="docutils literal notranslate"><span class="pre">Ions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Ions.setIons"><code class="docutils literal notranslate"><span class="pre">Ions.setIons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Ions.getIons"><code class="docutils literal notranslate"><span class="pre">Ions.getIons()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Ions.number"><code class="docutils literal notranslate"><span class="pre">Ions.number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Ions.count_ions"><code class="docutils literal notranslate"><span class="pre">Ions.count_ions()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#protein.Cholesterol"><code class="docutils literal notranslate"><span class="pre">Cholesterol</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Cholesterol.setCho"><code class="docutils literal notranslate"><span class="pre">Cholesterol.setCho()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Cholesterol.getCho"><code class="docutils literal notranslate"><span class="pre">Cholesterol.getCho()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Cholesterol.number"><code class="docutils literal notranslate"><span class="pre">Cholesterol.number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Cholesterol.check_pdb"><code class="docutils literal notranslate"><span class="pre">Cholesterol.check_pdb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Cholesterol.count_cho"><code class="docutils literal notranslate"><span class="pre">Cholesterol.count_cho()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#protein.Alosteric"><code class="docutils literal notranslate"><span class="pre">Alosteric</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Alosteric.check_pdb"><code class="docutils literal notranslate"><span class="pre">Alosteric.check_pdb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#protein.Alosteric.check_itp"><code class="docutils literal notranslate"><span class="pre">Alosteric.check_itp()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="membrane.html">Membrane module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bw4posres.html">Bw4posres module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="complex.html">Complex module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queue.html">Queue module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html">Recipes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gromacs.html">Gromacs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groerrors.html">Groerrors module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broker.html">Broker module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html">Settings module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymemdyn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">Protein module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/protein.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-protein">
+<span id="protein-module"></span><h1>Protein module<a class="headerlink" href="#module-protein" title="Permalink to this heading"></a></h1>
+<p>This module handles the protein and all submitted molecules around it.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="protein.ProteinComplex">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">protein.</span></span><span class="sig-name descname"><span class="pre">ProteinComplex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.ProteinComplex.setMonomer">
+<span class="sig-name descname"><span class="pre">setMonomer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex.setMonomer" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the monomer object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.ProteinComplex.getMonomer">
+<span class="sig-name descname"><span class="pre">getMonomer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex.getMonomer" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.ProteinComplex.setLigand">
+<span class="sig-name descname"><span class="pre">setLigand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex.setLigand" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the ligand object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.ProteinComplex.getLigand">
+<span class="sig-name descname"><span class="pre">getLigand</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex.getLigand" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.ProteinComplex.setWaters">
+<span class="sig-name descname"><span class="pre">setWaters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex.setWaters" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the crystal waters object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.ProteinComplex.getWaters">
+<span class="sig-name descname"><span class="pre">getWaters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex.getWaters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.ProteinComplex.setIons">
+<span class="sig-name descname"><span class="pre">setIons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex.setIons" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the ions object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.ProteinComplex.getIons">
+<span class="sig-name descname"><span class="pre">getIons</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex.getIons" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.ProteinComplex.setCho">
+<span class="sig-name descname"><span class="pre">setCho</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex.setCho" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the cholesterol object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.ProteinComplex.getCho">
+<span class="sig-name descname"><span class="pre">getCho</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex.getCho" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.ProteinComplex.setAlosteric">
+<span class="sig-name descname"><span class="pre">setAlosteric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex.setAlosteric" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the allosteric object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.ProteinComplex.getAlosteric">
+<span class="sig-name descname"><span class="pre">getAlosteric</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex.getAlosteric" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.ProteinComplex.set_nanom">
+<span class="sig-name descname"><span class="pre">set_nanom</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.ProteinComplex.set_nanom" title="Permalink to this definition"></a></dt>
+<dd><p>Convert dimension measurements to nanometers for GROMACS</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="protein.Protein">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">protein.</span></span><span class="sig-name descname"><span class="pre">Protein</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.Protein" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Protein.check_number_of_chains">
+<span class="sig-name descname"><span class="pre">check_number_of_chains</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.Protein.check_number_of_chains" title="Permalink to this definition"></a></dt>
+<dd><p>Determine if a PDB is a Monomer or a Dimer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="protein.Monomer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">protein.</span></span><span class="sig-name descname"><span class="pre">Monomer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.Monomer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Monomer.delete_chain">
+<span class="sig-name descname"><span class="pre">delete_chain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.Monomer.delete_chain" title="Permalink to this definition"></a></dt>
+<dd><p>PDBs which have a chain column mess up with pdb2gmx, creating
+an unsuitable protein.itp file by naming the protein ie “Protein_A”.
+Here we remove the chain value</p>
+<p>According to <a class="reference external" href="http://www.wwpdb.org/documentation/format33/sect9.html">http://www.wwpdb.org/documentation/format33/sect9.html</a>,
+the chain value is in column 22</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="protein.Oligomer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">protein.</span></span><span class="sig-name descname"><span class="pre">Oligomer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.Oligomer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#protein.Monomer" title="protein.Monomer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Monomer</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Oligomer.delete_chain">
+<span class="sig-name descname"><span class="pre">delete_chain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.Oligomer.delete_chain" title="Permalink to this definition"></a></dt>
+<dd><p>Overload the delete_chain method from Monomer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="protein.Sugar_prep">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">protein.</span></span><span class="sig-name descname"><span class="pre">Sugar_prep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.Sugar_prep" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Sugar_prep.create_itp">
+<span class="sig-name descname"><span class="pre">create_itp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdbfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numberOfOptimizations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#protein.Sugar_prep.create_itp" title="Permalink to this definition"></a></dt>
+<dd><p>Call ligpargen to create gromacs itp file and corresponding openmm
+pdb file. Note that original pdb file will be replaced by opnemm pdb
+file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pdbfile</strong> – string containing local path to pdb of molecule. In commandline -i.</p></li>
+<li><p><strong>charge</strong> – interger charge of molecule. In commandline -c.</p></li>
+<li><p><strong>numberOfOptimizations</strong> – number of optimizations done by ligpargen. In cmdline -o.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p>Writes itp file and new pdf file to current dir. old pdb is saved in dir ligpargenInput. 
+unneccessary ligpargen output is saved in dir ligpargenOutput.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Sugar_prep.lpg2pmd">
+<span class="sig-name descname"><span class="pre">lpg2pmd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sugar</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.Sugar_prep.lpg2pmd" title="Permalink to this definition"></a></dt>
+<dd><p>Converts LigParGen structure files to PyMemDyn input files.</p>
+<p>Original files are stored as something_backup.pdb or something_backup.itp.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="protein.Compound">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">protein.</span></span><span class="sig-name descname"><span class="pre">Compound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.Compound" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is a super-class to provide common functions to added compounds</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Compound.check_files">
+<span class="sig-name descname"><span class="pre">check_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.Compound.check_files" title="Permalink to this definition"></a></dt>
+<dd><p>Check if files passed as <a href="#id1"><span class="problematic" id="id2">*</span></a>args exist</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="protein.Ligand">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">protein.</span></span><span class="sig-name descname"><span class="pre">Ligand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.Ligand" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#protein.Compound" title="protein.Compound"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compound</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Ligand.check_forces">
+<span class="sig-name descname"><span class="pre">check_forces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.Ligand.check_forces" title="Permalink to this definition"></a></dt>
+<dd><p>A force field must give a set of forces which match every atom in
+the pdb file. This showed particularly important to the ligands, as they
+may vary along a very broad range of atoms</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="protein.CrystalWaters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">protein.</span></span><span class="sig-name descname"><span class="pre">CrystalWaters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.CrystalWaters" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#protein.Compound" title="protein.Compound"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compound</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.CrystalWaters.setWaters">
+<span class="sig-name descname"><span class="pre">setWaters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.CrystalWaters.setWaters" title="Permalink to this definition"></a></dt>
+<dd><p>Set crystal waters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.CrystalWaters.getWaters">
+<span class="sig-name descname"><span class="pre">getWaters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.CrystalWaters.getWaters" title="Permalink to this definition"></a></dt>
+<dd><p>Get the crystal waters</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="protein.CrystalWaters.number">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#protein.CrystalWaters.number" title="Permalink to this definition"></a></dt>
+<dd><p>Get the crystal waters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.CrystalWaters.count_waters">
+<span class="sig-name descname"><span class="pre">count_waters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.CrystalWaters.count_waters" title="Permalink to this definition"></a></dt>
+<dd><p>Count and set the number of crystal waters in the pdb</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="protein.Ions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">protein.</span></span><span class="sig-name descname"><span class="pre">Ions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.Ions" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#protein.Compound" title="protein.Compound"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compound</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Ions.setIons">
+<span class="sig-name descname"><span class="pre">setIons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.Ions.setIons" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the crystal ions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Ions.getIons">
+<span class="sig-name descname"><span class="pre">getIons</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.Ions.getIons" title="Permalink to this definition"></a></dt>
+<dd><p>Get the crystal ions</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="protein.Ions.number">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#protein.Ions.number" title="Permalink to this definition"></a></dt>
+<dd><p>Get the crystal ions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Ions.count_ions">
+<span class="sig-name descname"><span class="pre">count_ions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.Ions.count_ions" title="Permalink to this definition"></a></dt>
+<dd><p>Count and set the number of ions in the pdb</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="protein.Cholesterol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">protein.</span></span><span class="sig-name descname"><span class="pre">Cholesterol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.Cholesterol" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#protein.Compound" title="protein.Compound"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compound</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Cholesterol.setCho">
+<span class="sig-name descname"><span class="pre">setCho</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.Cholesterol.setCho" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the crystal cholesterol</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Cholesterol.getCho">
+<span class="sig-name descname"><span class="pre">getCho</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.Cholesterol.getCho" title="Permalink to this definition"></a></dt>
+<dd><p>Get the crystal cholesterols</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="protein.Cholesterol.number">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#protein.Cholesterol.number" title="Permalink to this definition"></a></dt>
+<dd><p>Get the crystal cholesterols</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Cholesterol.check_pdb">
+<span class="sig-name descname"><span class="pre">check_pdb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.Cholesterol.check_pdb" title="Permalink to this definition"></a></dt>
+<dd><p>Check the cholesterol file meets some standards</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Cholesterol.count_cho">
+<span class="sig-name descname"><span class="pre">count_cho</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.Cholesterol.count_cho" title="Permalink to this definition"></a></dt>
+<dd><p>Count and set the number of cho in the pdb</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="protein.Alosteric">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">protein.</span></span><span class="sig-name descname"><span class="pre">Alosteric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#protein.Alosteric" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#protein.Compound" title="protein.Compound"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compound</span></code></a></p>
+<p>This is a compound that goes as a ligand but it’s placed in an allosteric
+site rather than an orthosteric one.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Alosteric.check_pdb">
+<span class="sig-name descname"><span class="pre">check_pdb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.Alosteric.check_pdb" title="Permalink to this definition"></a></dt>
+<dd><p>Check the allosteric file meets some standards</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="protein.Alosteric.check_itp">
+<span class="sig-name descname"><span class="pre">check_itp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#protein.Alosteric.check_itp" title="Permalink to this definition"></a></dt>
+<dd><p>Check the force field is correct</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pymemdyn.html" class="btn btn-neutral float-left" title="Pymemdyn module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="membrane.html" class="btn btn-neutral float-right" title="Membrane module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, H. Gutierrez de Teran, X. Bello, M. Esguerra, R. L. van den Broek, R.V. Küpper.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

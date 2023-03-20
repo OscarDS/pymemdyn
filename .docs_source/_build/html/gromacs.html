@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gromacs module &mdash; pymemdyn 1.6.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Groerrors module" href="groerrors.html" />
+    <link rel="prev" title="Recipes module" href="recipes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pymemdyn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pymemdyn.html">Pymemdyn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protein.html">Protein module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="membrane.html">Membrane module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bw4posres.html">Bw4posres module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="complex.html">Complex module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queue.html">Queue module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html">Recipes module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Gromacs module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gromacs.Gromacs"><code class="docutils literal notranslate"><span class="pre">Gromacs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.set_membrane_complex"><code class="docutils literal notranslate"><span class="pre">Gromacs.set_membrane_complex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.get_membrane_complex"><code class="docutils literal notranslate"><span class="pre">Gromacs.get_membrane_complex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.membrane_complex"><code class="docutils literal notranslate"><span class="pre">Gromacs.membrane_complex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.count_lipids"><code class="docutils literal notranslate"><span class="pre">Gromacs.count_lipids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.get_charge"><code class="docutils literal notranslate"><span class="pre">Gromacs.get_charge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.get_ndx_groups"><code class="docutils literal notranslate"><span class="pre">Gromacs.get_ndx_groups()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.get_ndx_sol"><code class="docutils literal notranslate"><span class="pre">Gromacs.get_ndx_sol()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.make_ndx"><code class="docutils literal notranslate"><span class="pre">Gromacs.make_ndx()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.make_topol_lipids"><code class="docutils literal notranslate"><span class="pre">Gromacs.make_topol_lipids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.manual_log"><code class="docutils literal notranslate"><span class="pre">Gromacs.manual_log()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.relax"><code class="docutils literal notranslate"><span class="pre">Gromacs.relax()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.run_recipe"><code class="docutils literal notranslate"><span class="pre">Gromacs.run_recipe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.select_recipe"><code class="docutils literal notranslate"><span class="pre">Gromacs.select_recipe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.set_box_sizes"><code class="docutils literal notranslate"><span class="pre">Gromacs.set_box_sizes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.set_chains"><code class="docutils literal notranslate"><span class="pre">Gromacs.set_chains()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.set_grompp"><code class="docutils literal notranslate"><span class="pre">Gromacs.set_grompp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.set_itp"><code class="docutils literal notranslate"><span class="pre">Gromacs.set_itp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.set_options"><code class="docutils literal notranslate"><span class="pre">Gromacs.set_options()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.set_popc"><code class="docutils literal notranslate"><span class="pre">Gromacs.set_popc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.set_protein_height"><code class="docutils literal notranslate"><span class="pre">Gromacs.set_protein_height()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.set_protein_size"><code class="docutils literal notranslate"><span class="pre">Gromacs.set_protein_size()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.set_stage_init"><code class="docutils literal notranslate"><span class="pre">Gromacs.set_stage_init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.set_steep"><code class="docutils literal notranslate"><span class="pre">Gromacs.set_steep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Gromacs.set_water"><code class="docutils literal notranslate"><span class="pre">Gromacs.set_water()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gromacs.Wrapper"><code class="docutils literal notranslate"><span class="pre">Wrapper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Wrapper.generate_command"><code class="docutils literal notranslate"><span class="pre">Wrapper.generate_command()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gromacs.Wrapper.run_command"><code class="docutils literal notranslate"><span class="pre">Wrapper.run_command()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="groerrors.html">Groerrors module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="broker.html">Broker module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html">Settings module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymemdyn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">Gromacs module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/gromacs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gromacs">
+<span id="gromacs-module"></span><h1>Gromacs module<a class="headerlink" href="#module-gromacs" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="gromacs.Gromacs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gromacs.</span></span><span class="sig-name descname"><span class="pre">Gromacs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.set_membrane_complex">
+<span class="sig-name descname"><span class="pre">set_membrane_complex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.set_membrane_complex" title="Permalink to this definition"></a></dt>
+<dd><p>set_membrane_complex: Sets the monomer object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.get_membrane_complex">
+<span class="sig-name descname"><span class="pre">get_membrane_complex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.get_membrane_complex" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gromacs.Gromacs.membrane_complex">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">membrane_complex</span></span><a class="headerlink" href="#gromacs.Gromacs.membrane_complex" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.count_lipids">
+<span class="sig-name descname"><span class="pre">count_lipids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.count_lipids" title="Permalink to this definition"></a></dt>
+<dd><p>count_lipids: Counts the lipids in source and writes a target with N4 tags</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.get_charge">
+<span class="sig-name descname"><span class="pre">get_charge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.get_charge" title="Permalink to this definition"></a></dt>
+<dd><p>get_charge: Gets the total charge of a system using gromacs grompp command</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.get_ndx_groups">
+<span class="sig-name descname"><span class="pre">get_ndx_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.get_ndx_groups" title="Permalink to this definition"></a></dt>
+<dd><p>get_ndx_groups: Run make_ndx and set the total number of groups found</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.get_ndx_sol">
+<span class="sig-name descname"><span class="pre">get_ndx_sol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.get_ndx_sol" title="Permalink to this definition"></a></dt>
+<dd><p>get_ndx_sol: Run make_ndx and set the last number id for SOL found</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.make_ndx">
+<span class="sig-name descname"><span class="pre">make_ndx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.make_ndx" title="Permalink to this definition"></a></dt>
+<dd><p>make_ndx: Wraps the make_ndx command tweaking the input to reflect the
+characteristics of the complex</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.make_topol_lipids">
+<span class="sig-name descname"><span class="pre">make_topol_lipids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.make_topol_lipids" title="Permalink to this definition"></a></dt>
+<dd><p>make_topol_lipids: Add lipid positions to topol.top</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.manual_log">
+<span class="sig-name descname"><span class="pre">manual_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.manual_log" title="Permalink to this definition"></a></dt>
+<dd><p>manual_log: Redirect the output to file in command[“options”][“log”]
+Some commands can’t be logged via flag, so one has to catch and
+redirect stdout and stderr</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.relax">
+<span class="sig-name descname"><span class="pre">relax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.relax" title="Permalink to this definition"></a></dt>
+<dd><p>relax: Relax a protein</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.run_recipe">
+<span class="sig-name descname"><span class="pre">run_recipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.run_recipe" title="Permalink to this definition"></a></dt>
+<dd><p>run_recipe: Run recipe for the complex</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.select_recipe">
+<span class="sig-name descname"><span class="pre">select_recipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.select_recipe" title="Permalink to this definition"></a></dt>
+<dd><p>select_recipe: Select the appropriate recipe for the complex</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.set_box_sizes">
+<span class="sig-name descname"><span class="pre">set_box_sizes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.set_box_sizes" title="Permalink to this definition"></a></dt>
+<dd><p>set_box_sizes: Set length values for different boxes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.set_chains">
+<span class="sig-name descname"><span class="pre">set_chains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.set_chains" title="Permalink to this definition"></a></dt>
+<dd><p>set_chains: Set the REAL points of a dimer after protonation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.set_grompp">
+<span class="sig-name descname"><span class="pre">set_grompp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.set_grompp" title="Permalink to this definition"></a></dt>
+<dd><p>set_grompp: Copy template files to working dir</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.set_itp">
+<span class="sig-name descname"><span class="pre">set_itp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.set_itp" title="Permalink to this definition"></a></dt>
+<dd><p>set_itp: Cut a top file to be usable later as itp</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.set_options">
+<span class="sig-name descname"><span class="pre">set_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">breaks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.set_options" title="Permalink to this definition"></a></dt>
+<dd><p>set_options: Set break options from recipe</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.set_popc">
+<span class="sig-name descname"><span class="pre">set_popc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tgt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.set_popc" title="Permalink to this definition"></a></dt>
+<dd><p>set_popc: Create a pdb file only with the lipid bilayer (POP), no waters.
+Set some measures on the fly (height of the bilayer)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.set_protein_height">
+<span class="sig-name descname"><span class="pre">set_protein_height</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.set_protein_height" title="Permalink to this definition"></a></dt>
+<dd><p>set_protein_height: Get the z-axis center from a pdb file for membrane or
+solvent alignment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.set_protein_size">
+<span class="sig-name descname"><span class="pre">set_protein_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.set_protein_size" title="Permalink to this definition"></a></dt>
+<dd><p>set_protein_size: Get the protein maximum base width from a pdb file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.set_stage_init">
+<span class="sig-name descname"><span class="pre">set_stage_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.set_stage_init" title="Permalink to this definition"></a></dt>
+<dd><p>set_stage_init: Copy a set of files from source to target dir</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.set_steep">
+<span class="sig-name descname"><span class="pre">set_steep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.set_steep" title="Permalink to this definition"></a></dt>
+<dd><p>set_steep: Copy the template steep.mdp to target dir</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Gromacs.set_water">
+<span class="sig-name descname"><span class="pre">set_water</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Gromacs.set_water" title="Permalink to this definition"></a></dt>
+<dd><p>set_water: Create a water layer for a box</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gromacs.Wrapper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gromacs.</span></span><span class="sig-name descname"><span class="pre">Wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Wrapper" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Wrapper.generate_command">
+<span class="sig-name descname"><span class="pre">generate_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Wrapper.generate_command" title="Permalink to this definition"></a></dt>
+<dd><p>generate_command: Receive some variables in kwargs, generate
+the appropriate command to be run. Return a set in the form of
+a string “command -with flags”</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gromacs.Wrapper.run_command">
+<span class="sig-name descname"><span class="pre">run_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gromacs.Wrapper.run_command" title="Permalink to this definition"></a></dt>
+<dd><p>run_command: Run a command that comes in kwargs in a subprocess, and
+return the output as (output, errors)</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="recipes.html" class="btn btn-neutral float-left" title="Recipes module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="groerrors.html" class="btn btn-neutral float-right" title="Groerrors module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, H. Gutierrez de Teran, X. Bello, M. Esguerra, R. L. van den Broek, R.V. Küpper.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
