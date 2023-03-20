@@ -18,8 +18,15 @@
 # -- Project information -----------------------------------------------------
 
 project = 'pymemdyn'
-copyright = '2023, H. Gutierrez de Teran, X. Bello, M. Esguerra, R. L. van den Broek, R.V. Küpper'
+copyright = '2023, H. Gutierrez de Teran,  X. Bello, M. Esguerra, R. L. van den Broek, R.V. Küpper'
 author = 'H. Gutierrez de Teran, X. Bello, M. Esguerra, R. L. van den Broek, R.V. Küpper'
+
+master_doc = 'index'
+latex_documents = [
+    (master_doc, 'pymemdyn.tex', 'pymemdyn',
+        author.replace(', ', ' \\and ').replace(' and ', ' \\and and '),
+     'manual'),
+]
 
 # The full version, including alpha/beta/rc tags
 release = '1.6.1'

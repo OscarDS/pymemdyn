@@ -68,6 +68,15 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#queue.PriorityQueue"><code class="docutils literal notranslate"><span class="pre">PriorityQueue</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#queue.LifoQueue"><code class="docutils literal notranslate"><span class="pre">LifoQueue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#queue.SimpleQueue"><code class="docutils literal notranslate"><span class="pre">SimpleQueue</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#queue.SimpleQueue.empty"><code class="docutils literal notranslate"><span class="pre">SimpleQueue.empty()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#queue.SimpleQueue.get"><code class="docutils literal notranslate"><span class="pre">SimpleQueue.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#queue.SimpleQueue.get_nowait"><code class="docutils literal notranslate"><span class="pre">SimpleQueue.get_nowait()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#queue.SimpleQueue.put"><code class="docutils literal notranslate"><span class="pre">SimpleQueue.put()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#queue.SimpleQueue.put_nowait"><code class="docutils literal notranslate"><span class="pre">SimpleQueue.put_nowait()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#queue.SimpleQueue.qsize"><code class="docutils literal notranslate"><span class="pre">SimpleQueue.qsize()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="recipes.html">Recipes module</a></li>
@@ -239,6 +248,62 @@ raise the Empty exception.</p>
 <p>Variant of Queue that retrieves most recently added entries first.</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="queue.SimpleQueue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">queue.</span></span><span class="sig-name descname"><span class="pre">SimpleQueue</span></span><a class="headerlink" href="#queue.SimpleQueue" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Simple, unbounded, reentrant FIFO queue.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="queue.SimpleQueue.empty">
+<span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#queue.SimpleQueue.empty" title="Permalink to this definition"></a></dt>
+<dd><p>Return True if the queue is empty, False otherwise (not reliable!).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue.SimpleQueue.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queue.SimpleQueue.get" title="Permalink to this definition"></a></dt>
+<dd><p>Remove and return an item from the queue.</p>
+<p>If optional args ‘block’ is true and ‘timeout’ is None (the default),
+block if necessary until an item is available. If ‘timeout’ is
+a non-negative number, it blocks at most ‘timeout’ seconds and raises
+the Empty exception if no item was available within that time.
+Otherwise (‘block’ is false), return an item if one is immediately
+available, else raise the Empty exception (‘timeout’ is ignored
+in that case).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue.SimpleQueue.get_nowait">
+<span class="sig-name descname"><span class="pre">get_nowait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#queue.SimpleQueue.get_nowait" title="Permalink to this definition"></a></dt>
+<dd><p>Remove and return an item from the queue without blocking.</p>
+<p>Only get an item if one is immediately available. Otherwise
+raise the Empty exception.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue.SimpleQueue.put">
+<span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queue.SimpleQueue.put" title="Permalink to this definition"></a></dt>
+<dd><p>Put the item on the queue.</p>
+<p>The optional ‘block’ and ‘timeout’ arguments are ignored, as this method
+never blocks.  They are provided for compatibility with the Queue class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue.SimpleQueue.put_nowait">
+<span class="sig-name descname"><span class="pre">put_nowait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queue.SimpleQueue.put_nowait" title="Permalink to this definition"></a></dt>
+<dd><p>Put an item into the queue without blocking.</p>
+<p>This is exactly equivalent to <cite>put(item)</cite> and is only provided
+for compatibility with the Queue class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue.SimpleQueue.qsize">
+<span class="sig-name descname"><span class="pre">qsize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#queue.SimpleQueue.qsize" title="Permalink to this definition"></a></dt>
+<dd><p>Return the approximate size of the queue (not reliable!).</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -252,7 +317,7 @@ raise the Empty exception.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, H. Gutierrez de Teran, X. Bello, M. Esguerra, R. L. van den Broek, R.V. Küpper.</p>
+    <p>&#169; Copyright 2023, H. Gutierrez de Teran,  X. Bello, M. Esguerra, R. L. van den Broek, R.V. Küpper.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

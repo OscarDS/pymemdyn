@@ -218,12 +218,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="groerrors.html#groerrors.GromacsMessages.e">e (groerrors.GromacsMessages attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="queue.html#queue.Empty">Empty</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="queue.html#queue.Queue.empty">empty() (queue.Queue method)</a>
+
+      <ul>
+        <li><a href="queue.html#queue.SimpleQueue.empty">(queue.SimpleQueue method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -245,7 +249,11 @@
       <li><a href="gromacs.html#gromacs.Wrapper.generate_command">generate_command() (gromacs.Wrapper method)</a>
 </li>
       <li><a href="queue.html#queue.Queue.get">get() (queue.Queue method)</a>
+
+      <ul>
+        <li><a href="queue.html#queue.SimpleQueue.get">(queue.SimpleQueue method)</a>
 </li>
+      </ul></li>
       <li><a href="gromacs.html#gromacs.Gromacs.get_charge">get_charge() (gromacs.Gromacs method)</a>
 </li>
       <li><a href="gromacs.html#gromacs.Gromacs.get_membrane_complex">get_membrane_complex() (gromacs.Gromacs method)</a>
@@ -255,7 +263,11 @@
       <li><a href="gromacs.html#gromacs.Gromacs.get_ndx_sol">get_ndx_sol() (gromacs.Gromacs method)</a>
 </li>
       <li><a href="queue.html#queue.Queue.get_nowait">get_nowait() (queue.Queue method)</a>
+
+      <ul>
+        <li><a href="queue.html#queue.SimpleQueue.get_nowait">(queue.SimpleQueue method)</a>
 </li>
+      </ul></li>
       <li><a href="protein.html#protein.ProteinComplex.getAlosteric">getAlosteric() (protein.ProteinComplex method)</a>
 </li>
       <li><a href="utils.html#utils.getbw">getbw() (in module utils)</a>
@@ -268,10 +280,10 @@
         <li><a href="protein.html#protein.ProteinComplex.getCho">(protein.ProteinComplex method)</a>
 </li>
       </ul></li>
-      <li><a href="complex.html#complex.MembraneComplex.getComplex">getComplex() (complex.MembraneComplex method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="complex.html#complex.MembraneComplex.getComplex">getComplex() (complex.MembraneComplex method)</a>
+</li>
       <li><a href="protein.html#protein.Ions.getIons">getIons() (protein.Ions method)</a>
 
       <ul>
@@ -472,9 +484,17 @@
       <li><a href="protein.html#protein.ProteinComplex">ProteinComplex (class in protein)</a>
 </li>
       <li><a href="queue.html#queue.Queue.put">put() (queue.Queue method)</a>
+
+      <ul>
+        <li><a href="queue.html#queue.SimpleQueue.put">(queue.SimpleQueue method)</a>
 </li>
+      </ul></li>
       <li><a href="queue.html#queue.Queue.put_nowait">put_nowait() (queue.Queue method)</a>
+
+      <ul>
+        <li><a href="queue.html#queue.SimpleQueue.put_nowait">(queue.SimpleQueue method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -482,7 +502,13 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="queue.html#queue.Queue.qsize">qsize() (queue.Queue method)</a>
+
+      <ul>
+        <li><a href="queue.html#queue.SimpleQueue.qsize">(queue.SimpleQueue method)</a>
 </li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     queue
 
@@ -490,8 +516,6 @@
         <li><a href="queue.html#module-queue">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="queue.html#queue.Queue">Queue (class in queue)</a>
 </li>
   </ul></td>
@@ -553,10 +577,10 @@
 </li>
       <li><a href="gromacs.html#gromacs.Gromacs.set_steep">set_steep() (gromacs.Gromacs method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gromacs.html#gromacs.Gromacs.set_water">set_water() (gromacs.Gromacs method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="protein.html#protein.ProteinComplex.setAlosteric">setAlosteric() (protein.ProteinComplex method)</a>
 </li>
       <li><a href="protein.html#protein.Cholesterol.setCho">setCho() (protein.Cholesterol method)</a>
@@ -592,6 +616,8 @@
         <li><a href="protein.html#protein.ProteinComplex.setWaters">(protein.ProteinComplex method)</a>
 </li>
       </ul></li>
+      <li><a href="queue.html#queue.SimpleQueue">SimpleQueue (class in queue)</a>
+</li>
       <li><a href="protein.html#protein.Sugar_prep">Sugar_prep (class in protein)</a>
 </li>
   </ul></td>
@@ -639,7 +665,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, H. Gutierrez de Teran, X. Bello, M. Esguerra, R. L. van den Broek, R.V. Küpper.</p>
+    <p>&#169; Copyright 2023, H. Gutierrez de Teran,  X. Bello, M. Esguerra, R. L. van den Broek, R.V. Küpper.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
