@@ -275,8 +275,10 @@ class Sugar_prep(object):
                     lines_itp.pop(loc_content_of_defaults)
                     # now also do nothing else on this line
                     continue
+                if sugar == self.ligand:
+                    line = line.replace("opls_", "oplsl")
                 if sugar == self.allosteric:
-                    line = line.replace("opls_8", "opls_a")                
+                    line = line.replace("opls_", "oplsa")                
                 if "[ moleculetype ]" in line:
                     split = True    
                 if split == False: 
