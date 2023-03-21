@@ -27,6 +27,7 @@ latex_documents = [
         author.replace(', ', ' \\and ').replace(' and ', ' \\and and '),
      'manual'),
 ]
+latex_elements = {'preamble': '\\global\\renewcommand{\\AA}{\\text{\\r{A}}}'}
 
 # The full version, including alpha/beta/rc tags
 release = '1.6.1'
