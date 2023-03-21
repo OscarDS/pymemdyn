@@ -222,7 +222,7 @@ class Sugar_prep(object):
                 pass
             else:
                 if os.path.exists(self.ligand + ".itp") == False:
-                    self.create_itp(self.ligand + ".pdb", 
+                    Sugar_prep.create_itp(self.ligand + ".pdb", 
                             self.ligpargen_ligand_charge, 
                             self.ligpargen_ligand_nrOfOptimizations
                             )
@@ -238,7 +238,7 @@ class Sugar_prep(object):
                 pass
             else:
                 if os.path.exists(self.allosteric + ".itp") == False:
-                    self.create_itp(self.allosteric + ".pdb", 
+                    Sugar_prep.create_itp(self.allosteric + ".pdb", 
                             self.ligpargen_allosteric_charge, 
                             self.ligpargen_allosteric_nrOfOptimizations
                             )
