@@ -6,7 +6,7 @@ researcher, without prior experience in computational chemistry, to
 perform an otherwise tedious and complex process of membrane insertion
 and thorough MD equilibration, as outlined in Figure 1.
 
-.. image:: pymemdyn.png
+.. image:: pymemdyn_scheme_red.pdf
 
 In the simplest scenario, only the receptor structure is considered. In
 such case the GPCR is automatically surrounded by a pre-equilibrated
@@ -69,6 +69,12 @@ run as mpi with reservation of 8 cores in SVGD queue.
 
 Debugging 
 ---------
+To also log 'debug'-messages to the log file (log.log), activate the 
+debug mode with --debug:
+
+::
+
+  pymemdyn -p protein.pdb --debug
 
 If you are to set up a new system, it is a good idea to just run a few
 steps of each stage in the equilibration protocol just to test that the
@@ -77,11 +83,11 @@ fine and the system can be minimized and does not "explode" during the
 equilibration protocol (i.e., detect if atom clashes and so on exist on
 your system).
 
-To do this, use the --debug option, like:
+To do this, use the --debugFast option, like:
 
 ::
 
-   pymemdyn -p gpcr.pdb -l lig --waters hoh --debug 
+   pymemdyn -p gpcr.pdb -l lig --waters hoh --debugFast 
 
 If everythings works fine, you will see the list of output directories
 and files just as in a regular equilibration protocol, but with much
@@ -93,7 +99,7 @@ water molecules) this kind of debugging equilibration procedure might
 crash during the first stages due to hot atoms or LINCS failure. This is
 normal, and you have two options: i) trust that the full equilibration
 procedure will fix the steric clashes in your starting system, and then
-directly run the pymoldyn without the debugging option, or ii) identify
+directly run the pymemdyn without the debugging option, or ii) identify
 the hot atoms (check the mdrun.log file in the last subdirectory that
 was written in your output (generally eq/mdrun.log and look for "LINCS
 WARNING"). What if you want to check partial functions of pymoldyn? In
@@ -236,6 +242,9 @@ REPORTS:
 
 LOGS:
 -----
+
+The logger in pymemdyn will write log messages to the file log.log, which 
+is regenerated every run.
 
 | In the "logs" subfolder, you will find the log files of mdrun:
 | - eq_{force_constant}.log # log of stages with restrained heavy atoms

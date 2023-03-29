@@ -5,9 +5,10 @@ import os
 import settings
 from run import Run
 
-
+import logging
 
 if __name__ == "__main__":
+
     parser = argparse.ArgumentParser(
         prog='pymemdyn',
         description=' == Setup Molecular Dynamics for Membrane Proteins given a PDB. == ')
@@ -90,14 +91,50 @@ if __name__ == "__main__":
 
     parser.add_argument('-d', '--debug',
                         action="store_true")
+    
+    parser.add_argument('--debugFast',
+                        help = "run pymemdyn in debug mode with less min and eq steps.\
+                            Do not use for simulation results!",
+                        action="store_true")
 
     args = parser.parse_args()
 
+    # create logger with name 'pymemdyn'
+    logger = logging.getLogger('pymemdyn')
 
+    # create file handler which logs to info messages normally and debug messages when in debug mode.
+    with open('log.log', 'w+'):
+        pass
+    fh = logging.FileHandler('log.log')
+
+    if args.debug or args.debugFast:
+        logger.setLevel(logging.DEBUG)
+        if args.debugFast:
+            logger.warning('WARNING: Debug mode activated, do not use for simulations!')
+        fh.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+        fh.setLevel(logging.INFO)
+
+    # create console handler with a higher log level
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.WARNING)
+    # create formatter and add it to the handlers
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d,%H:%M:%S')
+    fh.setFormatter(formatter)
+    ch.setFormatter(formatter)
+    # add the handlers to the logger
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+
+    logger.info("Pymemdyn started.")
+
+    logger.debug('Parsing finished.')
 
     if not (os.path.isdir(args.own_dir)):
         os.makedirs(args.own_dir)
-        print ("Created working dir {0}".format(args.own_dir))
+        logger.info("Created working dir {0}".format(args.own_dir))
     os.chdir(args.own_dir)
 
     # Removes files previously generated in Run()
@@ -105,7 +142,9 @@ if __name__ == "__main__":
                  ''.join([args.pdb, "~"])]
    
     for target in to_unlink:
-        if os.path.isfile(target): os.unlink(target)
+        if os.path.isfile(target): 
+            os.unlink(target)
+            logger.debug('Removed old file: {}'.format(target))
 
     run = Run(own_dir = args.own_dir,
               repo_dir = args.repo_dir,
@@ -127,4 +166,9 @@ if __name__ == "__main__":
 
 
     run.moldyn()
+
+    if not (args.debug or args.debugFast):
+        run.clean()
+
+    logger.info('Done!')
 #    run.light_moldyn()

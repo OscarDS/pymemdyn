@@ -25,7 +25,7 @@ Pymemdyn is dependent on GROMACS. Download GROMACS [here](https://manual.gromacs
 
 **LigParGen**  
 In order to automatically generate .itp files for ligands and allosterics, the program ligpargen is used. Install using their instructions: <https://github.com/Isra3l/ligpargen>.
-Do not forget to activate the conda environment in which you installed ligpargen (`conda install py37` if you followed the instructions) before running pymemdyn. In case you are using a bash script, this should be done inside the script. 
+Do not forget to activate the conda environment in which you installed ligpargen (`conda activate py37` if you followed the instructions) before running pymemdyn. In case you are using a bash script, this should be done inside the script. 
 See also "ligpargen_example" in the folder examples.
 
 Testing was done using LigParGen v2.1 using BOSS5.0.
@@ -201,8 +201,11 @@ and can then be passed  to other objects.
 Manual
 --------------------------------------------------------------------------------
 
+In chapter 2 of documentation/pymemdyn.pdf the manual can be found.
+
 PyMemDyn execution manuals are found within the /examples directory. These
-include input file generation/processing and data processing.
+include input file generation/processing and data processing.  
+ 
 
 
 Changelog
@@ -213,6 +216,8 @@ Changelog
 Added support for Maestro ligand and allosteric .pdb files. (#15)  
 Fixed bug in prod.mdp for gromacs (#16)  
 Added .itp files required by topol.top to folder finalOutput so gromp command can be run from there (#17)  
+Documentation is added to the folder /documentation and can be automatically updated with Sphinx.  
+A new logfile is added (log.log) along with two different debug modes (`--debug`, `--debugFast`).
 
 ### Changes from version 1.5.2 to 1.6
 - March 8, 2023

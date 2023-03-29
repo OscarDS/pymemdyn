@@ -93,7 +93,7 @@
 researcher, without prior experience in computational chemistry, to
 perform an otherwise tedious and complex process of membrane insertion
 and thorough MD equilibration, as outlined in Figure 1.</p>
-<img alt="_images/pymemdyn.png" src="_images/pymemdyn.png" />
+<img alt="_images/pymemdyn_scheme_red.pdf" src="_images/pymemdyn_scheme_red.pdf" />
 <p>In the simplest scenario, only the receptor structure is considered. In
 such case the GPCR is automatically surrounded by a pre-equilibrated
 POPC (Palmitoyl-Oleoyl-Phosphatidyl-Choline) membrane model in a way
@@ -147,14 +147,19 @@ run as mpi with reservation of 8 cores in SVGD queue.</p>
 </section>
 <section id="debugging">
 <h2>Debugging<a class="headerlink" href="#debugging" title="Permalink to this heading"></a></h2>
+<p>To also log ‘debug’-messages to the log file (log.log), activate the
+debug mode with –debug:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pymemdyn</span> <span class="o">-</span><span class="n">p</span> <span class="n">protein</span><span class="o">.</span><span class="n">pdb</span> <span class="o">--</span><span class="n">debug</span>
+</pre></div>
+</div>
 <p>If you are to set up a new system, it is a good idea to just run a few
 steps of each stage in the equilibration protocol just to test that the
 pdb file is read correctly and the membrane-insertion protocol works
 fine and the system can be minimized and does not “explode” during the
 equilibration protocol (i.e., detect if atom clashes and so on exist on
 your system).</p>
-<p>To do this, use the –debug option, like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pymemdyn</span> <span class="o">-</span><span class="n">p</span> <span class="n">gpcr</span><span class="o">.</span><span class="n">pdb</span> <span class="o">-</span><span class="n">l</span> <span class="n">lig</span> <span class="o">--</span><span class="n">waters</span> <span class="n">hoh</span> <span class="o">--</span><span class="n">debug</span>
+<p>To do this, use the –debugFast option, like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pymemdyn</span> <span class="o">-</span><span class="n">p</span> <span class="n">gpcr</span><span class="o">.</span><span class="n">pdb</span> <span class="o">-</span><span class="n">l</span> <span class="n">lig</span> <span class="o">--</span><span class="n">waters</span> <span class="n">hoh</span> <span class="o">--</span><span class="n">debugFast</span>
 </pre></div>
 </div>
 <p>If everythings works fine, you will see the list of output directories
@@ -167,7 +172,7 @@ water molecules) this kind of debugging equilibration procedure might
 crash during the first stages due to hot atoms or LINCS failure. This is
 normal, and you have two options: i) trust that the full equilibration
 procedure will fix the steric clashes in your starting system, and then
-directly run the pymoldyn without the debugging option, or ii) identify
+directly run the pymemdyn without the debugging option, or ii) identify
 the hot atoms (check the mdrun.log file in the last subdirectory that
 was written in your output (generally eq/mdrun.log and look for “LINCS
 WARNING”). What if you want to check partial functions of pymoldyn? In
@@ -315,6 +320,8 @@ Residue RMSF plot</div>
 </section>
 <section id="logs">
 <h2>LOGS:<a class="headerlink" href="#logs" title="Permalink to this heading"></a></h2>
+<p>The logger in pymemdyn will write log messages to the file log.log, which
+is regenerated every run.</p>
 <div class="line-block">
 <div class="line">In the “logs” subfolder, you will find the log files of mdrun:</div>
 <div class="line">- eq_{force_constant}.log # log of stages with restrained heavy atoms

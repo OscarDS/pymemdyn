@@ -4,7 +4,8 @@ from string import Template
 
 import bw4posres
 
-
+import logging
+logger_utils = logging.getLogger('pymemdyn.utils')
 
 
 def clean_pdb(src = [], tgt = []):
@@ -69,10 +70,15 @@ def getbw(**kwargs):
     Call the Ballesteros-Weistein based pair-distance restraint
     module.
     """
+    logger_getBW = logging.getLogger('pymemdyn.utils.getbw')
     bw4posres.Run(kwargs["src"]).pdb2fas()
+    logger_getBW.debug('fasta file generated')
     bw4posres.Run(kwargs["src"]).clustalalign()
+    logger_getBW.debug('clustalalign done')
     bw4posres.Run(kwargs["src"]).getcalphas()
+    logger_getBW.debug('calphas gotten')
     bw4posres.Run(kwargs["src"]).makedisre()
+    logger_getBW.debug('disre.itp written')
 
 def _file_append(f_src, f2a):
     """

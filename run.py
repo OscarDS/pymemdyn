@@ -7,6 +7,8 @@ import membrane
 import protein
 import queue
 
+import logging
+run_logger = logging.getLogger('pymemdyn.run')
 
 class Run(object):
     def __init__(self, pdb, *args, **kwargs):
@@ -39,27 +41,32 @@ class Run(object):
         self.ligpargen_allosteric_nrOfOptimizations = kwargs.get("ligpargen_allosteric_nrOfOptimizations") or 3
         self.queue = kwargs.get("queue") or ""
         self.debug = kwargs.get("debug") or False
-        print('arguments initialized')
+        self.debugFast = kwargs.get("debugFast")
+        self.logger = logging.getLogger('pymemdyn.run.Run')
 
-        print('self.ligand = '+str(self.ligand))
+        self.logger.debug('Run arguments initialized')
+
+        self.logger.debug('self.ligand = '+str(self.ligand))
+        self.logger.debug('ligpargensettings: llc={}, llo={}, lac={}, lao={}'.format(self.ligpargen_ligand_charge, self.ligpargen_ligand_nrOfOptimizations, self.ligpargen_allosteric_charge, self.ligpargen_allosteric_nrOfOptimizations))
 
 
 
         if self.pdb:
-            print('self.pdb dectected. Checking nr of chains of '+ str(self.pdb))
+            self.logger.debug('self.pdb dectected. Checking nr of chains of '+ str(self.pdb))
             self.pdb = protein.Protein(pdb=self.pdb).check_number_of_chains()
-            print('nr of chains ok!')
+            self.logger.debug('nr of chains ok!')
 
         sugars = {"ligand": "Ligand",
                   "allosteric": "Alosteric",
                   "waters": "CrystalWaters",
                   "ions": "Ions",
                   "cho": "Cholesterol"}
-        print("dict 'sugars' initialized")
+        self.logger.debug("dict 'sugars' initialized")
 
-        print('starting sugar prep')
+        self.logger.debug('starting sugar prep')
 
         protein.Sugar_prep.__init__(self)
+        self.logger = logging.getLogger('pymemdyn.run.Run')
 
         for sugar_type, class_name in sugars.items():
             if getattr(self, sugar_type):
@@ -158,8 +165,9 @@ class Run(object):
                      "CARelax", "CACollectResults"]
 
         for step in steps:
-            self.g.select_recipe(stage=step, debug=self.debug)
-            self.g.run_recipe(debug=self.debug)
+            self.logger.info('\n\n[{}/{}]: {}\n'.format(steps.index(step)+1, len(steps), step))
+            self.g.select_recipe(stage=step, debugFast=self.debugFast)
+            self.g.run_recipe(debugFast=self.debugFast)
 
     def light_moldyn(self):
         """
@@ -169,6 +177,6 @@ class Run(object):
 #        steps = ["CACollectResults"]
 
         for step in steps:
-            self.g.select_recipe(stage=step, debug=self.debug)
-            self.g.run_recipe(debug = self.debug)
+            self.g.select_recipe(stage=step, debugFast=self.debugFast)
+            self.g.run_recipe(debugFast = self.debugFast)
 
