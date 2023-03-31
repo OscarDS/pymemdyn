@@ -43,7 +43,11 @@ if __name__ == "__main__":
                         dest = "allosteric",
                         help = "Name of the allosteric, without extension. See input_guide.txt \
             for details on how to generate the required pdb and forcefield files.")
-
+    
+    parser.add_argument('--na',
+                        dest = 'nr_alo',
+                        help = "number of identical allosteric molecules (with same .itp file)")
+    
     parser.add_argument('-w','--waters',
                         dest = "waters",
                         help = "Crystalized water molecules. File name without extension.")
@@ -99,6 +103,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    ######## CREATE LOG ###########
+
     # create logger with name 'pymemdyn'
     logger = logging.getLogger('pymemdyn')
 
@@ -128,6 +134,9 @@ if __name__ == "__main__":
     logger.addHandler(fh)
     logger.addHandler(ch)
 
+    ########### LOG CREATED ##############
+
+
     logger.info("Pymemdyn started.")
 
     logger.debug('Parsing finished.')
@@ -151,10 +160,15 @@ if __name__ == "__main__":
               pdb = args.pdb,
               ligand = args.ligand,
               allosteric = args.allosteric,
+              nr_alo = args.nr_alo,
               waters = args.waters,
               ions = args.ions,
               cho = args.cho,
               restraint = args.restraint,
+              ligpargen_ligand_charge = args.ligpargen_ligand_charge,
+              ligpargen_ligand_nrOfOptimizations = args.ligpargen_ligand_nrOfOptimizations,
+              ligpargen_allosteric_charge = args.ligpargen_allosteric_charge,
+              ligpargen_allosteric_nrOfOptimizations = args.ligpargen_allosteric_nrOfOptimizations,
               queue = args.queue,
               debug = args.debug)
 

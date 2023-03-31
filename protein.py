@@ -35,6 +35,7 @@ class ProteinComplex(object):
             self.setCho(kwargs["cho"])
         if "allosteric" in kwargs.keys():
             self.setAlosteric(kwargs["allosteric"])
+            self._n_alo = kwargs['nr_alo']
 
     def setMonomer(self, value):
         """

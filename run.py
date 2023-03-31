@@ -31,6 +31,8 @@ class Run(object):
         self.repo_dir = kwargs.get("repo_dir") or ""
         self.ligand = kwargs.get("ligand") or ""
         self.allosteric = kwargs.get("allosteric") or ""
+        if self.allosteric:
+            self._n_alo = kwargs.get("nr_alo") or 1
         self.waters = kwargs.get("waters") or ""
         self.ions = kwargs.get("ions") or ""
         self.cho = kwargs.get("cho") or ""
@@ -84,6 +86,7 @@ class Run(object):
             monomer=self.pdb,
             ligand=self.ligand or None,
             allosteric=self.allosteric or None,
+            nr_alo = self._n_alo or None,
             waters=self.waters or None,
             ions=self.ions or None,
             cho=self.cho or None)

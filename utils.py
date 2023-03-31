@@ -180,9 +180,8 @@ def make_topol(template_dir = \
             cho = complex.cho._n_cho
             cho_name = complex.cho.itp
     if hasattr(complex, "allosteric"):
-        if complex.allosteric:
-            alo = 1
-            allosteric_name = complex.allosteric.itp
+        alo = complex._n_alo
+        allosteric_name = complex.allosteric.itp
     if hasattr(complex, "waters"):
         if hasattr(complex.waters, "_n_wats"):
             hoh = int(complex.waters._n_wats)
