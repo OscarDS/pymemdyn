@@ -82,11 +82,16 @@ class Run(object):
 
         self.membr = membrane.Membrane()
 
+        if self.allosteric:
+            nr_allosteric = self._n_alo
+        else:
+            nr_allosteric = None
+
         prot_complex = protein.ProteinComplex(
             monomer=self.pdb,
             ligand=self.ligand or None,
             allosteric=self.allosteric or None,
-            nr_alo = self._n_alo or None,
+            nr_alo = nr_allosteric,
             waters=self.waters or None,
             ions=self.ions or None,
             cho=self.cho or None)
