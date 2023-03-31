@@ -234,7 +234,8 @@ class Sugar_prep(object):
                     self.logger.debug('create_itp({}.pdb, {}, {})'.format(self.ligand, self.ligpargen_ligand_charge, self.ligpargen_ligand_nrOfOptimizations))
                     Sugar_prep.create_itp(self, self.ligand + ".pdb", 
                             self.ligpargen_ligand_charge, 
-                            self.ligpargen_ligand_nrOfOptimizations
+                            self.ligpargen_ligand_nrOfOptimizations,
+                            'LIG'
                             )
             Sugar_prep.lpg2pmd(self, self.ligand)
             if self.ligand != 'lig':
@@ -251,7 +252,8 @@ class Sugar_prep(object):
                     self.logger.debug('.itp file for allosteric is missing. Will be generated now with Ligpargen.')
                     Sugar_prep.create_itp(self, self.allosteric + ".pdb", 
                             self.ligpargen_allosteric_charge, 
-                            self.ligpargen_allosteric_nrOfOptimizations
+                            self.ligpargen_allosteric_nrOfOptimizations,
+                            'ALO'
                             )
             Sugar_prep.lpg2pmd(self, self.allosteric)
             if self.allosteric != 'alo':
@@ -260,7 +262,8 @@ class Sugar_prep(object):
                 shutil.copyfile(self.allosteric + ".ff", 'alo.ff')    
                 self.allosteric = 'alo'
 
-    def create_itp(self, pdbfile: str, charge: int, numberOfOptimizations: int) -> None:
+    def create_itp(self, pdbfile: str, charge: int, numberOfOptimizations: int,
+                   resname: str) -> None:
         """Call ligpargen to create gromacs itp file and corresponding openmm
         pdb file. Note that original pdb file will be replaced by opnemm pdb
         file.
@@ -278,7 +281,7 @@ class Sugar_prep(object):
         workdir = 'ligpargenOutput_' + name
         inputdir = 'ligpargenInput_' + name
         mol = ligpar.LigParGen(ifile=pdbfile, molname=name, workdir=workdir, 
-                            resname='LIG', charge=charge, 
+                            resname=resname, charge=charge, 
                             numberOfOptimizations=numberOfOptimizations,
                             debug=True)
         mol.writeAllOuputs()
