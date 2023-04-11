@@ -5,6 +5,8 @@ import os
 import shutil
 import logging
 
+import numpy as np
+
 protein_logger = logging.getLogger('pymemdyn.protein')
 
 try:
@@ -116,9 +118,10 @@ class Protein(object):
         This is a proxy to determine if a protein is a Monomer or a Dimer
         """
         self.pdb = kwargs["pdb"]
+        self.logger_prot = logging.getLogger('pymemdyn.protein.Protein')
         if not os.path.isfile(self.pdb):
             raise IOError("File '{0}' missing".format(self.pdb))
-
+        
     def check_number_of_chains(self):
         """
         Determine if a PDB is a Monomer or a Dimer
@@ -135,6 +138,24 @@ class Protein(object):
             return Monomer(pdb = self.pdb)
         elif len(chains) >= 2:
             return Oligomer(pdb = self.pdb, chains = chains)
+
+    def calculate_center(self):
+        """Determine center of the coords in the self.pdb.
+        """
+        with open(self.pdb, "r") as inf:
+            lines = inf.readlines()
+        
+        n = []
+        for line in lines:
+            m =  line.split()
+            if m[0] in ('ATOM', 'HETATM'):
+                n.append(m[:8])
+        matrix = np.array(n)
+        coord = matrix[:, [5, 6, 7]]
+        coord = coord.astype(float)
+        mean_coord = np.mean(coord, axis=0)
+        return mean_coord
+        
         
 
 class Monomer(object):
@@ -402,6 +423,23 @@ class Compound(object):
         for src in files:
             if not os.path.isfile(src):
                 raise IOError("File {0} missing".format(src))
+            
+    def calculate_center(self):
+        """Determine center of the coords in the self.pdb.
+        """
+        with open(self.pdb, "r") as inf:
+            lines = inf.readlines()
+        
+        n = []
+        for line in lines:
+            m =  line.split()
+            if m[0] in ('ATOM', 'HETATM'):
+                n.append(m[:8])
+        matrix = np.array(n)
+        coord = matrix[:, [5, 6, 7]]
+        coord = coord.astype(float)
+        mean_coord = np.mean(coord, axis=0)
+        return mean_coord
 
 
 class Ligand(Compound):
@@ -415,6 +453,7 @@ class Ligand(Compound):
         self.force_field = kwargs["ff"]
 
         self.check_forces()
+        self.center = self.calculate_center()
 
     def check_forces(self):
         """
@@ -470,7 +509,7 @@ class Ligand(Compound):
                     print (atoms[molecules[data[3]][data[2]]])
 
         return True
-
+    
 
 class CrystalWaters(Compound):
     def __init__(self, *args, **kwargs):
@@ -482,6 +521,7 @@ class CrystalWaters(Compound):
         self.posre_itp = "posre_hoh.itp"
         self._setITP()
         self._n_wats = self.count_waters()
+        self.center = self.calculate_center()
         
     def setWaters(self, value):
         """
@@ -527,6 +567,7 @@ class Ions(Compound):
         self.posre_itp = "posre_ion.itp"
         self._setITP()
         self._n_ions = self.count_ions()
+        self.center = self.calculate_center()
 
     def setIons(self, value):
         """
@@ -545,7 +586,8 @@ class Ions(Compound):
        """
        Count and set the number of ions in the pdb
        """
-       ions = ["NA", "CA", "MG", "CL", "ZN"]
+       ions = ["NA", "NA+", "SOD", "K", "CA", "MG", "CL", "CL-", 
+               "CHL", "ZN", "LI", "RB", "CS", "F", "BR", "I"]
        ion_count = 0
        for line in open(self.pdb, "r"):
            if len(line.split()) > 2:
@@ -572,13 +614,16 @@ class Cholesterol(Compound):
     def __init__(self, *args, **kwargs):
         self.pdb = kwargs["pdb"]
         self.itp = kwargs["itp"]
+        self.logger = logging.getLogger('pymemdyn.protein.Cholesterol')
         super(Cholesterol, self).__init__(self, *args, **kwargs)
         
         self.group = "membr"
         self.posre_itp = "posre_cho.itp"
+        self.check_pdb()
         self._setITP()
         self._n_cho = self.count_cho()
-        self.logger = logging.getLogger('pymemdyn.protein.Cholesterol')
+        
+        self.center = self.calculate_center()
 
     def setCho(self, value):
         """
@@ -624,7 +669,7 @@ class Cholesterol(Compound):
        cho_count = 0
        for line in open(self.pdb, "r"):
            if len(line.split()) > 3:
-               if line.split()[3] in ["CHO", "CLR"]:
+               if line.split()[3] in ["CHO"]:
                    cho_count += 1
        return cho_count / 74 #Each CHO has 74 atoms
 
@@ -659,6 +704,7 @@ class Alosteric(Compound):
         self.check_itp()
 
         self.group = "protlig"
+        self.center = self.calculate_center()
 
     def check_pdb(self):
        """
