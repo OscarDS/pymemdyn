@@ -30,6 +30,9 @@ import subprocess
 
 import settings as s
 
+import logging
+logger_bw4posres = logging.getLogger('pymemdyn.bw4posres')
+
 # A larger dictionary of three to one letters can be used.
 # For example the dictionary contained at Data/SCOPData.py in a Biopython
 # distribution.
@@ -72,6 +75,7 @@ class Run(object):
         self.own_dir = kwargs.get("own_dir") or ""
         self.clustal_bin = s.CLUSTAL_BIN
         self.repo_dir = s.TEMPLATES_DIR
+        self.loggerbw = logging.getLogger('pymemdyn.bw4posres.Run')
 
     def pdb2fas(self):
         """
@@ -81,6 +85,7 @@ class Run(object):
         based on their 3-letter sequence id.
         """
         fastaseq = open(os.path.join(self.pdb.split(".")[0] + ".fasta"), "w")
+        self.loggerbw.debug('writing now: '+os.path.join(self.pdb.split(".")[0] + ".fasta"))
         fastaseq.write(">")
         fastaseq.write("{0}\n".format(self.pdb))
         result = []
@@ -103,7 +108,7 @@ class Run(object):
 
     def clustalalign(self):
         """
-        Align the produced fasta sequence with clustalw to assing
+        Align the produced fasta sequence with clustalw to assign
         Ballesteros-Weinstein marks.
         """
         profile1 =  self.repo_dir + "/GPCR_inactive_BWtags.aln"
@@ -198,6 +203,7 @@ class Run(object):
         firstline = onlyca.readline()
         offset =  int(int(firstline[22:26]) - 1)
         renumbered = [x + offset for x in resid]
+        logger_bw4posres.debug('renumbered: {}'.format(renumbered))
         # Take care of the possible offset of sequence numbers not starting
         # at 1.
         for line in onlyca:
@@ -205,8 +211,8 @@ class Run(object):
                 caid.append(line[7:11])
 
         # These two lists must have the same dimension:
-        print("The following two lists must have the same dimension:")
-        print(len(bwtags), len(caid))
+        logger_bw4posres.debug("The following two lists must have the same dimension:")
+        logger_bw4posres.debug('{} \t {}'.format(len(bwtags), len(caid)))
         
         # The mapping (rosetta-stone) between BW id numbers and c-alpha atom
         # numbers is made in this list.
@@ -236,7 +242,7 @@ class Run(object):
                     caatom2.append(bw2calpha[j][1])
 
         for i in range(0,24):
-            print (caatom1[i], caatom2[i], bwpairs[i])
+            logger_bw4posres.debug('{}, {}, {}'.format(caatom1[i], caatom2[i], bwpairs[i]))
 
         # This part finally writes to the disre.itp file all the information it needs
         # for the atom pairs after they have been mapped from Ballesteros-Weinstein

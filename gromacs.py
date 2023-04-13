@@ -11,6 +11,8 @@ import recipes
 import settings
 import utils
 
+logger = logging.getLogger('pymemdyn.gromacs')
+
 
 class Gromacs(object):
     def __init__(self, *args, **kwargs):
@@ -26,6 +28,7 @@ class Gromacs(object):
             self.tpr = \
                 self.membrane_complex.complex.monomer.pdb.replace(".pdb", 
                                                                   ".tpr")
+        self.logger = logging.getLogger('pymemdyn.gromacs.Gromacs')
 
     def set_membrane_complex(self, value):
         """
@@ -85,6 +88,7 @@ class Gromacs(object):
             if "total charge" in line:
                 # In gromacs the charge is not displayed in scientific notation.
                 # so this will result in giving a charge of 5, for a charge of 5.99999
+                print(line)
                 charge = abs(int(round(float(line.split()[-1]))))
                 break
 
@@ -125,7 +129,8 @@ class Gromacs(object):
                                              "input": "q\n"})
 
         for line in out.decode("utf-8").split("\n"):
-            print(line)
+            # print(line)
+            logger.debug(line)
             if "SOL" in line:
                 self.n_sol = int(line.split()[0])
 
@@ -189,6 +194,10 @@ class Gromacs(object):
         logging.debug(err.decode().strip('\n'))
         logging.debug(out.decode().strip('\n'))
 
+        self.logger.debug("make_ndx command")
+        # self.logger.debug(err.decode().strip('\n'))
+        # self.logger.debug(out.decode().strip('\n'))
+
         return True
 
     def make_topol_lipids(self, **kwargs):
@@ -214,7 +223,7 @@ class Gromacs(object):
         """
         log = open(command["options"]["log"], "w")
         log.writelines(str(output.decode('utf8').strip('\n')))
-        print(str(output.decode('utf8').strip('\n')))
+        # print(str(output.decode('utf8').strip('\n')))
         log.close()
 
         return True
@@ -269,12 +278,12 @@ class Gromacs(object):
                          working_dir=os.getcwd(),
                          complex=self.membrane_complex.complex)
 
-    def run_recipe(self, debug=False):
+    def run_recipe(self, debugFast=False):
         """
         run_recipe: Run recipe for the complex
         """
         if not hasattr(self, "recipe"):
-            self.select_recipe(debug=debug)
+            self.select_recipe(debugFast=debugFast)
 
         self.repo_dir = self.wrapper.repo_dir
 
@@ -290,6 +299,10 @@ class Gromacs(object):
                 self.recipe.__class__.__name__,
                 n + 1, len(self.recipe.steps),
                 command_name))
+            self.logger.info("{0} Step ({1}/{2}): {3}.".format(
+                self.recipe.__class__.__name__,
+                n + 1, len(self.recipe.steps),
+                command_name))
             if ("gromacs") in command:
                 # Either run a Gromacs pure command...
                 if hasattr(self, "queue"): command["queue"] = self.queue
@@ -297,6 +310,9 @@ class Gromacs(object):
                 logging.debug(" ".join(self.wrapper.generate_command(command)))
                 logging.debug(err.decode().strip('\n'))
                 logging.debug(out.decode().strip('\n'))
+                self.logger.debug(" ".join(self.wrapper.generate_command(command)))
+                # self.logger.debug(err.decode().strip('\n'))
+                self.logger.debug(out.decode().strip('\n'))
                 ## Next line tests Gromacs output checking for known errors
                 groerrors.GromacsMessages(gro_err=err,
                                           command=command["gromacs"])
@@ -305,10 +321,11 @@ class Gromacs(object):
                 # redirect stdout and stderr
                 if command["gromacs"] in ["energy"]:
                     self.manual_log(command, out)
-
+                    
             else:
                 # ...or run a local function
                 logging.debug(command)
+                self.logger.debug(command)
                 try:
                     f = getattr(self, command["command"])
                 except AttributeError:
@@ -320,10 +337,11 @@ class Gromacs(object):
                 else:
                     f()
                 logging.debug("FUNCTION: " + str(f.__doc__).strip())
+                self.logger.debug("FUNCTION: " + str(f.__doc__).strip())
 
         return True
 
-    def select_recipe(self, stage="", debug=False):
+    def select_recipe(self, stage="", debugFast=False):
         """
         select_recipe: Select the appropriate recipe for the complex
         """
@@ -344,10 +362,10 @@ class Gromacs(object):
         # Init, Minimization, Equilibration...
 
         if hasattr(recipes, recipe):
-            self.recipe = getattr(recipes, recipe)(debug=debug, chains=self.membrane_complex.complex.monomer.chains)
+            self.recipe = getattr(recipes, recipe)(debugFast=debugFast, chains=self.membrane_complex.complex.monomer.chains)
         elif hasattr(recipes, "Basic" + stage):
             # Fall back to Basic recipe if no specific where found
-            self.recipe = getattr(recipes, "Basic" + stage)(debug=debug, chains=self.membrane_complex.complex.monomer.chains)
+            self.recipe = getattr(recipes, "Basic" + stage)(debugFast=debugFast, chains=self.membrane_complex.complex.monomer.chains)
 
         return True
 

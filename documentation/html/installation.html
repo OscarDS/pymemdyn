@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyMemDyn Version 1.6.1 &mdash; pymemdyn 1.6.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Manual" href="manual.html" />
+    <link rel="prev" title="Welcome to pymemdyn’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pymemdyn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PyMemDyn Version 1.6.1</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modeling-modules">Modeling Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auxiliary-modules">Auxiliary Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#execution-modules">Execution Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#executable">Executable</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="manual.html">Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymemdyn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">PyMemDyn Version 1.6.1</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pymemdyn-version-1-6-1">
+<h1>PyMemDyn Version 1.6.1<a class="headerlink" href="#pymemdyn-version-1-6-1" title="Permalink to this heading"></a></h1>
+<p>PyMemDyn is a standalone <em>python</em> package to setup membrane molecular
+dynamics calculations using the <strong>GROMACS</strong> set of programs. The package
+can be used either in a desktop environment, or in a cluster with
+popular queuing systems such as Torque/PBS or Slurm.</p>
+<p><strong>PyMemDyn</strong> is hosted in github at:</p>
+<p><a class="reference external" href="https://github.com/GPCR-ModSim/pymemdyn">https://github.com/GPCR-ModSim/pymemdyn</a></p>
+<p>You can download any version of <strong>PyMemDyn</strong> by cloning the repository
+to your local machine using git.</p>
+<p>You will need to create a free personal account at github and send and
+e-mail to: <a class="reference external" href="mailto:gpcruser&#37;&#52;&#48;gmail&#46;com">gpcruser<span>&#64;</span>gmail<span>&#46;</span>com</a> requesting access to the code. After
+request processing from us you will be given access to the free
+repository.</p>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this heading"></a></h2>
+<div class="line-block">
+<div class="line"><strong>GROMACS</strong></div>
+<div class="line">Pymemdyn is dependent on GROMACS. Download GROMACS
+<a class="reference external" href="https://manual.gromacs.org/current/download.html">here</a>.
+Instructions for installation are
+<a class="reference external" href="https://manual.gromacs.org/current/install-guide/index.html">here</a>.</div>
+</div>
+<div class="line-block">
+<div class="line"><strong>LigParGen</strong></div>
+<div class="line">In order to automatically generate .itp files for ligands and
+allosterics, the program ligpargen is used. Install using their
+instructions: <a class="reference external" href="https://github.com/Isra3l/ligpargen">https://github.com/Isra3l/ligpargen</a>. Do not forget to
+activate the conda environment in which you installed ligpargen
+(<code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">py37</span></code> if you followed the instructions) before
+running pymemdyn. In case you are using a bash script, this should be
+done inside the script. See also “ligpargen_example” in the folder
+examples.</div>
+</div>
+<p>Testing was done using LigParGen v2.1 using BOSS5.0.</p>
+<p>Pymemdyn can also be used without ligpargen installation, but then .itp
+files containing the parameters for the ligand and the allosteric should
+be provided in the same folder as their respective .pdb’s.</p>
+<div class="line-block">
+<div class="line"><strong>Queueing system</strong></div>
+<div class="line">A queuing system: although not strictly required, this is highly
+advisable since an MD simulation of 2.5 nanoseconds will be
+performed. However, if only membrane insertion and energy
+minimization is requested, this requirement can be avoided.
+Currently, the queuing systems supported include Slurm and PBS.</div>
+</div>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<p>To install <strong>PyMemDyn</strong> follow these steps:</p>
+<ol class="arabic">
+<li><p>Clone <strong>PyMemDyn</strong> for python 3.7:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">username</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">GPCR</span><span class="o">-</span><span class="n">ModSim</span><span class="o">/</span><span class="n">pymemdyn</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>Make sure to change <em>username</em> to the one you have created at github.</p>
+</li>
+<li><p>The previous command will create a <em>pymemdyn</em> directory. Now you have
+to tell your operating system how to find that folder. You achieve
+this by declaring the location of the directory in a .bashrc file
+.cshrc or .zshrc file in your home folder. An example of what you
+will have to include in your .bashrc file follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export PYMEMDYN=/home/username/software/pymemdyn
+export PATH=$PYMEMDYN:$PATH
+</pre></div>
+</div>
+<p>or if your shell is csh then in your .cshrc file you can add:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>setenv PYMEMDYN /home/username/software/pymemdyn
+set path = ($path $PYMEMDYN)
+</pre></div>
+</div>
+<p>Notice that I have cloned <em>pymemdyn</em> in the software folder in my
+home folder, you will have to adapt this to wherever it is that you
+downloaded your <em>pymemdyn</em> to.</p>
+<p>After including the route to your <em>pymemdyn</em> directory in your
+.bashrc file make sure to issue the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">.</span><span class="n">bashrc</span>
+</pre></div>
+</div>
+<p>or open a new terminal.</p>
+<p>To check if you have defined the route to the <em>pymemdyn</em> directory
+correctly try to run the main program called pymemdyn in a terminal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pymemdyn</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
+</div>
+<p>You should obtain the following help output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">pymemdyn</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="n">OWN_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">REPO_DIR</span><span class="p">]</span> <span class="o">-</span><span class="n">p</span> <span class="n">PDB</span> <span class="p">[</span><span class="o">-</span><span class="n">l</span> <span class="n">LIGAND</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ALOSTERIC</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">w</span> <span class="n">WATERS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="n">IONS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CHO</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">res</span> <span class="n">RESTRAINT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">q</span> <span class="n">QUEUE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span><span class="p">]</span>
+
+<span class="o">==</span> <span class="n">Setup</span> <span class="n">Molecular</span> <span class="n">Dynamics</span> <span class="k">for</span> <span class="n">Membrane</span> <span class="n">Proteins</span> <span class="n">given</span> <span class="n">a</span> <span class="n">PDB</span><span class="o">.</span> <span class="o">==</span>
+
+<span class="n">optional</span> <span class="n">arguments</span><span class="p">:</span>
+   <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>            <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+   <span class="o">-</span><span class="n">v</span><span class="p">,</span> <span class="o">--</span><span class="n">version</span>         <span class="n">show</span> <span class="n">program</span><span class="s1">&#39;s version number and exit</span>
+   <span class="o">-</span><span class="n">b</span> <span class="n">OWN_DIR</span>            <span class="n">Working</span> <span class="nb">dir</span> <span class="k">if</span> <span class="n">different</span> <span class="kn">from</span> <span class="nn">actual</span> <span class="nb">dir</span>
+   <span class="o">-</span><span class="n">r</span> <span class="n">REPO_DIR</span>           <span class="n">Path</span> <span class="n">to</span> <span class="n">templates</span> <span class="n">of</span> <span class="n">fixed</span> <span class="n">files</span><span class="o">.</span> <span class="n">If</span> <span class="ow">not</span> <span class="n">provided</span><span class="p">,</span>
+                         <span class="n">take</span> <span class="n">the</span> <span class="n">value</span> <span class="kn">from</span> <span class="nn">settings.TEMPLATES_DIR.</span>
+   <span class="o">-</span><span class="n">p</span> <span class="n">PDB</span>                <span class="n">Name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">pdb</span> <span class="n">to</span> <span class="n">insert</span> <span class="n">into</span> <span class="n">membrane</span> <span class="k">for</span> <span class="n">MD</span>
+                         <span class="p">(</span><span class="n">mandatory</span><span class="p">)</span><span class="o">.</span> <span class="n">Use</span> <span class="n">the</span> <span class="n">pdb</span> <span class="n">extension</span><span class="o">.</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="o">-</span><span class="n">p</span>
+                         <span class="n">myprot</span><span class="o">.</span><span class="n">pdb</span><span class="p">)</span>
+   <span class="o">-</span><span class="n">l</span> <span class="n">LIGAND</span><span class="p">,</span> <span class="o">--</span><span class="n">lig</span> <span class="n">LIGAND</span>
+                         <span class="n">Name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">ligand</span><span class="p">,</span> <span class="n">without</span> <span class="n">extension</span><span class="o">.</span> <span class="n">See</span>
+                         <span class="n">input_guide</span><span class="o">.</span><span class="n">txt</span> <span class="k">for</span> <span class="n">details</span> <span class="n">on</span> <span class="n">how</span> <span class="n">to</span> <span class="n">generate</span> <span class="n">the</span>
+                         <span class="n">required</span> <span class="n">pdb</span> <span class="ow">and</span> <span class="n">forcefield</span> <span class="n">files</span><span class="o">.</span>
+   <span class="o">-</span><span class="n">a</span> <span class="n">ALLOSTERIC</span><span class="p">,</span> <span class="o">--</span><span class="n">alo</span> <span class="n">ALLOSTERIC</span>
+                         <span class="n">Name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">allosteric</span><span class="p">,</span> <span class="n">without</span> <span class="n">extension</span><span class="o">.</span> <span class="n">See</span>
+                         <span class="n">input_guide</span><span class="o">.</span><span class="n">txt</span> <span class="k">for</span> <span class="n">details</span> <span class="n">on</span> <span class="n">how</span> <span class="n">to</span> <span class="n">generate</span> <span class="n">the</span>
+                         <span class="n">required</span> <span class="n">pdb</span> <span class="ow">and</span> <span class="n">forcefield</span> <span class="n">files</span><span class="o">.</span>
+   <span class="o">-</span><span class="n">w</span> <span class="n">WATERS</span><span class="p">,</span> <span class="o">--</span><span class="n">waters</span> <span class="n">WATERS</span>
+                         <span class="n">Crystalized</span> <span class="n">water</span> <span class="n">molecules</span><span class="o">.</span> <span class="n">File</span> <span class="n">name</span> <span class="n">without</span>
+                         <span class="n">extension</span><span class="o">.</span>
+   <span class="o">-</span><span class="n">i</span> <span class="n">IONS</span><span class="p">,</span> <span class="o">--</span><span class="n">ions</span> <span class="n">IONS</span>  <span class="n">Crystalized</span> <span class="n">ions</span> <span class="n">file</span> <span class="n">name</span> <span class="n">without</span> <span class="n">extension</span><span class="o">.</span>
+   <span class="o">-</span><span class="n">c</span> <span class="n">CHO</span><span class="p">,</span> <span class="o">--</span><span class="n">cho</span> <span class="n">CHO</span>     <span class="n">Crystalized</span> <span class="n">cholesterol</span> <span class="n">molecules</span> <span class="n">file</span> <span class="n">name</span> <span class="n">without</span>
+                         <span class="n">extension</span><span class="o">.</span>
+   <span class="o">--</span><span class="n">res</span> <span class="n">RESTRAINT</span>       <span class="n">Position</span> <span class="n">restraints</span> <span class="n">during</span> <span class="n">MD</span> <span class="n">production</span> <span class="n">run</span><span class="o">.</span> <span class="n">Options</span><span class="p">:</span>
+                         <span class="n">bw</span> <span class="p">(</span><span class="n">Ballesteros</span><span class="o">-</span><span class="n">Weinstein</span> <span class="n">Restrained</span> <span class="n">Relaxation</span> <span class="o">-</span>
+                         <span class="n">default</span><span class="p">),</span> <span class="n">ca</span> <span class="p">(</span><span class="n">C</span><span class="o">-</span><span class="n">Alpha</span> <span class="n">Restrained</span> <span class="n">Relaxation</span><span class="p">)</span>
+   <span class="o">--</span><span class="n">llc</span> <span class="n">LIGPARGEN_LIGAND_CHARGE</span>
+                         <span class="n">Charge</span> <span class="n">of</span> <span class="n">ligand</span> <span class="k">for</span> <span class="n">ligpargen</span> <span class="p">(</span><span class="n">when</span> <span class="n">itp</span> <span class="n">file</span> <span class="n">should</span>
+                         <span class="n">be</span> <span class="n">generated</span><span class="p">)</span>
+   <span class="o">--</span><span class="n">llo</span> <span class="n">LIGPARGEN_LIGAND_NROFOPTIMIZATIONS</span>
+                         <span class="n">Number</span> <span class="n">of</span> <span class="n">optimizations</span> <span class="n">that</span> <span class="n">ligpargen</span> <span class="n">should</span> <span class="n">use</span> <span class="n">to</span>
+                         <span class="n">generate</span> <span class="n">itp</span> <span class="n">file</span> <span class="k">for</span> <span class="n">ligand</span> <span class="p">(</span><span class="n">only</span> <span class="n">needed</span> <span class="n">when</span> <span class="n">itp</span> <span class="ow">is</span>
+                         <span class="ow">not</span> <span class="n">provided</span><span class="p">)</span>
+   <span class="o">--</span><span class="n">lac</span> <span class="n">LIGPARGEN_ALLOSTERIC_CHARGE</span>
+                         <span class="n">Charge</span> <span class="n">of</span> <span class="n">allosteric</span> <span class="k">for</span> <span class="n">ligpargen</span> <span class="p">(</span><span class="n">when</span> <span class="n">itp</span> <span class="n">file</span>
+                         <span class="n">should</span> <span class="n">be</span> <span class="n">generated</span><span class="p">)</span>
+   <span class="o">--</span><span class="n">lao</span> <span class="n">LIGPARGEN_ALLOSTERIC_NROFOPTIMIZATIONS</span>
+                         <span class="n">Number</span> <span class="n">of</span> <span class="n">optimizations</span> <span class="n">that</span> <span class="n">ligpargen</span> <span class="n">should</span> <span class="n">use</span> <span class="n">to</span>
+                         <span class="n">generate</span> <span class="n">itp</span> <span class="n">file</span> <span class="k">for</span> <span class="n">allosteric</span> <span class="p">(</span><span class="n">only</span> <span class="n">needed</span> <span class="n">when</span> <span class="n">itp</span>
+                         <span class="ow">is</span> <span class="ow">not</span> <span class="n">provided</span><span class="p">)</span>
+   <span class="o">-</span><span class="n">q</span> <span class="n">QUEUE</span><span class="p">,</span> <span class="o">--</span><span class="n">queue</span> <span class="n">QUEUE</span>
+                         <span class="n">Queueing</span> <span class="n">system</span> <span class="n">to</span> <span class="n">use</span> <span class="p">(</span><span class="n">slurm</span><span class="p">,</span> <span class="n">pbs</span><span class="p">,</span> <span class="n">pbs_ib</span> <span class="ow">and</span> <span class="n">svgd</span>
+                         <span class="n">supported</span><span class="p">)</span>
+   <span class="o">-</span><span class="n">d</span><span class="p">,</span> <span class="o">--</span><span class="n">debug</span>
+</pre></div>
+</div>
+</li>
+<li><p>Updates are very easy thanks to the git versioning system. Once
+<strong>PyMemDyn</strong> has been downloaded (cloned) into its own <em>pymemdyn</em>
+folder you just have to move to it and pull the newest changes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">username</span><span class="o">/</span><span class="n">software</span><span class="o">/</span><span class="n">pymemdyn</span>
+<span class="n">git</span> <span class="n">pull</span>
+</pre></div>
+</div>
+</li>
+<li><p>You can also clone older stable versions of <strong>PyMemDyn</strong>. For example
+the stable version 1.4 which works well and has been tested
+extensively again GROMACS version 4.6.7 can be cloned with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">username</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">GPCR</span><span class="o">-</span><span class="n">ModSim</span><span class="o">/</span><span class="n">pymemdyn</span><span class="o">.</span><span class="n">git</span> \
+<span class="o">--</span><span class="n">branch</span> <span class="n">stable</span><span class="o">/</span><span class="mf">1.4</span> <span class="o">--</span><span class="n">single</span><span class="o">-</span><span class="n">branch</span> <span class="n">pymemdyn</span><span class="o">-</span><span class="mf">1.4</span>
+</pre></div>
+</div>
+<p>Now you will have to change your .bashrc or .cshrc files in your home
+folder accordingly.</p>
+</li>
+<li><p>To make sure that your GROMACS installation is understood by
+<strong>PyMemDyn</strong> you will need to specify the path to where GROMACS is
+installed in your system. To do this you will need to edit the
+settings.py file with any text editor (vi and emacs are common
+options in the unix environment). Make sure that only one line is
+uncommented, looking like: GROMACS_PATH = /opt/gromacs-2021/bin
+Provided that in your case gromacs is installed in /opt. The program
+will prepend this line to the binaries names, so calling
+/opt/gromacs-2021/bin/gmx should point to that binary.</p></li>
+</ol>
+</section>
+<section id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this heading"></a></h2>
+<section id="modeling-modules">
+<h3>Modeling Modules<a class="headerlink" href="#modeling-modules" title="Permalink to this heading"></a></h3>
+<p>The following modules define the objects to be modeled.</p>
+<ul class="simple">
+<li><p><strong>protein.py</strong>. This module defines the ProteinComplex, Protein,
+Monomer, Dimer, Compound, Ligand, CrystalWaters, Ions, Cholesterol,
+Lipids, and Alosteric objects. These objects are started with the
+required files, and can then be passed to other objects.</p></li>
+<li><p><strong>membrane.py</strong>. Defines the cellular membrane.</p></li>
+<li><p><strong>complex.py</strong>. Defines the full complex, protein + membrane.
+It can include any of the previous objects.</p></li>
+</ul>
+</section>
+<section id="auxiliary-modules">
+<h3>Auxiliary Modules<a class="headerlink" href="#auxiliary-modules" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>queue.py</strong>. Queue manager. That is, it receives objects to be
+executed.</p></li>
+<li><p><strong>recipes.py</strong>. Applies step by step instructions for carrying a
+modeling step.</p></li>
+<li><p><strong>bw4posres.py</strong>. Creates a set of distance restraints based on
+Ballesteros-Weinstein identities which are gathered by alignment to a
+multiple-sequence alignment using clustalw.</p></li>
+<li><p><strong>utils.py</strong>. Puts the functions done by the previous objects on
+demand. For example, manipulate files, copy folders, call functions
+or classes from standalone modules like bw4posres.py, etc.</p></li>
+<li><p><strong>settings.py</strong> This modules sets up the main environment variables
+needed to run the calculation, for example, the path to the gromacs
+binaries.</p></li>
+</ul>
+</section>
+<section id="execution-modules">
+<h3>Execution Modules<a class="headerlink" href="#execution-modules" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>gromacs.py</strong>. Defines the Gromacs and Wrapper objects. * Gromacs
+will load the objects to be modeled, the modeling recipe, and run it.
+* Wrapper is a proxy for gromacs commands. When a recipe entry is
+sent to it this returns the command to be run.</p></li>
+</ul>
+</section>
+<section id="executable">
+<h3>Executable<a class="headerlink" href="#executable" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>pymemdyn</strong> The main program to call which sends the run to a
+cluster.</p></li>
+</ul>
+<p>More information about all modules can be found in the Modules chapter.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to pymemdyn’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="manual.html" class="btn btn-neutral float-right" title="Manual" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, H. Gutierrez de Teran,  X. Bello, M. Esguerra, R. L. van den Broek, R.V. Küpper.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

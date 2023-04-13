@@ -1,3 +1,14 @@
+"""This module describes the commandline or python commands for all the 
+phases of pymemdyn. It consists of: 
+
+    - Init
+    - Minimization
+    - Equilibration
+    - Relaxation
+    - Collecting results
+    
+"""
+
 import os
 
 
@@ -220,7 +231,7 @@ class BasicInit(object):
              "trjconv2": {"trans": "membrane_complex.complex.trans"}
              }
 
-        if kwargs["debug"] or False:
+        if kwargs["debugFast"] or False:
             self.recipe["set_grompp"]["options"]["steep.mdp"] = "steepDEBUG.mdp"
 
 
@@ -304,7 +315,7 @@ class BasicMinimization(object):
         }
         self.breaks = {}
 
-        if kwargs["debug"] or False:
+        if kwargs["debugFast"] or False:
             self.recipe["set_stage_init"]["options"]["repo_files"] = \
                 ["eqDEBUG.mdp"]
 
@@ -375,7 +386,7 @@ class BasicEquilibration(object):
                 self.recipe["set_stage_init2"]["options"]["src_files"].append(
                                                     "posre_Protein_chain_" + chain + ".itp")
 
-        if kwargs["debug"] or False:
+        if kwargs["debugFast"] or False:
             self.recipe["grompp"]["options"]["src"] = "Rmin/eqDEBUG.mdp"
             self.recipe["set_stage_init"]["options"]["src_files"] = \
                 ["eqDEBUG.mdp"]
@@ -450,7 +461,7 @@ class BasicRelax(object):
                              "log": "md_eq{0}.log".format(const)}}
         self.breaks = {}
 
-        if kwargs["debug"] or False:
+        if kwargs["debugFast"] or False:
             for i in [x for x in self.recipe.keys() if x.startswith("relax")]:
                 self.recipe[i]["options"]["mdp"] = "eqDEBUG.mdp"
 
@@ -507,7 +518,7 @@ class BasicCARelax(object):
 
         self.breaks = {}
 
-        if kwargs["debug"] or False:
+        if kwargs["debugFast"] or False:
             self.recipe["set_stage_init"]["options"]["src_files"] = \
                 ["confout.gro", "eqDEBUG.mdp"]
             self.recipe["grompp"]["options"]["src"] = "eqProd/eqDEBUG.mdp"
@@ -550,7 +561,7 @@ class BasicBWRelax(object):
 
         self.breaks = {}
 
-        if kwargs["debug"] or False:
+        if kwargs["debugFast"] or False:
             self.recipe["set_stage_init"]["options"]["src_files"] = \
                 ["confout.gro", "eqDEBUG.mdp"]
             self.recipe["grompp"]["options"]["src"] = "eqProd/eqDEBUG.mdp"
@@ -631,7 +642,9 @@ class BasicCollectResults(object):
                                                "repo_files": ["popc.itp",
                                                               "README.md",
                                                               "prod.mdp",
-                                                              "load_gpcr.pml"],
+                                                              "load_gpcr.pml",
+                                                              "ions.itp",
+                                                              "spc.itp"],
                                                "tgt_dir": "finalOutput"}},
 
                        "clean_topol":
@@ -649,7 +662,9 @@ class BasicCollectResults(object):
                                                      "hexagon.pdb",
                                                      "protein.itp",
                                                      "lig.itp",
-                                                     "ions_local.itp",
+                                                     "posre_lig.itp",
+                                                     "alo.itp",
+                                                     "posre_alo.itp",
                                                      "cho.itp",
                                                      "hoh.itp",
                                                      "index.ndx", 

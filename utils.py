@@ -4,12 +4,8 @@ from string import Template
 
 import bw4posres
 
-try:
-    import ligpargen.ligpargen as ligpar
-except:
-    print("""!! WARNING !! : No installation of ligpargen was found. 
-          itp files for ligands and/or allosterics cannot be automatically
-          generated and must be provided manually.""")
+import logging
+logger_utils = logging.getLogger('pymemdyn.utils')
 
 
 def clean_pdb(src = [], tgt = []):
@@ -74,10 +70,15 @@ def getbw(**kwargs):
     Call the Ballesteros-Weistein based pair-distance restraint
     module.
     """
+    logger_getBW = logging.getLogger('pymemdyn.utils.getbw')
     bw4posres.Run(kwargs["src"]).pdb2fas()
+    logger_getBW.debug('fasta file generated')
     bw4posres.Run(kwargs["src"]).clustalalign()
+    logger_getBW.debug('clustalalign done')
     bw4posres.Run(kwargs["src"]).getcalphas()
+    logger_getBW.debug('calphas gotten')
     bw4posres.Run(kwargs["src"]).makedisre()
+    logger_getBW.debug('disre.itp written')
 
 def _file_append(f_src, f2a):
     """
@@ -180,7 +181,7 @@ def make_topol(template_dir = \
             cho_name = complex.cho.itp
     if hasattr(complex, "allosteric"):
         if complex.allosteric:
-            alo = 1
+            alo = complex._n_alo
             allosteric_name = complex.allosteric.itp
     if hasattr(complex, "waters"):
         if hasattr(complex.waters, "_n_wats"):
@@ -336,37 +337,3 @@ def tar_out(src_dir = [], tgt = []):
     t_f.close()
     os.chdir(base_dir)
 
-def create_itp(pdbfile: str, charge: int, numberOfOptimizations: int) -> None:
-    """Call ligpargen to create gromacs itp file and corresponding openmm
-    pdb file. Note that original pdb file will be replaced by opnemm pdb
-    file.
-
-    parameters:
-    - pdbfile: string containing local path to pdb of molecule. In commandline -i.
-    - charge: interger charge of molecule. In commandline -c.
-    - numberOfOptimizations: number of optimizations done by ligpargen. In cmdline -o.
-
-    returns:
-    - None
-
-    writes itp file and new pdf file to current dir. old pdb is saved in dir ligpargenInput. 
-    unneccessary ligpargen output is saved in dir ligpargenOutput.
-    """
-    dot = pdbfile.find(".")
-    print(pdbfile)
-    name = pdbfile[:dot]
-    workdir = 'ligpargenOutput_' + name
-    inputdir = 'ligpargenInput_' + name
-    mol = ligpar.LigParGen(ifile=pdbfile, molname=name, workdir=workdir, 
-                           resname='LIG', charge=charge, 
-                           numberOfOptimizations=numberOfOptimizations,
-                           debug=True)
-    mol.writeAllOuputs()
-
-    # Only save necessary files
-    os.mkdir(inputdir)
-    os.rename(pdbfile, inputdir+'/'+pdbfile)
-    os.rename(workdir+'/'+name+'.gmx.itp', name+'.itp')
-    os.rename(workdir+'/'+name+'.openmm.pdb', name+'.pdb')
-
-    return
