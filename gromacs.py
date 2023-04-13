@@ -16,6 +16,7 @@ logger = logging.getLogger('pymemdyn.gromacs')
 
 class Gromacs(object):
     def __init__(self, *args, **kwargs):
+        self.logger = logging.getLogger('pymemdyn.gromacs.Gromacs')
         self.broker = kwargs.get("broker") or broker.Printing()
         self._membrane_complex = None
         self.wrapper = Wrapper()
@@ -28,7 +29,7 @@ class Gromacs(object):
             self.tpr = \
                 self.membrane_complex.complex.monomer.pdb.replace(".pdb", 
                                                                   ".tpr")
-        self.logger = logging.getLogger('pymemdyn.gromacs.Gromacs')
+        
 
     def set_membrane_complex(self, value):
         """

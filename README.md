@@ -1,4 +1,4 @@
-PyMemDyn Version 1.6.1
+PyMemDyn Version 1.6.3
 ================================================================================
 
 PyMemDyn is  a standalone *python*  package to setup  membrane molecular
@@ -74,57 +74,66 @@ To install **PyMemDyn** follow these steps:
         pymemdyn --help
 
     You should obtain the following help output:
-	
+
         usage: pymemdyn [-h] [-v] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
-                        [-a ALOSTERIC] [-w WATERS] [-i IONS] [-c CHO]
-                        [--res RESTRAINT] [-q QUEUE] [-d]
+                        [-a ALLOSTERIC] [--na NR_ALO] [-w WATERS] [-i IONS] [-c CHO]
+                        [--res RESTRAINT] [--llc LIGPARGEN_LIGAND_CHARGE]
+                        [--llo LIGPARGEN_LIGAND_NROFOPTIMIZATIONS]
+                        [--lac LIGPARGEN_ALLOSTERIC_CHARGE]
+                        [--lao LIGPARGEN_ALLOSTERIC_NROFOPTIMIZATIONS] [-q QUEUE] [-d]
+                        [--debugFast]
         
         == Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
         
-        optional arguments:
-           -h, --help            show this help message and exit
-           -v, --version         show program's version number and exit
-           -b OWN_DIR            Working dir if different from actual dir
-           -r REPO_DIR           Path to templates of fixed files. If not provided,
-                                 take the value from settings.TEMPLATES_DIR.
-           -p PDB                Name of the pdb to insert into membrane for MD
-                                 (mandatory). Use the pdb extension. (e.g. -p
-                                 myprot.pdb)
-           -l LIGAND, --lig LIGAND
-                                 Name of the ligand, without extension. See
-                                 input_guide.txt for details on how to generate the
-                                 required pdb and forcefield files.
-           -a ALLOSTERIC, --alo ALLOSTERIC
-                                 Name of the allosteric, without extension. See
-                                 input_guide.txt for details on how to generate the
-                                 required pdb and forcefield files.
-           -w WATERS, --waters WATERS
-                                 Crystalized water molecules. File name without
-                                 extension.
-           -i IONS, --ions IONS  Crystalized ions file name without extension.
-           -c CHO, --cho CHO     Crystalized cholesterol molecules file name without
-                                 extension.
-           --res RESTRAINT       Position restraints during MD production run. Options:
-                                 bw (Ballesteros-Weinstein Restrained Relaxation -
-                                 default), ca (C-Alpha Restrained Relaxation)
-           --llc LIGPARGEN_LIGAND_CHARGE
-                                 Charge of ligand for ligpargen (when itp file should
-                                 be generated)
-           --llo LIGPARGEN_LIGAND_NROFOPTIMIZATIONS
-                                 Number of optimizations that ligpargen should use to
-                                 generate itp file for ligand (only needed when itp is
-                                 not provided)
-           --lac LIGPARGEN_ALLOSTERIC_CHARGE
-                                 Charge of allosteric for ligpargen (when itp file
-                                 should be generated)
-           --lao LIGPARGEN_ALLOSTERIC_NROFOPTIMIZATIONS
-                                 Number of optimizations that ligpargen should use to
-                                 generate itp file for allosteric (only needed when itp
-                                 is not provided)
-           -q QUEUE, --queue QUEUE
-                                 Queueing system to use (slurm, pbs, pbs_ib and svgd
-                                 supported)
-           -d, --debug
+        options:
+          -h, --help            show this help message and exit
+          -v, --version         show program's version number and exit
+          -b OWN_DIR            Working dir if different from actual dir
+          -r REPO_DIR           Path to templates of fixed files. If not provided,
+                                take the value from settings.TEMPLATES_DIR.
+          -p PDB                Name of the pdb to insert into membrane for MD
+                                (mandatory). Use the pdb extension. (e.g. -p
+                                myprot.pdb)
+          -l LIGAND, --lig LIGAND
+                                Name of the ligand, without extension. See
+                                input_guide.txt for details on how to generate the
+                                required pdb and forcefield files.
+          -a ALLOSTERIC, --alo ALLOSTERIC
+                                Name of the allosteric, without extension. See
+                                input_guide.txt for details on how to generate the
+                                required pdb and forcefield files.
+          --na NR_ALO           number of identical allosteric molecules (with same
+                                .itp file)
+          -w WATERS, --waters WATERS
+                                Crystalized water molecules. File name without
+                                extension.
+          -i IONS, --ions IONS  Crystalized ions file name without extension.
+          -c CHO, --cho CHO     Crystalized cholesterol molecules file name without
+                                extension.
+          --res RESTRAINT       Position restraints during MD production run. Options:
+                                bw (Ballesteros-Weinstein Restrained Relaxation -
+                                default), ca (C-Alpha Restrained Relaxation)
+          --llc LIGPARGEN_LIGAND_CHARGE
+                                Charge of ligand for ligpargen (when itp file should
+                                be generated)
+          --llo LIGPARGEN_LIGAND_NROFOPTIMIZATIONS
+                                Number of optimizations that ligpargen should use to
+                                generate itp file for ligand (only needed when itp is
+                                not provided)
+          --lac LIGPARGEN_ALLOSTERIC_CHARGE
+                                Charge of allosteric for ligpargen (when itp file
+                                should be generated)
+          --lao LIGPARGEN_ALLOSTERIC_NROFOPTIMIZATIONS
+                                Number of optimizations that ligpargen should use to
+                                generate itp file for allosteric (only needed when itp
+                                is not provided)
+          -q QUEUE, --queue QUEUE
+                                Queueing system to use (slurm, pbs, pbs_ib and svgd
+                                supported)
+          -d, --debug
+          --debugFast           run pymemdyn in debug mode with less min and eq steps.
+                                Do not use for simulation results!
+	
 
 
 
@@ -148,12 +157,12 @@ To install **PyMemDyn** follow these steps:
 5.  To make sure that your GROMACS installation is understood by
     **PyMemDyn** you will need to specify the path to where GROMACS is
     installed in your system. To do this you will need to edit the
-    settings.py file with any text editor (“vi” and “emacs” are common
+    settings.py file with any text editor (vi and emacs are common
     options in the unix environment). Make sure that only one line is
     uncommented, looking like: GROMACS_PATH = /opt/gromacs-2021/bin
     Provided that in your case gromacs is installed in /opt. The program
     will prepend this line to the binaries names, so calling
-    “/opt/gromacs-2021/bin/gmx should point to that binary.  
+    /opt/gromacs-2021/bin/gmx should point to that binary.  
 
 
 ### Modeling Modules 
@@ -210,6 +219,22 @@ include input file generation/processing and data processing.
 
 Changelog
 --------------------------------------------------------------------------------
+### Changes from version 1.6.2 to 1.6.3
+- April, 2023
+
+Added check to see if orientation of lig/alo/ion/etc. matches that of protein. 
+Prints warning if distence between those is unusual.
+
+
+
+### Changes from version 1.6.1 to 1.6.2
+- April, 2023
+
+Added support for using multiple alosteric molecules using a single itp file.  
+Catch gromacs fatal error and print in log.
+
+
+
 ### Changes from version 1.6 to 1.6.1
 - March, 2023
 

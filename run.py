@@ -1,5 +1,6 @@
 import shutil
 import os
+import numpy as np
 
 import complex
 import gromacs
@@ -56,6 +57,7 @@ class Run(object):
         if self.pdb:
             self.logger.debug('self.pdb dectected. Checking nr of chains of '+ str(self.pdb))
             self.pdb = protein.Protein(pdb=self.pdb).check_number_of_chains()
+            self.protein_center = protein.Protein(pdb=pdb).calculate_center()
             self.logger.debug('nr of chains ok!')
 
         sugars = {"ligand": "Ligand",
@@ -86,6 +88,8 @@ class Run(object):
             nr_allosteric = self._n_alo
         else:
             nr_allosteric = None
+
+        self.check_dist()
 
         prot_complex = protein.ProteinComplex(
             monomer=self.pdb,
@@ -132,7 +136,7 @@ class Run(object):
                      "#topol.tpr.1#", "#topol.tpr.2#", "#topol.tpr.3#", 
                      "#topol.tpr.4#", "disre.itp", "ener_EQ.edr", 
                      "ffoplsaa_mod.itp", "ffoplsaabon_mod.itp", 
-                     "ffoplsaanb_mod.itp", "hexagon.pdb", "index.ndx", 
+                     "ffoplsaanb_mod.itp", "index.ndx", 
                      "ions.itp", "ligand_ha.ndx", "MD_output.tgz", "mdout.mdp", 
                      "mdrun.sh", "min.pdb", "output.pdb", "popc.gro", 
                      "popc.itp", "popc.pdb", "posre.itp", "posre_lig.itp", 
@@ -187,4 +191,21 @@ class Run(object):
         for step in steps:
             self.g.select_recipe(stage=step, debugFast=self.debugFast)
             self.g.run_recipe(debugFast = self.debugFast)
+
+    def check_dist(self):
+        """Check distance between protein and all possible ligands (if any).
+        Raise warning is dist > 50
+        """
+        possible_ligands = [self.ligand, self.allosteric, self.ions, self.waters, self.cho]
+        prot_centre = self.protein_center
+
+        for thing in possible_ligands:
+            if thing == "":
+                continue
+            else:
+                d = np.linalg.norm(prot_centre - thing.center)
+                if d > 45:
+                    self.logger.warning("""Centre of {} and {} are unusually far apart. 
+                                        Did you correctly align both?""".format(self.pdb.pdb, thing.pdb))
+        return True
 
