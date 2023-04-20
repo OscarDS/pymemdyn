@@ -57,7 +57,10 @@ class Run(object):
         if self.pdb:
             self.logger.debug('self.pdb dectected. Checking nr of chains of '+ str(self.pdb))
             self.pdb = protein.Protein(pdb=self.pdb).check_number_of_chains()
-            self.protein_center = protein.Protein(pdb=pdb).calculate_center()
+            try:
+                self.protein_center = protein.Protein(pdb=pdb).calculate_center()
+            except:
+                self.logger.warning("Cannot calculate center of protein. Please check alignment manually.")
             self.logger.debug('nr of chains ok!')
 
         sugars = {"ligand": "Ligand",
@@ -89,7 +92,12 @@ class Run(object):
         else:
             nr_allosteric = None
 
-        self.check_dist()
+        try:
+            self.check_dist()
+        except:
+            self.logger.warning("Cannot check distance between protein and compound. \
+                                Please check alignment manually.")
+        
 
         prot_complex = protein.ProteinComplex(
             monomer=self.pdb,
