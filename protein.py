@@ -446,6 +446,7 @@ class Compound(object):
 
 class Ligand(Compound):
     def __init__(self, *args, **kwargs):
+        self.logger_lig = logging.getLogger('pymemdyn.protein.Ligand')
         self.pdb = kwargs["pdb"]
         self.itp = kwargs["itp"]
         super(Ligand, self).__init__(self, *args, **kwargs)
@@ -455,7 +456,12 @@ class Ligand(Compound):
         self.force_field = kwargs["ff"]
 
         self.check_forces()
-        self.center = self.calculate_center()
+        try:
+            self.center = self.calculate_center()
+        except:
+            self.logger_lig.warning('Could not calculate center of ligand. Please \
+                                    check ligand alignment manually.')
+
 
     def check_forces(self):
         """
@@ -515,6 +521,7 @@ class Ligand(Compound):
 
 class CrystalWaters(Compound):
     def __init__(self, *args, **kwargs):
+        self.logger_cw = logging.getLogger('pymemdyn.protein.CrystalWaters')
         self.pdb = kwargs["pdb"]
         self.itp = kwargs["itp"]
         super(CrystalWaters, self).__init__(self, *args, **kwargs)
@@ -523,8 +530,12 @@ class CrystalWaters(Compound):
         self.posre_itp = "posre_hoh.itp"
         self._setITP()
         self._n_wats = self.count_waters()
-        self.center = self.calculate_center()
-        
+        try:
+            self.center = self.calculate_center()
+        except:
+            self.logger_cw.warning('Could not calculate center of crystal waters. Please \
+                                    check crystal waters alignment manually.')        
+                
     def setWaters(self, value):
         """
         Set crystal waters
@@ -561,6 +572,7 @@ class CrystalWaters(Compound):
 
 class Ions(Compound):
     def __init__(self, *args, **kwargs):      
+        self.logger_ions = logging.getLogger('pymemdyn.protein.Ions')
         self.pdb = kwargs["pdb"]
         self.itp = kwargs["itp"]
         super(Ions, self).__init__(self, *args, **kwargs)
@@ -569,7 +581,11 @@ class Ions(Compound):
         self.posre_itp = "posre_ion.itp"
         self._setITP()
         self._n_ions = self.count_ions()
-        self.center = self.calculate_center()
+        try:
+            self.center = self.calculate_center()
+        except:
+            self.logger_ions.warning('Could not calculate center of ions. Please \
+                                    check ions alignment manually.')
 
     def setIons(self, value):
         """
@@ -614,6 +630,7 @@ class Ions(Compound):
 
 class Cholesterol(Compound):
     def __init__(self, *args, **kwargs):
+        self.logger_choleserol = logging.getLogger('pymemdyn.protein.Cholesterol')
         self.pdb = kwargs["pdb"]
         self.itp = kwargs["itp"]
         self.logger = logging.getLogger('pymemdyn.protein.Cholesterol')
@@ -625,7 +642,11 @@ class Cholesterol(Compound):
         self._setITP()
         self._n_cho = self.count_cho()
         
-        self.center = self.calculate_center()
+        try:
+            self.center = self.calculate_center()
+        except:
+            self.logger_cholesterol.warning('Could not calculate center of cholesterol. Please \
+                                    check cholesterol alignment manually.')
 
     def setCho(self, value):
         """
@@ -696,6 +717,7 @@ class Alosteric(Compound):
     site rather than an orthosteric one.
     """
     def __init__(self, *args, **kwargs):
+        self.logger_allosteric = logging.getLogger('pymemdyn.protein.Alosteric')
         self.pdb = kwargs["pdb"]
         self.itp = kwargs["itp"]
         super(Alosteric, self).__init__(self, *args, **kwargs)
@@ -706,7 +728,11 @@ class Alosteric(Compound):
         self.check_itp()
 
         self.group = "protlig"
-        self.center = self.calculate_center()
+        try:
+            self.center = self.calculate_center()
+        except:
+            self.logger_allosteric.warning('Could not calculate center of allosteric. Please \
+                                    check allosteric alignment manually.')
 
     def check_pdb(self):
        """
