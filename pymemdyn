@@ -67,6 +67,13 @@ if __name__ == "__main__":
             (Ballesteros-Weinstein Restrained Relaxation - default), ca (C-Alpha Restrained \
             Relaxation)",
                         default = "bw")
+    parser.add_argument('-f', "--loop_fill",
+                        dest = "loop_fill",
+                        help = "Amount of Å per AA to fill cut loops. The total \
+            distance is calculated from the coordinates of the remaining residues. \
+            The AA contour length is 3.4-4.0 Å, To allow for flexibility in the \
+            loop, 2.0 Å/AA (default) is suggested. (example: -f 2.0)",
+                        default = "2.0")     
     
     parser.add_argument('--llc',
                         dest = "ligpargen_ligand_charge",
@@ -165,6 +172,7 @@ if __name__ == "__main__":
               ions = args.ions,
               cho = args.cho,
               restraint = args.restraint,
+              loop_fill = args.loop_fill,
               ligpargen_ligand_charge = args.ligpargen_ligand_charge,
               ligpargen_ligand_nrOfOptimizations = args.ligpargen_ligand_nrOfOptimizations,
               ligpargen_allosteric_charge = args.ligpargen_allosteric_charge,

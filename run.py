@@ -7,6 +7,7 @@ import gromacs
 import membrane
 import protein
 import queue
+import checks
 
 import logging
 run_logger = logging.getLogger('pymemdyn.run')
@@ -38,6 +39,7 @@ class Run(object):
         self.ions = kwargs.get("ions") or ""
         self.cho = kwargs.get("cho") or ""
         self.restraint = kwargs.get("restraint") or ""
+        self.loop_fill = kwargs.get("loop_fill")
         self.ligpargen_ligand_charge = kwargs.get("ligpargen_ligand_charge") or 0
         self.ligpargen_ligand_nrOfOptimizations = kwargs.get("ligpargen_ligand_nrOfOptimizations") or 3
         self.ligpargen_allosteric_charge = kwargs.get("ligpargen_allosteric_charge") or 0
@@ -57,11 +59,18 @@ class Run(object):
         if self.pdb:
             self.logger.debug('self.pdb dectected. Checking nr of chains of '+ str(self.pdb))
             self.pdb = protein.Protein(pdb=self.pdb).check_number_of_chains()
+            self.logger.debug('nr of chains ok!')
             try:
                 self.protein_center = protein.Protein(pdb=pdb).calculate_center()
             except:
                 self.logger.warning("Cannot calculate center of protein. Please check alignment manually.")
-            self.logger.debug('nr of chains ok!')
+            self.check_protein = checks.CheckProtein(
+                pdb=self.pdb.pdb, 
+                chains=self.pdb.chains, 
+                tgt='missingLoops.txt', 
+                loop_fill = self.loop_fill
+                ).make_ml_pir(tgt1='alignment.pir', work_dir=self.own_dir)
+            
 
         sugars = {"ligand": "Ligand",
                   "allosteric": "Alosteric",
