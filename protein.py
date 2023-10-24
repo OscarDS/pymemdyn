@@ -17,8 +17,100 @@ except:
           generated and must be provided manually.""")
 
 
-class ProteinComplex(object):
+class System(object):
     def __init__(self, *args, **kwargs):
+        protein_res_names = ["ALA", "ARG", "ASN", "ASP", "CYS", "CYX", "GLN", "GLU", "GLY", "HIS", 
+                             "HIE", "HID", "HIP", "HISE", "HISD", "HISH", "ILE", "LEU", "LYS", 
+                             "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL", ]
+
+        self.pdb = kwargs["pdb"]
+
+        self.logger = logging.getLogger('pymemdyn.protein.System')
+        self.logger.info('Initializing system') 
+
+        self.protein_res = set()
+        self.cofactor_res = set()
+
+        with open(self.pdb, "r") as src:
+            for line in src:
+                if line.startswith("ATOM") or line.startswith("HETATM"):
+                    res_name = line[17:21].strip()
+                    if res_name in protein_res_names:
+                        self.protein_res.add(res_name)
+                    else:
+                        self.cofactor_res.add(res_name)
+
+        self.logger.info(f'The PDB file contains the following cofactors: {self.cofactor_res}')
+        self.logger.info(f'The PDB file contains the following residues: {self.protein_res}')
+
+    def split_system(self, *args, **kwargs):
+        self.ligand = kwargs["ligand"]
+        self.waters = kwargs["waters"]
+        self.ions = kwargs["ions"]
+
+        # Extract protein.pdb
+        tgt_prot = open('protein.pdb', "w")
+        
+        with open(self.pdb, "r") as src:
+            chain = 0
+            for line in src:
+                if line.startswith("TER"):
+                    tgt_prot.write(line)
+                    chain += 1    
+                      
+                if line.startswith("ATOM") or line.startswith("HETATM"):
+                    # add protein chain IDs
+                    if line[21] == ' ':
+                        line = line[:21] + (chr(ord('A') + chain) + line[22:])
+                                            
+                    # only save protein residues    
+                    res_name = line[17:21].strip()
+                    if res_name in self.protein_res:
+                        tgt_prot.write(line) 
+        
+        self.logger.info(f'PDB file created containing protein(s): protein.pdb')
+
+        # Extract ligand pdb(s)
+        if self.ligand:
+            ligands = self.ligand.split(',')
+            for lig in ligands:
+                tgt_lig = open(f'{lig}.pdb', "w")
+                with open(self.pdb, "r") as src:
+                    for line in src:
+                        if line.startswith("ATOM") or line.startswith("HETATM"):
+                            res_name = line[17:21].strip()
+                            if res_name == lig:
+                                tgt_lig.write(line)
+                
+                self.logger.info(f'PDB file created containing ligand: {lig}.pdb')
+
+        # Extract waters.pdb
+        if self.waters:
+            tgt_water = open(f'{self.waters}.pdb', 'w')
+            with open(self.pdb, "r") as src:
+                for line in src:
+                    if line.startswith("ATOM") or line.startswith("HETATM"):
+                        res_name = line[17:21].strip()
+                        if res_name == self.waters:
+                            tgt_water.write(line)
+            
+            self.logger.info(f'PDB file created containing waters: {self.waters}.pdb')
+
+        # Extract ions.pdb
+        if self.ions:
+            tgt_ions = open(f'{self.ions}.pdb', 'w')
+            with open(self.pdb, "r") as src:
+                for line in src:
+                    if line.startswith("ATOM") or line.startswith("HETATM"):
+                        res_name = line[17:21].strip()
+                        if res_name == self.ions:
+                            tgt_ions.write(line)
+            
+            self.logger.info(f'PDB file created containing ions: {self.ions}.pdb')
+
+
+class ProteinComplex(object):
+    def ___(self, *args, **kwargs):
         self.cres = 0  # Central residue
         self.trans = [0, 0, self.cres]  # Module for translating complex
         self.n_wats = 0  # Number of experimental waters
@@ -167,7 +259,7 @@ class Monomer(object):
         self.group = "protlig"
         self.delete_chain()
         self.chains = []
-        self._setHist()
+        self._setRes()
 
     def delete_chain(self):
         """
@@ -200,9 +292,9 @@ class Monomer(object):
  
         return True
 
-    def _setHist(self):
+    def _setRes(self):
         """
-        Change Histidines in pdb to the format preferred by gromacs.
+        Change Histidines and Cysteins in pdb to the format preferred by gromacs.
         """
         tgt = open(self.pdb.replace(".pdb", "-his.pdb"), "w")
         self.pdb_his = tgt.name
@@ -215,6 +307,8 @@ class Monomer(object):
                     tgt.write(line.replace('HID ','HISD'))
                 elif line.split()[3] == "HIP":
                     tgt.write(line.replace('HIP ','HISH'))
+                elif line.split()[3] == "CYX":
+                    tgt.write(line.replace('CYX ','CYS'))
                 else:
                     tgt.write(line)
             else:

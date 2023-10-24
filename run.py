@@ -31,17 +31,11 @@ class Run(object):
         self.own_dir = kwargs.get("own_dir") or ""
         self.repo_dir = kwargs.get("repo_dir") or ""
         self.ligand = kwargs.get("ligand") or ""
-        self.allosteric = kwargs.get("allosteric") or ""
-        if self.allosteric:
-            self._n_alo = kwargs.get("nr_alo") or 1
+        self.ligand_charge = kwargs.get("ligand_charge") or ""
+        self.protein = 'protein.pdb'
         self.waters = kwargs.get("waters") or ""
         self.ions = kwargs.get("ions") or ""
-        self.cho = kwargs.get("cho") or ""
         self.restraint = kwargs.get("restraint") or ""
-        self.ligpargen_ligand_charge = kwargs.get("ligpargen_ligand_charge") or 0
-        self.ligpargen_ligand_nrOfOptimizations = kwargs.get("ligpargen_ligand_nrOfOptimizations") or 3
-        self.ligpargen_allosteric_charge = kwargs.get("ligpargen_allosteric_charge") or 0
-        self.ligpargen_allosteric_nrOfOptimizations = kwargs.get("ligpargen_allosteric_nrOfOptimizations") or 3
         self.queue = kwargs.get("queue") or ""
         self.debug = kwargs.get("debug") or False
         self.debugFast = kwargs.get("debugFast")
@@ -50,13 +44,18 @@ class Run(object):
         self.logger.debug('Run arguments initialized')
 
         self.logger.debug('self.ligand = '+str(self.ligand))
-        self.logger.debug('ligpargensettings: llc={}, llo={}, lac={}, lao={}'.format(self.ligpargen_ligand_charge, self.ligpargen_ligand_nrOfOptimizations, self.ligpargen_allosteric_charge, self.ligpargen_allosteric_nrOfOptimizations))
-
+        self.logger.debug('self.ligand_charge = '+str(self.ligand_charge))
 
 
         if self.pdb:
-            self.logger.debug('self.pdb dectected. Checking nr of chains of '+ str(self.pdb))
-            self.pdb = protein.Protein(pdb=self.pdb).check_number_of_chains()
+            self.logger.debug('self.pdb dectected.')                            
+            self.logger.debug('Splitting pdb file.')
+            protein.System(pdb=self.pdb).split_system(ligand=self.ligand,
+                                                      waters=self.waters,
+                                                      ions=self.ions)
+
+            self.logger.debug('Checking nr of chains of '+ str(self.protein))
+            self.protein = protein.Protein(pdb=self.protein).check_number_of_chains()
             try:
                 self.protein_center = protein.Protein(pdb=pdb).calculate_center()
             except:
@@ -100,7 +99,7 @@ class Run(object):
         
 
         prot_complex = protein.ProteinComplex(
-            monomer=self.pdb,
+            monomer=self.protein,
             ligand=self.ligand or None,
             allosteric=self.allosteric or None,
             nr_alo = nr_allosteric,
