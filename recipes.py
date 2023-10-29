@@ -12,6 +12,7 @@ phases of pymemdyn. It consists of:
 import os
 
 
+
 class BasicInit(object):
     def __init__(self, **kwargs):
         # First we make a list of ordered steps

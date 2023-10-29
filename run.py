@@ -58,18 +58,13 @@ class Run(object):
 
         if self.pdb:
             self.logger.debug('self.pdb dectected. Checking nr of chains of '+ str(self.pdb))
-            self.pdb = protein.Protein(pdb=self.pdb).check_number_of_chains()
+            self.pdb = protein.Protein(pdb=self.pdb, owndir=self.own_dir, loopfill=self.loop_fill).check_number_of_chains()
             self.logger.debug('nr of chains ok!')
             try:
                 self.protein_center = protein.Protein(pdb=pdb).calculate_center()
             except:
                 self.logger.warning("Cannot calculate center of protein. Please check alignment manually.")
-            self.check_protein = checks.CheckProtein(
-                pdb=self.pdb.pdb, 
-                chains=self.pdb.chains, 
-                tgt='missingLoops.txt', 
-                loop_fill = self.loop_fill
-                ).make_ml_pir(tgt1='alignment.pir', work_dir=self.own_dir)
+            
             
 
         sugars = {"ligand": "Ligand",

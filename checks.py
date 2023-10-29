@@ -3,14 +3,20 @@
 import os 
 import math 
 
-from aminoAcidCodes import AminoAcids
+import modeller 
+from modeller import automodel
+
+from aminoAcids import AminoAcids
+import logging
+check_logger = logging.getLogger('pymemdyn.checks')
 
 class CheckProtein():
     def __init__(self, *args, **kwargs):
         self.pdb = kwargs['pdb']
         self.chains = kwargs['chains']
         self.loop_fill = kwargs['loop_fill']
-
+        self.logger = logging.getLogger('pymemdyn.checks.checkProtein')
+        
     def find_missingLoops(self, tgt):
         """Check if the residue numbering is continuous.
         If loops are missing, return missingLoc.
@@ -22,7 +28,6 @@ class CheckProtein():
         missingLoc = {}
         resID_prev = 0
         prev_line = "ATOM      0  N   XXX     0     000.000 000.000 000.000  0.00000.00           N" # Dummy line
-        # for_modeller = []
         first_res = True
 
        
@@ -42,7 +47,7 @@ class CheckProtein():
                 if chainID not in list(seq_dict.keys()):
                     seq_dict[chainID] = {}
                 
-                seq_dict[chainID][resID] = splitted[3] # {A: {40: ASP}}
+                seq_dict[chainID][resID] = splitted[3] # e.g. {A: {40: ASP}}
                 
                 resIDchain = chainID + str(resID)
                 chain_prev = prev_line[21]
@@ -56,34 +61,34 @@ class CheckProtein():
                     missingLoc[chain_prev+str(resID_prev)] = resIDchain
                     # for_modeller.append('{}:{}, {}:{}'.format(resID_prev, chain_prev, resID, chainID))
 
-             
                 resID_prev = resID
                 prev_line = line
+        self.logger.debug('length missingLoc: {}'.format(len(missingLoc)))
+
+        # End of for-loop
+
+
+        # # Create missingLoops.txt (Not used)
+        # with open(tgt, 'w') as outf:
+        #     outf.write("{:<6} |\n".format("resID"))
+        #     outf.write("-"*8+"\n")
+        #     for l in missingLoc.keys():
+        #         outf.write("{:<6} |\n".format(l))
+                
+        #         k = missingLoc[l]
+        #         outf.write("{:<6} |\n".format(k))
+        #         outf.write("-"*8+"\n")
 
         
 
-        # Create missingLoops.txt (Not used)
-        with open(tgt, 'w') as outf:
-            outf.write("{:<6} |\n".format("resID"))
-            outf.write("-"*8+"\n")
-            for l in missingLoc.keys():
-                outf.write("{:<6} |\n".format(l))
-                
-                k = missingLoc[l]
-                outf.write("{:<6} |\n".format(k))
-                outf.write("-"*8+"\n")
-
-        # with open('loops.txt', 'w') as output:
-        #     for thing in for_modeller:
-        #         output.write(thing+'\n')
-         
+        # Generate 1 letter code sequence
 
         aa = AminoAcids()
         aa_d = aa.codes321 # 3-letter code to 1 letter code dict is now aa_d
 
         pdbseq = ''
 
-        seq = open("seq_original.fasta", "w") # seq_original.fasta is not used
+        seq = open("seq_original.fasta", "w") # seq_original.fasta is not used, but self.seq is.
         seq.write(">Generated automatically from {}\n".format(self.pdb))   
 
         for c in list(seq_dict.keys()):
@@ -94,8 +99,10 @@ class CheckProtein():
             finalID = ids[-1]
             for i in range(self.first_res_ID, finalID+1):
                 if i in ids:
+                    assert seq_dict[c][i] in list(aa_d.keys()), 'non-standard amino acid found in residue {}: {}'.format(i, seq_dict[c][i])
                     seq.write(aa_d[seq_dict[c][i]])
                     pdbseq += aa_d[seq_dict[c][i]]
+
                 else:
                     seq.write('-')
                     pdbseq += '-'
@@ -120,6 +127,12 @@ class CheckProtein():
             lines_pdb = in_pdb.readlines()
 
         missingLoc = self.find_missingLoops(tgt = 'missing_loops.txt')
+        if len(missingLoc) == 0:
+            self.logger.info('No missing loops found')
+            return False
+        else:
+            self.logger.info('Missing loops found in locations {}. Will be replaced with poly-ala.'.format(list(missingLoc.keys())))
+
 
         pdbseq = self.seq
         pdbseq = pdbseq[:-1] # looses trailing '/'
@@ -223,4 +236,38 @@ class CheckProtein():
                 tgt1.write("\n")
 
         tgt1.close()
-        return
+        return True
+
+    def refine_protein(self, **kwargs):
+        """
+        Refine protein structure using MODELLER
+        """
+        first_res = self.first_res_ID
+        self.logger.debug('self.chains: {}{}'.format(self.chains, type(self.chains[0])))
+        chains = self.chains
+
+        class MyModel(automodel.AutoModel):
+            def special_patches(self, aln):
+                # Renumber residues in chains
+                print('chains here: {}{}'.format(chains, type(chains[0])))
+                self.rename_segments(segment_ids=chains,      
+                                    renumber_residues=[first_res, first_res, first_res, first_res])
+
+        env = modeller.Environ()
+        env.io.atom_files_directory = ['.', '../atom_files']
+
+        a = MyModel(env,
+                    alnfile  = 'alignment.pir',  
+                    knowns   = kwargs["knowns"],     
+                    sequence = 'refined')
+
+        a.starting_model= 1              
+        a.ending_model  = 1              
+        a.md_level = None                 
+
+        a.make()
+
+        refined_pdb = a.get_model_filename(root_name='refined', id1=9999, id2=1, file_ext='.pdb')
+
+        
+        return refined_pdb
