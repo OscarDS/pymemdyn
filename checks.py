@@ -30,6 +30,9 @@ class CheckProtein():
         prev_line = "ATOM      0  N   XXX     0     000.000 000.000 000.000  0.00000.00           N" # Dummy line
         first_res = True
 
+        aa = AminoAcids()
+        aa_d = aa.codes321 # 3-letter code to 1 letter code dict is now aa_d
+
        
         for i, line in enumerate(lines):
             splitted = line.split() # Careful here, sometimes columns are stuck together!
@@ -43,9 +46,13 @@ class CheckProtein():
                         first_res = False
                     chainID = line[21]
                 except:
-                    raise Exception("Cannot read resID in the following line: \n{}".format(line))
+                    raise Exception("Cannot read resID or chain ID in the following line: \n{}".format(line))
                 if chainID not in list(seq_dict.keys()):
                     seq_dict[chainID] = {}
+                
+                if splitted[3] not in list(aa.codes321.keys()):
+                    self.logger.exception("Residue {}, {} is not a standard amino acid. Non-standard amino acids are not supported.".format(resID, splitted[3]))
+                    raise Exception("Residue {}, {} is not a standard amino acid. Non-standard amino acids are not supported.".format(resID, splitted[3]))
                 
                 seq_dict[chainID][resID] = splitted[3] # e.g. {A: {40: ASP}}
                 
@@ -83,8 +90,7 @@ class CheckProtein():
 
         # Generate 1 letter code sequence
 
-        aa = AminoAcids()
-        aa_d = aa.codes321 # 3-letter code to 1 letter code dict is now aa_d
+        
 
         pdbseq = ''
 
@@ -94,8 +100,8 @@ class CheckProtein():
         for c in list(seq_dict.keys()):
             ids = list(seq_dict[c].keys())
             ids.sort()
-            print('chain {}:'.format(c))
-            print('{} ids'.format(len(ids)))
+            self.logger.debug('chain {}:'.format(c))
+            self.logger.debug('{} ids'.format(len(ids)))
             finalID = ids[-1]
             for i in range(self.first_res_ID, finalID+1):
                 if i in ids:
@@ -142,31 +148,26 @@ class CheckProtein():
 
         target = ''
 
-        print(list(missingLoc.keys()))
+        self.logger.debug(list(missingLoc.keys()))
 
         first_res_ID = self.first_res_ID
 
         for loopstart in list(missingLoc.keys()):
             loop = int(loopstart[1:])
-            # print("loop "+str(loop))
             chain = loopstart[0]
-            # print("chain "+str(loopstart[0]))
             for line in lines_pdb: 
                 if line[:4] == "ATOM":    
-                    # print("should be loop "+str(int(line[22:26])))
-                    # print("should be C "+str("".join(line[11:17]).strip()))
-                    # print("should be chain "+str(line[21]))
                     if int(line[22:26]) == loop and \
                         "".join(line[11:17]).strip() == "C" and line[21] == chain:
 
                         start = [float(line[30:38]), float(line[38:46]), float(line[46:54])]
                         target = int(missingLoc[loopstart][1:])
-                        print('loop: {}\n'.format(loop))
+                        self.logger.debug('loop: {}\n'.format(loop))
                     if int(line[22:26]) == target and \
                         "".join(line[11:17]).strip() == "N" and line[21] == chain:
 
                         end = [float(line[30:38]), float(line[38:46]), float(line[46:54])]
-                        print('target: {}\n'.format(target))
+                        self.logger.debug('target: {}\n'.format(target))
 
             aa_dist = float(self.loop_fill)           
             x = abs(start[0] - end[0])
@@ -174,7 +175,7 @@ class CheckProtein():
             z = abs(start[2] - end[2])
             dist = math.sqrt(x*x + y*y + z*z)
             num_aa = math.ceil(dist / aa_dist)     
-            print('\tnum_aa: {}\n'.format(num_aa))
+            self.logger.debug('\tnum_aa: {}\n'.format(num_aa))
             
             start_seq_index = loop - first_res_ID +1  # (we removed the beginloop)
             end_seq_index = target - first_res_ID +1
@@ -188,8 +189,8 @@ class CheckProtein():
             gaps = before + "A" * num_aa + after        # 'ABAABA'
             loop_replace = before + num_aa *'-' + after # 'AB--BA'
 
-            print('\tloop_seq: {}\n'.format(loop_seq))
-            print('\tgaps:     {}\n'.format(gaps))
+            self.logger.debug('\tloop_seq: {}\n'.format(loop_seq))
+            self.logger.debug('\tgaps:     {}\n'.format(gaps))
             
             mod_seq = mod_seq.replace(loop_seq, gaps)
             tmpl_seq = tmpl_seq.replace(loop_seq, loop_replace)
@@ -202,14 +203,14 @@ class CheckProtein():
             while tmpl_seq.startswith('-'):
                 tmpl_seq = tmpl_seq[1:]
             
-            print('\tloop_rep: {}\n'.format(loop_replace))
+            self.logger.debug('\tloop_rep: {}\n'.format(loop_replace))
             
         mod_seq += "*"
         tmpl_seq += "*"
 
-        print("these lengths should be equal: {}, {}".format(len(mod_seq), len(tmpl_seq)))
+        self.logger.debug("these lengths should be equal: {}, {}".format(len(mod_seq), len(tmpl_seq)))
 
-        print(pdbseq)
+        self.logger.debug(pdbseq)
 
         tgt1 = open(os.path.join(kwargs['work_dir'], kwargs["tgt1"]), "w") 
         # tgt3 = open(os.path.join(self.work_dir, kwargs["tgt3"]), "w")
@@ -249,7 +250,6 @@ class CheckProtein():
         class MyModel(automodel.AutoModel):
             def special_patches(self, aln):
                 # Renumber residues in chains
-                print('chains here: {}{}'.format(chains, type(chains[0])))
                 self.rename_segments(segment_ids=chains,      
                                     renumber_residues=[first_res, first_res, first_res, first_res])
 
