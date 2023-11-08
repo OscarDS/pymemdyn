@@ -188,8 +188,8 @@ class Monomer(object):
                 tgt='missingLoops.txt', 
                 loop_fill = self.loop_fill
                 )
-        self.missingloops = self.check_protein.make_ml_pir(tgt1='alignment.pir', work_dir=self.own_dir)
-        if self.missingloops:
+        self.missing = self.check_protein.make_ml_pir(tgt1='alignment.pir', work_dir=self.own_dir)
+        if self.missing:
             new_pdb = self.check_protein.refine_protein(knowns = self.pdb)
             self.logger_monomer.info('Replacing self.pdb from {} to {}.'.format(self.pdb, new_pdb))
             self.pdb = new_pdb

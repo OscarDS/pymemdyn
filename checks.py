@@ -7,6 +7,7 @@ import modeller
 from modeller import automodel
 
 from aminoAcids import AminoAcids
+from collections import Counter
 import logging
 check_logger = logging.getLogger('pymemdyn.checks')
 
@@ -16,8 +17,9 @@ class CheckProtein():
         self.chains = kwargs['chains']
         self.loop_fill = kwargs['loop_fill']
         self.logger = logging.getLogger('pymemdyn.checks.checkProtein')
+        self.aa = AminoAcids()
         
-    def find_missingLoops(self, tgt):
+    def find_missingLoops(self):
         """Check if the residue numbering is continuous.
         If loops are missing, return missingLoc.
         """
@@ -30,8 +32,7 @@ class CheckProtein():
         prev_line = "ATOM      0  N   XXX     0     000.000 000.000 000.000  0.00000.00           N" # Dummy line
         first_res = True
 
-        aa = AminoAcids()
-        aa_d = aa.codes321 # 3-letter code to 1 letter code dict is now aa_d
+        aa_d = self.aa.codes321 # 3-letter code to 1 letter code dict is now aa_d
 
        
         for i, line in enumerate(lines):
@@ -50,7 +51,7 @@ class CheckProtein():
                 if chainID not in list(seq_dict.keys()):
                     seq_dict[chainID] = {}
                 
-                if splitted[3] not in list(aa.codes321.keys()):
+                if splitted[3] not in list(aa_d.keys()):
                     self.logger.exception("Residue {}, {} is not a standard amino acid. Non-standard amino acids are not supported.".format(resID, splitted[3]))
                     raise Exception("Residue {}, {} is not a standard amino acid. Non-standard amino acids are not supported.".format(resID, splitted[3]))
                 
@@ -66,7 +67,6 @@ class CheckProtein():
                         continue # ignore missing starting loop  
 
                     missingLoc[chain_prev+str(resID_prev)] = resIDchain
-                    # for_modeller.append('{}:{}, {}:{}'.format(resID_prev, chain_prev, resID, chainID))
 
                 resID_prev = resID
                 prev_line = line
@@ -74,23 +74,8 @@ class CheckProtein():
 
         # End of for-loop
 
-
-        # # Create missingLoops.txt (Not used)
-        # with open(tgt, 'w') as outf:
-        #     outf.write("{:<6} |\n".format("resID"))
-        #     outf.write("-"*8+"\n")
-        #     for l in missingLoc.keys():
-        #         outf.write("{:<6} |\n".format(l))
-                
-        #         k = missingLoc[l]
-        #         outf.write("{:<6} |\n".format(k))
-        #         outf.write("-"*8+"\n")
-
         
-
         # Generate 1 letter code sequence
-
-        
 
         pdbseq = ''
 
@@ -120,31 +105,114 @@ class CheckProtein():
         
         return missingLoc
 
+    def find_missingSideChains(self):
+        """
+        Check all sidechains of amino acids, save missing ones for modeller and remove 
+        faulty side chains from pbd.
+    
+
+        :returns: list of tuples in the form [(resID, 'ALA')]
+        """
+        with open(self.pdb, 'r') as inf:
+            lines = inf.readlines()
+        
+        sideChains_d = self.aa.sideChains   # Dict containing predefined side chains
+        missing_sideChains = []
+        atom_count = Counter()
+        prev_resID = self.first_res_ID
+        delete_lines = []
+        current_lines = []
+
+        for i, line in enumerate(lines):    # Loop over protein.pdb
+            splitted = line.split()
+
+            if not splitted[0] == 'ATOM':   # Skip lines that are irrelevant
+                continue 
+            
+            current_resID = int(line[22:26])     # Read current res_ID
+
+            if current_resID != prev_resID:
+                # Close previous residue
+                too_few = sideChains_d[amino] - atom_count
+                too_many = atom_count - sideChains_d[amino]
+                if len(too_few) != 0:
+                    self.logger.debug('too_few: {}'.format(too_few))
+                    self.logger.info('Residue {}: {} has too few side chains. It will be deleted from you pdb and replaced with MODELLER'.format(prev_resID, amino))
+                    missing_sideChains.append((prev_resID, amino))
+                    delete_lines += current_lines
+
+                if len(too_many) != 0:
+                    self.logger.debug('too_many: {}'.format(too_many))
+                    self.logger.info('Residue {}: {} has too many side chains. It will be deleted from you pdb and replaced with MODELLER'.format(prev_resID, amino))
+                    missing_sideChains.append((prev_resID, amino))
+                    delete_lines += current_lines
+                
+                atom_count = Counter()      # Overwrite previous atom count
+                current_lines = []          # Overwrite previous saved lines
+
+                
+            # Continue with residue     
+            amino = line[17:20]         # Amino acid
+            atom = line[13]             # Find atom
+
+            if not atom == 'H':         # Ignore H
+                atom_count[atom.upper()] += 1   # Add (capital) atom to counter 
+            
+            current_lines.append(line)
+
+            prev_resID = int(line[22:26])
+
+     
+        # end of for-loop
+        self.logger.debug('{}'.format(delete_lines))
+        with open(self.pdb, "w") as f:
+            for l in lines:
+                if l not in delete_lines:
+                    f.write(l)
+
+        return missing_sideChains
+
+
 
     def make_ml_pir(self, **kwargs):
         """
         make_ml_pr: Modify missing regions and create a MODELLER alignment file (.pir)
 
-        :param pdb: pdb file of protein
-        :param tgt1: alignment.pir
-        # :param tgt3: alignment.txt
+        :kwarg work_dir: working directory
+        :kwarg tgt1: alignment.pir
+        # :kwarg tgt3: alignment.txt
         """
         with open(os.path.join(kwargs["work_dir"], self.pdb), 'r') as in_pdb:
             lines_pdb = in_pdb.readlines()
 
-        missingLoc = self.find_missingLoops(tgt = 'missing_loops.txt')
+        missingLoc = self.find_missingLoops()#tgt = 'missing_loops.txt')
         if len(missingLoc) == 0:
             self.logger.info('No missing loops found')
-            return False
         else:
             self.logger.info('Missing loops found in locations {}. Will be replaced with poly-ala.'.format(list(missingLoc.keys())))
+        
+        missing_SideChains = self.find_missingSideChains()
+ 
+        if len(missing_SideChains) == len(missingLoc) == 0:
+            return False
+
 
 
         pdbseq = self.seq
+        self.logger.debug(pdbseq)
         pdbseq = pdbseq[:-1] # looses trailing '/'
 
         mod_seq = pdbseq
         tmpl_seq = pdbseq
+
+        for sc in missing_SideChains:
+            loc = sc[0] - self.first_res_ID
+            code = self.aa.codes321[sc[1]]
+            tmpl_seq = tmpl_seq[:loc] + '-' + tmpl_seq[loc+1:]
+            mod_seq = tmpl_seq[:loc] + code + tmpl_seq[loc+1:]
+
+        self.logger.debug('tmpl sidechains: {}'.format(tmpl_seq))
+        self.logger.debug('mod sidechains: {}'.format(mod_seq))
 
         target = ''
 
@@ -180,10 +248,10 @@ class CheckProtein():
             start_seq_index = loop - first_res_ID +1  # (we removed the beginloop)
             end_seq_index = target - first_res_ID +1
 
-            loop_seq_dash = pdbseq[start_seq_index:end_seq_index-1]       # '----'
-            before = pdbseq[start_seq_index-2:start_seq_index]                # 'AB'
+            loop_seq_dash = pdbseq[start_seq_index:end_seq_index-1]   # '----'
+            before = pdbseq[start_seq_index-2:start_seq_index]        # 'AB'
             after = pdbseq[end_seq_index-1:end_seq_index+1]           # 'BA'
-            loop_seq = before + loop_seq_dash + after   # 'AB----BA'
+            loop_seq = before + loop_seq_dash + after                 # 'AB----BA'
             
             # dashes_remain = len(loop_seq_dash) - num_aa
             gaps = before + "A" * num_aa + after        # 'ABAABA'
@@ -194,24 +262,28 @@ class CheckProtein():
             
             mod_seq = mod_seq.replace(loop_seq, gaps)
             tmpl_seq = tmpl_seq.replace(loop_seq, loop_replace)
-            # print('\t\tmodseq: \n\t\t{}\n\n'.format(mod_seq))
-            # tmpl_seq = tmpl_seq[:loop[0]] + len(loop_mod) * "-" + tmpl_seq[loop[0]:]
-
+            
             while mod_seq.startswith('-'):
                 mod_seq = mod_seq[1:]
             
-            while tmpl_seq.startswith('-'):
-                tmpl_seq = tmpl_seq[1:]
+            # while tmpl_seq.startswith('-'):
+            #     tmpl_seq = tmpl_seq[1:]
             
             self.logger.debug('\tloop_rep: {}\n'.format(loop_replace))
             
         mod_seq += "*"
         tmpl_seq += "*"
 
+        self.logger.debug(mod_seq)
+        self.logger.debug(tmpl_seq)
+
         self.logger.debug("these lengths should be equal: {}, {}".format(len(mod_seq), len(tmpl_seq)))
 
         self.logger.debug(pdbseq)
 
+        # Write to .pir file
+
+        # tgt is the alignment.pir file
         tgt1 = open(os.path.join(kwargs['work_dir'], kwargs["tgt1"]), "w") 
         # tgt3 = open(os.path.join(self.work_dir, kwargs["tgt3"]), "w")
         
@@ -242,6 +314,9 @@ class CheckProtein():
     def refine_protein(self, **kwargs):
         """
         Refine protein structure using MODELLER
+
+        :kwarg knowns: the .pdb file to be refined
+        :returns: .pdb file of refined protein
         """
         first_res = self.first_res_ID
         self.logger.debug('self.chains: {}{}'.format(self.chains, type(self.chains[0])))
@@ -267,6 +342,7 @@ class CheckProtein():
 
         a.make()
 
+        # Get new file name
         refined_pdb = a.get_model_filename(root_name='refined', id1=9999, id2=1, file_ext='.pdb')
 
         

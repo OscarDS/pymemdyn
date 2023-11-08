@@ -55,7 +55,7 @@ class AminoAcids():
             'V': 'VAL',
             '-': '-'
         }
-        self.aminos = {
+        self.sideChains = {
             'ALA': Counter( 
                 N = 1,
                 O = 1,
@@ -155,7 +155,7 @@ class AminoAcids():
             ),
             'VAL': Counter(
                 N = 1, 
-                o = 1,
+                O = 1,
                 C = 5
             )
         }
