@@ -58,12 +58,12 @@ def concat(**kwargs):
     """
     Make a whole pdb file with all the pdb provided
     """
-    for compound_class in ["ligand", "ions", "cho", "allosteric", "waters"]:
+    for compound_class in ["ligands", "waters", "ions"]:
         # Does the complex carry the group?
         if hasattr(kwargs["tgt"], compound_class):
             if getattr(kwargs["tgt"], compound_class):
                 _file_append(kwargs["src"],
-                             getattr(kwargs["tgt"], compound_class).pdb)
+                    getattr(kwargs["tgt"], compound_class).pdb)
 
 def getbw(**kwargs):
     """

@@ -213,7 +213,7 @@ class BasicInit(object):
              }
 
         self.breaks = \
-            {"pdb2gmx": {"src": "membrane_complex.complex.monomer.pdb_his"},
+            {"pdb2gmx": {"src": "membrane_complex.complex.proteins.pdb_his"},
              "concat": {"tgt": "membrane_complex.complex"},
              "editconf": {"dist": "membrane_complex.box_height"},
              "editconf2": {"dist": "membrane_complex.box_width"},

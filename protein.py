@@ -10,15 +10,23 @@ import numpy as np
 protein_logger = logging.getLogger('pymemdyn.protein')
 
 try:
-    import ligpargen.ligpargen as ligpar
+    import ligpargen.ligpargen as lpg
 except:
     protein_logger.warning("""!! WARNING !! : No installation of ligpargen was found. 
-          itp files for ligands and/or allosterics cannot be automatically
-          generated and must be provided manually.""")
+          itp files for ligands cannot be automatically generated and must be provided 
+          manually.""")
 
+try:
+    from rdkit import Chem
+    from rdkit.Chem import AllChem
+    from rdkit.Chem import PDBWriter
+except:
+    protein_logger.warning("""!! WARNING !! : No installation of rdkit was found. 
+          itp files for ligands cannot be automatically generated and must be provided 
+          manually.""")
 
 class System(object):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         protein_res_names = ["ALA", "ARG", "ASN", "ASP", "CYS", "CYX", "GLN", "GLU", "GLY", "HIS", 
                              "HIE", "HID", "HIP", "HISE", "HISD", "HISH", "ILE", "LEU", "LYS", 
                              "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL", ]
@@ -43,7 +51,7 @@ class System(object):
         self.logger.info(f'The PDB file contains the following cofactors: {self.cofactor_res}')
         self.logger.info(f'The PDB file contains the following residues: {self.protein_res}')
 
-    def split_system(self, *args, **kwargs):
+    def split_system(self, **kwargs):
         self.ligand = kwargs["ligand"]
         self.waters = kwargs["waters"]
         self.ions = kwargs["ions"]
@@ -70,76 +78,54 @@ class System(object):
         
         self.logger.info(f'PDB file created containing protein(s): protein.pdb')
 
-        # Extract ligand pdb(s)
+        # Extract cofactor pdb(s)
+        cofactors = []
         if self.ligand:
-            ligands = self.ligand.split(',')
-            for lig in ligands:
-                tgt_lig = open(f'{lig}.pdb', "w")
-                with open(self.pdb, "r") as src:
-                    for line in src:
-                        if line.startswith("ATOM") or line.startswith("HETATM"):
-                            res_name = line[17:21].strip()
-                            if res_name == lig:
-                                tgt_lig.write(line)
-                
-                self.logger.info(f'PDB file created containing ligand: {lig}.pdb')
-
-        # Extract waters.pdb
+            cofactors += self.ligand.split(',')
         if self.waters:
-            tgt_water = open(f'{self.waters}.pdb', 'w')
-            with open(self.pdb, "r") as src:
-                for line in src:
-                    if line.startswith("ATOM") or line.startswith("HETATM"):
-                        res_name = line[17:21].strip()
-                        if res_name == self.waters:
-                            tgt_water.write(line)
-            
-            self.logger.info(f'PDB file created containing waters: {self.waters}.pdb')
-
-        # Extract ions.pdb
+            cofactors += self.waters.split(',')
         if self.ions:
-            tgt_ions = open(f'{self.ions}.pdb', 'w')
+            cofactors += self.waters.split(',')
+
+        for cofactor in cofactors:
+            cf_pdb = open(f'{cofactor}.pdb', "w")
             with open(self.pdb, "r") as src:
                 for line in src:
                     if line.startswith("ATOM") or line.startswith("HETATM"):
                         res_name = line[17:21].strip()
-                        if res_name == self.ions:
-                            tgt_ions.write(line)
+                        if res_name == cofactor:
+                            cf_pdb.write(line)
             
-            self.logger.info(f'PDB file created containing ions: {self.ions}.pdb')
+            self.logger.info(f'PDB file created containing cofactor: {cofactor}.pdb')
 
 
 class ProteinComplex(object):
-    def ___(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.cres = 0  # Central residue
         self.trans = [0, 0, self.cres]  # Module for translating complex
         self.n_wats = 0  # Number of experimental waters
         self.logger = logging.getLogger('pymemdyn.protein.ProteinComplex')
         self.logger.info('Initializing protein complex.')
 
-        if "monomer" in kwargs.keys():
-            self.setMonomer(kwargs["monomer"])
-        if "ligand" in kwargs.keys():
-            self.setLigand(kwargs["ligand"])
+        if "proteins" in kwargs.keys():
+            self.setProteins(kwargs["proteins"])
+        if "ligands" in kwargs.keys():
+            self.setLigand(kwargs["ligands"])
+            self._n_lig = kwargs['nr_lig']
         if "waters" in kwargs.keys():
             self.setWaters(kwargs["waters"])
         if "ions" in kwargs.keys():
             self.setIons(kwargs["ions"])
-        if "cho" in kwargs.keys():
-            self.setCho(kwargs["cho"])
-        if "allosteric" in kwargs.keys():
-            self.setAlosteric(kwargs["allosteric"])
-            self._n_alo = kwargs['nr_alo']
 
-    def setMonomer(self, value):
+    def setProteins(self, value):
         """
-        Sets the monomer object.
+        Sets the proteins object.
         """
-        self.monomer = value
+        self.proteins = value
 
-    def getMonomer(self):
-        return self.monomer
-    property(getMonomer, setMonomer)
+    def getProteins(self):
+        return self.proteins
+    property(getProteins, setProteins)
 
     def setLigand(self, value):
         """
@@ -170,26 +156,6 @@ class ProteinComplex(object):
     def getIons(self):
         return self.ions
     property(getIons, setIons)
-
-    def setCho(self, value):
-        """
-        Sets the cholesterol object
-        """
-        self.cho = value
-
-    def getCho(self):
-        return self.cho
-    property(getCho, setCho)
-
-    def setAlosteric(self, value):
-        """
-        Sets the allosteric object
-        """
-        self.allosteric = value
-
-    def getAlosteric(self):
-        return self.allosteric
-    property(getAlosteric, setAlosteric)
 
     def set_nanom(self):
         """
@@ -331,55 +297,39 @@ class Oligomer(Monomer):
         return True
 
 
-class Sugar_prep(object):
-    def __init__(self, *args, **kwargs):
-        """Prepare sugars (ligand and/or allosteric) for pymemdyn run. 
+class CalculateLigandParameters(object):
+    def __init__(self):
+        """
+        Prepare cofactors for pymemdyn run. 
 
         .itp files are generated by ligpargen (if not provided).
         """
-        self.logger = logging.getLogger('pymemdyn.protein.Sugar_prep')
-        self.logger.info('initialization of Sugar_prep started')
+        self.logger = logging.getLogger('pymemdyn.protein.CalculateLigandParameters')
+        self.logger.info('initialization of CalculateLigandParameters started')
 
         if self.ligand:
-            if os.path.exists(self.ligand + ".ff") == True:
-                self.logger.info('All files present already.')
-                pass
-            else:
-                if os.path.exists(self.ligand + ".itp") == False:
-                    self.logger.info('.itp file for ligand is missing. Will be generated now with Ligpargen.')
-                    self.logger.debug('create_itp({}.pdb, {}, {})'.format(self.ligand, self.ligpargen_ligand_charge, self.ligpargen_ligand_nrOfOptimizations))
-                    Sugar_prep.create_itp(self, self.ligand + ".pdb", 
-                            self.ligpargen_ligand_charge, 
-                            self.ligpargen_ligand_nrOfOptimizations,
-                            'LIG'
-                            )
-            Sugar_prep.lpg2pmd(self, self.ligand)
-            if self.ligand != 'lig':
-                shutil.copyfile(self.ligand + ".itp", 'lig.itp')
-                shutil.copyfile(self.ligand + ".pdb", 'lig.pdb')
-                shutil.copyfile(self.ligand + ".ff", 'lig.ff')
-                self.ligand = 'lig'
-                
-        if self.allosteric:
-            if os.path.exists(self.allosteric + ".ff") == True:
-                pass
-            else:
-                if os.path.exists(self.allosteric + ".itp") == False:
-                    self.logger.debug('.itp file for allosteric is missing. Will be generated now with Ligpargen.')
-                    Sugar_prep.create_itp(self, self.allosteric + ".pdb", 
-                            self.ligpargen_allosteric_charge, 
-                            self.ligpargen_allosteric_nrOfOptimizations,
-                            'ALO'
-                            )
-            Sugar_prep.lpg2pmd(self, self.allosteric)
-            if self.allosteric != 'alo':
-                shutil.copyfile(self.allosteric + ".itp", 'alo.itp')        
-                shutil.copyfile(self.allosteric + ".pdb", 'alo.pdb')
-                shutil.copyfile(self.allosteric + ".ff", 'alo.ff')    
-                self.allosteric = 'alo'
+            ligands = self.ligand.split(',')
+            
+            charges = self.ligand_charge.split(',')
+            if len(charges) != len(ligands):
+                charges = [0] * len(ligands)
 
-    def create_itp(self, pdbfile: str, charge: int, numberOfOptimizations: int,
-                   resname: str) -> None:
+            index = 0
+            for lig in ligands:
+                charge = charges[index]
+                index += 1
+                #if os.path.exists(lig + ".ff") == True:
+                #    self.logger.info('All ligand parameter (.itp and .ff) files present.')
+                #    pass
+
+                #else:
+                #   if os.path.exists(lig + ".itp") == False:
+                #       self.logger.info('.itp file for ligand is missing. Will be generated now with Ligpargen.')
+                self.logger.debug('create_itp({}.pdb, {})'.format(lig, charge))
+                CalculateLigandParameters.create_itp(self, lig, charge)
+                CalculateLigandParameters.lpg2pmd(self, lig, index)
+
+    def create_itp(self, ligand: str, charge: int) -> None:
         """Call ligpargen to create gromacs itp file and corresponding openmm
         pdb file. Note that original pdb file will be replaced by opnemm pdb
         file.
@@ -393,68 +343,124 @@ class Sugar_prep(object):
         Writes itp file and new pdf file to current dir. old pdb is saved in dir ligpargenInput. 
         unneccessary ligpargen output is saved in dir ligpargenOutput.
         """
-        name = os.path.splitext(pdbfile)[0]
-        workdir = 'ligpargenOutput_' + name
-        inputdir = 'ligpargenInput_' + name
-        mol = ligpar.LigParGen(ifile=pdbfile, molname=name, workdir=workdir, 
-                            resname=resname, charge=charge, 
-                            numberOfOptimizations=numberOfOptimizations,
-                            debug=True)
+        workdir = 'ligpargenOutput_' + ligand
+        inputdir = 'ligpargenInput_' + ligand
+
+        try: 
+            self.logger.info(f'Calculating ligand parameters for {ligand} using LigParGen.')
+            mol = lpg.LigParGen(
+                ifile=f'{ligand}.pdb', 
+                molname=f'{ligand}', 
+                workdir=workdir, 
+                resname=ligand, 
+                charge=charge, 
+                numberOfOptimizations=3, 
+                )
+            self.logger.info(f'Calculated ligand parameters for {ligand} using LigParGen.')
+        except:
+            self.logger.warning(f'LigParGen unable to calculate ligand parameters on original file.')
+            if charge == 0:
+                pdb_h = CalculateLigandParameters.add_h(self, ligand)            
+                try:
+                    # re-initialize ligpargen
+                    import ligpargen.ligpargen as lpg
+                    self.logger.info(f'Calculating ligand parameters for {ligand} using LigParGen.')
+                    mol = lpg.LigParGen(
+                            ifile=pdb_h, 
+                            molname=f'{ligand}', 
+                            workdir=workdir, 
+                            resname=ligand, 
+                            charge=charge, 
+                            numberOfOptimizations=3, 
+                            )
+                    self.logger.info(f'Calculated ligand parameters for {ligand} using LigParGen.')
+                except:
+                    self.logger.warning('LigParGen unable to calculate ligand parameters on processed file.')
+            else:
+                self.logger.warning('PyMemDyn is not able to automatically add hydrogens for charged molecules. Please provide a molecule file with hydrogens')
+
         mol.writeAllOuputs()
 
         # Only save necessary files
         os.mkdir(inputdir)
-        os.rename(pdbfile, inputdir+'/'+pdbfile)
-        os.rename(workdir+'/'+name+'.gmx.itp', name+'.itp')
-        os.rename(workdir+'/'+name+'.openmm.pdb', name+'.pdb')
+        os.rename(f'{ligand}.pdb', inputdir+'/'+f'{ligand}.pdb')
+        os.rename(workdir+'/'+ligand+'.gmx.itp', ligand+'.itp')
+        os.rename(workdir+'/'+ligand+'.openmm.pdb', ligand+'.pdb')
 
         return
    
 
-    def lpg2pmd(self, sugar, *args, **kwargs):
+    def add_h(self, ligand):
+        # Add hydrogens to molecule file.
+        self.logger.info(f'Attempt: Adding hydrogens to {ligand}.')
+        pdbfile_h = f'{ligand}_h.pdb'
+        ref_molecule = Chem.MolFromPDBFile(f'{ligand}.pdb')
+        tgt_molecule = Chem.AddHs(ref_molecule)
+        AllChem.ConstrainedEmbed(tgt_molecule, ref_molecule)
+        writer = PDBWriter(pdbfile_h)
+        writer.write(tgt_molecule)
+        writer.close()
+
+        pdb_prepped = f'{ligand}_prepped.pdb'
+        pdb_prepped_file = open(pdb_prepped, "w")
+
+        with open(pdbfile_h, "r") as src:
+            count=0              
+            for line in src:
+                if line.startswith("ATOM") or line.startswith("HETATM"):       
+                    if count == 0:
+                        count += 1
+                        res_nr = line[20:27]
+                    line = line[:17] + ligand + res_nr + line[27:]
+                pdb_prepped_file.write(line)
+
+        pdb_prepped_file.close()
+
+        return pdb_prepped
+
+    def lpg2pmd(self, cofactor, index, *args, **kwargs):
         """
         Converts LigParGen structure files to PyMemDyn input files.
 
         Original files are stored as something_backup.pdb or something_backup.itp.
         """
         # Safeguard for deleting files
-        if not os.path.isfile(self.own_dir + "/" + sugar + ".ff"):    
-            shutil.copy(self.own_dir + "/" + sugar + ".itp", self.own_dir + "/" + sugar + "_backup.itp")
-            shutil.copy(self.own_dir + "/" + sugar + ".pdb", self.own_dir + "/" + sugar + "_backup.pdb")
+        if not os.path.isfile(self.own_dir + "/" + cofactor + ".ff"):    
+            shutil.copy(self.own_dir + "/" + cofactor + ".itp", self.own_dir + "/" + cofactor + "_backup.itp")
+            shutil.copy(self.own_dir + "/" + cofactor + ".pdb", self.own_dir + "/" + cofactor + "_backup.pdb")
     
-            old_itp = open(self.own_dir + "/" + sugar + ".itp", "r") 
-            old_pdb = open(self.own_dir + "/" + sugar + ".pdb", "r")
+            old_itp = open(self.own_dir + "/" + cofactor + ".itp", "r") 
+            old_pdb = open(self.own_dir + "/" + cofactor + ".pdb", "r")
             
             lines_itp = old_itp.readlines()
             lines_pdb = old_pdb.readlines()
             old_itp.close()
             old_pdb.close()
                     
-            new_itp = open(self.own_dir + "/" + sugar + ".itp", "w")
-            new_ff = open(self.own_dir + "/" + sugar + ".ff", "w")
-            new_pdb = open(self.own_dir + "/" + sugar + ".pdb", "w")
+            new_itp = open(self.own_dir + "/" + cofactor + ".itp", "w")
+            new_ff = open(self.own_dir + "/" + cofactor + ".ff", "w")
+            new_pdb = open(self.own_dir + "/" + cofactor + ".pdb", "w")
     
+            lig_ID = 'L'+str(str(index).zfill(2))
+            
             split = False
             count = -1
             tmp_ff = []
             tmp_itp = []
     
             for line in lines_itp:
+                line = line.replace("opls_", f"{lig_ID}__")
                 if "[ defaults ]" in line:
                     # find location of defaults content
                     loc_content_of_defaults = lines_itp.index(line) + 2
                     # also remove content
                     lines_itp.pop(loc_content_of_defaults)
                     # now also do nothing else on this line
-                    continue
-                if sugar == self.ligand:
-                    line = line.replace("opls_", "oplsl")
-                if sugar == self.allosteric:
-                    line = line.replace("opls_", "oplsa")                
+                    continue             
                 if "[ moleculetype ]" in line:
                     split = True    
                 if split == False: 
-                    if "opls" not in line:
+                    if f"{lig_ID}__" not in line:
                         new_ff.write(line)
                     else:
                         tmp_ff.append(line.split())         
@@ -462,17 +468,13 @@ class Sugar_prep(object):
                 if split == True:
                     count += 1
                     if count == 2:# Added lstrip() to not take starting whitespace into account
-                        if sugar == self.ligand and line.lstrip()[0:3] != "LIG": 
-                            line = line.replace(line.lstrip()[0:3], "LIG")
-                        if sugar == self.allosteric and line.lstrip()[0:3] != "ALO":
-                            line = line.replace(line.lstrip()[0:3], "ALO")
+                        if line.lstrip()[0:3] != lig_ID: 
+                            line = line.replace(line.lstrip()[0:3], lig_ID)
                         
-                    if "opls" in line:
+                    if f"{lig_ID}__" in line:
                         tmp_itp.append(line.split())
-                        if sugar == self.ligand and line[28:31] != "LIG":
-                            line = line.replace(line[28:31], "LIG")
-                        if sugar == self.allosteric and line[28:31] != "ALO":
-                            line = line.replace(line[28:31], "ALO")
+                        if line[28:31] != lig_ID:
+                            line = line.replace(line[28:31], lig_ID)
     
                     new_itp.write(line)
     
@@ -489,10 +491,8 @@ class Sugar_prep(object):
                     line = line.replace("HETATM", "ATOM  ")
                     cols[0] = "ATOM"
                 if "ATOM" in cols[0]: 
-                    if sugar == self.ligand and cols[3] != "LIG":
-                        line = line.replace(cols[3], "LIG")
-                    if sugar == self.allosteric and cols[3] != "ALO":
-                        line = line.replace(cols[3], "ALO")
+                    if cols[3] != lig_ID:
+                        line = line.replace(cols[3], lig_ID)
                 if "REMARK" in cols[0]:
                     continue # Do not write remarks in new pdb file
                         
@@ -523,8 +523,12 @@ class Compound(object):
     def calculate_center(self):
         """Determine center of the coords in the self.pdb.
         """
-        with open(self.pdb, "r") as inf:
-            lines = inf.readlines()
+        try:
+            with open(self.pdb, "r") as inf:
+                lines = inf.readlines()
+        except:
+            with open(self, "r") as inf:
+                lines = inf.readlines()
         
         n = []
         for line in lines:
@@ -552,6 +556,7 @@ class Ligand(Compound):
         self.check_forces()
         try:
             self.center = self.calculate_center()
+            self.logger_lig.debug(f'Center of {self.pdb} at {self.center}')
         except:
             self.logger_lig.warning('Could not calculate center of ligand. Please \
                                     check ligand alignment manually.')
@@ -626,6 +631,7 @@ class CrystalWaters(Compound):
         self._n_wats = self.count_waters()
         try:
             self.center = self.calculate_center()
+            self.logger_cw.debug(f'Center of {self.pdb} at {self.center}')
         except:
             self.logger_cw.warning('Could not calculate center of crystal waters. Please \
                                     check crystal waters alignment manually.')        
@@ -677,6 +683,7 @@ class Ions(Compound):
         self._n_ions = self.count_ions()
         try:
             self.center = self.calculate_center()
+            self.logger_ions.debug(f'Center of {self.pdb} at {self.center}')
         except:
             self.logger_ions.warning('Could not calculate center of ions. Please \
                                     check ions alignment manually.')
@@ -720,172 +727,3 @@ class Ions(Compound):
         tgt = open(self.posre_itp, "w")
         tgt.writelines(s)
         tgt.close()
-
-
-class Cholesterol(Compound):
-    def __init__(self, *args, **kwargs):
-        self.logger_choleserol = logging.getLogger('pymemdyn.protein.Cholesterol')
-        self.pdb = kwargs["pdb"]
-        self.itp = kwargs["itp"]
-        self.logger = logging.getLogger('pymemdyn.protein.Cholesterol')
-        super(Cholesterol, self).__init__(self, *args, **kwargs)
-        
-        self.group = "membr"
-        self.posre_itp = "posre_cho.itp"
-        self.check_pdb()
-        self._setITP()
-        self._n_cho = self.count_cho()
-        
-        try:
-            self.center = self.calculate_center()
-        except:
-            self.logger_cholesterol.warning('Could not calculate center of cholesterol. Please \
-                                    check cholesterol alignment manually.')
-
-    def setCho(self, value):
-        """
-        Sets the crystal cholesterol
-        """
-        self._n_cho = value
-
-    def getCho(self):
-        """
-        Get the crystal cholesterols
-        """
-        return self._n_cho
-    number = property(getCho, setCho)
-
-    def check_pdb(self):
-       """
-       Check the cholesterol file meets some standards
-       """
-       shutil.move(self.pdb, self.pdb + "~")
-       pdb = open(self.pdb + "~", "r")
-       pdb_out = open(self.pdb, "w")
-
-       replacing = False
-       for line in pdb:
-           new_line = line
-           if len(line.split()) > 3:
-               #Ensure the cholesterol is labeled as CHO
-               if line.split()[3] != "CHO":
-                   replacing = True
-                   new_line = new_line.replace(line.split()[3], "CHO")
-           pdb_out.write(new_line)
-
-       if replacing: self.logger.info("Made some CHO replacements in cho.pdb!")
-       pdb.close()
-       pdb_out.close()
-
-       return True
-
-    def count_cho(self):
-       """
-       Count and set the number of cho in the pdb
-       """
-       cho_count = 0
-       for line in open(self.pdb, "r"):
-           if len(line.split()) > 3:
-               if line.split()[3] in ["CHO"]:
-                   cho_count += 1
-       return cho_count / 74 #Each CHO has 74 atoms
-
-    def _setITP(self):
-        """
-        Create the itp to this structure
-        """
-        s = "\n".join([
-            "; position restraints for ions (resn CHO)",
-            "[ position_restraints ]",
-            ";  i funct       fcx        fcy        fcz",
-            "   1    1       1000       1000       1000"])
-
-        tgt = open(self.posre_itp, "w")
-        tgt.writelines(s)
-        tgt.close()
-
-
-class Alosteric(Compound):
-    """
-    This is a compound that goes as a ligand but it's placed in an allosteric
-    site rather than an orthosteric one.
-    """
-    def __init__(self, *args, **kwargs):
-        self.logger_allosteric = logging.getLogger('pymemdyn.protein.Alosteric')
-        self.pdb = kwargs["pdb"]
-        self.itp = kwargs["itp"]
-        super(Alosteric, self).__init__(self, *args, **kwargs)
-
-        self.check_pdb()
-
-        self.force_field = kwargs["ff"]
-        self.check_itp()
-
-        self.group = "protlig"
-        try:
-            self.center = self.calculate_center()
-        except:
-            self.logger_allosteric.warning('Could not calculate center of allosteric. Please \
-                                    check allosteric alignment manually.')
-
-    def check_pdb(self):
-       """
-       Check the allosteric file meets some standards
-       """
-       shutil.move(self.pdb, self.pdb + "~")
-       pdb = open(self.pdb + "~", "r")
-       pdb_out = open(self.pdb, "w")
-
-       replacing = False
-       for line in pdb:
-           new_line = line          
-           line = line.split()
-           try:
-               line[3]
-               #Ensure the allosteric compound is labeled as ALO
-               if line[3] != "ALO":
-                   replacing = True
-                   new_line = new_line.replace(line[3], "ALO")
-           except: IndexError
-            
-           pdb_out.write(new_line)
-
-       if replacing: print ("Made some ALO replacements in %s!" % self.pdb)
-       pdb.close()
-       pdb_out.close()
-
-       return True
-
-    def check_itp(self):
-        """
-        Check the force field is correct
-        """
-        shutil.move(self.itp, self.itp + "~")
-        itp = open(self.itp + "~", "r")
-        itp_out = open(self.itp, "w")
- 
-        molecule_type = atoms = False
-        for line in itp:
-            new_line = line
-            if line.startswith("[ moleculetype ]"): molecule_type = True
-            if molecule_type:
-                if not line.startswith(";"): #Not a comment
-                    if len(line.split()) == 2:
-                        #Change the user name to "alo"
-                        new_line = line.replace(line.split()[0], "alo")
-                        molecule_type = False
-
-            if line.startswith("[ "): #Next section (after atoms) reached
-                atoms = False
-            if line.startswith("[ atoms ]"): atoms = True
-            if atoms:
-                if not line.startswith(";"):
-                    if len(line.split()) > 4:
-                        #Change the name of the compound to "ALO"
-                        new_line = line.replace(line.split()[3], "ALO")
-            itp_out.write(new_line)
-
-        itp.close()
-        itp_out.close()
-  
-        return True

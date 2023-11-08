@@ -138,13 +138,6 @@ if __name__ == "__main__":
               queue = args.queue,
               debug = args.debug)
 
-
-    run.clean()
-    # Rewrite old GROMACS.log file if on a re-run
-    f = open("GROMACS.log", "w")
-    f.close()
-
-
     run.moldyn()
 
     if not (args.debug or args.debugFast):
