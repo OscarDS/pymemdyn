@@ -15,6 +15,9 @@ class AminoAcids():
             'GLU': 'E',
             'GLY': 'G',
             'HIS': 'H',
+            'HIE': 'H',
+            'HID': 'H',
+            'HIP': 'H',
             'ILE': 'I',
             'LEU': 'L',
             'LYS': 'K',
@@ -98,6 +101,21 @@ class AminoAcids():
                 C = 2
             ),
             'HIS': Counter(
+                N = 3,
+                O = 1,
+                C = 6
+             ),
+            'HIE': Counter(
+                N = 3,
+                O = 1,
+                C = 6
+             ),
+            'HID': Counter(
+                N = 3,
+                O = 1,
+                C = 6
+             ),
+            'HIP': Counter(
                 N = 3,
                 O = 1,
                 C = 6
