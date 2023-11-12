@@ -22,6 +22,8 @@ class CheckProtein():
     def find_missingLoops(self):
         """Check if the residue numbering is continuous.
         If loops are missing, return missingLoc.
+
+        TODO: restart numbering after TER
         """
         with open(self.pdb, 'r') as inf:
             lines = inf.readlines()
@@ -29,8 +31,10 @@ class CheckProtein():
         seq_dict = {}
         missingLoc = {}
         resID_prev = 0
-        prev_line = "ATOM      0  N   XXX     0     000.000 000.000 000.000  0.00000.00           N" # Dummy line
+        # prev_line = "ATOM      0  N   XXX     0     000.000 000.000 000.000  0.00000.00           N" # Dummy line
+        prev_chain = ''
         first_res = True
+        first_chain_res = True
 
         aa_d = self.aa.codes321 # 3-letter code to 1 letter code dict is now aa_d
 
@@ -38,13 +42,18 @@ class CheckProtein():
         for i, line in enumerate(lines):
             splitted = line.split() # Careful here, sometimes columns are stuck together!
             if not splitted[0] == 'ATOM':
+                if splitted[0] == 'TER':
+                    first_chain_res = True
                 continue
             else:
                 try: 
                     resID = int(line[22:26])
-                    if first_res: # Save ID of the first residue
-                        self.first_res_ID = int(line[22:26])
-                        first_res = False
+                    if first_chain_res: # Save ID of the first residue
+                        if first_res:
+                            self.first_res_ID = int(line[22:26])
+                            first_res = False
+                        resID_prev = int(line[22:26])
+                        first_chain_res = False
                     chainID = line[21]
                 except:
                     raise Exception("Cannot read resID or chain ID in the following line: \n{}".format(line))
@@ -58,18 +67,18 @@ class CheckProtein():
                 seq_dict[chainID][resID] = splitted[3] # e.g. {A: {40: ASP}}
                 
                 resIDchain = chainID + str(resID)
-                chain_prev = prev_line[21]
+                # chain_prev = prev_line[21]
 
                 if (resID != resID_prev) and (resID != resID_prev + 1):
                     if int(splitted[1]) == 1:
                         resID_prev = resID
-                        prev_line = line
+                        prev_chain = chainID
                         continue # ignore missing starting loop  
 
-                    missingLoc[chain_prev+str(resID_prev)] = resIDchain
+                    missingLoc[prev_chain+str(resID_prev)] = resIDchain
 
                 resID_prev = resID
-                prev_line = line
+                prev_chain = chainID
         self.logger.debug('length missingLoc: {}'.format(len(missingLoc)))
 
         # End of for-loop
