@@ -88,15 +88,18 @@ class System(object):
             cofactors += self.waters.split(',')
 
         for cofactor in cofactors:
-            cf_pdb = open(f'{cofactor}.pdb', "w")
-            with open(self.pdb, "r") as src:
-                for line in src:
-                    if line.startswith("ATOM") or line.startswith("HETATM"):
-                        res_name = line[17:21].strip()
-                        if res_name == cofactor:
-                            cf_pdb.write(line)
-            
-            self.logger.info(f'PDB file created containing cofactor: {cofactor}.pdb')
+            if not os.path.exists(f'{cofactor}.pdb'):
+                cf_pdb = open(f'{cofactor}.pdb', "w")
+                with open(self.pdb, "r") as src:
+                    for line in src:
+                        if line.startswith("ATOM") or line.startswith("HETATM"):
+                            res_name = line[17:21].strip()
+                            if res_name == cofactor:
+                                cf_pdb.write(line)
+                
+                self.logger.info(f'PDB file created containing cofactor: {cofactor}.pdb')
+            else:
+                self.logger.info(f'PDB file already exists containing cofactor: {cofactor}.pdb')
 
 
 class ProteinComplex(object):
@@ -318,15 +321,16 @@ class CalculateLigandParameters(object):
             for lig in ligands:
                 charge = charges[index]
                 index += 1
-                #if os.path.exists(lig + ".ff") == True:
-                #    self.logger.info('All ligand parameter (.itp and .ff) files present.')
-                #    pass
+                if os.path.exists(lig + ".ff") == True:
+                    self.logger.info('All ligand parameter (.itp and .ff) files present.')
+                    pass
 
-                #else:
-                #   if os.path.exists(lig + ".itp") == False:
-                #       self.logger.info('.itp file for ligand is missing. Will be generated now with Ligpargen.')
-                self.logger.debug('create_itp({}.pdb, {})'.format(lig, charge))
-                CalculateLigandParameters.create_itp(self, lig, charge)
+                else:
+                   self.logger.info(f'Ligand parameter file {lig}.ff not found.')
+                   if os.path.exists(lig + ".itp") == False:
+                       self.logger.info(f'Ligand parameter file {lig}.itp not found.')
+                       self.logger.info('Ligand parameter files will be generated with Ligpargen.')
+                       CalculateLigandParameters.create_itp(self, lig, charge)
                 CalculateLigandParameters.lpg2pmd(self, lig, index)
 
     def create_itp(self, ligand: str, charge: int) -> None:
@@ -344,7 +348,14 @@ class CalculateLigandParameters(object):
         unneccessary ligpargen output is saved in dir ligpargenOutput.
         """
         workdir = 'ligpargenOutput_' + ligand
+        if os.path.exists(workdir):
+            shutil.rmtree(workdir)
+            self.logger.debug(f'Removed {workdir}')        
+        
         inputdir = 'ligpargenInput_' + ligand
+        if os.path.exists(inputdir):
+            shutil.rmtree(inputdir)
+            self.logger.debug(f'Removed {inputdir}')  
 
         try: 
             self.logger.info(f'Calculating ligand parameters for {ligand} using LigParGen.')
