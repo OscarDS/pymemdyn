@@ -119,22 +119,6 @@ class ProteinComplex(object):
             self.setObjects(object)
             self.logger.debug(f'set object: {object}')
 
-
-        #if "proteins" in kwargs.keys():
-        #    self.setProteins(kwargs["proteins"])
-        #    self.logger.debug(f'proteins: {kwargs["proteins"]}')
-
-        #if "cofactors" in kwargs.keys():
-        #    self.logger.debug(f'cofactors: {kwargs["cofactors"]}')
-            
-            
-        #    for cofactor in kwargs["cofactors"]:
-        #        self.logger.debug(f'cofactor name: {cofactor.name}')
-        #        self.setCofactor(cofactor.name)
-
-        #if "nr_lig" in kwargs.keys():
-        #    self._n_lig = kwargs['nr_lig']
-
     def setObjects(self, object):
         """
         Sets an object.
@@ -144,48 +128,7 @@ class ProteinComplex(object):
     def getObjects(self, object):
         return getattr(self, object.name)
     property(getObjects, setObjects)
-    
-    
-    #def setProteins(self, value):
-    #    """
-    #    Sets the proteins object.
-    #    """
-    #    self.proteins = value
-
-    #def getProteins(self):
-    #    return self.proteins
-    #property(getProteins, setProteins)
-
-    #def setCofactor(self, value):
-    #    """
-    #    Sets the cofactor object
-    #    """
-    #    setattr(self, value.name, value)
-
-    #def getCofactor(self, value):
-    #    return self.value
-    #property(getCofactor, setCofactor)
-
-    #def setWaters(self, value):
-    #   """
-    #    Sets the crystal waters object
-    #    """
-    #    self.waters = value
-
-    #def getWaters(self):
-    #    return self.waters
-    #property(getWaters, setWaters)
-
-    #def setIons(self, value):
-    #    """
-    #    Sets the ions object
-    #    """
-    #    self.ions = value
-
-    #def getIons(self):
-    #    return self.ions
-    #property(getIons, setIons)
-
+  
     def set_nanom(self):
         """
         Convert dimension measurements to nanometers for GROMACS
@@ -258,37 +201,6 @@ class Monomer(object):
         self.chains = []
         self._setRes()
 
-    #def delete_chain(self):
-    #    """
-    #    PDBs which have a chain column mess up with pdb2gmx, creating
-    #    an unsuitable protein.itp file by naming the protein ie "Protein_A".
-    #    Here we remove the chain value
-
-    #    According to http://www.wwpdb.org/documentation/format33/sect9.html,
-    #    the chain value is in column 22
-    #    """
-    #   shutil.move(self.pdb, self.pdb + "~")
-    #   pdb = open(self.pdb + "~", "r")
-    #   pdb_out = open(self.pdb, "w")
-
-    #    replacing = False
-    #    for line in pdb:
-    #        new_line = line
-    #        if len(line.split()) > 2:
-    #            #Remove chain id
-    #            if line[21] != " ":
-    #                replacing = True
-    #                new_line = list(line) #Transform the line into a list...
-    #                new_line[21] = " " 
-    #                new_line = "".join(new_line)
-    #        pdb_out.write(new_line)
-
-    #    if replacing: print ("Removed chain id from your protein pdb!")
-    #    pdb.close()
-    #    pdb_out.close()
- 
-    #    return True
-
     def _setRes(self):
         """
         Change Histidines and Cysteins in pdb to the format preferred by gromacs.
@@ -321,12 +233,6 @@ class Oligomer(Monomer):
 
         self.chains = kwargs.get("chains")
         self.points = dict.fromkeys(self.chains, [])
-
-    #def delete_chain(self):
-    #    """
-    #    Overload the delete_chain method from Monomer
-    #    """
-    #    return True
 
 
 class CalculateLigandParameters(object):

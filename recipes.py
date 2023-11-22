@@ -269,34 +269,6 @@ class LigandInit(BasicInit):
                         {"src": f"membrane_complex.complex.{var}.pdb"}
 
 
-# This recipe modifies the previous one taking an allosteric ligand into account
-#class LigandAlostericInit(LigandInit):
-#    def __init__(self, **kwargs):
-#        super(LigandAlostericInit, self).__init__(**kwargs)
-
-#        self.steps.insert(9, "genrestr_alo")
-#        self.recipe["genrestr_alo"] = \
-#            {"gromacs": "genrestr",
-#             "options": {"src": "",
-#                         "tgt": "posre_alo.itp",
-#                         "index": "allosteric_ha.ndx",
-#                         "forces": ["1000", "1000", "1000"]},
-#             "input": "2\n"}
-
-#        self.steps.insert(9, "make_ndx_alo")
-#        self.recipe["make_ndx_alo"] = \
-#            {"gromacs": "make_ndx",
-#             "options": {"src": "",
-#                         "tgt": "allosteric_ha.ndx",
-#                         "allosteric": True},
-#             "input": "! a H*\nq\n"}
-
-#        self.breaks["make_ndx_alo"] = \
-#            {"src": "membrane_complex.complex.allosteric.pdb"}
-#        self.breaks["genrestr_alo"] = \
-#            {"src": "membrane_complex.complex.allosteric.pdb"}
-
-
 ##########################################################################
 #                 Minimization                                           #
 ##########################################################################
@@ -324,16 +296,6 @@ class BasicMinimization(object):
         if kwargs["debugFast"] or False:
             self.recipe["set_stage_init"]["options"]["repo_files"] = \
                 ["eqDEBUG.mdp"]
-
-
-#class LigandMinimization(BasicMinimization):
-#    def __init__(self, **kwargs):
-#        super(LigandMinimization, self).__init__(**kwargs)
-
-
-#class LigandAlostericMinimization(BasicMinimization):
-#    def __init__(self, **kwargs):
-#        super(LigandAlostericMinimization, self).__init__(**kwargs)
 
 
 ##########################################################################
@@ -434,21 +396,6 @@ class LigandEquilibration(BasicEquilibration):
                                     "forces": ["200", "200", "200"]},
                         "input": "3\n"}
                     
-                    
-
-
-#class LigandAlostericEquilibration(LigandEquilibration):
-#    def __init__(self, **kwargs):
-#        super(LigandAlostericEquilibration, self).__init__(**kwargs)
-#        self.steps.insert(2, "genrestr")
-#        self.recipe["genrestr"] = \
-#            {"gromacs": "genrestr",
-#             "options": {"src": "Rmin/topol.tpr",
-#                         "tgt": "protein_ca200.itp",
-#                         "index": "index.ndx",
-#                         "forces": ["200", "200", "200"]},
-#             "input": "3\n"}
-
 
 ##########################################################################
 #                 Relaxation                                             #
@@ -504,12 +451,6 @@ class LigandRelax(BasicRelax):
             for var, value in vars(kwargs["membrane_complex"]).items():
                 if isinstance(value, protein.Ligand):
                     self.recipe["relax800"]["options"]["posres"].append(f"posre_{var}.itp")
-
-
-#class LigandAlostericRelax(LigandRelax):
-#    def __init__(self, **kwargs):
-#        super(LigandAlostericRelax, self).__init__(**kwargs)
-#        self.recipe["relax800"]["options"]["posres"].append("posre_alo.itp")
 
 
 ##########################################################################
