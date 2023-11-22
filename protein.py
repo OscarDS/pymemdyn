@@ -85,11 +85,17 @@ class System(object):
         if self.waters:
             cofactors += self.waters.split(',')
         if self.ions:
-            cofactors += self.waters.split(',')
+            cofactors += self.ions.split(',')
 
         for cofactor in cofactors:
-            if not os.path.exists(f'{cofactor}.pdb'):
-                cf_pdb = open(f'{cofactor}.pdb', "w")
+
+            if cofactor == self.waters:
+                filename = 'HOH'
+            else:
+                filename = cofactor
+
+            if not os.path.exists(f'{filename}.pdb'):
+                cf_pdb = open(f'{filename}.pdb', "w")
                 with open(self.pdb, "r") as src:
                     for line in src:
                         if line.startswith("ATOM") or line.startswith("HETATM"):
@@ -97,68 +103,88 @@ class System(object):
                             if res_name == cofactor:
                                 cf_pdb.write(line)
                 
-                self.logger.info(f'PDB file created containing cofactor: {cofactor}.pdb')
+                self.logger.info(f'PDB file created containing cofactor: {filename}.pdb')
             else:
-                self.logger.info(f'PDB file already exists containing cofactor: {cofactor}.pdb')
+                self.logger.info(f'PDB file already exists containing cofactor: {filename}.pdb')
 
 
 class ProteinComplex(object):
     def __init__(self, *args, **kwargs):
         self.cres = 0  # Central residue
         self.trans = [0, 0, self.cres]  # Module for translating complex
-        self.n_wats = 0  # Number of experimental waters
         self.logger = logging.getLogger('pymemdyn.protein.ProteinComplex')
         self.logger.info('Initializing protein complex.')
 
-        if "proteins" in kwargs.keys():
-            self.setProteins(kwargs["proteins"])
-        if "ligands" in kwargs.keys():
-            self.setLigand(kwargs["ligands"])
-            self._n_lig = kwargs['nr_lig']
-        if "waters" in kwargs.keys():
-            self.setWaters(kwargs["waters"])
-        if "ions" in kwargs.keys():
-            self.setIons(kwargs["ions"])
+        for object in kwargs["objects"]:
+            self.setObjects(object)
+            self.logger.debug(f'set object: {object}')
 
-    def setProteins(self, value):
-        """
-        Sets the proteins object.
-        """
-        self.proteins = value
 
-    def getProteins(self):
-        return self.proteins
-    property(getProteins, setProteins)
+        #if "proteins" in kwargs.keys():
+        #    self.setProteins(kwargs["proteins"])
+        #    self.logger.debug(f'proteins: {kwargs["proteins"]}')
 
-    def setLigand(self, value):
-        """
-        Sets the ligand object
-        """
-        self.ligand = value
+        #if "cofactors" in kwargs.keys():
+        #    self.logger.debug(f'cofactors: {kwargs["cofactors"]}')
+            
+            
+        #    for cofactor in kwargs["cofactors"]:
+        #        self.logger.debug(f'cofactor name: {cofactor.name}')
+        #        self.setCofactor(cofactor.name)
 
-    def getLigand(self):
-        return self.ligand
-    property(getLigand, setLigand)
+        #if "nr_lig" in kwargs.keys():
+        #    self._n_lig = kwargs['nr_lig']
 
-    def setWaters(self, value):
+    def setObjects(self, object):
         """
-        Sets the crystal waters object
+        Sets an object.
         """
-        self.waters = value
+        setattr(self, object.name, object)
+    
+    def getObjects(self, object):
+        return getattr(self, object.name)
+    property(getObjects, setObjects)
+    
+    
+    #def setProteins(self, value):
+    #    """
+    #    Sets the proteins object.
+    #    """
+    #    self.proteins = value
 
-    def getWaters(self):
-        return self.waters
-    property(getWaters, setWaters)
+    #def getProteins(self):
+    #    return self.proteins
+    #property(getProteins, setProteins)
 
-    def setIons(self, value):
-        """
-        Sets the ions object
-        """
-        self.ions = value
+    #def setCofactor(self, value):
+    #    """
+    #    Sets the cofactor object
+    #    """
+    #    setattr(self, value.name, value)
 
-    def getIons(self):
-        return self.ions
-    property(getIons, setIons)
+    #def getCofactor(self, value):
+    #    return self.value
+    #property(getCofactor, setCofactor)
+
+    #def setWaters(self, value):
+    #   """
+    #    Sets the crystal waters object
+    #    """
+    #    self.waters = value
+
+    #def getWaters(self):
+    #    return self.waters
+    #property(getWaters, setWaters)
+
+    #def setIons(self, value):
+    #    """
+    #    Sets the ions object
+    #    """
+    #    self.ions = value
+
+    #def getIons(self):
+    #    return self.ions
+    #property(getIons, setIons)
 
     def set_nanom(self):
         """
@@ -210,9 +236,9 @@ class Protein(object):
         for line in lines:
             m =  line.split()
             if m[0] in ('ATOM', 'HETATM'):
-                n.append(m[:8])
+                n.append(m[:9])
         matrix = np.array(n)
-        coord = matrix[:, [5, 6, 7]]
+        coord = matrix[:, [6, 7, 8]]
         coord = coord.astype(float)
         mean_coord = np.mean(coord, axis=0)
         return mean_coord
@@ -221,45 +247,47 @@ class Protein(object):
 
 class Monomer(object):
     def __init__(self, *args, **kwargs):
+        self.name = "proteins"
+        self.type = "proteins"
         self.pdb = kwargs["pdb"]
         if not os.path.isfile(self.pdb):
             raise IOError("File '{0}' missing".format(self.pdb))
 
         self.group = "protlig"
-        self.delete_chain()
+        #self.delete_chain()
         self.chains = []
         self._setRes()
 
-    def delete_chain(self):
-        """
-        PDBs which have a chain column mess up with pdb2gmx, creating
-        an unsuitable protein.itp file by naming the protein ie "Protein_A".
-        Here we remove the chain value
+    #def delete_chain(self):
+    #    """
+    #    PDBs which have a chain column mess up with pdb2gmx, creating
+    #    an unsuitable protein.itp file by naming the protein ie "Protein_A".
+    #    Here we remove the chain value
 
-        According to http://www.wwpdb.org/documentation/format33/sect9.html,
-        the chain value is in column 22
-        """
-        shutil.move(self.pdb, self.pdb + "~")
-        pdb = open(self.pdb + "~", "r")
-        pdb_out = open(self.pdb, "w")
+    #    According to http://www.wwpdb.org/documentation/format33/sect9.html,
+    #    the chain value is in column 22
+    #    """
+    #   shutil.move(self.pdb, self.pdb + "~")
+    #   pdb = open(self.pdb + "~", "r")
+    #   pdb_out = open(self.pdb, "w")
 
-        replacing = False
-        for line in pdb:
-            new_line = line
-            if len(line.split()) > 2:
-                #Remove chain id
-                if line[21] != " ":
-                    replacing = True
-                    new_line = list(line) #Transform the line into a list...
-                    new_line[21] = " " 
-                    new_line = "".join(new_line)
-            pdb_out.write(new_line)
+    #    replacing = False
+    #    for line in pdb:
+    #        new_line = line
+    #        if len(line.split()) > 2:
+    #            #Remove chain id
+    #            if line[21] != " ":
+    #                replacing = True
+    #                new_line = list(line) #Transform the line into a list...
+    #                new_line[21] = " " 
+    #                new_line = "".join(new_line)
+    #        pdb_out.write(new_line)
 
-        if replacing: print ("Removed chain id from your protein pdb!")
-        pdb.close()
-        pdb_out.close()
+    #    if replacing: print ("Removed chain id from your protein pdb!")
+    #    pdb.close()
+    #    pdb_out.close()
  
-        return True
+    #    return True
 
     def _setRes(self):
         """
@@ -277,7 +305,8 @@ class Monomer(object):
                 elif line.split()[3] == "HIP":
                     tgt.write(line.replace('HIP ','HISH'))
                 elif line.split()[3] == "CYX":
-                    tgt.write(line.replace('CYX ','CYS'))
+                    tgt.write(line.replace('CYX ','CYS '))
+
                 else:
                     tgt.write(line)
             else:
@@ -293,11 +322,11 @@ class Oligomer(Monomer):
         self.chains = kwargs.get("chains")
         self.points = dict.fromkeys(self.chains, [])
 
-    def delete_chain(self):
-        """
-        Overload the delete_chain method from Monomer
-        """
-        return True
+    #def delete_chain(self):
+    #    """
+    #    Overload the delete_chain method from Monomer
+    #    """
+    #    return True
 
 
 class CalculateLigandParameters(object):
@@ -452,7 +481,7 @@ class CalculateLigandParameters(object):
             new_ff = open(self.own_dir + "/" + cofactor + ".ff", "w")
             new_pdb = open(self.own_dir + "/" + cofactor + ".pdb", "w")
     
-            lig_ID = 'L'+str(str(index).zfill(2))
+            self.lig_ID = 'L'+str(str(index).zfill(2))
             
             split = False
             count = -1
@@ -460,7 +489,7 @@ class CalculateLigandParameters(object):
             tmp_itp = []
     
             for line in lines_itp:
-                line = line.replace("opls_", f"{lig_ID}__")
+                line = line.replace("opls_", f"{self.lig_ID}__")
                 if "[ defaults ]" in line:
                     # find location of defaults content
                     loc_content_of_defaults = lines_itp.index(line) + 2
@@ -471,7 +500,7 @@ class CalculateLigandParameters(object):
                 if "[ moleculetype ]" in line:
                     split = True    
                 if split == False: 
-                    if f"{lig_ID}__" not in line:
+                    if f"{self.lig_ID}__" not in line:
                         new_ff.write(line)
                     else:
                         tmp_ff.append(line.split())         
@@ -479,13 +508,13 @@ class CalculateLigandParameters(object):
                 if split == True:
                     count += 1
                     if count == 2:# Added lstrip() to not take starting whitespace into account
-                        if line.lstrip()[0:3] != lig_ID: 
-                            line = line.replace(line.lstrip()[0:3], lig_ID)
+                        if line.lstrip()[0:3] != self.lig_ID: 
+                            line = line.replace(line.lstrip()[0:3], self.lig_ID)
                         
-                    if f"{lig_ID}__" in line:
+                    if f"{self.lig_ID}__" in line:
                         tmp_itp.append(line.split())
-                        if line[28:31] != lig_ID:
-                            line = line.replace(line[28:31], lig_ID)
+                        if line[28:31] != self.lig_ID:
+                            line = line.replace(line[28:31], self.lig_ID)
     
                     new_itp.write(line)
     
@@ -502,8 +531,8 @@ class CalculateLigandParameters(object):
                     line = line.replace("HETATM", "ATOM  ")
                     cols[0] = "ATOM"
                 if "ATOM" in cols[0]: 
-                    if cols[3] != lig_ID:
-                        line = line.replace(cols[3], lig_ID)
+                    if cols[3] != self.lig_ID:
+                        line = line.replace(cols[3], self.lig_ID)
                 if "REMARK" in cols[0]:
                     continue # Do not write remarks in new pdb file
                         
@@ -519,6 +548,8 @@ class Compound(object):
     This is a super-class to provide common functions to added compounds
     """
     def __init__(self, *args, **kwargs):
+        self.name = kwargs["name"]
+        self.ID = kwargs["ID"]
         self.check_files(self.pdb, 
                          # self.itp
                          )
@@ -532,7 +563,8 @@ class Compound(object):
                 raise IOError("File {0} missing".format(src))
             
     def calculate_center(self):
-        """Determine center of the coords in the self.pdb.
+        """
+        Determine center of the coords in the self.pdb.
         """
         try:
             with open(self.pdb, "r") as inf:
@@ -552,10 +584,28 @@ class Compound(object):
         mean_coord = np.mean(coord, axis=0)
         return mean_coord
 
+    def correct_resid(self, pdb, resid):
+        """
+        Correct the residue id to the specified residue id.
+        """
+        with open(pdb, 'r') as file:
+            lines = file.readlines()
+
+        # Modify the lines with new residue identifier
+        with open(pdb, 'w') as file:
+            for line in lines:
+                if line.startswith("ATOM") or line.startswith("HETATM"):
+                    # PDB format specifies residue identifier in columns 23-26 (inclusive)
+                    modified_line = line[:17] + resid + line[20:]
+                    file.write(modified_line)
+                else:
+                    # Write the line as is if it's not an atom or heteroatom record
+                    file.write(line)
 
 class Ligand(Compound):
     def __init__(self, *args, **kwargs):
         self.logger_lig = logging.getLogger('pymemdyn.protein.Ligand')
+        self.type = "ligand"
         self.pdb = kwargs["pdb"]
         self.itp = kwargs["itp"]
         super(Ligand, self).__init__(self, *args, **kwargs)
@@ -632,14 +682,16 @@ class Ligand(Compound):
 class CrystalWaters(Compound):
     def __init__(self, *args, **kwargs):
         self.logger_cw = logging.getLogger('pymemdyn.protein.CrystalWaters')
+        self.type = "waters"
         self.pdb = kwargs["pdb"]
+        self.correct_resid(self.pdb, 'HOH')
         self.itp = kwargs["itp"]
         super(CrystalWaters, self).__init__(self, *args, **kwargs)
 
         self.group = "wation"
-        self.posre_itp = "posre_hoh.itp"
+        self.posre_itp = f"posre_{self.ID}.itp"
         self._setITP()
-        self._n_wats = self.count_waters()
+        self._n_waters = self.count_waters()
         try:
             self.center = self.calculate_center()
             self.logger_cw.debug(f'Center of {self.pdb} at {self.center}')
@@ -651,20 +703,20 @@ class CrystalWaters(Compound):
         """
         Set crystal waters
         """
-        self._n_wats = value
+        self._n_waters = value
 
     def getWaters(self):
         """
         Get the crystal waters
         """
-        return self._n_wats
+        return self._n_waters
     number = property(getWaters, setWaters)
 
     def count_waters(self):
        """
        Count and set the number of crystal waters in the pdb
        """
-       return len([x for x in open(self.pdb, "r") if "HOH" in x])/3
+       return int(len([x for x in open(self.pdb, "r") if self.ID in x])/3)
 
     def _setITP(self):
         """
@@ -684,12 +736,13 @@ class CrystalWaters(Compound):
 class Ions(Compound):
     def __init__(self, *args, **kwargs):      
         self.logger_ions = logging.getLogger('pymemdyn.protein.Ions')
+        self.type = "ions"
         self.pdb = kwargs["pdb"]
         self.itp = kwargs["itp"]
         super(Ions, self).__init__(self, *args, **kwargs)
         
         self.group = "wation"
-        self.posre_itp = "posre_ion.itp"
+        self.posre_itp = f"posre_{self.ID}.itp"
         self._setITP()
         self._n_ions = self.count_ions()
         try:
@@ -713,24 +766,27 @@ class Ions(Compound):
     number = property(getIons, setIons)
 
     def count_ions(self):
-       """
-       Count and set the number of ions in the pdb
-       """
-       ions = ["NA", "NA+", "SOD", "K", "CA", "MG", "CL", "CL-", 
-               "CHL", "ZN", "LI", "RB", "CS", "F", "BR", "I"]
-       ion_count = 0
-       for line in open(self.pdb, "r"):
+        """
+        Count and set the number of ions in the pdb
+        """
+        ions = ["NA", "NA+", "SOD", "K", "CA", "MG", "CL", "CL-", 
+                "CHL", "LI", "RB", "CS", "F", "BR", "I"]
+        ion_count = 0
+        for line in open(self.pdb, "r"):
            if len(line.split()) > 2:
                if line.split()[2] in ions:
                    ion_count += 1
-       return ion_count
+        if ion_count == 0:
+            self.logger_ions.warning(f'Ion identifier ({self.ID}) not in {ions}. Please make sure the ID links correctly to ions.itp.')
+        
+        return ion_count
 
     def _setITP(self):
         """
         Create an itp file for this structure
         """
         s = "\n".join([
-            "; position restraints for ions (resn NA, CA, MG, CL, ZN)",
+            "; position restraints for ions (resn NA, K, CA, MG, CL, ZN)",
             "[ position_restraints ]",
             ";  i funct       fcx        fcy        fcz",
             "   1    1       1000       1000       1000"])

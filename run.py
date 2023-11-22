@@ -59,8 +59,8 @@ class Run(object):
 
         # Prepare protein
         self.logger.debug('Checking # of chains of '+ str(self.protein))
-        self.protein = protein.Protein(pdb=self.protein).check_number_of_chains()
-        self.logger.debug(f'Protein is a(n) {type(self.protein)} with {self.protein.chains} chains')
+        self.proteins = protein.Protein(pdb=self.protein).check_number_of_chains()
+        self.logger.debug(f'Protein is a(n) {type(self.proteins)} with {self.proteins.chains} chains')
         try:
             self.protein_center = protein.Protein(pdb='protein.pdb').calculate_center()
             self.logger.debug(f'Center of protein at {self.protein_center}')
@@ -69,24 +69,31 @@ class Run(object):
 
         # Prepare ligand(s)
         protein.CalculateLigandParameters.__init__(self)
-        
-        if self.ligand:
-            self.nr_ligand = len(self.ligand.split(','))
-        else:
-            self.nr_ligand = None
+
+        #if self.ligand:
+        #    self.nr_ligand = len(self.ligand.split(','))
+        #else:
+        #    self.nr_ligand = None
 
         # Prepare cofactor(s)
-        for cofactor in self.ligand.split(',') + [self.waters, self.ions]:
+        self.cofactors = self.ligand.split(',') + ['HOH' if self.waters else "", self.ions]
+        self.cofactors = [value for value in self.cofactors if value] 
+        self.logger.debug(f'cofactors: {self.cofactors}')
+        for index, cofactor in enumerate(self.cofactors):
+            ID = cofactor
             if not cofactor:
                 continue
             elif cofactor in self.ligand.split(','):
+                ID = 'L'+str(index+1).zfill(2)
                 cofactor_type = 'Ligand'
-            elif cofactor == self.waters:
+            elif cofactor == 'HOH':
                 cofactor_type = 'CrystalWaters'
             elif cofactor == self.ions:
                 cofactor_type = 'Ions'
  
             setattr(self, cofactor, getattr(protein, cofactor_type)(
+                        name=cofactor,
+                        ID=ID,
                         pdb=f'{cofactor}.pdb',
                         itp=f'{cofactor}.itp',
                         ff=f'{cofactor}.ff'
@@ -104,17 +111,22 @@ class Run(object):
         self.membr = membrane.Membrane()
 
         # Prepare complex
+        self.objects = self.cofactors + ['proteins']
+        self.logger.debug(f'objects: {self.objects}')
+
         prot_complex = protein.ProteinComplex(
-            proteins=self.protein,
-            ligands=self.ligand or None,
-            nr_lig = self.nr_ligand or None,
-            waters=self.waters or None,
-            ions=self.ions or None
+            objects= [getattr(self, object) for object in self.objects]
             )
 
         full_complex = complex.MembraneComplex()
-
         full_complex.complex = prot_complex
+        full_complex.complex.cofactors = self.cofactors
+        
+        # Check for correct storing of Ligands
+        self.logger.debug(f'attributes MembraneComplex.complex: {vars(full_complex.complex)}')
+        lig_present = any(isinstance(var, protein.Ligand) for var in vars(full_complex.complex).values())
+        self.logger.debug(f'found protein.Ligand: {lig_present}')
+
         full_complex.membrane = self.membr
 
         self.g = gromacs.Gromacs(membrane_complex=full_complex)

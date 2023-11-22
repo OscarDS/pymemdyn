@@ -53,7 +53,7 @@ class Gromacs(object):
         self.membrane_complex.membrane.lipids_down = 0
         self.membrane_complex.membrane.n_wats = 0
 
-        if getattr(self.membrane_complex.complex, "waters"):
+        if hasattr(self.membrane_complex.complex, "waters"):
             # Careful, some waters belong to crystal, not solvent
             self.membrane_complex.membrane.n_wats -= \
             self.membrane_complex.complex.waters.number
@@ -211,7 +211,12 @@ class Gromacs(object):
         topol.write("\n; Number of POPC molecules with lower z-coord value:\n")
         topol.write("POPC " + str(self.membrane_complex.membrane.lipids_down))
         topol.write("\n; Total number of SOL molecules:\n")
-        topol.write("SOL " + str(self.membrane_complex.membrane.n_wats) + "\n")
+        
+        if hasattr(self.membrane_complex.complex, "HOH"):
+            topol.write("SOL " + str(self.membrane_complex.membrane.n_wats - self.membrane_complex.complex.HOH._n_waters) + "\n")
+        else:
+            topol.write("SOL " + str(self.membrane_complex.membrane.n_wats) + "\n")
+
         topol.close()
 
         return True
@@ -248,9 +253,6 @@ class Gromacs(object):
         if hasattr(self.membrane_complex.complex, "ions") and \
                 self.membrane_complex.complex.ions:
             posres.append("posre_ion.itp")
-        if hasattr(self.membrane_complex.complex, "cho") and \
-                self.membrane_complex.complex.cho:
-            posres.append("posre_cho.itp")
 
         for posre in posres:
             new_posre = open(os.path.join(kwargs["tgt_dir"], posre), "w")
@@ -350,23 +352,19 @@ class Gromacs(object):
         stage = stage or "Init"
 
         if self.membrane_complex:
-            if not self.membrane_complex.complex.ligand:
+            if not any(isinstance(var, protein.Ligand) for var in vars(self.membrane_complex.complex).values()):
                 recipe += "Basic"
-            if hasattr(self.membrane_complex.complex, "ligand"):
-                if self.membrane_complex.complex.ligand:
-                    recipe += "Ligand"
-            if hasattr(self.membrane_complex.complex, "allosteric"):
-                if self.membrane_complex.complex.allosteric:
-                    recipe += "Alosteric"
+            else:
+                recipe += "Ligand"
 
         recipe += stage  # This kwarg carries the proper recipe:
         # Init, Minimization, Equilibration...
 
         if hasattr(recipes, recipe):
-            self.recipe = getattr(recipes, recipe)(debugFast=debugFast, chains=self.membrane_complex.complex.proteins.chains)
+            self.recipe = getattr(recipes, recipe)(debugFast=debugFast, membrane_complex=self.membrane_complex.complex)
         elif hasattr(recipes, "Basic" + stage):
             # Fall back to Basic recipe if no specific where found
-            self.recipe = getattr(recipes, "Basic" + stage)(debugFast=debugFast, chains=self.membrane_complex.complex.proteins.chains)
+            self.recipe = getattr(recipes, "Basic" + stage)(debugFast=debugFast, membrane_complex=self.membrane_complex.complex)
 
         return True
 
@@ -773,7 +771,7 @@ class Wrapper(object):
         """
         _mode_grompp: Wrap the grompp command options
         """
-        command = ["-maxwarn", " 2",
+        command = ["-maxwarn", " 3",
                    "-c", self._setDir(kwargs["src2"]),
                    "-r", self._setDir(kwargs["src2"]),
                    "-p", self._setDir(kwargs["top"]),

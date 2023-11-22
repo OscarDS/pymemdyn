@@ -3,6 +3,7 @@ import shutil
 from string import Template
 
 import bw4posres
+import protein
 
 import logging
 logger_utils = logging.getLogger('pymemdyn.utils')
@@ -58,12 +59,10 @@ def concat(**kwargs):
     """
     Make a whole pdb file with all the pdb provided
     """
-    for compound_class in ["ligands", "waters", "ions"]:
-        # Does the complex carry the group?
-        if hasattr(kwargs["tgt"], compound_class):
-            if getattr(kwargs["tgt"], compound_class):
-                _file_append(kwargs["src"],
-                    getattr(kwargs["tgt"], compound_class).pdb)
+    for cofactor in kwargs["tgt"].cofactors:
+        logger_utils.debug(f'concatting {cofactor} to {kwargs["src"]}')
+        _file_append(kwargs["src"], getattr(kwargs["tgt"], cofactor).pdb)
+
 
 def getbw(**kwargs):
     """
@@ -125,6 +124,25 @@ def make_ffoplsaanb(complex = None):
                       "templates", "ffoplsaanb_")
 
     base = "{0}base.itp".format(ff) # This is the ff for proteins and other
+
+    to_concat = [base]
+    for key, value in vars(complex).items():
+        if isinstance(value, protein.Ligand):
+            to_concat.extend([getattr(complex, key).force_field])
+
+    output = "[ atomtypes ]\n"
+    for ff_i in to_concat:
+        output += open(ff_i).read()
+        if not output.endswith("\n"): output += "\n"
+
+    open("ffoplsaanb_mod.itp", "w").write(output)
+
+    return True
+
+
+########################################################################
+'''
+    base = "{0}base.itp".format(ff) # This is the ff for proteins and other
     lip = "{0}lip.itp".format(ff)   # This for the lipids
     cho = "{0}cho.itp".format(ff)   # This for cholesterol
 
@@ -148,6 +166,7 @@ def make_ffoplsaanb(complex = None):
     open("ffoplsaanb_mod.itp", "w").write(output)
 
     return True
+'''
 
 def make_topol(template_dir = \
     os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates"),
@@ -157,168 +176,66 @@ def make_topol(template_dir = \
     """
     Make the topol starting from our topol.top template
     """
-    protein = pc1 = pc2 = pc3 = pc4 = pc5 = pc6 = pc7 = pc8 = pc9 = pc10 = 0 
-    # if extending the number of proteins beyond 10, add pc's here (e.g. pc11)
-    bw = oligomer = lig = sod = cho = alo = hoh = 0
-    lig_name = ions_name = cho_name = allosteric_name = hoh_name = ""
-    if hasattr(complex, "monomer"):
-        protein = 1
-        bw = 1
-        if getattr(complex, "monomer").__class__.__name__ == "Oligomer":
-            protein = 0
-            oligomer = 1      
-    if hasattr(complex, "ligand"):
-        if complex.ligand:
-            lig = 1
-            lig_name = complex.ligand.itp
-    if hasattr(complex, "ions"):
-        if hasattr(complex.ions, "_n_ions"):
-            sod = complex.ions._n_ions
-            ions_name = complex.ions.itp
-    if hasattr(complex, "cho"):
-        if hasattr(complex.cho, "_n_cho"):
-            cho = complex.cho._n_cho
-            cho_name = complex.cho.itp
-    if hasattr(complex, "allosteric"):
-        if complex.allosteric:
-            alo = complex._n_alo
-            allosteric_name = complex.allosteric.itp
-    if hasattr(complex, "waters"):
-        if hasattr(complex.waters, "_n_wats"):
-            hoh = int(complex.waters._n_wats)
-            hoh_name = complex.waters.itp
-
-
-    order = ("protein", "pc1", "pc2", "pc3", "pc4", "pc5", "pc6", "pc7", "pc8", "pc9", "pc10",
-                 "bw", "lig", "sod", "cho", "alo", "hoh")
-    # if extending the number of proteins beyond 10, add pc's here (e.g. pc11)
-    comps = {"protein": {"itp_name": "protein.itp",
-                         "ifdef_name": "POSRES",
-                         "posre_name": "posre.itp"},
-             
-             "pc1": {},
-             "pc2": {},
-             "pc3": {},
-             "pc4": {},
-             "pc5": {},
-             "pc6": {},
-             "pc7": {},
-             "pc8": {},
-             "pc9": {},
-             "pc10": {},
-             # if extending the number of proteins beyond 10, add pc's here (e.g. pc11)
-
-             "bw": {"ifdef_name": "DISRE",
-                    "posre_name": "disre.itp"},
-
-             "lig": {"itp_name": lig_name,
-                 "ifdef_name": "POSRESLIG",
-                 "posre_name": "posre_lig.itp"},
-
-             "sod": {#"itp_name": ions_name,
-                 "ifdef_name": "POSRESION",
-                 "posre_name": "posre_ion.itp"},
-
-             "cho": {#"itp_name": cho_name,
-                 "ifdef_name": "POSRESCHO",
-                 "posre_name": "posre_cho.itp"},
-
-             "alo": {"itp_name": allosteric_name,
-                 "ifdef_name": "POSRESALO",
-                 "posre_name": "posre_alo.itp"},
-
-             "hoh": {#"itp_name": hoh_name,
-                 "ifdef_name": "POSRESHOH",
-                 "posre_name": "posre_hoh.itp"},
-             }
-    
-    if oligomer:
-        chainID = complex.monomer.chains
-        if len(chainID) >= 2:
-            pc1 = pc2 = 1
-        if len(chainID) >= 3:
-            pc3 = 1
-        if len(chainID) >= 4:
-            pc4 = 1
-        if len(chainID) >= 5:
-            pc5 = 1      
-        if len(chainID) >= 6:
-            pc6 = 1              
-        if len(chainID) >= 7:
-            pc7 = 1              
-        if len(chainID) >= 8:
-            pc8 = 1  
-        if len(chainID) >= 9:
-            pc9 = 1  
-        if len(chainID) >= 10:
-            pc10 = 1  
-        # if extending the number of proteins beyond 10, add pc's here (e.g. pc11)
-
-        prot_name = prot_itp = prot_posre = ""
-        count = 0
-        for ID in chainID:
-            count += 1
-            comp = "pc" + str(count)
-            
-            prot_name = ("Protein_chain_" + ID)
-            prot_itp = ("protein_Protein_chain_" + ID + ".itp")
-            prot_posre = ("posre_Protein_chain_" + ID + ".itp")            
-            
-            comps[comp] =  {"name": prot_name,
-                            "itp_name": prot_itp,
-                            "ifdef_name": "POSRES",
-                            "posre_name": prot_posre}
-            
+    if working_dir: working_dir += "/" # Root dir doesn't need to be slashed
 
     src = open(os.path.join(template_dir, "topol.top"), "r")
     tgt = open(os.path.join(target_dir, "topol.top"), "w")
 
     t = Template("".join(src.readlines()))
     src.close()
+    
+    itp_include = []  
+    mol_include = []
+    add_disre = True 
+    for key, value in vars(complex).items():
+        # define protein topologies first
+        if isinstance(value, protein.Oligomer):
+            chainID = getattr(complex, key).chains
+            for ID in chainID:
+                itp_include.extend([f'#include "protein_Protein_chain_{ID}.itp"',
+                                    '; Include Position restraint file',
+                                    '#ifdef POSRES',
+                                    f'#include "posre_Protein_chain_{ID}.itp"',
+                                    '#endif'])   
+                mol_include.extend([f'Protein_chain_{ID} 1'])     
 
-    itp_include = []
-    for c in order:
-        if locals()[c]:
-            if "itp_name" in comps[c].keys():
-                posre_name = comps[c]["posre_name"]
-                itp_include.append('#include "{0}"'.format(comps[c]["itp_name"]))
-            if "posre_name" in comps[c].keys():
-                itp_include.extend(['; Include Position restraint file',
-                '#ifdef {0}'.format(comps[c]["ifdef_name"]),
-                '#include "{0}"'.format(os.path.join(target_dir,
-                    comps[c]["posre_name"])),
-                '#endif'])
+        elif isinstance(value, protein.Monomer):
+            itp_include.extend(['#include "protein.itp"',
+                                '; Include Position restraint file',
+                                '#ifdef POSRES',
+                                '#include "posre.itp"',
+                                '#endif'])
+            mol_include.extend(['protein_chain_A 1'])
 
-            if ("name") in comps[c]:
-                comps[c]["line"] = "{0} {1}".format(
-                    comps[c]["name"], locals()[c])
-            else:
-                comps[c]["line"] = "{0} {1}".format(c, locals()[c])
-        else:
-            comps[c]["line"] = ";"
+    for key, value in vars(complex).items():
+        # define distance restraints  
+        if add_disre == True:
+            itp_include.extend(['#ifdef DISRE',
+                                '#include "disre.itp"',
+                                '#endif'])
+            add_disre = False 
 
-    if working_dir: working_dir += "/" # Root dir doesn't need to be slashed
+        # define cofactor restraints
+        if isinstance(value, protein.Ligand):
+            itp_include.extend([f'#include "{key}.itp"',
+                                '; Include Position restraint file',
+                                f'#include "posre_{key}.itp'])
+            mol_include.extend([f'{getattr(complex, key).ID} 1'])  
+
+        if  isinstance(value, protein.Ions):
+            itp_include.extend(['; Include Position restraint file',
+                                f'#include "posre_{key}.itp'])  
+            mol_include.extend([f'{key} {getattr(complex, key)._n_ions}'])
+
+        if isinstance(value, protein.CrystalWaters) :
+            itp_include.extend(['; Include Position restraint file',
+                                f'#include "posre_{key}.itp'])  
+            mol_include.extend([f'{key} {getattr(complex, key)._n_waters}'])
 
     tgt.write(t.substitute(working_dir = working_dir,
-                           protein = comps["protein"]["line"],
-                           pc1 = comps["pc1"]["line"],
-                           pc2 = comps["pc2"]["line"],
-                           pc3 = comps["pc3"]["line"],
-                           pc4 = comps["pc4"]["line"],
-                           pc5 = comps["pc5"]["line"],
-                           pc6 = comps["pc6"]["line"],
-                           pc7 = comps["pc7"]["line"],
-                           pc8 = comps["pc8"]["line"],
-                           pc9 = comps["pc9"]["line"],
-                           pc10 = comps["pc10"]["line"],
-                           # If oligomer consists of more than 10 protein chains, add pc9 etc. 
-                           # Also add pc11 etc. in topol.top in templates
-                           lig = comps["lig"]["line"],
-                           sod = comps["sod"]["line"],
-                           cho = comps["cho"]["line"],
-                           allosteric = comps["alo"]["line"],
-                           hoh = comps["hoh"]["line"],
-                           itp_includes = "\n".join(itp_include)))
+                           itp_includes = "\n".join(itp_include),
+                           mol_includes = "\n".join(mol_include)))
+
     tgt.close()
 
     return True

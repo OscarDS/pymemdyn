@@ -8,19 +8,4 @@ $itp_includes
 Membrane protein
 [ molecules ]
 ; Compound  #mols
-$protein
-$pc1
-$pc2
-$pc3
-$pc4
-$pc5
-$pc6
-$pc7
-$pc8
-$pc9
-$pc10
-$lig
-$sod
-$cho
-$allosteric
-$hoh
+$mol_includes
