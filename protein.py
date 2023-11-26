@@ -182,24 +182,26 @@ class Monomer(object):
         self.loop_fill = kwargs['loopfill']
         self.chains = kwargs['chains']
 
+        self.pdb_hist = self._setHist() 
+
         self.check_protein = checks.CheckProtein(
-                pdb=self.pdb, 
+                pdb=self.pdb_hist,#.replace(".pdb", "-his.pdb"),#self.pdb, 
                 chains=self.chains, 
                 tgt='missingLoops.txt', 
                 loop_fill = self.loop_fill
                 )
         self.missing = self.check_protein.make_ml_pir(tgt1='alignment.pir', work_dir=self.own_dir)
         if self.missing:
-            new_pdb = self.check_protein.refine_protein(knowns = self.pdb)
+            new_pdb = self.check_protein.refine_protein(knowns = self.pdb_hist)
             self.logger_monomer.info('Replacing self.pdb from {} to {}.'.format(self.pdb, new_pdb))
             self.pdb = new_pdb
         
-        self.delete_chain()
+        self.delete_chain(self.pdb_hist)
         self.chains = ['']      # Added empty string so length == 1
-        self._setHist()
+
         
 
-    def delete_chain(self):
+    def delete_chain(self, file):
         """
         PDBs which have a chain column mess up with pdb2gmx, creating
         an unsuitable protein.itp file by naming the protein ie "Protein_A".
@@ -208,9 +210,9 @@ class Monomer(object):
         According to http://www.wwpdb.org/documentation/format33/sect9.html,
         the chain value is in column 22
         """
-        shutil.move(self.pdb, self.pdb + "~")
-        pdb = open(self.pdb + "~", "r")
-        pdb_out = open(self.pdb, "w")
+        shutil.move(file, file + "~")
+        pdb = open(file + "~", "r")
+        pdb_out = open(file, "w")
 
         replacing = False
         for line in pdb:
@@ -252,7 +254,11 @@ class Monomer(object):
                 tgt.write(line)
         tgt.close()
 
-        return True
+        
+        # os.rename(self.pdb, self.pdb.replace(".pdb", "-oldHIS.pdb"))
+        # os.rename(tgt.name, tgt.name.replace("-his.pdb", ".pdb"))
+
+        return tgt.name
 
 class Oligomer(Monomer):
     def __init__(self, *args, **kwargs):

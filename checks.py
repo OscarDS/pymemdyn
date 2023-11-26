@@ -22,8 +22,6 @@ class CheckProtein():
     def find_missingLoops(self):
         """Check if the residue numbering is continuous.
         If loops are missing, return missingLoc.
-
-        TODO: restart numbering after TER
         """
         with open(self.pdb, 'r') as inf:
             lines = inf.readlines()
@@ -60,11 +58,11 @@ class CheckProtein():
                 if chainID not in list(seq_dict.keys()):
                     seq_dict[chainID] = {}
                 
-                if splitted[3] not in list(aa_d.keys()):
+                if line[17:20] not in list(aa_d.keys()):
                     self.logger.exception("Residue {}, {} is not a standard amino acid. Non-standard amino acids are not supported.".format(resID, splitted[3]))
                     raise Exception("Residue {}, {} is not a standard amino acid. Non-standard amino acids are not supported.".format(resID, splitted[3]))
                 
-                seq_dict[chainID][resID] = splitted[3] # e.g. {A: {40: ASP}}
+                seq_dict[chainID][resID] = line[17:20] # e.g. {A: {40: ASP}}
                 
                 resIDchain = chainID + str(resID)
                 # chain_prev = prev_line[21]
@@ -146,13 +144,13 @@ class CheckProtein():
                 too_many = atom_count - sideChains_d[amino]
                 if len(too_few) != 0:
                     self.logger.debug('too_few: {}'.format(too_few))
-                    self.logger.info('Residue {}: {} has too few side chains. It will be deleted from you pdb and replaced with MODELLER'.format(prev_resID, amino))
+                    self.logger.info('Residue {}: {} has too few side chains. It will be deleted from your pdb and replaced with MODELLER'.format(prev_resID, amino))
                     missing_sideChains.append((prev_resID, amino))
                     delete_lines += current_lines
 
                 if len(too_many) != 0:
                     self.logger.debug('too_many: {}'.format(too_many))
-                    self.logger.info('Residue {}: {} has too many side chains. It will be deleted from you pdb and replaced with MODELLER'.format(prev_resID, amino))
+                    self.logger.info('Residue {}: {} has too many side chains. It will be deleted from your pdb and replaced with MODELLER'.format(prev_resID, amino))
                     missing_sideChains.append((prev_resID, amino))
                     delete_lines += current_lines
                 
@@ -173,7 +171,8 @@ class CheckProtein():
 
      
         # end of for-loop
-        self.logger.debug('{}'.format(delete_lines))
+        self.logger.debug('deleted: {}'.format(delete_lines))
+        
         with open(self.pdb, "w") as f:
             for l in lines:
                 if l not in delete_lines:
