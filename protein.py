@@ -268,7 +268,7 @@ class Oligomer(Monomer):
         self.points = dict.fromkeys(self.chains, [])
         
 
-    def delete_chain(self):
+    def delete_chain(self, file):
         """
         Overload the delete_chain method from Monomer
         """
