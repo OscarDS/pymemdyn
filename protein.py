@@ -191,12 +191,23 @@ class Monomer(object):
                 loop_fill = self.loop_fill
                 )
         self.missing = self.check_protein.make_ml_pir(tgt1='alignment.pir', work_dir=self.own_dir)
+
         if self.missing:
             new_pdb = self.check_protein.refine_protein(knowns = self.pdb_hist)
             self.logger_monomer.info('Replacing self.pdb from {} to {}.'.format(self.pdb, new_pdb))
             self.pdb = new_pdb
-        
-        self.delete_chain(self.pdb_hist)
+            self.delete_chain(self.pdb)
+
+            # overwrite protein-his.pdb file
+            os.remove(self.pdb_hist)
+            os.rename(new_pdb, self.pdb_hist)
+
+
+
+        else:
+            self.delete_chain(self.pdb_hist)
+            
+               
         self.chains = ['']      # Added empty string so length == 1
 
         
