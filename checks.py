@@ -20,93 +20,77 @@ class CheckProtein():
         self.aa = AminoAcids()
         
     def find_missingLoops(self):
-        """Check if the residue numbering is continuous.
+        """Check if the residue numbering is continuous, write sequence.
         If loops are missing, return missingLoc.
         """
         with open(self.pdb, 'r') as inf:
             lines = inf.readlines()
 
-        seq_dict = {}
+        # Initialize params
         missingLoc = {}
         resID_prev = 0
-        # prev_line = "ATOM      0  N   XXX     0     000.000 000.000 000.000  0.00000.00           N" # Dummy line
         prev_chain = ''
         first_res = True
         first_chain_res = True
-
+        pdbseq = ''
         aa_d = self.aa.codes321 # 3-letter code to 1 letter code dict is now aa_d
 
-       
+        # Loop over protein.pdb
         for i, line in enumerate(lines):
             splitted = line.split() # Careful here, sometimes columns are stuck together!
+            
+            # Determine if line is useful
             if not splitted[0] == 'ATOM':
-                if splitted[0] == 'TER':
+                if splitted[0] == 'TER': # End of chain
                     first_chain_res = True
-                continue
-            else:
+                    self.logger.debug('found TER at line {}'.format(i))
+                    pdbseq += '/'
+                continue # Skip to next line
+            
+            else: # Useful line
                 try: 
                     resID = int(line[22:26])
-                    if first_chain_res: # Save ID of the first residue
-                        if first_res:
-                            self.first_res_ID = int(line[22:26])
-                            first_res = False
-                        resID_prev = int(line[22:26])
-                        first_chain_res = False
+
+                    # Save ID of the first residue
+                    if first_res:
+                        self.first_res_ID = int(line[22:26])
+                        first_res = False
+                        
                     chainID = line[21]
+                    
                 except:
                     raise Exception("Cannot read resID or chain ID in the following line: \n{}".format(line))
-                if chainID not in list(seq_dict.keys()):
-                    seq_dict[chainID] = {}
                 
+                # Check for non-std res
                 if line[17:20] not in list(aa_d.keys()):
                     self.logger.exception("Residue {}, {} is not a standard amino acid. Non-standard amino acids are not supported.".format(resID, splitted[3]))
                     raise Exception("Residue {}, {} is not a standard amino acid. Non-standard amino acids are not supported.".format(resID, splitted[3]))
                 
-                seq_dict[chainID][resID] = line[17:20] # e.g. {A: {40: ASP}}
-                
                 resIDchain = chainID + str(resID)
-                # chain_prev = prev_line[21]
 
-                if (resID != resID_prev) and (resID != resID_prev + 1):
-                    if int(splitted[1]) == 1:
-                        resID_prev = resID
-                        prev_chain = chainID
-                        continue # ignore missing starting loop  
+                if resID != resID_prev: # next res
+                    pdbseq += aa_d[line[17:20]] # 1 letter code
 
-                    missingLoc[prev_chain+str(resID_prev)] = resIDchain
+                if (resID != resID_prev) and (resID != resID_prev + 1): # missing
+                    if first_chain_res:
+                        first_chain_res = False
+                        self.logger.debug('Ignored first of chain')
+                    else:
+                        missingLoc[prev_chain+str(resID_prev)] = resIDchain
+
+                        nr_missing = resID - resID_prev
+                        pdbseq += '-'*nr_missing # for missing residue
 
                 resID_prev = resID
                 prev_chain = chainID
-        self.logger.debug('length missingLoc: {}'.format(len(missingLoc)))
-
-        # End of for-loop
-
         
-        # Generate 1 letter code sequence
-
-        pdbseq = ''
-
-        seq = open("seq_original.fasta", "w") # seq_original.fasta is not used, but self.seq is.
+        # End of for-loop                
+        self.logger.debug('length missingLoc: {}'.format(len(missingLoc)))
+        
+        # Generate fasta file (not used, but nice for debugging)
+        seq = open("seq_original.fasta", "w") 
         seq.write(">Generated automatically from {}\n".format(self.pdb))   
-
-        for c in list(seq_dict.keys()):
-            ids = list(seq_dict[c].keys())
-            ids.sort()
-            self.logger.debug('chain {}:'.format(c))
-            self.logger.debug('{} ids'.format(len(ids)))
-            finalID = ids[-1]
-            for i in range(self.first_res_ID, finalID+1):
-                if i in ids:
-                    assert seq_dict[c][i] in list(aa_d.keys()), 'non-standard amino acid found in residue {}: {}'.format(i, seq_dict[c][i])
-                    seq.write(aa_d[seq_dict[c][i]])
-                    pdbseq += aa_d[seq_dict[c][i]]
-
-                else:
-                    seq.write('-')
-                    pdbseq += '-'
-                    
-            seq.write('/')
-            pdbseq += '/'
+        seq.write(pdbseq)
         
         self.seq = pdbseq
         
@@ -188,12 +172,11 @@ class CheckProtein():
 
         :kwarg work_dir: working directory
         :kwarg tgt1: alignment.pir
-        # :kwarg tgt3: alignment.txt
         """
         with open(os.path.join(kwargs["work_dir"], self.pdb), 'r') as in_pdb:
             lines_pdb = in_pdb.readlines()
 
-        missingLoc = self.find_missingLoops()#tgt = 'missing_loops.txt')
+        missingLoc = self.find_missingLoops()
         if len(missingLoc) == 0:
             self.logger.info('No missing loops found')
         else:
@@ -207,7 +190,7 @@ class CheckProtein():
 
 
         pdbseq = self.seq
-        self.logger.debug(pdbseq)
+        self.logger.debug('pdbseq: {}'.format(pdbseq))
         pdbseq = pdbseq[:-1] # looses trailing '/'
 
         mod_seq = pdbseq
@@ -218,9 +201,6 @@ class CheckProtein():
             code = self.aa.codes321[sc[1]]
             tmpl_seq = tmpl_seq[:loc] + '-' + tmpl_seq[loc+1:]
             mod_seq = tmpl_seq[:loc] + code + tmpl_seq[loc+1:]
-
-        self.logger.debug('tmpl sidechains: {}'.format(tmpl_seq))
-        self.logger.debug('mod sidechains: {}'.format(mod_seq))
 
         target = ''
 
@@ -261,7 +241,6 @@ class CheckProtein():
             after = pdbseq[end_seq_index-1:end_seq_index+1]           # 'BA'
             loop_seq = before + loop_seq_dash + after                 # 'AB----BA'
             
-            # dashes_remain = len(loop_seq_dash) - num_aa
             gaps = before + "A" * num_aa + after        # 'ABAABA'
             loop_replace = before + num_aa *'-' + after # 'AB--BA'
 
@@ -274,8 +253,6 @@ class CheckProtein():
             while mod_seq.startswith('-'):
                 mod_seq = mod_seq[1:]
             
-            # while tmpl_seq.startswith('-'):
-            #     tmpl_seq = tmpl_seq[1:]
             
             self.logger.debug('\tloop_rep: {}\n'.format(loop_replace))
             
@@ -287,13 +264,11 @@ class CheckProtein():
 
         self.logger.debug("these lengths should be equal: {}, {}".format(len(mod_seq), len(tmpl_seq)))
 
-        self.logger.debug(pdbseq)
 
         # Write to .pir file
 
         # tgt is the alignment.pir file
         tgt1 = open(os.path.join(kwargs['work_dir'], kwargs["tgt1"]), "w") 
-        # tgt3 = open(os.path.join(self.work_dir, kwargs["tgt3"]), "w")
         
         tgt1.write(f'>P1;{self.pdb}\n')
         finalResID = int((len(pdbseq) + 1) / len(self.chains))

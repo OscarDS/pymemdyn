@@ -185,7 +185,7 @@ class Monomer(object):
         self.pdb_hist = self._setHist() 
 
         self.check_protein = checks.CheckProtein(
-                pdb=self.pdb_hist,#.replace(".pdb", "-his.pdb"),#self.pdb, 
+                pdb=self.pdb_hist,
                 chains=self.chains, 
                 tgt='missingLoops.txt', 
                 loop_fill = self.loop_fill
