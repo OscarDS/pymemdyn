@@ -31,7 +31,7 @@ class CheckProtein():
         resID_prev = 0
         prev_chain = ''
         first_res = True
-        first_chain_res = True
+        first_chain_res = False
         pdbseq = ''
         aa_d = self.aa.codes321 # 3-letter code to 1 letter code dict is now aa_d
 
@@ -68,18 +68,20 @@ class CheckProtein():
                 
                 resIDchain = chainID + str(resID)
 
-                if resID != resID_prev: # next res
-                    pdbseq += aa_d[line[17:20]] # 1 letter code
-
                 if (resID != resID_prev) and (resID != resID_prev + 1): # missing
                     if first_chain_res:
                         first_chain_res = False
-                        self.logger.debug('Ignored first of chain')
+                        self.logger.debug('Ignoring residue {} for missing residue check(first residue of chain)'.format(resID))
                     else:
                         missingLoc[prev_chain+str(resID_prev)] = resIDchain
 
-                        nr_missing = resID - resID_prev
+                        nr_missing = resID - resID_prev -1
                         pdbseq += '-'*nr_missing # for missing residue
+                
+                if resID != resID_prev: # next res
+                    pdbseq += aa_d[line[17:20]] # 1 letter code
+
+
 
                 resID_prev = resID
                 prev_chain = chainID
