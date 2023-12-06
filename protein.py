@@ -234,7 +234,7 @@ class Monomer(object):
                
         self.chains = ['']      # Added empty string so length == 1
 
-        return True
+        return 
 
     def _setRes(self):
         """

@@ -62,7 +62,7 @@ class Run(object):
 
         # Prepare protein
         self.logger.debug('Checking # of chains of '+ str(self.protein))
-        self.proteins = protein.Protein(pdb=self.pdb, owndir=self.own_dir, loopfill=self.loop_fill).check_number_of_chains()
+        self.proteins = protein.Protein(pdb=self.protein, owndir=self.own_dir, loopfill=self.loop_fill).check_number_of_chains()
         self.logger.debug(f'Protein is a(n) {type(self.proteins)} with {self.proteins.chains} chains')
         try:
             self.protein_center = protein.Protein(pdb='protein.pdb').calculate_center()

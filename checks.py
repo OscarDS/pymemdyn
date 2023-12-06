@@ -18,6 +18,7 @@ class CheckProtein():
         self.loop_fill = kwargs['loop_fill']
         self.logger = logging.getLogger('pymemdyn.checks.checkProtein')
         self.aa = AminoAcids()
+        self.nr_missing = 0
         
     def find_missingLoops(self):
         """Check if the residue numbering is continuous, write sequence.
@@ -54,6 +55,8 @@ class CheckProtein():
                     # Save ID of the first residue
                     if first_res:
                         self.first_res_ID = int(line[22:26])
+                        self.logger.debug('first resID: {}'.format(self.first_res_ID))
+                        resID_prev = resID - 1
                         first_res = False
                         
                     chainID = line[21]
@@ -75,8 +78,8 @@ class CheckProtein():
                     else:
                         missingLoc[prev_chain+str(resID_prev)] = resIDchain
 
-                        nr_missing = resID - resID_prev -1
-                        pdbseq += '-'*nr_missing # for missing residue
+                        self.nr_missing = resID - resID_prev -1
+                        pdbseq += '-'*self.nr_missing # for missing residue
                 
                 if resID != resID_prev: # next res
                     pdbseq += aa_d[line[17:20]] # 1 letter code
@@ -234,29 +237,30 @@ class CheckProtein():
             dist = math.sqrt(x*x + y*y + z*z)
             num_aa = math.ceil(dist / aa_dist)     
             self.logger.debug('\tnum_aa: {}\n'.format(num_aa))
+
+            # Determine which chain we are in (and how many '/'-signs we need to ignore)
+            ignore_chain_characters = self.chains.index(chain)
             
-            start_seq_index = loop - first_res_ID +1  # (we removed the beginloop)
-            end_seq_index = target - first_res_ID +1
+            start_seq_index = loop - first_res_ID +1 - ignore_chain_characters  # (we ignored the beginloop)
+            end_seq_index = target - first_res_ID +1 - ignore_chain_characters
+            self.logger.debug('\tstart: {}'.format(start_seq_index))
+            self.logger.debug('\tend:   {}\n'.format(end_seq_index))
 
             loop_seq_dash = pdbseq[start_seq_index:end_seq_index-1]   # '----'
             before = pdbseq[start_seq_index-2:start_seq_index]        # 'AB'
             after = pdbseq[end_seq_index-1:end_seq_index+1]           # 'BA'
             loop_seq = before + loop_seq_dash + after                 # 'AB----BA'
-            
+            self.logger.debug('\tbefore: {}, dash: {}, after: {}'.format(before, loop_seq_dash, after))
+            self.logger.debug('\tloop_seq: {}\n'.format(loop_seq))
+
             gaps = before + "A" * num_aa + after        # 'ABAABA'
             loop_replace = before + num_aa *'-' + after # 'AB--BA'
-
-            self.logger.debug('\tloop_seq: {}\n'.format(loop_seq))
+            
             self.logger.debug('\tgaps:     {}\n'.format(gaps))
+            self.logger.debug('\tloop_rep: {}\n'.format(loop_replace))
             
             mod_seq = mod_seq.replace(loop_seq, gaps)
             tmpl_seq = tmpl_seq.replace(loop_seq, loop_replace)
-            
-            while mod_seq.startswith('-'):
-                mod_seq = mod_seq[1:]
-            
-            
-            self.logger.debug('\tloop_rep: {}\n'.format(loop_replace))
             
         mod_seq += "*"
         tmpl_seq += "*"
