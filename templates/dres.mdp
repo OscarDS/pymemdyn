@@ -33,9 +33,9 @@ ewald_rtol          =  1e-5      ; relative accuracy of direct/reciprocal space
 
 ; Temperature Coupling
 Tcoupl              =  nose-hoover           ; thermostat
-tau_t               =  0.5   0.5  0.5        ; time constaint in ps
-tc-grps             =  wation protlig membr  ; coupling groups
-ref_t               =  310   310   310       ; reference temperature
+tau_t               =  0.5   0.5             ; time constaint in ps
+tc-grps             =  Protein non-Protein   ; coupling groups
+ref_t               =  310   310             ; reference temperature
 
 ; Pressure Coupling
 Pcoupl              =  Parrinello-Rahman     ; barostat

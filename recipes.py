@@ -11,6 +11,8 @@ phases of pymemdyn. It consists of:
 
 import os
 
+import protein
+
 
 
 class BasicInit(object):
@@ -214,7 +216,7 @@ class BasicInit(object):
              }
 
         self.breaks = \
-            {"pdb2gmx": {"src": "membrane_complex.complex.monomer.pdb_his"},
+            {"pdb2gmx": {"src": "membrane_complex.complex.proteins.pdb_his"},
              "concat": {"tgt": "membrane_complex.complex"},
              "editconf": {"dist": "membrane_complex.box_height"},
              "editconf2": {"dist": "membrane_complex.box_width"},
@@ -236,60 +238,36 @@ class BasicInit(object):
             self.recipe["set_grompp"]["options"]["steep.mdp"] = "steepDEBUG.mdp"
 
 
-# This recipe modifies the previous one taking a ligand into account
+# This recipe modifies the previous one taking ligands into account
 class LigandInit(BasicInit):
     def __init__(self, **kwargs):
         super(LigandInit, self).__init__(**kwargs)
 
-        self.steps.insert(9, "genrestr_lig")
-        self.recipe["genrestr_lig"] = \
-            {"gromacs": "genrestr", 
-             "options": {"src": "",
-                         "tgt": "posre_lig.itp",
-                         "index": "ligand_ha.ndx",
-                         "forces": ["1000", "1000", "1000"]},
-             "input": "2\n"}
+        if kwargs["membrane_complex"]:
+            for var, value in vars(kwargs["membrane_complex"]).items():
+                if isinstance(value, protein.Ligand):
 
-        self.steps.insert(9, "make_ndx_lig")
-        self.recipe["make_ndx_lig"] = \
-            {"gromacs": "make_ndx",
-             "options": {"src": "",
-                         "tgt": "ligand_ha.ndx",
-                         "ligand": True},
-             "input": "! a H*\nq\n"}
+                    self.steps.insert(9, f"genrestr_{var}")
+                    self.recipe[f"genrestr_{var}"] = \
+                        {"gromacs": "genrestr", 
+                        "options": {"src": "",
+                                    "tgt": f"posre_{var}.itp",
+                                    "index": f"ligand_{var}_ha.ndx",
+                                    "forces": ["1000", "1000", "1000"]},
+                        "input": "2\n"}
 
-        self.breaks["make_ndx_lig"] = \
-            {"src": "membrane_complex.complex.ligand.pdb"}
-        self.breaks["genrestr_lig"] = \
-            {"src": "membrane_complex.complex.ligand.pdb"}
+                    self.steps.insert(9, f"make_ndx_{var}")
+                    self.recipe[f"make_ndx_{var}"] = \
+                        {"gromacs": "make_ndx",
+                        "options": {"src": "",
+                                    "tgt": f"ligand_{var}_ha.ndx",
+                                    var: True},
+                        "input": "! a H*\nq\n"}
 
-
-# This recipe modifies the previous one taking an allosteric ligand into account
-class LigandAlostericInit(LigandInit):
-    def __init__(self, **kwargs):
-        super(LigandAlostericInit, self).__init__(**kwargs)
-
-        self.steps.insert(9, "genrestr_alo")
-        self.recipe["genrestr_alo"] = \
-            {"gromacs": "genrestr",
-             "options": {"src": "",
-                         "tgt": "posre_alo.itp",
-                         "index": "allosteric_ha.ndx",
-                         "forces": ["1000", "1000", "1000"]},
-             "input": "2\n"}
-
-        self.steps.insert(9, "make_ndx_alo")
-        self.recipe["make_ndx_alo"] = \
-            {"gromacs": "make_ndx",
-             "options": {"src": "",
-                         "tgt": "allosteric_ha.ndx",
-                         "allosteric": True},
-             "input": "! a H*\nq\n"}
-
-        self.breaks["make_ndx_alo"] = \
-            {"src": "membrane_complex.complex.allosteric.pdb"}
-        self.breaks["genrestr_alo"] = \
-            {"src": "membrane_complex.complex.allosteric.pdb"}
+                    self.breaks[f"make_ndx_{var}"] = \
+                        {"src": f"membrane_complex.complex.{var}.pdb"}
+                    self.breaks[f"genrestr_{var}"] = \
+                        {"src": f"membrane_complex.complex.{var}.pdb"}
 
 
 ##########################################################################
@@ -319,16 +297,6 @@ class BasicMinimization(object):
         if kwargs["debugFast"] or False:
             self.recipe["set_stage_init"]["options"]["repo_files"] = \
                 ["eqDEBUG.mdp"]
-
-
-class LigandMinimization(BasicMinimization):
-    def __init__(self, **kwargs):
-        super(LigandMinimization, self).__init__(**kwargs)
-
-
-class LigandAlostericMinimization(BasicMinimization):
-    def __init__(self, **kwargs):
-        super(LigandAlostericMinimization, self).__init__(**kwargs)
 
 
 ##########################################################################
@@ -365,10 +333,7 @@ class BasicEquilibration(object):
                                             "src_files": ["topol.tpr",
                                                           "posre.itp",
                                                           "posre_hoh.itp",
-                                                          "posre_ion.itp",
-                                                          "posre_lig.itp",
-                                                          "posre_alo.itp",
-                                                          "posre_cho.itp"],
+                                                          "posre_ion.itp"],
                                             "tgt_dir": "eq"}},
 
             "mdrun": {"gromacs": "mdrun",  # 6
@@ -382,42 +347,56 @@ class BasicEquilibration(object):
         }
         self.breaks = {}
 
-        if kwargs["chains"]:
-            for chain in kwargs["chains"]:
+        if kwargs["membrane_complex"].proteins.chains:
+            for chain in kwargs["membrane_complex"].proteins.chains:
                 self.recipe["set_stage_init2"]["options"]["src_files"].append(
-                                                    "posre_Protein_chain_" + chain + ".itp")
+                                                    f"posre_Protein_chain_{chain}.itp")
+        if kwargs["membrane_complex"]:    
+            for var, value in vars(kwargs["membrane_complex"]).items():
+                if isinstance(value, protein.Ligand) or isinstance(value, protein.CrystalWaters) or isinstance(value, protein.Ions):
+                    self.recipe["set_stage_init2"]["options"]["src_files"].append(
+                                                        f"posre_{var}.itp")
 
         if kwargs["debugFast"] or False:
             self.recipe["grompp"]["options"]["src"] = "Rmin/eqDEBUG.mdp"
             self.recipe["set_stage_init"]["options"]["src_files"] = \
                 ["eqDEBUG.mdp"]
 
+'''
+class LigandInit(BasicInit):
+    def __init__(self, **kwargs):
+        super(LigandInit, self).__init__(**kwargs)
 
+        if kwargs["membrane_complex"]:
+            for var, value in vars(kwargs["membrane_complex"]).items():
+                if isinstance(value, protein.Ligand):
+                
+                    self.steps.insert(9, f"genrestr_{var}")
+                    self.recipe[f"genrestr_{var}"] = \
+                        {"gromacs": "genrestr", 
+                        "options": {"src": "",
+                                    "tgt": f"posre_{var}.itp",
+                                    "index": f"ligand_{var}_ha.ndx",
+                                    "forces": ["1000", "1000", "1000"]},
+                        "input": "2\n"}
+'''
+                
 class LigandEquilibration(BasicEquilibration):
     def __init__(self, **kwargs):
         super(LigandEquilibration, self).__init__(**kwargs)
-        self.steps.insert(2, "genrestr")
-        self.recipe["genrestr"] = \
-            {"gromacs": "genrestr",
-             "options": {"src": "Rmin/topol.tpr",
-                         "tgt": "protein_ca200.itp",
-                         "index": "index.ndx",
-                         "forces": ["200", "200", "200"]},
-             "input": "3\n"}
 
-
-class LigandAlostericEquilibration(LigandEquilibration):
-    def __init__(self, **kwargs):
-        super(LigandAlostericEquilibration, self).__init__(**kwargs)
-        self.steps.insert(2, "genrestr")
-        self.recipe["genrestr"] = \
-            {"gromacs": "genrestr",
-             "options": {"src": "Rmin/topol.tpr",
-                         "tgt": "protein_ca200.itp",
-                         "index": "index.ndx",
-                         "forces": ["200", "200", "200"]},
-             "input": "3\n"}
-
+        if kwargs["membrane_complex"]:
+            for var, value in vars(kwargs["membrane_complex"]).items():
+                if isinstance(value, protein.Ligand):
+                    self.steps.insert(2, "genrestr")
+                    self.recipe["genrestr"] = \
+                        {"gromacs": "genrestr",
+                        "options": {"src": "Rmin/topol.tpr",
+                                    "tgt": "protein_ca200.itp",
+                                    "index": "index.ndx",
+                                    "forces": ["200", "200", "200"]},
+                        "input": "3\n"}
+                    
 
 ##########################################################################
 #                 Relaxation                                             #
@@ -466,17 +445,13 @@ class BasicRelax(object):
             for i in [x for x in self.recipe.keys() if x.startswith("relax")]:
                 self.recipe[i]["options"]["mdp"] = "eqDEBUG.mdp"
 
-
 class LigandRelax(BasicRelax):
     def __init__(self, **kwargs):
         super(LigandRelax, self).__init__(**kwargs)
-        self.recipe["relax800"]["options"]["posres"].append("posre_lig.itp")
-
-
-class LigandAlostericRelax(LigandRelax):
-    def __init__(self, **kwargs):
-        super(LigandAlostericRelax, self).__init__(**kwargs)
-        self.recipe["relax800"]["options"]["posres"].append("posre_alo.itp")
+        if kwargs["membrane_complex"]:
+            for var, value in vars(kwargs["membrane_complex"]).items():
+                if isinstance(value, protein.Ligand):
+                    self.recipe["relax800"]["options"]["posres"].append(f"posre_{var}.itp")
 
 
 ##########################################################################
@@ -662,11 +637,6 @@ class BasicCollectResults(object):
                                                      "ffoplsaanb_mod.itp",
                                                      "hexagon.pdb",
                                                      "protein.itp",
-                                                     "lig.itp",
-                                                     "posre_lig.itp",
-                                                     "alo.itp",
-                                                     "posre_alo.itp",
-                                                     "cho.itp",
                                                      "hoh.itp",
                                                      "index.ndx", 
                                                      "traj_EQ.xtc",
@@ -789,3 +759,10 @@ class BasicBWCollectResults(BasicCollectResults):
                              "name": "ener.edr",
                              "tgt": "ener_EQ.edr"},
                  "input": "y\nc\nc\nc\nc\nc\nc\n"}
+
+        if kwargs["membrane_complex"]:    
+            for var, value in vars(kwargs["membrane_complex"]).items():
+                if isinstance(value, protein.Ligand) or isinstance(value, protein.CrystalWaters) or isinstance(value, protein.Ions):
+                    self.recipe["set_end_2"]["options"]["src_files"].extend([
+                                                        f"posre_{var}.itp",
+                                                        f"{var}.itp"])
