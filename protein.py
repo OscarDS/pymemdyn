@@ -7,6 +7,8 @@ import logging
 
 import numpy as np
 
+import checks
+
 protein_logger = logging.getLogger('pymemdyn.protein')
 
 try:
@@ -148,10 +150,15 @@ class Protein(object):
         This is a proxy to determine if a protein is a Monomer or a Dimer
         """
         self.pdb = kwargs["pdb"]
+        self.dir = kwargs['owndir']
+        self.loop_fill = kwargs['loopfill']
+
         self.logger_prot = logging.getLogger('pymemdyn.protein.Protein')
+                
+
         if not os.path.isfile(self.pdb):
             raise IOError("File '{0}' missing".format(self.pdb))
-        
+
     def check_number_of_chains(self):
         """
         Determine if a PDB is a Monomer or a Dimer
@@ -165,9 +172,9 @@ class Protein(object):
                         chains.append(line[21])
     
         if len(chains) < 2:
-            return Monomer(pdb = self.pdb)
+            return Monomer(pdb = self.pdb, chains = chains, dir = self.dir, loopfill = self.loop_fill)
         elif len(chains) >= 2:
-            return Oligomer(pdb = self.pdb, chains = chains)
+            return Oligomer(pdb = self.pdb, chains = chains, dir = self.dir, loopfill=self.loop_fill)
 
     def calculate_center(self):
         """Determine center of the coords in the self.pdb.
@@ -193,13 +200,41 @@ class Monomer(object):
         self.name = "proteins"
         self.type = "proteins"
         self.pdb = kwargs["pdb"]
+        
+        self.logger_monomer = logging.getLogger('pymemdyn.protein.Monomer')
+        self.logger_monomer.info('self.pdb in Monomer: {}'.format(self.pdb))
         if not os.path.isfile(self.pdb):
             raise IOError("File '{0}' missing".format(self.pdb))
 
         self.group = "protlig"
-        #self.delete_chain()
-        self.chains = []
-        self._setRes()
+
+        
+        self.own_dir = kwargs['dir']
+        self.loop_fill = kwargs['loopfill']
+        self.chains = kwargs['chains']
+
+        self.pdb_hist = self._setHist() 
+
+        self.check_protein = checks.CheckProtein(
+                pdb=self.pdb_hist,
+                chains=self.chains, 
+                tgt='missingLoops.txt', 
+                loop_fill = self.loop_fill
+                )
+        self.missing = self.check_protein.make_ml_pir(tgt1='alignment.pir', work_dir=self.own_dir)
+
+        if self.missing:
+            new_pdb = self.check_protein.refine_protein(knowns = self.pdb_hist)
+            self.logger_monomer.info('Replacing self.pdb from {} to {}.'.format(self.pdb, new_pdb))
+            self.pdb = new_pdb
+
+            # overwrite protein-his.pdb file
+            os.remove(self.pdb_hist)
+            os.rename(new_pdb, self.pdb_hist)
+               
+        self.chains = ['']      # Added empty string so length == 1
+
+        return True
 
     def _setRes(self):
         """
@@ -225,7 +260,11 @@ class Monomer(object):
                 tgt.write(line)
         tgt.close()
 
-        return True
+        
+        # os.rename(self.pdb, self.pdb.replace(".pdb", "-oldHIS.pdb"))
+        # os.rename(tgt.name, tgt.name.replace("-his.pdb", ".pdb"))
+
+        return tgt.name
 
 class Oligomer(Monomer):
     def __init__(self, *args, **kwargs):
@@ -233,7 +272,7 @@ class Oligomer(Monomer):
 
         self.chains = kwargs.get("chains")
         self.points = dict.fromkeys(self.chains, [])
-
+        
 
 class CalculateLigandParameters(object):
     def __init__(self):

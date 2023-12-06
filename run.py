@@ -7,6 +7,7 @@ import gromacs
 import membrane
 import protein
 import queue
+import checks
 
 import logging
 run_logger = logging.getLogger('pymemdyn.run')
@@ -37,11 +38,13 @@ class Run(object):
         self.waters = kwargs.get("waters") or ""
         self.ions = kwargs.get("ions") or ""
         self.restraint = kwargs.get("restraint") or ""
+        self.loop_fill = kwargs.get("loop_fill")
         self.queue = kwargs.get("queue") or ""
         self.debug = kwargs.get("debug") or False
         self.debugFast = kwargs.get("debugFast")
+        
         self.logger = logging.getLogger('pymemdyn.run.Run')
-
+  
         self.logger.debug('Run arguments initialized')
         self.logger.debug(f'self.pdb = {str(self.pdb)}')
         self.logger.debug(f'self.ligand = {str(self.ligand)}')
@@ -59,7 +62,7 @@ class Run(object):
 
         # Prepare protein
         self.logger.debug('Checking # of chains of '+ str(self.protein))
-        self.proteins = protein.Protein(pdb=self.protein).check_number_of_chains()
+        self.proteins = protein.Protein(pdb=self.pdb, owndir=self.own_dir, loopfill=self.loop_fill).check_number_of_chains()
         self.logger.debug(f'Protein is a(n) {type(self.proteins)} with {self.proteins.chains} chains')
         try:
             self.protein_center = protein.Protein(pdb='protein.pdb').calculate_center()
@@ -100,6 +103,7 @@ class Run(object):
                     ))
             
             self.logger.info(f'Checking distance between {cofactor} and protein')
+
             try:
                 center = protein.Compound.calculate_center(f'{cofactor}.pdb')
                 self.check_dist(center, self.protein_center)
@@ -107,6 +111,7 @@ class Run(object):
                 self.logger.warning(f"Cannot check distance between protein and {cofactor}. Please check alignment manually.")
         
         # Prepare membrane
+
         self.logger = logging.getLogger('pymemdyn.run.Run')
         self.membr = membrane.Membrane()
 
