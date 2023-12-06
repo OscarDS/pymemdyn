@@ -213,7 +213,7 @@ class Monomer(object):
         self.loop_fill = kwargs['loopfill']
         self.chains = kwargs['chains']
 
-        self.pdb_hist = self._setHist() 
+        self.pdb_hist = self._setRes() 
 
         self.check_protein = checks.CheckProtein(
                 pdb=self.pdb_hist,
