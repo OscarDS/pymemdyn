@@ -7,6 +7,8 @@ Modules
    ../pymemdyn
    ../run
    ../protein
+   ../checks
+   ../aminoAcids
    ../membrane
    ../bw4posres
    ../complex

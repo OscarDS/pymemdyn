@@ -1,4 +1,4 @@
-PyMemDyn Version 1.6.3
+PyMemDyn Version 2.0
 ================================================================================
 
 PyMemDyn is  a standalone *python*  package to setup  membrane molecular
@@ -76,64 +76,47 @@ To install **PyMemDyn** follow these steps:
     You should obtain the following help output:
 
         usage: pymemdyn [-h] [-v] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
-                        [-a ALLOSTERIC] [--na NR_ALO] [-w WATERS] [-i IONS] [-c CHO]
-                        [--res RESTRAINT] [--llc LIGPARGEN_LIGAND_CHARGE]
-                        [--llo LIGPARGEN_LIGAND_NROFOPTIMIZATIONS]
-                        [--lac LIGPARGEN_ALLOSTERIC_CHARGE]
-                        [--lao LIGPARGEN_ALLOSTERIC_NROFOPTIMIZATIONS] [-q QUEUE] [-d]
-                        [--debugFast]
+                        [--lc LIGAND_CHARGE] [-w WATERS] [-i IONS] [--res RESTRAINT]
+                        [-f LOOP_FILL] [-q QUEUE] [-d] [--debugFast]
         
         == Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
         
-        options:
+        optional arguments:
           -h, --help            show this help message and exit
           -v, --version         show program's version number and exit
           -b OWN_DIR            Working dir if different from actual dir
           -r REPO_DIR           Path to templates of fixed files. If not provided,
                                 take the value from settings.TEMPLATES_DIR.
-          -p PDB                Name of the pdb to insert into membrane for MD
-                                (mandatory). Use the pdb extension. (e.g. -p
+          -p PDB                Name of the PDB file to insert into membrane for MD
+                                (mandatory). Use the .pdb extension. (e.g. -p
                                 myprot.pdb)
           -l LIGAND, --lig LIGAND
-                                Name of the ligand, without extension. See
-                                input_guide.txt for details on how to generate the
-                                required pdb and forcefield files.
-          -a ALLOSTERIC, --alo ALLOSTERIC
-                                Name of the allosteric, without extension. See
-                                input_guide.txt for details on how to generate the
-                                required pdb and forcefield files.
-          --na NR_ALO           number of identical allosteric molecules (with same
-                                .itp file)
+                                Ligand identifiers of ligands present within the PDB
+                                file. If multiple ligands are present, give a comma-
+                                delimited list.
+          --lc LIGAND_CHARGE    Charge of ligands for ligpargen (when itp file should
+                                be generated). If multiple ligands are present, give a
+                                comma-delimited list.
           -w WATERS, --waters WATERS
-                                Crystalized water molecules. File name without
-                                extension.
-          -i IONS, --ions IONS  Crystalized ions file name without extension.
-          -c CHO, --cho CHO     Crystalized cholesterol molecules file name without
-                                extension.
+                                Water identifiers of crystalized water molecules
+                                present within the PDB file.
+          -i IONS, --ions IONS  Ion identifiers of crystalized ions present within the
+                                PDB file.
           --res RESTRAINT       Position restraints during MD production run. Options:
                                 bw (Ballesteros-Weinstein Restrained Relaxation -
                                 default), ca (C-Alpha Restrained Relaxation)
-          --llc LIGPARGEN_LIGAND_CHARGE
-                                Charge of ligand for ligpargen (when itp file should
-                                be generated)
-          --llo LIGPARGEN_LIGAND_NROFOPTIMIZATIONS
-                                Number of optimizations that ligpargen should use to
-                                generate itp file for ligand (only needed when itp is
-                                not provided)
-          --lac LIGPARGEN_ALLOSTERIC_CHARGE
-                                Charge of allosteric for ligpargen (when itp file
-                                should be generated)
-          --lao LIGPARGEN_ALLOSTERIC_NROFOPTIMIZATIONS
-                                Number of optimizations that ligpargen should use to
-                                generate itp file for allosteric (only needed when itp
-                                is not provided)
+          -f LOOP_FILL, --loop_fill LOOP_FILL
+                                Amount of Å per AA to fill cut loops. The total
+                                distance is calculated from the coordinates of the
+                                remaining residues. The AA contour length is 3.4-4.0
+                                Å, To allow for flexibility in the loop, 2.0 Å/AA
+                                (default) is suggested. (example: -f 2.0)
           -q QUEUE, --queue QUEUE
                                 Queueing system to use (slurm, pbs, pbs_ib and svgd
                                 supported)
           -d, --debug
           --debugFast           run pymemdyn in debug mode with less min and eq steps.
                                 Do not use for simulation results!
-	
 
 
 
@@ -180,6 +163,10 @@ and can then be passed  to other objects.
 
 ### Auxiliary Modules
 
+- **checks.py**. Checks continuity of the protein and composition of the 
+  residues.
+- **aminoAcids.py**. Contains the amino acids class that defines the 1-letter
+  and three letter codes, along with the number of different atoms per residue.
 - **queue.py**.   Queue  manager.  That  is,  it  receives  objects to  be
   executed.   
 - **recipes.py**.   Applies  step by  step instructions  for  carrying a 
@@ -219,6 +206,26 @@ include input file generation/processing and data processing.
 
 Changelog
 --------------------------------------------------------------------------------
+### Changes from version 1.6.3 to 2.0
+- December, 2023
+
+Input should now consist of a single pdb file that contains both the protein
+and all of its ligands, waters and ions. The three letter codes of the ligands, 
+waters and ions need to be defined with `-l`, `-w` and `-i` (comma separated)
+respectively. The charges of the ligand(s) (if non-zero) need to be defined 
+with `--lc` (also comma separated). 
+
+Continuity of the protein residue numbering is checked as well. In case of a 
+discontinuity the residue numbering the gap will be filled with a poly-ala 
+chain with Modeller. The distance (in Å) per AA can be set with `-f` and is
+equal to 2.0 by default. 
+
+Next to continuity of the residue numbering also the number of atoms per 
+residue is compared to a predefined dictionary. In case of a missing sidechain
+the whole residue will be removed from the protein and replaced by the same 
+residue with Modeller.
+
+
 ### Changes from version 1.6.2 to 1.6.3
 - April, 2023
 
