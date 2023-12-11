@@ -3,8 +3,16 @@
 import os 
 import math 
 
-import modeller 
-from modeller import automodel
+import logging
+check_logger = logging.getLogger('pymemdyn.checks')
+
+try:
+    import modeller 
+    from modeller import automodel
+except:
+    check_logger.warning("""!! WARNING !! : No installation of MODELLER was found.
+        Missing loops and/or sidechains cannot be remodelled and will cause errors.""")
+
 
 from aminoAcids import AminoAcids
 from collections import Counter
