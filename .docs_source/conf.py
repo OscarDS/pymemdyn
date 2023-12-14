@@ -30,7 +30,7 @@ latex_documents = [
 latex_elements = {'preamble': '\\global\\renewcommand{\\AA}{\\text{\\r{A}}}'}
 
 # The full version, including alpha/beta/rc tags
-release = '1.6.1'
+release = '2.0'
 
 
 # -- General configuration ---------------------------------------------------

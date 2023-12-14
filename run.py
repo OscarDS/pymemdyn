@@ -7,6 +7,7 @@ import gromacs
 import membrane
 import protein
 import queue
+import checks
 
 import logging
 run_logger = logging.getLogger('pymemdyn.run')
@@ -26,91 +27,111 @@ class Run(object):
 
         The queueing system is also created here to be used in certain steps.
         """
+        self.clean()
 
         self.pdb = pdb
         self.own_dir = kwargs.get("own_dir") or ""
         self.repo_dir = kwargs.get("repo_dir") or ""
         self.ligand = kwargs.get("ligand") or ""
-        self.allosteric = kwargs.get("allosteric") or ""
-        if self.allosteric:
-            self._n_alo = kwargs.get("nr_alo") or 1
+        self.ligand_charge = kwargs.get("ligand_charge") or ""
+        self.protein = 'protein.pdb'
         self.waters = kwargs.get("waters") or ""
         self.ions = kwargs.get("ions") or ""
-        self.cho = kwargs.get("cho") or ""
         self.restraint = kwargs.get("restraint") or ""
-        self.ligpargen_ligand_charge = kwargs.get("ligpargen_ligand_charge") or 0
-        self.ligpargen_ligand_nrOfOptimizations = kwargs.get("ligpargen_ligand_nrOfOptimizations") or 3
-        self.ligpargen_allosteric_charge = kwargs.get("ligpargen_allosteric_charge") or 0
-        self.ligpargen_allosteric_nrOfOptimizations = kwargs.get("ligpargen_allosteric_nrOfOptimizations") or 3
+        self.loop_fill = kwargs.get("loop_fill")
         self.queue = kwargs.get("queue") or ""
         self.debug = kwargs.get("debug") or False
         self.debugFast = kwargs.get("debugFast")
+        
         self.logger = logging.getLogger('pymemdyn.run.Run')
-
+  
         self.logger.debug('Run arguments initialized')
+        self.logger.debug(f'self.pdb = {str(self.pdb)}')
+        self.logger.debug(f'self.ligand = {str(self.ligand)}')
+        self.logger.debug(f'self.ligand_charge = {str(self.ligand_charge)}')
+        self.logger.debug(f'self.waters = {str(self.waters)}')
+        self.logger.debug(f'self.ions = {str(self.ions)}')
+        self.logger.debug(f'self.restraint = {str(self.restraint)}')
 
-        self.logger.debug('self.ligand = '+str(self.ligand))
-        self.logger.debug('ligpargensettings: llc={}, llo={}, lac={}, lao={}'.format(self.ligpargen_ligand_charge, self.ligpargen_ligand_nrOfOptimizations, self.ligpargen_allosteric_charge, self.ligpargen_allosteric_nrOfOptimizations))
+        # Prepare System
+        self.logger.debug(f'{self.pdb} dectected.')                            
+        self.logger.debug('Splitting pdb file.')
+        protein.System(pdb=self.pdb).split_system(ligand=self.ligand,
+                                                    waters=self.waters,
+                                                    ions=self.ions)
 
+        # Prepare protein
+        self.logger.debug('Checking # of chains of '+ str(self.protein))
+        self.proteins = protein.Protein(pdb=self.protein, owndir=self.own_dir, loopfill=self.loop_fill).check_number_of_chains()
+        self.logger.debug(f'Protein is a(n) {type(self.proteins)} with {self.proteins.chains} chains')
+        try:
+            self.protein_center = protein.Protein(pdb='protein.pdb').calculate_center()
+            self.logger.debug(f'Center of protein at {self.protein_center}')
+        except:
+            self.logger.warning("Cannot calculate center of protein. Please check alignment manually.")
 
+        # Prepare ligand(s)
+        protein.CalculateLigandParameters.__init__(self)
 
-        if self.pdb:
-            self.logger.debug('self.pdb dectected. Checking nr of chains of '+ str(self.pdb))
-            self.pdb = protein.Protein(pdb=self.pdb).check_number_of_chains()
+        #if self.ligand:
+        #    self.nr_ligand = len(self.ligand.split(','))
+        #else:
+        #    self.nr_ligand = None
+
+        # Prepare cofactor(s)
+        self.cofactors = self.ligand.split(',') + ['HOH' if self.waters else "", self.ions]
+        self.cofactors = [value for value in self.cofactors if value] 
+        self.logger.debug(f'cofactors: {self.cofactors}')
+        for index, cofactor in enumerate(self.cofactors):
+            ID = cofactor
+            if not cofactor:
+                continue
+            elif cofactor in self.ligand.split(','):
+                ID = 'L'+str(index+1).zfill(2)
+                cofactor_type = 'Ligand'
+            elif cofactor == 'HOH':
+                cofactor_type = 'CrystalWaters'
+            elif cofactor == self.ions:
+                cofactor_type = 'Ions'
+ 
+            setattr(self, cofactor, getattr(protein, cofactor_type)(
+                        name=cofactor,
+                        ID=ID,
+                        pdb=f'{cofactor}.pdb',
+                        itp=f'{cofactor}.itp',
+                        ff=f'{cofactor}.ff'
+                    ))
+            
+            self.logger.info(f'Checking distance between {cofactor} and protein')
+
             try:
-                self.protein_center = protein.Protein(pdb=pdb).calculate_center()
+                center = protein.Compound.calculate_center(f'{cofactor}.pdb')
+                self.check_dist(center, self.protein_center)
             except:
-                self.logger.warning("Cannot calculate center of protein. Please check alignment manually.")
-            self.logger.debug('nr of chains ok!')
+                self.logger.warning(f"Cannot check distance between protein and {cofactor}. Please check alignment manually.")
+        
+        # Prepare membrane
 
-        sugars = {"ligand": "Ligand",
-                  "allosteric": "Alosteric",
-                  "waters": "CrystalWaters",
-                  "ions": "Ions",
-                  "cho": "Cholesterol"}
-        self.logger.debug("dict 'sugars' initialized")
-
-        self.logger.debug('starting sugar prep')
-
-        protein.Sugar_prep.__init__(self)
         self.logger = logging.getLogger('pymemdyn.run.Run')
-
-        for sugar_type, class_name in sugars.items():
-            if getattr(self, sugar_type):
-                base_name = getattr(self, sugar_type)
-                setattr(self,
-                        sugar_type,
-                        getattr(protein, class_name)(
-                            pdb=base_name + ".pdb",
-                            itp=base_name + ".itp",
-                            ff=base_name + ".ff"))
-
         self.membr = membrane.Membrane()
 
-        if self.allosteric:
-            nr_allosteric = self._n_alo
-        else:
-            nr_allosteric = None
-
-        try:
-            self.check_dist()
-        except:
-            self.logger.warning("Cannot check distance between protein and compound. \
-                                Please check alignment manually.")
-        
+        # Prepare complex
+        self.objects = self.cofactors + ['proteins']
+        self.logger.debug(f'objects: {self.objects}')
 
         prot_complex = protein.ProteinComplex(
-            monomer=self.pdb,
-            ligand=self.ligand or None,
-            allosteric=self.allosteric or None,
-            nr_alo = nr_allosteric,
-            waters=self.waters or None,
-            ions=self.ions or None,
-            cho=self.cho or None)
+            objects= [getattr(self, object) for object in self.objects]
+            )
 
         full_complex = complex.MembraneComplex()
-
         full_complex.complex = prot_complex
+        full_complex.complex.cofactors = self.cofactors
+        
+        # Check for correct storing of Ligands
+        self.logger.debug(f'attributes MembraneComplex.complex: {vars(full_complex.complex)}')
+        lig_present = any(isinstance(var, protein.Ligand) for var in vars(full_complex.complex).values())
+        self.logger.debug(f'found protein.Ligand: {lig_present}')
+
         full_complex.membrane = self.membr
 
         self.g = gromacs.Gromacs(membrane_complex=full_complex)
@@ -163,6 +184,7 @@ class Run(object):
                      "traj_pymol.xtc", "volume.log", "volume.xvg", 
                      "volume2.log", "volume2.xvg", "water.gro", "water.pdb"]
 
+        # TODO: make cleaning routine for LigParGen generated files. (Crashes on rerun if not deleted)
         dirs_to_unlink = ["Rmin", "eq", "eqProd"]
 
         for target in to_unlink:
@@ -200,20 +222,15 @@ class Run(object):
             self.g.select_recipe(stage=step, debugFast=self.debugFast)
             self.g.run_recipe(debugFast = self.debugFast)
 
-    def check_dist(self):
+    def check_dist(self, vector1, vector2):
         """Check distance between protein and all possible ligands (if any).
         Raise warning is dist > 50
         """
-        possible_ligands = [self.ligand, self.allosteric, self.ions, self.waters, self.cho]
-        prot_centre = self.protein_center
-
-        for thing in possible_ligands:
-            if thing == "":
-                continue
-            else:
-                d = np.linalg.norm(prot_centre - thing.center)
-                if d > 45:
-                    self.logger.warning("""Centre of {} and {} are unusually far apart. 
-                                        Did you correctly align both?""".format(self.pdb.pdb, thing.pdb))
+        d = np.linalg.norm(vector1 - vector2)
+        if d > 45:
+            self.logger.warning(f'Center of cofactor and protein are unusually far apart ({d}). Did you correctly align both?')
+        else:
+            self.logger.debug(f'Distance between center is {d}')
+                                
         return True
 

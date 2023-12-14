@@ -6,7 +6,7 @@ researcher, without prior experience in computational chemistry, to
 perform an otherwise tedious and complex process of membrane insertion
 and thorough MD equilibration, as outlined in Figure 1.
 
-.. image:: pymemdyn_scheme_red.pdf
+.. image:: pymemdyn_scheme.png
 
 In the simplest scenario, only the receptor structure is considered. In
 such case the GPCR is automatically surrounded by a pre-equilibrated
@@ -24,23 +24,96 @@ modulator, or even specific cholesterol, lipid, water or ion molecules
 are key for a more comprehensive characterization of GPCRs. **PyMemDyn**
 can explicitly handle these elements allowing a broader audience in the
 field of GPCRs to use molecular dynamics simulations. These molecules
-should be uploaded in the same way they're present in the original PDB
-file of the receptor, so they are properly integrated into the membrane
-insertion protocol described above, together with force-field associated
-files (which can be either generated with external software like
-Macromodel, or by manual parameterization). In addition, it is also
-possible to perform MD simulations of receptor dimers, provided that a
-proper dimerization model exists (i.e., coming from X-ray
-crystallography or from a protein-protein docking protocol). The ease of
-use, flexibility and public availability of the **PyMemDyn** library
-makes it a unique tool for researchers in the GPCR field interested in
-exploring dynamic processes of these receptors.
+should be uploaded in the same PDB file of the receptor, so they are 
+properly integrated into the membrane insertion protocol described above. 
+Force-field associated files are generated automatically with LigParGen. 
+In addition, it is also possible to perform MD simulations of other
+membrane proteins, provided that a proper dimerization model exists (i.e.,
+coming from X-ray crystallography or from a protein-protein docking 
+protocol). The ease of use, flexibility and public availability of the 
+**PyMemDyn** library makes it a unique tool for researchers in the 
+receptor field interested in exploring dynamic processes of these receptors.
+
+
+Getting started
+---------------
+
+After you have finished the installation of **PyMemDyn** you can check
+if the installation has succeeded with: 
+
+::
+
+  pymemdyn -h
+
+This should print the following message: 
+
+::
+
+  usage: pymemdyn [-h] [-v] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
+                  [--lc LIGAND_CHARGE] [-w WATERS] [-i IONS] [--res RESTRAINT]
+                  [-f LOOP_FILL] [-q QUEUE] [-d] [--debugFast]
+  
+  == Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
+  
+  optional arguments:
+    -h, --help            show this help message and exit
+    -v, --version         show program's version number and exit
+    -b OWN_DIR            Working dir if different from actual dir
+    -r REPO_DIR           Path to templates of fixed files. If not provided,
+                          take the value from settings.TEMPLATES_DIR.
+    -p PDB                Name of the PDB file to insert into membrane for MD
+                          (mandatory). Use the .pdb extension. (e.g. -p
+                          myprot.pdb)
+    -l LIGAND, --lig LIGAND
+                          Ligand identifiers of ligands present within the PDB
+                          file. If multiple ligands are present, give a comma-
+                          delimited list.
+    --lc LIGAND_CHARGE    Charge of ligands for ligpargen (when itp file should
+                          be generated). If multiple ligands are present, give a
+                          comma-delimited list.
+    -w WATERS, --waters WATERS
+                          Water identifiers of crystalized water molecules
+                          present within the PDB file.
+    -i IONS, --ions IONS  Ion identifiers of crystalized ions present within the
+                          PDB file.
+    --res RESTRAINT       Position restraints during MD production run. Options:
+                          bw (Ballesteros-Weinstein Restrained Relaxation -
+                          default), ca (C-Alpha Restrained Relaxation)
+    -f LOOP_FILL, --loop_fill LOOP_FILL
+                          Amount of Å per AA to fill cut loops. The total
+                          distance is calculated from the coordinates of the
+                          remaining residues. The AA contour length is 3.4-4.0
+                          Å, To allow for flexibility in the loop, 2.0 Å/AA
+                          (default) is suggested. (example: -f 2.0)
+    -q QUEUE, --queue QUEUE
+                          Queueing system to use (slurm, pbs, pbs_ib and svgd
+                          supported)
+    -d, --debug
+    --debugFast           run pymemdyn in debug mode with less min and eq steps.
+                          Do not use for simulation results!
+
+
+Don't forget to activate your conda environment if needed. 
+
+Now let's say we want to run a system that consists of a membrane protein, two
+ligands, an ion and some crystallized waters. We need to know a couple of 
+things about the system: the three-letter abbreviations of the ligands, ion
+and waters, the charge of the ligands. So let's say that in our file we have
+ligand 1 "LIG", ligand 2 "LIH", ion "NA" and water "POH" and ligand 2 has a 
+charge of -1. Then we can run pymemdyn with the following line:
+
+::
+  
+  pymemdyn -p file.pdb -l LIG,LIH --lc 0,-1 -i NA -w POH --res ca
+
+In case our protein has a missing loop that needs to be filled with Modeller,
+we can also define the number of Å per AA with -f. 
 
 
 Running with queues
 -------------------
 
-$\approx$ 90% of the time you will want to use some queueing system. We
+About 90% of the time you will want to use some queueing system. We
 deal with queue systems tweaks as we stumble into them and it's out of
 our scope to cover them all. If you take a look at the source code dir,
 you'll found some files called "run_pbs.sh", "run_svgd.sh" and so on.
@@ -74,7 +147,7 @@ debug mode with --debug:
 
 ::
 
-  pymemdyn -p protein.pdb --debug
+  pymemdyn -p proteinComplex.pdb --debug
 
 If you are to set up a new system, it is a good idea to just run a few
 steps of each stage in the equilibration protocol just to test that the
@@ -87,7 +160,7 @@ To do this, use the --debugFast option, like:
 
 ::
 
-   pymemdyn -p gpcr.pdb -l lig --waters hoh --debugFast 
+   pymemdyn -p gpcr.pdb -l LIG --waters HOH --debugFast 
 
 If everythings works fine, you will see the list of output directories
 and files just as in a regular equilibration protocol, but with much
@@ -232,24 +305,49 @@ REPORTS:
 ~~~~~~~~
 
 | In the "reports" subfolder, you will find the following files:
-| - tot_ener.xvg, tot_ener.log # System total energy plot and log -
-  temp.xvg, temp.log # System temperature plot and log - pressure.xvg,
-  pressure.log # System pressure plot and log - volume.xvg, volume.log #
-  System volume plot and log - rmsd-all-atom-vs-start # All atoms RMSD
-  plot - rmsd-backbone-vs-start.xvg # Backbone RMSD plot -
-  rmsd-calpha-vs-start.xvg # C-Alpha RMSD plot - rmsf-per-residue.xvg #
-  Residue RMSF plot
+
+
+.. list-table:: 
+   :widths: 45 55
+   :header-rows: 0
+
+   * - tot_ener.xvg, tot_ener.log
+     - System total energy plot and log
+   * - temp.xvg, temp.log 
+     - System temperature plot and log 
+   * - pressure.xvg, pressure.log  
+     - System pressure plot and log 
+   * - volume.xvg, volume.log 
+     - System volume plot and log 
+   * - rmsd-all-atom-vs-start 
+     - All atoms RMSD plot 
+   * - rmsd-backbone-vs-start.xvg 
+     - Backbone RMSD plot 
+   * - rmsd-calpha-vs-start.xvg 
+     - C-Alpha RMSD plot 
+   * - rmsf-per-residue.xvg
+     - Residue RMSF plot
+
+
 
 LOGS:
------
+~~~~~
 
 The logger in pymemdyn will write log messages to the file log.log, which 
 is regenerated every run.
 
 | In the "logs" subfolder, you will find the log files of mdrun:
-| - eq_{force_constant}.log # log of stages with restrained heavy atoms
-  of the receptor - eqCA.log # log of the stage with restrained C-alfa
-  atoms of the receptor
+
+
+.. list-table:: 
+   :widths: 45 55
+   :header-rows: 0
+
+   * - eq_{force_constant}.log 
+     - log of stages with restrained heavy atoms of the receptor 
+   * - eqCA.log
+     - log of the stage with restrained C-alfa atoms of the receptor
+
 
 **NOTE ON GROMACS METHODS** To integrate the equations of motion we have
 selected the leap-frog integrator with a 2 femtosecond timestep.

@@ -27,13 +27,13 @@ class Gromacs(object):
         if "membrane_complex" in kwargs.keys():
             self.set_membrane_complex(kwargs["membrane_complex"])
             self.tpr = \
-                self.membrane_complex.complex.monomer.pdb.replace(".pdb", 
-                                                                  ".tpr")
+                self.membrane_complex.complex.proteins.pdb.replace(".pdb", 
+                                                                   ".tpr")
         
 
     def set_membrane_complex(self, value):
         """
-        set_membrane_complex: Sets the monomer object
+        set_membrane_complex: Sets the membrane object
         """
         self._membrane_complex = value
 
@@ -53,7 +53,7 @@ class Gromacs(object):
         self.membrane_complex.membrane.lipids_down = 0
         self.membrane_complex.membrane.n_wats = 0
 
-        if getattr(self.membrane_complex.complex, "waters"):
+        if hasattr(self.membrane_complex.complex, "waters"):
             # Careful, some waters belong to crystal, not solvent
             self.membrane_complex.membrane.n_wats -= \
             self.membrane_complex.complex.waters.number
@@ -169,13 +169,13 @@ class Gromacs(object):
         input += "name {0} membr\n".format(n_group)
 
         # This makes a separate group for each chain (if more than one)
-        if type(self.membrane_complex.complex.monomer) == protein.Oligomer:
-            for chain in self.membrane_complex.complex.monomer.chains:
+        if type(self.membrane_complex.complex.proteins) == protein.Oligomer:
+            for chain in self.membrane_complex.complex.proteins.chains:
                 n_group += 1
                 input += "a {0}-{1}\n".format(
-                    self.membrane_complex.complex.monomer.points[chain][0],
+                    self.membrane_complex.complex.proteins.points[chain][0],
                     # start point of chain X
-                    self.membrane_complex.complex.monomer.points[chain][1])  
+                    self.membrane_complex.complex.proteins.points[chain][1])  
                     # end point of chain X
                 input += "name {0} Protein_chain_{1}\n".format(n_group, chain)
 
@@ -211,7 +211,12 @@ class Gromacs(object):
         topol.write("\n; Number of POPC molecules with lower z-coord value:\n")
         topol.write("POPC " + str(self.membrane_complex.membrane.lipids_down))
         topol.write("\n; Total number of SOL molecules:\n")
-        topol.write("SOL " + str(self.membrane_complex.membrane.n_wats) + "\n")
+        
+        if hasattr(self.membrane_complex.complex, "HOH"):
+            topol.write("SOL " + str(self.membrane_complex.membrane.n_wats - self.membrane_complex.complex.HOH._n_waters) + "\n")
+        else:
+            topol.write("SOL " + str(self.membrane_complex.membrane.n_wats) + "\n")
+
         topol.close()
 
         return True
@@ -236,10 +241,10 @@ class Gromacs(object):
         if not os.path.isdir(kwargs["tgt_dir"]): os.makedirs(kwargs["tgt_dir"])
         posres = kwargs.get("posres", [])
 
-        if type(self.membrane_complex.complex.monomer) == protein.Monomer:
+        if type(self.membrane_complex.complex.proteins) == protein.Monomer:
             posres.append("posre.itp")
-        elif type(self.membrane_complex.complex.monomer) == protein.Oligomer:
-            for chain in self.membrane_complex.complex.monomer.chains:
+        elif type(self.membrane_complex.complex.proteins) == protein.Oligomer:
+            for chain in self.membrane_complex.complex.proteins.chains:
                 posres.extend(["posre_Protein_chain_"+chain+".itp"])
 
         if hasattr(self.membrane_complex.complex, "waters") and \
@@ -248,9 +253,6 @@ class Gromacs(object):
         if hasattr(self.membrane_complex.complex, "ions") and \
                 self.membrane_complex.complex.ions:
             posres.append("posre_ion.itp")
-        if hasattr(self.membrane_complex.complex, "cho") and \
-                self.membrane_complex.complex.cho:
-            posres.append("posre_cho.itp")
 
         for posre in posres:
             new_posre = open(os.path.join(kwargs["tgt_dir"], posre), "w")
@@ -350,23 +352,19 @@ class Gromacs(object):
         stage = stage or "Init"
 
         if self.membrane_complex:
-            if not self.membrane_complex.complex.ligand:
+            if not any(isinstance(var, protein.Ligand) for var in vars(self.membrane_complex.complex).values()):
                 recipe += "Basic"
-            if hasattr(self.membrane_complex.complex, "ligand"):
-                if self.membrane_complex.complex.ligand:
-                    recipe += "Ligand"
-            if hasattr(self.membrane_complex.complex, "allosteric"):
-                if self.membrane_complex.complex.allosteric:
-                    recipe += "Alosteric"
+            else:
+                recipe += "Ligand"
 
         recipe += stage  # This kwarg carries the proper recipe:
         # Init, Minimization, Equilibration...
 
         if hasattr(recipes, recipe):
-            self.recipe = getattr(recipes, recipe)(debugFast=debugFast, chains=self.membrane_complex.complex.monomer.chains)
+            self.recipe = getattr(recipes, recipe)(debugFast=debugFast, membrane_complex=self.membrane_complex.complex)
         elif hasattr(recipes, "Basic" + stage):
             # Fall back to Basic recipe if no specific where found
-            self.recipe = getattr(recipes, "Basic" + stage)(debugFast=debugFast, chains=self.membrane_complex.complex.monomer.chains)
+            self.recipe = getattr(recipes, "Basic" + stage)(debugFast=debugFast, membrane_complex=self.membrane_complex.complex)
 
         return True
 
@@ -400,8 +398,8 @@ class Gromacs(object):
         """
         src = kwargs.get("src")
 
-        if type(self.membrane_complex.complex.monomer) == protein.Oligomer:
-            points = self.membrane_complex.complex.monomer.points
+        if type(self.membrane_complex.complex.proteins) == protein.Oligomer:
+            points = self.membrane_complex.complex.proteins.points
             with open(src, "r") as pdb_fp:
                 for line in pdb_fp:
                     if len(line) > 21 and line.startswith(("ATOM", "HETATM")):
@@ -416,7 +414,7 @@ class Gromacs(object):
                                 points[chain_id] = [atom_serial, atom_serial]
                         
 
-            self.membrane_complex.complex.monomer.points = points
+            self.membrane_complex.complex.proteins.points = points
 
         return True
 
@@ -449,7 +447,7 @@ class Gromacs(object):
                 tgt.write(line)
 
             if get_name and not line.startswith(";"):
-                self.membrane_complex.complex.monomer.name = line.split()[0]
+                self.membrane_complex.complex.proteins.name = line.split()[0]
                 get_name = False
 
             if line.startswith("[ moleculetype ]"):
@@ -773,7 +771,7 @@ class Wrapper(object):
         """
         _mode_grompp: Wrap the grompp command options
         """
-        command = ["-maxwarn", " 2",
+        command = ["-maxwarn", " 3",
                    "-c", self._setDir(kwargs["src2"]),
                    "-r", self._setDir(kwargs["src2"]),
                    "-p", self._setDir(kwargs["top"]),

@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     parser.add_argument('-v', '--version',
                         action='version',
-                        version='%(prog)s 1.6.3')
+                        version='%(prog)s 2.0')
 
     parser.add_argument('-b',
                         dest = "own_dir",
@@ -31,35 +31,27 @@ if __name__ == "__main__":
     parser.add_argument('-p',
                         dest = "pdb",
                         required = True,
-                        help = "Name of the pdb to insert into membrane for MD (mandatory). \
-            Use the pdb extension. (e.g. -p myprot.pdb)")
+                        help = "Name of the PDB file to insert into membrane for MD (mandatory). \
+            Use the .pdb extension. (e.g. -p myprot.pdb)")
 
     parser.add_argument('-l', '--lig',
                         dest = "ligand",
-                        help = "Name of the ligand, without extension. See input_guide.txt \
-            for details on how to generate the required pdb and forcefield files.")
+                        help = "Ligand identifiers of ligands present within the PDB file. If \
+            multiple ligands are present, give a comma-delimited list.") 
+    
+    parser.add_argument('--lc',
+                        dest = "ligand_charge",
+                        help = "Charge of ligands for ligpargen (when itp file should be \
+            generated). If multiple ligands are present, give a comma-delimited list.")
 
-    parser.add_argument('-a', "--alo",
-                        dest = "allosteric",
-                        help = "Name of the allosteric, without extension. See input_guide.txt \
-            for details on how to generate the required pdb and forcefield files.")
-    
-    parser.add_argument('--na',
-                        dest = 'nr_alo',
-                        help = "number of identical allosteric molecules (with same .itp file)")
-    
     parser.add_argument('-w','--waters',
                         dest = "waters",
-                        help = "Crystalized water molecules. File name without extension.")
+                        help = "Water identifiers of crystalized water molecules present within \
+            the PDB file.")
 
     parser.add_argument('-i', '--ions',
                         dest = "ions",
-                        help = "Crystalized ions file name without extension.")
-
-    parser.add_argument('-c', '--cho',
-                        dest = "cho",
-                        help = "Crystalized cholesterol molecules file name\
-            without extension.")
+                        help = "Ion identifiers of crystalized ions present within the PDB file.")
             
     parser.add_argument('--res',
                         dest = "restraint",
@@ -67,26 +59,13 @@ if __name__ == "__main__":
             (Ballesteros-Weinstein Restrained Relaxation - default), ca (C-Alpha Restrained \
             Relaxation)",
                         default = "bw")
-    
-    parser.add_argument('--llc',
-                        dest = "ligpargen_ligand_charge",
-                        help = "Charge of ligand for ligpargen (when itp file should be \
-            generated)")
-    
-    parser.add_argument('--llo',
-                        dest = "ligpargen_ligand_nrOfOptimizations",
-                        help = "Number of optimizations that ligpargen should use to generate \
-            itp file for ligand (only needed when itp is not provided)")
-    
-    parser.add_argument('--lac',
-                        dest = "ligpargen_allosteric_charge",
-                        help = "Charge of allosteric for ligpargen (when itp file should be \
-            generated)")
-    
-    parser.add_argument('--lao',
-                        dest = "ligpargen_allosteric_nrOfOptimizations",
-                        help = "Number of optimizations that ligpargen should use to generate \
-            itp file for allosteric (only needed when itp is not provided)")
+    parser.add_argument('-f', "--loop_fill",
+                        dest = "loop_fill",
+                        help = "Amount of Å per AA to fill cut loops. The total \
+            distance is calculated from the coordinates of the remaining residues. \
+            The AA contour length is 3.4-4.0 Å, To allow for flexibility in the \
+            loop, 2.0 Å/AA (default) is suggested. (example: -f 2.0)",
+                        default = "2.0")     
     
     parser.add_argument('-q', '--queue',
                         dest = "queue",
@@ -98,7 +77,7 @@ if __name__ == "__main__":
     
     parser.add_argument('--debugFast',
                         help = "run pymemdyn in debug mode with less min and eq steps.\
-                            Do not use for simulation results!",
+            Do not use for simulation results!",
                         action="store_true")
 
     args = parser.parse_args()
@@ -159,25 +138,13 @@ if __name__ == "__main__":
               repo_dir = args.repo_dir,
               pdb = args.pdb,
               ligand = args.ligand,
-              allosteric = args.allosteric,
-              nr_alo = args.nr_alo,
+              ligand_charge = args.ligand_charge,
               waters = args.waters,
               ions = args.ions,
-              cho = args.cho,
               restraint = args.restraint,
-              ligpargen_ligand_charge = args.ligpargen_ligand_charge,
-              ligpargen_ligand_nrOfOptimizations = args.ligpargen_ligand_nrOfOptimizations,
-              ligpargen_allosteric_charge = args.ligpargen_allosteric_charge,
-              ligpargen_allosteric_nrOfOptimizations = args.ligpargen_allosteric_nrOfOptimizations,
+              loop_fill = args.loop_fill,
               queue = args.queue,
               debug = args.debug)
-
-
-    run.clean()
-    # Rewrite old GROMACS.log file if on a re-run
-    f = open("GROMACS.log", "w")
-    f.close()
-
 
     run.moldyn()
 
