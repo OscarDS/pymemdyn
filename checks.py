@@ -200,11 +200,10 @@ class CheckProtein():
         if len(missing_SideChains) == len(missingLoc) == 0:
             return False
 
-
-
         pdbseq = self.seq
         self.logger.debug('pdbseq: {}'.format(pdbseq))
-        pdbseq = pdbseq[:-1] # looses trailing '/'
+        if pdbseq.endswith("/"):
+            pdbseq = pdbseq[:-1]  # looses trailing '/'
 
         mod_seq = pdbseq
         tmpl_seq = pdbseq
