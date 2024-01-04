@@ -214,7 +214,7 @@ class CheckProtein():
             loc = sc[0] - self.first_res_ID
             code = self.aa.codes321[sc[1]]
             tmpl_seq = tmpl_seq[:loc] + '-' + tmpl_seq[loc+1:]
-            mod_seq = tmpl_seq[:loc] + code + tmpl_seq[loc+1:]
+            mod_seq = mod_seq[:loc] + code + mod_seq[loc+1:]
 
         target = ''
 
@@ -286,8 +286,10 @@ class CheckProtein():
         tgt1 = open(os.path.join(kwargs['work_dir'], kwargs["tgt1"]), "w") 
         
         tgt1.write(f'>P1;{self.pdb}\n')
+        
+        firstResID_tmpl = int(first_res_ID) + (len(tmpl_seq) - len(tmpl_seq.lstrip('-')))
         finalResID = int((len(pdbseq) + 1) / len(self.chains))
-        tgt1.write(f'structure:{self.pdb}:{first_res_ID}:{self.chains[0]}:{finalResID+first_res_ID-1}:{self.chains[-1]}::: 2.10:-1.00\n')
+        tgt1.write(f'structure:{self.pdb}:{firstResID_tmpl}:{self.chains[0]}:{finalResID+first_res_ID-1}:{self.chains[-1]}::: 2.10:-1.00\n')
 
         new_line = 0
         for aa in tmpl_seq:
