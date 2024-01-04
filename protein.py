@@ -286,10 +286,12 @@ class CalculateLigandParameters(object):
 
         if self.ligand:
             ligands = self.ligand.split(',')
+            self.logger.debug(f'List of ligands: {ligands}')
             
             charges = self.ligand_charge.split(',')
-            if len(charges) != len(ligands):
+            if len(charges) != len(ligands) or charges == ['']:
                 charges = [0] * len(ligands)
+            self.logger.debug(f'List of charges: {charges}')
 
             index = 0
             for lig in ligands:
@@ -344,6 +346,7 @@ class CalculateLigandParameters(object):
             self.logger.info(f'Calculated ligand parameters for {ligand} using LigParGen.')
         except:
             self.logger.warning(f'LigParGen unable to calculate ligand parameters on original file.')
+            self.logger.info(f'Charge of {ligand} was defined by the user as {charge}.')
             if charge == 0:
                 pdb_h = CalculateLigandParameters.add_h(self, ligand)            
                 try:
