@@ -295,7 +295,7 @@ class CalculateLigandParameters(object):
 
             index = 0
             for lig in ligands:
-                charge = charges[index]
+                charge = int(charges[index])
                 index += 1
                 if os.path.exists(lig + ".ff") == True:
                     self.logger.info('All ligand parameter (.itp and .ff) files present.')
