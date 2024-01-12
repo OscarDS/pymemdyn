@@ -58,7 +58,8 @@ if __name__ == "__main__":
                         help = "Position restraints during MD production run. Options: bw \
             (Ballesteros-Weinstein Restrained Relaxation - default), ca (C-Alpha Restrained \
             Relaxation)",
-                        default = "bw")
+                        default = "ca")
+                        
     parser.add_argument('-f', "--loop_fill",
                         dest = "loop_fill",
                         help = "Amount of Å per AA to fill cut loops. The total \
