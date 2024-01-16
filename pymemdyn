@@ -149,8 +149,5 @@ if __name__ == "__main__":
 
     run.moldyn()
 
-    if not (args.debug or args.debugFast):
-        run.clean()
-
     logger.info('Done!')
 #    run.light_moldyn()
