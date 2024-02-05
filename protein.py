@@ -149,13 +149,12 @@ class Protein(object):
         """
         This is a proxy to determine if a protein is a Monomer or a Dimer
         """
-        self.pdb = kwargs["pdb"]
-        self.dir = kwargs['owndir']
-        self.loop_fill = kwargs['loopfill']
+        self.pdb = kwargs.get("pdb")
+        self.dir = kwargs.get('owndir') or ''
+        self.loop_fill = kwargs.get('loopfill') or ''
 
         self.logger_prot = logging.getLogger('pymemdyn.protein.Protein')
                 
-
         if not os.path.isfile(self.pdb):
             raise IOError("File '{0}' missing".format(self.pdb))
 
@@ -177,7 +176,8 @@ class Protein(object):
             return Oligomer(pdb = self.pdb, chains = chains, dir = self.dir, loopfill=self.loop_fill)
 
     def calculate_center(self):
-        """Determine center of the coords in the self.pdb.
+        """
+        Determine center of the coords in the self.pdb.
         """
         with open(self.pdb, "r") as inf:
             lines = inf.readlines()
@@ -191,8 +191,8 @@ class Protein(object):
         coord = matrix[:, [6, 7, 8]]
         coord = coord.astype(float)
         mean_coord = np.mean(coord, axis=0)
+
         return mean_coord
-        
         
 
 class Monomer(object):

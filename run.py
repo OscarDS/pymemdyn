@@ -64,19 +64,15 @@ class Run(object):
         self.logger.debug('Checking # of chains of '+ str(self.protein))
         self.proteins = protein.Protein(pdb=self.protein, owndir=self.own_dir, loopfill=self.loop_fill).check_number_of_chains()
         self.logger.debug(f'Protein is a(n) {type(self.proteins)} with {self.proteins.chains} chains')
+                
         try:
-            self.protein_center = protein.Protein(pdb='protein.pdb').calculate_center()
-            self.logger.debug(f'Center of protein at {self.protein_center}')
+            self.protein_center = protein.Protein(pdb=self.protein).calculate_center()
+            self.logger.info(f'Center of protein at {self.protein_center}')
         except:
             self.logger.warning("Cannot calculate center of protein. Please check alignment manually.")
 
         # Prepare ligand(s)
         protein.CalculateLigandParameters.__init__(self)
-
-        #if self.ligand:
-        #    self.nr_ligand = len(self.ligand.split(','))
-        #else:
-        #    self.nr_ligand = None
 
         # Prepare cofactor(s)
         self.cofactors = self.ligand.split(',') + ['HOH' if self.waters else "", self.ions]
@@ -111,7 +107,6 @@ class Run(object):
                 self.logger.warning(f"Cannot check distance between protein and {cofactor}. Please check alignment manually.")
         
         # Prepare membrane
-
         self.logger = logging.getLogger('pymemdyn.run.Run')
         self.membr = membrane.Membrane()
 
@@ -227,10 +222,10 @@ class Run(object):
         Raise warning is dist > 50
         """
         d = np.linalg.norm(vector1 - vector2)
-        if d > 45:
+        if d > 50:
             self.logger.warning(f'Center of cofactor and protein are unusually far apart ({d}). Did you correctly align both?')
         else:
-            self.logger.debug(f'Distance between center is {d}')
+            self.logger.info(f'Distance between cofactor and protein center is {d}')
                                 
         return True
 
