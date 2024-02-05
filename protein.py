@@ -12,7 +12,7 @@ import checks
 protein_logger = logging.getLogger('pymemdyn.protein')
 
 try:
-    import ligpargen.ligpargen as lpg
+    import ligpargen.ligpargen
 except:
     protein_logger.warning("""!! WARNING !! : No installation of ligpargen was found. 
           itp files for ligands cannot be automatically generated and must be provided 
@@ -332,40 +332,23 @@ class CalculateLigandParameters(object):
         if os.path.exists(inputdir):
             shutil.rmtree(inputdir)
             self.logger.debug(f'Removed {inputdir}')  
+      
+        pdb_lpg = CalculateLigandParameters.process_pdb(self, ligand, charge)
 
         try: 
-            self.logger.info(f'Calculating ligand parameters for {ligand} using LigParGen.')
+            import ligpargen.ligpargen as lpg
+            self.logger.info(f'Calculating ligand parameters for {ligand} using LigParGen. ifile: {pdb_lpg}')
             mol = lpg.LigParGen(
-                ifile=f'{ligand}.pdb', 
+                ifile=pdb_lpg, 
                 molname=f'{ligand}', 
                 workdir=workdir, 
                 resname=ligand, 
                 charge=charge, 
-                numberOfOptimizations=3, 
+                numberOfOptimizations=3
                 )
             self.logger.info(f'Calculated ligand parameters for {ligand} using LigParGen.')
         except:
-            self.logger.warning(f'LigParGen unable to calculate ligand parameters on original file.')
-            self.logger.info(f'Charge of {ligand} was defined by the user as {charge}.')
-            if charge == 0:
-                pdb_h = CalculateLigandParameters.add_h(self, ligand)            
-                try:
-                    # re-initialize ligpargen
-                    import ligpargen.ligpargen as lpg
-                    self.logger.info(f'Calculating ligand parameters for {ligand} using LigParGen.')
-                    mol = lpg.LigParGen(
-                            ifile=pdb_h, 
-                            molname=f'{ligand}', 
-                            workdir=workdir, 
-                            resname=ligand, 
-                            charge=charge, 
-                            numberOfOptimizations=3, 
-                            )
-                    self.logger.info(f'Calculated ligand parameters for {ligand} using LigParGen.')
-                except:
-                    self.logger.warning('LigParGen unable to calculate ligand parameters on processed file.')
-            else:
-                self.logger.warning('PyMemDyn is not able to automatically add hydrogens for charged molecules. Please provide a molecule file with hydrogens')
+            self.logger.warning(f'LigParGen unable to calculate ligand parameters for {ligand}.')
 
         mol.writeAllOuputs()
 
@@ -377,34 +360,60 @@ class CalculateLigandParameters(object):
 
         return
    
+    def process_pdb(self, ligand, charge):
+        pdbfile_lpg = f'{ligand}_lpg.pdb'
+        ref_molecule = Chem.MolFromPDBFile(f'{ligand}.pdb', removeHs=False)
+        
+        has_hydrogens = CalculateLigandParameters.molecule_has_hydrogens(ref_molecule)
+        self.logger.info(f"Molecule has explicit hydrogens: {has_hydrogens}")
 
-    def add_h(self, ligand):
-        # Add hydrogens to molecule file.
-        self.logger.info(f'Attempt: Adding hydrogens to {ligand}.')
-        pdbfile_h = f'{ligand}_h.pdb'
-        ref_molecule = Chem.MolFromPDBFile(f'{ligand}.pdb')
-        tgt_molecule = Chem.AddHs(ref_molecule)
-        AllChem.ConstrainedEmbed(tgt_molecule, ref_molecule)
-        writer = PDBWriter(pdbfile_h)
-        writer.write(tgt_molecule)
-        writer.close()
+        if has_hydrogens == True:
+            writer = PDBWriter(pdbfile_lpg)
+            writer.write(ref_molecule)
+            writer.close()
 
-        pdb_prepped = f'{ligand}_prepped.pdb'
-        pdb_prepped_file = open(pdb_prepped, "w")
+            return pdbfile_lpg
+        
+        else:
+            self.logger.info(f'Charge of {ligand} was defined by the user as {charge}.')
+            self.logger.warning('Hydrogens within Aromatic rings are likely to be incorrectly added. \
+                                For compounds with Aromatic rings rings we recommend using explicit hydrogens. ')
+            # TODO: protocol for AddHs of aromatic compounds
+            # TODO: protocol for AddHs of charged compounds
+            if charge == 0:
+                self.logger.info(f'Adding hydrogens to {ligand}.')
+                pdbfile_tmp = f'{ligand}_tmp.pdb'
+                tgt_molecule = Chem.AddHs(ref_molecule)
+                AllChem.ConstrainedEmbed(tgt_molecule, ref_molecule)
+                writer = PDBWriter(pdbfile_tmp)
+                writer.write(tgt_molecule)
+                writer.close()
 
-        with open(pdbfile_h, "r") as src:
-            count=0              
-            for line in src:
-                if line.startswith("ATOM") or line.startswith("HETATM"):       
-                    if count == 0:
-                        count += 1
-                        res_nr = line[20:27]
-                    line = line[:17] + ligand + res_nr + line[27:]
-                pdb_prepped_file.write(line)
+                pdbfile_lpg = f'{ligand}_lpg.pdb'
+                pdbfile_lpg_file = open(pdbfile_lpg, "w")
 
-        pdb_prepped_file.close()
+                with open(pdbfile_tmp, "r") as src:
+                    count=0              
+                    for line in src:
+                        if line.startswith("ATOM") or line.startswith("HETATM"):       
+                            if count == 0:
+                                count += 1
+                                res_nr = line[20:27]
+                            line = line[:17] + ligand + res_nr + line[27:]
+                        pdbfile_lpg_file.write(line)
+                pdbfile_lpg_file.close()
 
-        return pdb_prepped
+            else:
+                self.logger.warning('PyMemDyn is not able to add hydrogens for charged molecules. Please provide a molecule file with hydrogens')
+
+            return pdbfile_lpg
+
+    def molecule_has_hydrogens(mol):
+        """Check if the molecule has hydrogen atoms."""
+        for atom in mol.GetAtoms():
+            if atom.GetAtomicNum() == 1:  # Hydrogen has atomic number 1
+                return True
+        return False
 
     def lpg2pmd(self, cofactor, index, *args, **kwargs):
         """
