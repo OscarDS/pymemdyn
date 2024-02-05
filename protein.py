@@ -344,7 +344,7 @@ class CalculateLigandParameters(object):
                 workdir=workdir, 
                 resname=ligand, 
                 charge=charge, 
-                numberOfOptimizations=3
+                numberOfOptimizations=0     # Increasing the optimizations causes the ligand to shift
                 )
             self.logger.info(f'Calculated ligand parameters for {ligand} using LigParGen.')
         except:
