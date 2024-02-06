@@ -32,6 +32,13 @@ Testing was done using LigParGen v2.1 using BOSS5.0.
 
 Pymemdyn can also be used without ligpargen installation, but then .itp files containing the parameters for the ligand and the allosteric should be provided in the same folder as their respective .pdb's.
 
+**BioPython**
+BioPython is used to parse the provided PDB-files. You can install this package as follows:
+
+        pip install biopython
+
+Testing was done using BioPython 1.81
+
 ## Installation
 
 To install **PyMemDyn** follow these steps:  
