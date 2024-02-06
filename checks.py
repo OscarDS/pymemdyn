@@ -15,7 +15,9 @@ except:
 
 
 from aminoAcids import AminoAcids
+from Bio.PDB import PDBParser, PDBIO, Select
 from collections import Counter
+
 import logging
 check_logger = logging.getLogger('pymemdyn.checks')
 
@@ -110,74 +112,44 @@ class CheckProtein():
         return missingLoc
 
     def find_missingSideChains(self):
-        """
-        Check all sidechains of amino acids, save missing ones for modeller and remove 
-        faulty side chains from pbd.
-    
+        self.structure = PDBParser(QUIET=True).get_structure('protein', self.pdb)
 
-        :returns: list of tuples in the form [(resID, 'ALA')]
-        """
-        with open(self.pdb, 'r') as inf:
-            lines = inf.readlines()
-        
-        sideChains_d = self.aa.sideChains   # Dict containing predefined side chains
         missing_sideChains = []
-        atom_count = Counter()
-        prev_resID = self.first_res_ID
-        delete_lines = []
-        current_lines = []
+        residues_to_exclude = []
+        residues_to_keep = []
 
-        for i, line in enumerate(lines):    # Loop over protein.pdb
-            splitted = line.split()
+        for model in self.structure:
+            for chain in model:
+                prev_residue = None
+                for residue in chain:
+                    atom_count = Counter()
+                    current_atoms = [atom.element for atom in residue if atom.element != 'H']  # Exclude hydrogen
+                    for atom in current_atoms:
+                        atom_count[atom] += 1
 
-            if not splitted[0] == 'ATOM':   # Skip lines that are irrelevant
-                continue 
-            
-            current_resID = int(line[22:26])     # Read current res_ID
+                    amino = residue.resname   
+                    self.logger.debug('Residue {}: {} atom counts ({}) | reference atom counts ({}).'.format(prev_residue, amino, self.aa.sideChains[amino], atom_count))              
+                    if self.aa.sideChains[amino] != atom_count:
+                        self.logger.info('Residue {}: {} atom counts ({}) does not match with reference atom counts ({}). \
+                                         It will be deleted from your pdb and replaced with MODELLER'.format(prev_residue, amino, self.aa.sideChains[amino], atom_count))
+                        missing_sideChains.append((prev_residue, amino))
+                        residues_to_exclude.append(residue)
+                    else:
+                        residues_to_keep.append(residue)
 
-            if current_resID != prev_resID:
-                # Close previous residue
-                too_few = sideChains_d[amino] - atom_count
-                too_many = atom_count - sideChains_d[amino]
-                if len(too_few) != 0:
-                    self.logger.debug('too_few: {}'.format(too_few))
-                    self.logger.info('Residue {}: {} has too few side chains. It will be deleted from your pdb and replaced with MODELLER'.format(prev_resID, amino))
-                    missing_sideChains.append((prev_resID, amino))
-                    delete_lines += current_lines
+        class ResiduesSelect(Select):
+            def __init__(self, residues):
+                self.residues = residues
 
-                if len(too_many) != 0:
-                    self.logger.debug('too_many: {}'.format(too_many))
-                    self.logger.info('Residue {}: {} has too many side chains. It will be deleted from your pdb and replaced with MODELLER'.format(prev_resID, amino))
-                    missing_sideChains.append((prev_resID, amino))
-                    delete_lines += current_lines
-                
-                atom_count = Counter()      # Overwrite previous atom count
-                current_lines = []          # Overwrite previous saved lines
+            """A custom selector that excludes specific residues."""
+            def accept_residue(self, residue):
+                return residue in self.residues
 
-                
-            # Continue with residue     
-            amino = line[17:20]         # Amino acid
-            atom = line[13]             # Find atom
-
-            if not atom == 'H':         # Ignore H
-                atom_count[atom.upper()] += 1   # Add (capital) atom to counter 
-            
-            current_lines.append(line)
-
-            prev_resID = int(line[22:26])
-
-     
-        # end of for-loop
-        self.logger.debug('deleted: {}'.format(delete_lines))
-        
-        with open(self.pdb, "w") as f:
-            for l in lines:
-                if l not in delete_lines:
-                    f.write(l)
+        io = PDBIO()
+        io.set_structure(self.structure)
+        io.save(self.pdb, ResiduesSelect(residues_to_keep))
 
         return missing_sideChains
-
-
 
     def make_ml_pir(self, **kwargs):
         """
