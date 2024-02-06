@@ -120,7 +120,6 @@ class CheckProtein():
 
         for model in self.structure:
             for chain in model:
-                prev_residue = None
                 for residue in chain:
                     atom_count = Counter()
                     current_atoms = [atom.element for atom in residue if atom.element != 'H']  # Exclude hydrogen
@@ -128,11 +127,11 @@ class CheckProtein():
                         atom_count[atom] += 1
 
                     amino = residue.resname   
-                    self.logger.debug('Residue {}: {} atom counts ({}) | reference atom counts ({}).'.format(prev_residue, amino, self.aa.sideChains[amino], atom_count))              
+                    self.logger.debug('Residue {}: {} atom counts ({}) | reference atom counts ({}).'.format(residue.id[1], amino, self.aa.sideChains[amino], atom_count))              
                     if self.aa.sideChains[amino] != atom_count:
                         self.logger.info('Residue {}: {} atom counts ({}) does not match with reference atom counts ({}). \
-                                         It will be deleted from your pdb and replaced with MODELLER'.format(prev_residue, amino, self.aa.sideChains[amino], atom_count))
-                        missing_sideChains.append((prev_residue, amino))
+                                         It will be deleted from your pdb and replaced with MODELLER'.format(residue.id[1], amino, self.aa.sideChains[amino], atom_count))
+                        missing_sideChains.append((residue.id[1], amino))
                         residues_to_exclude.append(residue)
                     else:
                         residues_to_keep.append(residue)
