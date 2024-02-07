@@ -201,7 +201,7 @@ def make_topol(template_dir = \
             itp_include.extend(['#include "protein.itp"',
                                 '#ifdef POSRES',
                                 '#include "posre.itp"',
-                                '#endif'
+                                '#endif',
                                 '#ifdef DISRE',             # DISRE (BW) only applicable for monomers
                                 '#include "disre.itp"',
                                 '#endif'])
@@ -218,13 +218,15 @@ def make_topol(template_dir = \
 
         # TODO: posre ITP doesn't link to correct molecules for Ions and CrystalWaters
         if  isinstance(value, protein.Ions):
-            itp_include.extend(['; Include Position restraint file',
-                                f'#include "posre_{key}.itp"'])  
+            itp_include.extend(['; posre_{key}.itp currently cannot be included"'])
+            #itp_include.extend(['; Include Position restraint file',
+            #                    f'#include "posre_{key}.itp"'])  
             mol_include.extend([f'{key} {getattr(complex, key)._n_ions}'])
 
         if isinstance(value, protein.CrystalWaters) :
-            itp_include.extend(['; Include Position restraint file',
-                                f'#include "posre_{key}.itp"'])  
+            itp_include.extend(['; posre_{key}.itp currently cannot be included"'])
+            #itp_include.extend(['; Include Position restraint file',
+            #                    f'#include "posre_{key}.itp"'])  
             mol_include.extend([f'{key} {getattr(complex, key)._n_waters}'])
 
     tgt.write(t.substitute(working_dir = working_dir,
