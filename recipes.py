@@ -282,7 +282,7 @@ class BasicMinimization(object):
                                "options": {"src_dir": "",
                                            "src_files": ["topol.tpr"],
                                            "tgt_dir": "Rmin",
-                                           "repo_files": ["eq.mdp"]}},
+                                           "repo_files": ["steep.mdp"]}},
 
             "mdrun": {"gromacs": "mdrun",  # 2
                       "options": {"dir": "Rmin",
