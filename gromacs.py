@@ -241,18 +241,23 @@ class Gromacs(object):
         if not os.path.isdir(kwargs["tgt_dir"]): os.makedirs(kwargs["tgt_dir"])
         posres = kwargs.get("posres", [])
 
+
         if type(self.membrane_complex.complex.proteins) == protein.Monomer:
             posres.append("posre.itp")
         elif type(self.membrane_complex.complex.proteins) == protein.Oligomer:
             for chain in self.membrane_complex.complex.proteins.chains:
                 posres.extend(["posre_Protein_chain_"+chain+".itp"])
 
-        if hasattr(self.membrane_complex.complex, "waters") and \
-                self.membrane_complex.complex.waters:
-            posres.append("posre_hoh.itp")
-        if hasattr(self.membrane_complex.complex, "ions") and \
-                self.membrane_complex.complex.ions:
-            posres.append("posre_ion.itp")
+        # for var, value in vars(kwargs["membrane_complex"]).items():            
+        #     if isinstance(value, protein.Ligand) or isinstance(value, protein.CrystalWaters) or isinstance(value, protein.Ions):
+        #         posres.append(f"posre_{var}.itp")
+
+        # if hasattr(self.membrane_complex.complex, "waters") and \
+        #         self.membrane_complex.complex.waters:
+        #     posres.append("posre_hoh.itp")
+        # if hasattr(self.membrane_complex.complex, "ions") and \
+        #         self.membrane_complex.complex.ions:
+        #     posres.append("posre_ion.itp")
 
         for posre in posres:
             new_posre = open(os.path.join(kwargs["tgt_dir"], posre), "w")
@@ -266,20 +271,20 @@ class Gromacs(object):
                     new_posre.write(line)
             new_posre.close()
 
-        new_mdp = open(os.path.join(kwargs["tgt_dir"], "eq.mdp"), "w")
+        new_mdp = open(os.path.join(kwargs["tgt_dir"], f"eq{str(kwargs['const'])}.mdp"), "w")
         src_mdp = open(os.path.join(kwargs["src_dir"], kwargs["mdp"]), "r")
 
         for line in src_mdp:
             if (line.startswith("gen_vel")):
-                new_mdp.write("gen_vel = no\n")
+                new_mdp.write("gen_vel             = no\n")
             else:
                 new_mdp.write(line)
         src_mdp.close()
         new_mdp.close()
 
-        utils.make_topol(target_dir=kwargs["tgt_dir"],
-                         working_dir=os.getcwd(),
-                         complex=self.membrane_complex.complex)
+        # utils.make_topol(target_dir=kwargs["tgt_dir"],
+        #                  working_dir=os.getcwd(),
+        #                  complex=self.membrane_complex.complex)
 
     def run_recipe(self, debugFast=False):
         """

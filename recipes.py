@@ -254,7 +254,7 @@ class LigandInit(BasicInit):
                                     "tgt": f"posre_{var}.itp",
                                     "index": f"ligand_{var}_ha.ndx",
                                     "forces": ["1000", "1000", "1000"]},
-                        "input": "2\n"}
+                        "input": "3\n"}
 
                     self.steps.insert(9, f"make_ndx_{var}")
                     self.recipe[f"make_ndx_{var}"] = \
@@ -305,7 +305,7 @@ class BasicMinimization(object):
 
 class BasicEquilibration(object):
     def __init__(self, **kwargs):
-        self.steps = ["editconf", "make_ndx", "grompp", "set_stage_init",
+        self.steps = ["editconf", "make_ndx", "set_grompp", "set_stage_init", "grompp", 
                       "set_stage_init2", "mdrun"]
         self.recipe = {
             "editconf": {"gromacs": "editconf",  # 1
@@ -316,32 +316,33 @@ class BasicEquilibration(object):
                          "options": {"src": "min.pdb",
                                      "tgt": "index.ndx"}},
 
-            "grompp": {"gromacs": "grompp",  # 3
-                       "options": {"src": "Rmin/eq.mdp",
+            "set_grompp": {"command": "set_grompp",  # 3
+                           "options": {"eq.mdp": "eq.mdp"}},
+
+            "set_stage_init": {"command": "set_stage_init",  # 4
+                               "options": {"src_dir": "",
+                                           "src_files": ["eq.mdp"],
+                                           "tgt_dir": "eq"}},            
+                                           
+            "grompp": {"gromacs": "grompp",  # 5
+                       "options": {"src": "eq.mdp",
                                    "src2": "min.pdb",
                                    "top": "topol.top",
                                    "tgt": "topol.tpr",
                                    "index": "index.ndx"}},
 
-            "set_stage_init": {"command": "set_stage_init",  # 4
-                               "options": {"src_dir": "Rmin",
-                                           "src_files": ["eq.mdp"],
-                                           "tgt_dir": "eq"}},
-
-            "set_stage_init2": {"command": "set_stage_init",  # 5
+            "set_stage_init2": {"command": "set_stage_init",  # 6
                                 "options": {"src_dir": "",
                                             "src_files": ["topol.tpr",
-                                                          "posre.itp",
-                                                          "posre_hoh.itp",
-                                                          "posre_ion.itp"],
+                                                          "posre.itp"],
                                             "tgt_dir": "eq"}},
 
-            "mdrun": {"gromacs": "mdrun",  # 6
+            "mdrun": {"gromacs": "mdrun",  # 7
                       "options": {"dir": "eq",
                                   "src": "topol.tpr",
                                   "tgt": "traj.trr",
                                   "energy": "ener.edr",
-                                  "conf": "confout.gro",
+                                  "conf": "confout1000.gro",
                                   "traj": "traj.xtc",
                                   "log": "md_eq1000.log"}},
         }
@@ -361,41 +362,23 @@ class BasicEquilibration(object):
             self.recipe["grompp"]["options"]["src"] = "Rmin/eqDEBUG.mdp"
             self.recipe["set_stage_init"]["options"]["src_files"] = \
                 ["eqDEBUG.mdp"]
-
-'''
-class LigandInit(BasicInit):
-    def __init__(self, **kwargs):
-        super(LigandInit, self).__init__(**kwargs)
-
-        if kwargs["membrane_complex"]:
-            for var, value in vars(kwargs["membrane_complex"]).items():
-                if isinstance(value, protein.Ligand):
+            
                 
-                    self.steps.insert(9, f"genrestr_{var}")
-                    self.recipe[f"genrestr_{var}"] = \
-                        {"gromacs": "genrestr", 
-                        "options": {"src": "",
-                                    "tgt": f"posre_{var}.itp",
-                                    "index": f"ligand_{var}_ha.ndx",
-                                    "forces": ["1000", "1000", "1000"]},
-                        "input": "2\n"}
-'''
-                
-class LigandEquilibration(BasicEquilibration):
-    def __init__(self, **kwargs):
-        super(LigandEquilibration, self).__init__(**kwargs)
+#class LigandEquilibration(BasicEquilibration):
+#    def __init__(self, **kwargs):
+#        super(LigandEquilibration, self).__init__(**kwargs)
 
-        if kwargs["membrane_complex"]:
-            for var, value in vars(kwargs["membrane_complex"]).items():
-                if isinstance(value, protein.Ligand):
-                    self.steps.insert(2, "genrestr")
-                    self.recipe["genrestr"] = \
-                        {"gromacs": "genrestr",
-                        "options": {"src": "Rmin/topol.tpr",
-                                    "tgt": "protein_ca200.itp",
-                                    "index": "index.ndx",
-                                    "forces": ["200", "200", "200"]},
-                        "input": "3\n"}
+        # if kwargs["membrane_complex"]:
+        #     for var, value in vars(kwargs["membrane_complex"]).items():
+        #         if isinstance(value, protein.Ligand):
+        #             self.steps.insert(2, "genrestr")
+        #             self.recipe["genrestr"] = \
+        #                 {"gromacs": "genrestr",
+        #                 "options": {"src": "Rmin/topol.tpr",
+        #                             "tgt": "protein_ca200.itp",
+        #                             "index": "index.ndx",
+        #                             "forces": ["200", "200", "200"]},
+        #                 "input": "3\n"}
                     
 
 ##########################################################################
@@ -408,6 +391,7 @@ class BasicRelax(object):
         self.recipe = {}
         for const in range(800, 0, -200):
             self.steps.extend(["relax{0}".format(const),
+                               "set_stage_init{0}".format(const),
                                "grompp{0}".format(const),
                                "mdrun{0}".format(const)])
             tgt_dir = "eq/{0}".format(const)
@@ -419,16 +403,27 @@ class BasicRelax(object):
                              "tgt_dir": tgt_dir,
                              "posres": [],
                              "mdp": "eq.mdp"}}
+            
+            self.recipe["set_stage_init%d" % const] = \
+                {"command": "set_stage_init",  # 4
+                 "options": {"src_dir": "",
+                             "src_files": ["topol.top",
+                                           "ffoplsaa_mod.itp",
+                                           "ffoplsaanb_mod.itp",
+                                           "ffoplsaabon_mod.itp",
+                                           "protein.itp",
+                                           "popc.itp",
+                                           "ions.itp",
+                                           "spc.itp"],
+                             "tgt_dir": "eq/{0}".format(const)}}   
 
             self.recipe["grompp%d" % const] = \
                 {"gromacs": "grompp",  # 2, 5, 8, 11
-                 "options": {"src": os.path.join(tgt_dir, "eq.mdp"),
-                             "src2": os.path.join(src_dir, "confout.gro"),
-                             "top": "topol.top",
+                 "options": {"src": os.path.join(tgt_dir, "eq{0}.mdp".format(const)),
+                             "src2": os.path.join(src_dir, "confout{0}.gro".format(const+200)),
+                             "top": os.path.join(tgt_dir, "topol.top"),
                              "tgt": os.path.join(tgt_dir, "topol.tpr"),
                              "index": "index.ndx"}}
-            # TODO the confout.gro coming next needs to be copied, it feels a
-            # bit like cheating
 
             self.recipe["mdrun%d" % const] = \
                 {"gromacs": "mdrun",  # 3, 6, 9, 12
@@ -436,22 +431,30 @@ class BasicRelax(object):
                              "src": "topol.tpr",
                              "tgt": "traj.trr",
                              "energy": "ener.edr",
-                             "conf": "../confout.gro",
+                             "conf": "../confout{0}.gro".format(const),
                              "traj": "traj.xtc",
-                             "log": "md_eq{0}.log".format(const)}}
+                             "log": "md_eq{0}.log".format(const)}}        
+            
+            for var, value in vars(kwargs["membrane_complex"]).items():            
+                if isinstance(value, protein.Ligand) or isinstance(value, protein.CrystalWaters) or isinstance(value, protein.Ions):
+                    self.recipe[f"relax{const}"]["options"]["posres"].append(f"posre_{var}.itp")
+                    self.recipe[f"set_stage_init{const}"]["options"]["src_files"].append(f"{var}.itp")
+
+        # TODO: add section for copying .itp for oligomers (posre is handled in relax)
+
         self.breaks = {}
 
         if kwargs["debugFast"] or False:
             for i in [x for x in self.recipe.keys() if x.startswith("relax")]:
                 self.recipe[i]["options"]["mdp"] = "eqDEBUG.mdp"
 
-class LigandRelax(BasicRelax):
-    def __init__(self, **kwargs):
-        super(LigandRelax, self).__init__(**kwargs)
-        if kwargs["membrane_complex"]:
-            for var, value in vars(kwargs["membrane_complex"]).items():
-                if isinstance(value, protein.Ligand):
-                    self.recipe["relax800"]["options"]["posres"].append(f"posre_{var}.itp")
+# class LigandRelax(BasicRelax):
+#     def __init__(self, **kwargs):
+#         super(LigandRelax, self).__init__(**kwargs)
+#         if kwargs["membrane_complex"]:
+#             for var, value in vars(kwargs["membrane_complex"]).items():
+#                 if isinstance(value, protein.Ligand):
+#                     self.recipe["relax800"]["options"]["posres"].append(f"posre_{var}.itp")
 
 
 ##########################################################################
@@ -460,25 +463,38 @@ class LigandRelax(BasicRelax):
 
 class BasicCARelax(object):
     def __init__(self, **kwargs):
-        self.steps = ["set_stage_init", "genrestr", "grompp", "mdrun"]
+        self.steps = ["set_stage_init", "set_stage_init2", "grompp", "mdrun"]
         self.recipe = {
             "set_stage_init": {"command": "set_stage_init",  # 1
                                "options": {"src_dir": "eq",
                                            "tgt_dir": "eqProd",
-                                           "src_files": ["confout.gro"],
+                                           "src_files": ["confout200.gro"],
                                            "repo_files": ["eqCA.mdp"]}},
 
-            "genrestr": {"gromacs": "genrestr",  # 2
-                         "options": {"src": "Rmin/topol.tpr",
-                                     "tgt": "posre.itp",
-                                     "index": "index.ndx",
-                                     "forces": ["200"] * 3},
-                         "input": "3\n"},
+            "set_stage_init2": {"command": "set_stage_init",  # 1
+                                "options": {"src_dir": "eq/200",
+                                            "tgt_dir": "eqProd",
+                                            "src_files": ["topol.top",
+                                                          "ffoplsaa_mod.itp",
+                                                          "ffoplsaanb_mod.itp",
+                                                          "ffoplsaabon_mod.itp",
+                                                          "protein.itp",
+                                                          "posre.itp",
+                                                          "popc.itp",
+                                                          "ions.itp",
+                                                          "spc.itp"]}},
+
+            # "genrestr": {"gromacs": "genrestr",  # 2
+            #              "options": {"src": "Rmin/topol.tpr",
+            #                          "tgt": "posre.itp",
+            #                          "index": "index.ndx",
+            #                          "forces": ["200"] * 3},
+            #              "input": "3\n"},
 
             "grompp": {"gromacs": "grompp",  # 3
                        "options": {"src": "eqProd/eqCA.mdp",
-                                   "src2": "eqProd/confout.gro",
-                                   "top": "topol.top",
+                                   "src2": "eqProd/confout200.gro",
+                                   "top": "eqProd/topol.top",
                                    "tgt": "eqProd/topol.tpr",
                                    "index": "index.ndx"}},
 
@@ -493,6 +509,10 @@ class BasicCARelax(object):
         }
 
         self.breaks = {}
+
+        for var, value in vars(kwargs["membrane_complex"]).items():            
+            if isinstance(value, protein.Ligand) or isinstance(value, protein.CrystalWaters) or isinstance(value, protein.Ions):
+                self.recipe[f"set_stage_init2"]["options"]["src_files"].extend([f"{var}.itp", f"posre_{var}.itp"])
 
         if kwargs["debugFast"] or False:
             self.recipe["set_stage_init"]["options"]["src_files"] = \

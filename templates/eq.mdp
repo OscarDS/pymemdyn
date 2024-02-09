@@ -1,6 +1,5 @@
 ; title =  Equilibration
-;include             = -I./posre_hoh.itp
-define              = -DPOSRES ; Restraint heavy atoms of the protein (all except H's)
+define              = -DPOSRES   ; Restraint heavy atoms of the protein (all except H's)
 
 ; Run Parameters
 integrator          =  md        ; leap-frog integrator
@@ -26,7 +25,6 @@ rvdw                =  1.2       ; short range vdw cuoff (nm)
 ; Electrostatic Parameters
 coulombtype         =  PME       ; Particle mesh Ewald for LR interactions
 fourierspacing      =  0.15      ; grid dimensions for FFT
-;;ewald_geometry      =  3dc       ; only for slab geometries
 pme_order           =  4         ; interpolation order for FFT
 ewald_rtol          =  1e-5      ; relative accuracy of direct/reciprocal space
 
