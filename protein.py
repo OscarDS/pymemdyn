@@ -243,8 +243,6 @@ class Monomer(object):
             os.remove(self.pdb_hist)
             os.rename(system_file, self.pdb_hist)
 
-        self.chains = ['']      # Added empty string so length == 1
-
         return 
 
     def _setRes(self):

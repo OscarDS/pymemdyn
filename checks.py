@@ -166,8 +166,11 @@ class CheckProtein():
 
             lines_chain = []
             for line in lines_pdb:
-                if (line[21] == chain):
-                    lines_chain.append(line)
+                try:
+                    if (line[21] == chain):
+                        lines_chain.append(line)
+                except:
+                    pass
 
             self.chain_pdb = f'{self.pdb[:-4]}_{chain}.pdb'
             with open(self.chain_pdb, 'w') as file:

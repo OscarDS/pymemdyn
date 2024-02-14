@@ -198,14 +198,16 @@ def make_topol(template_dir = \
                 mol_include.extend([f'Protein_chain_{ID} 1'])     
 
         elif isinstance(value, protein.Monomer):
-            itp_include.extend(['#include "protein.itp"',
-                                '#ifdef POSRES',
-                                '#include "posre.itp"',
-                                '#endif',
-                                '#ifdef DISRE',             # DISRE (BW) only applicable for monomers
-                                '#include "disre.itp"',
-                                '#endif'])
-            mol_include.extend(['protein_chain_A 1'])
+            chainID = getattr(complex, key).chains
+            for ID in chainID:
+                itp_include.extend(['#include "protein.itp"',
+                                    '#ifdef POSRES',
+                                    '#include "posre.itp"',
+                                    '#endif',
+                                    '#ifdef DISRE',             # DISRE (BW) only applicable for monomers
+                                    '#include "disre.itp"',
+                                    '#endif'])
+                mol_include.extend([f'Protein_chain_{ID} 1'])  
 
     for key, value in vars(complex).items():
         # define cofactor restraints
