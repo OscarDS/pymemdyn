@@ -77,7 +77,7 @@ class Run(object):
         # Prepare cofactor(s)
         self.cofactors = self.ligand.split(',') + ['HOH' if self.waters else "", self.ions]
         self.cofactors = [value for value in self.cofactors if value] 
-        self.logger.debug(f'cofactors: {self.cofactors}')
+        self.logger.info(f'cofactors: {self.cofactors}')
         for index, cofactor in enumerate(self.cofactors):
             ID = cofactor
             if not cofactor:
@@ -199,7 +199,8 @@ class Run(object):
                      "BWRelax", "BWCollectResults"]
         elif self.restraint == "ca":
             steps = ["Init", "Minimization", "Equilibration", "Relax", 
-                     "CARelax", "CACollectResults"]
+                     "CARelax", "CACollectResults"
+                ]
 
         for step in steps:
             self.logger.info('\n\n[{}/{}]: {}\n'.format(steps.index(step)+1, len(steps), step))

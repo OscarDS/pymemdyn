@@ -434,7 +434,10 @@ class BasicRelax(object):
                              "conf": "../confout{0}.gro".format(const),
                              "traj": "traj.xtc",
                              "log": "md_eq{0}.log".format(const)}}        
-            
+
+            for chain in kwargs["membrane_complex"].proteins.chains:
+                self.recipe[f"set_stage_init{const}"]["options"]["src_files"].append(f"protein_Protein_chain_{chain}.itp")
+
             for var, value in vars(kwargs["membrane_complex"]).items():            
                 if isinstance(value, protein.Ligand) or isinstance(value, protein.CrystalWaters) or isinstance(value, protein.Ions):
                     self.recipe[f"relax{const}"]["options"]["posres"].append(f"posre_{var}.itp")
@@ -509,6 +512,9 @@ class BasicCARelax(object):
         }
 
         self.breaks = {}
+
+        for chain in kwargs["membrane_complex"].proteins.chains:
+            self.recipe[f"set_stage_init2"]["options"]["src_files"].extend([f"protein_Protein_chain_{chain}.itp", f"posre_Protein_chain_{chain}.itp"])
 
         for var, value in vars(kwargs["membrane_complex"]).items():            
             if isinstance(value, protein.Ligand) or isinstance(value, protein.CrystalWaters) or isinstance(value, protein.Ions):
