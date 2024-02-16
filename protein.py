@@ -211,27 +211,25 @@ class Monomer(object):
         self.loop_fill = kwargs['loopfill']
         self.chains = kwargs['chains']
 
-        self.pdb_hist = self._setRes() 
-
         self.check_protein = checks.CheckProtein(
-                pdb=self.pdb_hist,
+                pdb=self.pdb,
                 chains=self.chains, 
                 tgt='missingLoops.txt', 
                 loop_fill = self.loop_fill
                 )
         
         self.broken_chains = self.check_protein.make_ml_pir(work_dir=self.own_dir)
-        self.logger_monomer.info('Broken chains: {}'.format(self.broken_chains))
-
+        
         if self.broken_chains != []:
-            system_file = f'{self.pdb[:-4]}-modeller.pdb'
+            self.logger_monomer.info('Broken chains: {}'.format(self.broken_chains))
+            system_file = self.pdb.replace('.pdb', '-modeller.pdb')
             system_pdbs = []
             for chain in self.chains:
                 if chain in self.broken_chains:
-                    self.logger_monomer.info('Debug MODELLER input: {}'.format(f'{self.pdb[:-4]}-his_{chain}.pdb'))
-                    system_pdbs.append(self.check_protein.refine_protein(knowns=f'{self.pdb[:-4]}-his_{chain}.pdb', chain=chain))
+                    self.logger_monomer.debug('MODELLER input: {}'.format(self.pdb.replace('.pdb', f'_{chain}.pdb')))
+                    system_pdbs.append(self.check_protein.refine_protein(knowns=self.pdb.replace('.pdb', f'_{chain}.pdb'), chain=chain))
                 else:
-                    system_pdbs.append(f'{self.pdb[:-4]}-his_{chain}.pdb')
+                    system_pdbs.append(self.pdb.replace('.pdb', f'_{chain}.pdb'))
  
             with open(system_file, 'w') as output_file:
                 for file_idx, pdb_file in enumerate(system_pdbs):
@@ -239,9 +237,13 @@ class Monomer(object):
                         for line in file:
                             output_file.write(line)
 
+            self.pdb = system_file
+
             # overwrite protein-his.pdb file
-            os.remove(self.pdb_hist)
-            os.rename(system_file, self.pdb_hist)
+            #os.remove(self.pdb_hist)
+            #os.rename(system_file, self.pdb_hist)
+
+        self.pdb_hist = self._setRes() 
 
         return 
 
@@ -262,11 +264,11 @@ class Monomer(object):
                     tgt.write(line.replace('HIP ','HISH'))
                 elif line.split()[3] == "CYX":
                     tgt.write(line.replace('CYX ','CYS '))
-
                 else:
                     tgt.write(line)
             else:
                 tgt.write(line)
+            
         tgt.close()
 
         
