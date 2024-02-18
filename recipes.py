@@ -18,7 +18,7 @@ import protein
 class BasicInit(object):
     def __init__(self, **kwargs):
         # First we make a list of ordered steps
-        self.steps = ["pdb2gmx", "set_itp", "concat", "set_protein_height", "editconf",
+        self.steps = ["pdb2gmx", "set_itp", "clean_itp", "concat", "set_protein_height", "editconf",
                       "set_protein_size", "editconf2", "set_protein_size2",
                       "set_popc", "editconf3", "editconf4", "make_topol",
                       "editconf5", "solvate", "set_protein_height2", "set_water", 
@@ -39,6 +39,9 @@ class BasicInit(object):
              "set_itp": {"command": "set_itp",  # 2
                          "options": {"src": "protein.top",
                                      "tgt": "protein.itp"}},
+
+             "clean_itp": {"command": "clean_itp",
+                           "options": {"src_files": []}},
 
              "concat": {"command": "concat",  # 3
                         "options": {"src": "proteinopls.pdb",
@@ -234,6 +237,11 @@ class BasicInit(object):
              "trjconv2": {"trans": "membrane_complex.complex.trans"}
              }
 
+        if kwargs["membrane_complex"].proteins.chains:
+            for chain in kwargs["membrane_complex"].proteins.chains:
+                self.recipe["clean_itp"]["options"]["src_files"].append(
+                                                    f"protein_Protein_chain_{chain}.itp")
+
         if kwargs["debugFast"] or False:
             self.recipe["set_grompp"]["options"]["steep.mdp"] = "steepDEBUG.mdp"
 
@@ -423,6 +431,7 @@ class BasicRelax(object):
                              "src2": os.path.join(src_dir, "confout{0}.gro".format(const+200)),
                              "top": os.path.join(tgt_dir, "topol.top"),
                              "tgt": os.path.join(tgt_dir, "topol.tpr"),
+                             "tgt_top": os.path.join(tgt_dir, "processed.top"), # DEBUGGING
                              "index": "index.ndx"}}
 
             self.recipe["mdrun%d" % const] = \

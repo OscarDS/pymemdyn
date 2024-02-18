@@ -434,6 +434,34 @@ class Gromacs(object):
 
         return True
 
+    def clean_itp(self, **kwargs):
+        """
+        clean_itp: Cut a itp file to be usable later as with restraints
+        """
+        src_files = kwargs["src_files"]
+        
+        for file in src_files:
+            src = open(file, "r")
+            lines = src.readlines()
+            src.close()
+
+            tgt = open(file, "w")
+
+            toggle_keep = True
+            for line in lines:
+                if line.startswith("#ifdef POSRES"):
+                    toggle_keep = False
+                
+                if toggle_keep == True:
+                    tgt.write(line)
+                
+                if line.startswith("#endif"):
+                    toggle_keep = True
+
+            tgt.close()
+
+        return True
+
     def set_itp(self, **kwargs):
         """
         set_itp: Cut a top file to be usable later as itp
@@ -783,6 +811,9 @@ class Wrapper(object):
                    "-po", self._setDir("mdout.mdp")]
         if "index" in kwargs.keys():
             command.extend(["-n", self._setDir(kwargs["index"])])
+
+        if "tgt_top" in kwargs.keys():
+            command.extend(["-pp", self._setDir(kwargs["tgt_top"])]) # DEBUGGING
 
         return command
 
