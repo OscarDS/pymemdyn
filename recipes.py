@@ -559,15 +559,16 @@ class BasicBWRelax(object):
             "set_stage_init": {"command": "set_stage_init",  # 2
                                "options": {"src_dir": "eq",
                                            "tgt_dir": "eqProd",
-                                           "src_files": ["confout.gro",
+                                           "src_files": ["confout200.gro",
                                                          "../disre.itp"],
                                            "repo_files": ["dres.mdp"]}},
 
             "grompp": {"gromacs": "grompp",  # 3
                        "options": {"src": "eqProd/dres.mdp",
-                                   "src2": "eqProd/confout.gro",
+                                   "src2": "eqProd/confout200.gro",
                                    "top": "topol.top",
                                    "tgt": "eqProd/topol.tpr",
+                                   "tgt_top": "eqProd/processed.top", # DEBUGGING
                                    "index": "index.ndx"}},
 
             "mdrun": {"gromacs": "mdrun",  # 4
