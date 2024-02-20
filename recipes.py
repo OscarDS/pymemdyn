@@ -313,9 +313,12 @@ class BasicMinimization(object):
 
 class BasicEquilibration(object):
     def __init__(self, **kwargs):
-        self.steps = ["editconf", "make_ndx", "set_grompp", "set_stage_init", "grompp", 
+        self.steps = ["clean_itp", "editconf", "make_ndx", "set_grompp", "set_stage_init", "grompp", 
                       "set_stage_init2", "mdrun"]
         self.recipe = {
+            "clean_itp": {"command": "clean_itp",
+                           "options": {"src_files": ["protein.itp"]}},
+            
             "editconf": {"gromacs": "editconf",  # 1
                          "options": {"src": "Rmin/confout.gro",
                                      "tgt": "min.pdb"}},
@@ -337,6 +340,7 @@ class BasicEquilibration(object):
                                    "src2": "min.pdb",
                                    "top": "topol.top",
                                    "tgt": "topol.tpr",
+                                   "tgt_top": "eq/processed.top", # DEBUGGING
                                    "index": "index.ndx"}},
 
             "set_stage_init2": {"command": "set_stage_init",  # 6
@@ -475,7 +479,7 @@ class BasicRelax(object):
 
 class BasicCARelax(object):
     def __init__(self, **kwargs):
-        self.steps = ["set_stage_init", "set_stage_init2", "grompp", "mdrun"]
+        self.steps = ["set_stage_init", "set_stage_init2", "restrain_ca", "grompp", "mdrun"]
         self.recipe = {
             "set_stage_init": {"command": "set_stage_init",  # 1
                                "options": {"src_dir": "eq",
@@ -496,6 +500,10 @@ class BasicCARelax(object):
                                                           "ions.itp",
                                                           "spc.itp"]}},
 
+            "restrain_ca": {"command": "restrain_ca", 
+                            "options": {"src_files": ["eqProd/posre.itp"],
+                                        "index": "index.ndx"}},
+            
             # "genrestr": {"gromacs": "genrestr",  # 2
             #              "options": {"src": "Rmin/topol.tpr",
             #                          "tgt": "posre.itp",
@@ -508,6 +516,7 @@ class BasicCARelax(object):
                                    "src2": "eqProd/confout200.gro",
                                    "top": "eqProd/topol.top",
                                    "tgt": "eqProd/topol.tpr",
+                                   "tgt_top": "eqProd/processed.top", # DEBUGGING
                                    "index": "index.ndx"}},
 
             "mdrun": {"gromacs": "mdrun",  # 4
@@ -524,6 +533,7 @@ class BasicCARelax(object):
 
         for chain in kwargs["membrane_complex"].proteins.chains:
             self.recipe[f"set_stage_init2"]["options"]["src_files"].extend([f"protein_Protein_chain_{chain}.itp", f"posre_Protein_chain_{chain}.itp"])
+            self.recipe[f"restrain_ca"]["options"]["src_files"].extend([f"eqProd/posre_Protein_chain_{chain}.itp"])
 
         for var, value in vars(kwargs["membrane_complex"]).items():            
             if isinstance(value, protein.Ligand) or isinstance(value, protein.CrystalWaters) or isinstance(value, protein.Ions):

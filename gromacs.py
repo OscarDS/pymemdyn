@@ -286,6 +286,65 @@ class Gromacs(object):
         #                  working_dir=os.getcwd(),
         #                  complex=self.membrane_complex.complex)
 
+    def restrain_ca(self, **kwargs):
+        """
+        restrain_ca: Restrain only protein CA by index
+        """
+        # Get C-alpha atoms from index
+        index_file = kwargs.get("index")
+        index = open(index_file, "r")
+
+        ca_ids = set()
+        section = False
+        for line in index:
+            if line.startswith("[ C-alpha ]"):
+                section = True
+            elif line.startswith("[") and section:
+                break
+            elif section:
+                ids = line.split()
+                for id in ids:
+                    ca_ids.add(int(id.strip()))
+        
+        self.logger.debug(f'Extracted C-alpha IDs: {sorted(ca_ids)}')
+
+        index.close()
+
+        # keep only CA atom restraints
+        src_files = kwargs["src_files"]
+        
+        self.logger.debug(f'scr_files: {src_files}')
+        for src in src_files:
+            if os.path.exists(src):
+                self.logger.debug(f'processing CA-restraints: {src}')
+                with open(src, 'r') as file:
+                    lines = file.readlines()
+
+                ca_restraints = ['[ position_restraints ]\n']
+                for line in lines:
+                    if line:
+                        parts = line.split()
+                        if parts:
+                            if parts[0].isdigit(): 
+                                final_nr = int(parts[0])
+                                if int(parts[0]) in ca_ids:
+                                    ca_restraints.append(line)
+            
+                self.logger.debug(f'ca_restr.: {ca_restraints}')
+
+                ca_corr = {x - final_nr for x in ca_ids}
+                ca_ids = {x for x in ca_corr if x > 0}
+
+                self.logger.debug(f'correction factor: {final_nr}')
+                self.logger.debug(f'corrected CA-IDs: {sorted(ca_ids)}')
+               
+                with open(src, 'w') as file:
+                    file.writelines(ca_restraints)
+            else:
+                self.logger.debug(f'{src} does not exist')
+
+        return True
+
     def run_recipe(self, debugFast=False):
         """
         run_recipe: Run recipe for the complex
@@ -440,25 +499,25 @@ class Gromacs(object):
         """
         src_files = kwargs["src_files"]
         
-        for file in src_files:
-            src = open(file, "r")
-            lines = src.readlines()
-            src.close()
+        for src in src_files:
+            if os.path.exists(src):
+                with open(src, 'r') as file:
+                    lines = file.readlines()
 
-            tgt = open(file, "w")
+                tgt_lines = []
+                toggle_keep = True
+                for line in lines:
+                    if line.startswith("#ifdef POSRES"):
+                        toggle_keep = False
+                    
+                    if toggle_keep == True:
+                        tgt_lines.append(line)
+                    
+                    if line.startswith("#endif"):
+                        toggle_keep = True
 
-            toggle_keep = True
-            for line in lines:
-                if line.startswith("#ifdef POSRES"):
-                    toggle_keep = False
-                
-                if toggle_keep == True:
-                    tgt.write(line)
-                
-                if line.startswith("#endif"):
-                    toggle_keep = True
-
-            tgt.close()
+                with open(src, 'w') as file:
+                    file.writelines(tgt_lines)
 
         return True
 
