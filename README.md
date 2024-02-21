@@ -109,6 +109,8 @@ To install **PyMemDyn** follow these steps:
                                 present within the PDB file.
           -i IONS, --ions IONS  Ion identifiers of crystalized ions present within the
                                 PDB file.
+          --prod PRODUCTION     Toggle for performing MD production run. If set to false,
+                                the run will finish after equilibration. (default = True)
           --res RESTRAINT       Position restraints during MD production run. Options:
                                 bw (Ballesteros-Weinstein Restrained Relaxation -
                                 default), ca (C-Alpha Restrained Relaxation)

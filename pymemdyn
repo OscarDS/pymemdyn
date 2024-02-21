@@ -57,7 +57,7 @@ if __name__ == "__main__":
                         dest = 'production',
                         default = True,
                         help = "Toggle for performing MD production run. If set to false, \
-            the run will finish after equilibration.")
+            the run will finish after equilibration. (default = True)")
             
     parser.add_argument('--res',
                         dest = "restraint",
