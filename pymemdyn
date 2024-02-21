@@ -52,6 +52,12 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--ions',
                         dest = "ions",
                         help = "Ion identifiers of crystalized ions present within the PDB file.")
+    
+    parser.add_argument('--prod',
+                        dest = 'production',
+                        default = True,
+                        help = "Toggle for performing MD production run. If set to false, \
+            the run will finish after equilibration.")
             
     parser.add_argument('--res',
                         dest = "restraint",
@@ -142,6 +148,7 @@ if __name__ == "__main__":
               ligand_charge = args.ligand_charge,
               waters = args.waters,
               ions = args.ions,
+              production = args.production,
               restraint = args.restraint,
               loop_fill = args.loop_fill,
               queue = args.queue,

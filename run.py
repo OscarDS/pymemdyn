@@ -37,7 +37,8 @@ class Run(object):
         self.protein = 'protein.pdb'
         self.waters = kwargs.get("waters") or ""
         self.ions = kwargs.get("ions") or ""
-        self.restraint = kwargs.get("restraint") or ""
+        self.production = kwargs.get("production")
+        self.restraint = kwargs.get("restraint")
         self.loop_fill = kwargs.get("loop_fill")
         self.queue = kwargs.get("queue") or ""
         self.debug = kwargs.get("debug") or False
@@ -51,6 +52,7 @@ class Run(object):
         self.logger.debug(f'self.ligand_charge = {str(self.ligand_charge)}')
         self.logger.debug(f'self.waters = {str(self.waters)}')
         self.logger.debug(f'self.ions = {str(self.ions)}')
+        self.logger.debug(f'self.production = {str(self.production)}')
         self.logger.debug(f'self.restraint = {str(self.restraint)}')
 
         # Prepare System
@@ -194,13 +196,18 @@ class Run(object):
         """
         Run all steps in a molecular dynamics simulation of a membrane protein
         """
-        if self.restraint == "bw":
-            steps = ["Init", "Minimization", "Equilibration", "Relax", 
-                     "BWRelax", "BWCollectResults"]
-        elif self.restraint == "ca":
-            steps = ["Init", "Minimization", "Equilibration", "Relax", 
-                     "CARelax", "CACollectResults"
-                ]
+        if self.production == True:
+            if self.restraint == "bw":
+                steps = ["Init", "Minimization", "Equilibration", "Relax", 
+                        "BWRelax", "BWCollectResults"]
+            elif self.restraint == "ca":
+                steps = ["Init", "Minimization", "Equilibration", "Relax", 
+                        "CARelax", "CACollectResults"
+                    ]
+        else:
+            steps = ["Init", "Minimization", "Equilibration", "Relax"]
+
+        self.logger.debug(f'steps: {steps}')
 
         for step in steps:
             self.logger.info('\n\n[{}/{}]: {}\n'.format(steps.index(step)+1, len(steps), step))
