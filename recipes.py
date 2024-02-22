@@ -659,10 +659,9 @@ class BasicCollectResults(object):
                        "set_end":
                            {"command": "set_stage_init",  # 12
                                    "options": {"src_dir": "eqProd",
-                                               "src_files": ["log.log"
-                                                             "confout.gro",
+                                               "src_files": ["confout.gro",
                                                              "topol.tpr",
-                                                             "processed.top"
+                                                             "processed.top",
                                                              "dres.mdp",
                                                              "eqCA.mdp"],
                                                "repo_files": ["README.md",
@@ -673,6 +672,7 @@ class BasicCollectResults(object):
                            {"command": "set_stage_init",  # 14
                                      "options": {"src_dir": "",
                                                  "src_files": [
+                                                     "log.log",
                                                      "hexagon.pdb",
                                                      "index.ndx", 
                                                      "traj_EQ.xtc",
