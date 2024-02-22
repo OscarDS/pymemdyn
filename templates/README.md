@@ -11,7 +11,7 @@ The performed equilibration includes the following stages:
 
 |   STAGE    | RESTRAINED ATOMS        | FORCE CONSTANT       | TIME           |
 |:----------:|:-----------------------:|:--------------------:|:--------------:|
-|  -         |   -                     |kJ/(mol·nm^2)        | ns             |
+|  -         |   -                     |kJ/(molï¿½nm^2)        | ns             |
 |Minimization|   -                     | -                    |(Max. 500 steps)|
 |Equil. 1    |Protein Heavy Atoms      | 1000                 | 0.5            |
 |Equil. 2    |Protein Heavy Atoms      | 800                  | 0.5            |
@@ -96,30 +96,34 @@ steps (nsteps), and thus the simulation time, you want to run.
 
 After that, you just have to type:  
 
-    grompp -f prod.mdp -c confout.gro -p topol.top -n index.ndx -o topol_prod.tpr  
-    mdrun -s topol_prod.tpr -o traj.trr -e ener.edr -c confout.gro -g production.log -x traj_prod.xtc
+With C-alpha position restraints:
+    gmx grompp -f eqCA.mdp -c confout.gro -p processed.top -n index.ndx -o topol_prod.tpr  
+With BW distance restraints:
+    gmx grompp -f dres.mdp -c confout.gro -p processed.top -n index.ndx -o topol_prod.tpr  
+
+    gmx mdrun -s topol_prod.tpr -o traj.trr -e ener.edr -c confout.gro -g production.log -x traj_prod.xtc
 
 - If  you  want  to  create  a  PDB file  of  your  system  after  the
 equilibration, with the receptor centered in the box, type:  
 
-    echo 1 0 | trjconv -pbc mol -center -ur compact -f confout.gro -o confout.pdb
+    echo 1 0 | gmx trjconv -pbc mol -center -ur compact -f confout.gro -o confout.pdb
 
 - If you want to create an xmgrace graph of the root mean square
   deviation for c-alpha atoms in the 5.0 ns of simulation you can use:  
 
-    echo 3 3 | g_rms -f traj_EQ.xtc -s topol.tpr -o rmsd-calpha-vs-start.xvg
+    echo 3 3 | gmx rms -f traj_EQ.xtc -s topol.tpr -o rmsd-calpha-vs-start.xvg
 
 - You may want to get a pdb file of your last frame. You can first
 check the total time of your trajectory and then use this time to
 request the last frame with:
 
-    gmxcheck -f traj_pymol.xtc
-    echo 1 | trjconv -b 5000 -e 5000 -f traj_pymol.xtc -o last51.pdb
+    gmx check -f traj_pymol.xtc
+    echo 1 | gmx trjconv -b 5000 -e 5000 -f traj_pymol.xtc -o last51.pdb
 
 
 References
 ----------
 
-[1] Rodríguez D., Piñeiro Á. and Gutiérrez-de-Terán H.   
+[1] Rodrï¿½guez D., Piï¿½eiro ï¿½. and Gutiï¿½rrez-de-Terï¿½n H.   
 Molecular Dynamics Simulations Reveal Insights into Key Structural Elements of Adenosine Receptors   
 Biochemistry (2011), 50, 4194-208.   

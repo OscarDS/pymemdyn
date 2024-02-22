@@ -606,8 +606,8 @@ class BasicCollectResults(object):
         self.breaks = {}
         self.steps = ["trjcat", "trjconv", "rms1", "rms2",
                       "rms3", "rmsf", "tot_ener", "temp", "pressure",
-                      "volume", "set_end", "clean_topol", "set_end_2",
-                      "set_end_3", "set_end_4", "set_end_5", "set_end_6",
+                      "volume", "set_end", "set_end_2", "set_end_3", 
+                      "set_end_4", "set_end_5", "set_end_6",
                       "tar_it"]
 
         self.recipe = {"trjcat":
@@ -659,31 +659,21 @@ class BasicCollectResults(object):
                        "set_end":
                            {"command": "set_stage_init",  # 12
                                    "options": {"src_dir": "eqProd",
-                                               "src_files": ["confout.gro",
-                                                             "topol.tpr"],
-                                               "repo_files": ["popc.itp",
-                                                              "README.md",
-                                                              "prod.mdp",
-                                                              "load_gpcr.pml",
-                                                              "ions.itp",
-                                                              "spc.itp"],
+                                               "src_files": ["log.log"
+                                                             "confout.gro",
+                                                             "topol.tpr",
+                                                             "processed.top"
+                                                             "dres.mdp",
+                                                             "eqCA.mdp"],
+                                               "repo_files": ["README.md",
+                                                              "load_gpcr.pml"],
                                                "tgt_dir": "finalOutput"}},
-
-                       "clean_topol":
-                           {"command": "clean_topol",  # 13
-                                       "options": {"src": "topol.top",
-                                                   "tgt": "finalOutput/topol.top"}},
 
                        "set_end_2":
                            {"command": "set_stage_init",  # 14
                                      "options": {"src_dir": "",
                                                  "src_files": [
-                                                     "ffoplsaa_mod.itp",
-                                                     "ffoplsaabon_mod.itp",
-                                                     "ffoplsaanb_mod.itp",
                                                      "hexagon.pdb",
-                                                     "protein.itp",
-                                                     "hoh.itp",
                                                      "index.ndx", 
                                                      "traj_EQ.xtc",
                                                      "ener_EQ.edr",
@@ -710,7 +700,12 @@ class BasicCollectResults(object):
                        "set_end_4":
                            {"command": "set_stage_init",  # 16
                                      "options": {"src_dir": "eq",
-                                                 "src_files": ["md_eq1000.log"],
+                                                 "src_files": ["md_eq1000.log",
+                                                               "confout1000.gro",
+                                                               "confout800.gro",
+                                                               "confout600.gro",
+                                                               "confout400.gro",
+                                                               "confout200.gro",],
                                                  "tgt_dir": "finalOutput/logs"}},
 
                        "set_end_5":
@@ -726,7 +721,8 @@ class BasicCollectResults(object):
                        "set_end_6":
                            {"command": "set_stage_init",  # 18
                                      "options": {"src_dir": "eqProd",
-                                                 "src_files": ["md_eqProd.log"],
+                                                 "src_files": ["md_eqBW.log",
+                                                               "md_eqCA.log"],
                                                  "tgt_dir": "finalOutput/logs"}},
 
                        "tar_it":
@@ -806,9 +802,9 @@ class BasicBWCollectResults(BasicCollectResults):
                              "tgt": "ener_EQ.edr"},
                  "input": "y\nc\nc\nc\nc\nc\nc\n"}
 
-        if kwargs["membrane_complex"]:    
-            for var, value in vars(kwargs["membrane_complex"]).items():
-                if isinstance(value, protein.Ligand) or isinstance(value, protein.CrystalWaters) or isinstance(value, protein.Ions):
-                    self.recipe["set_end_2"]["options"]["src_files"].extend([
-                                                        f"posre_{var}.itp",
-                                                        f"{var}.itp"])
+        # if kwargs["membrane_complex"]:    
+        #     for var, value in vars(kwargs["membrane_complex"]).items():
+        #         if isinstance(value, protein.Ligand) or isinstance(value, protein.CrystalWaters) or isinstance(value, protein.Ions):
+        #             self.recipe["set_end_2"]["options"]["src_files"].extend([
+        #                                                 f"posre_{var}.itp",
+        #                                                 f"{var}.itp"])
