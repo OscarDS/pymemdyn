@@ -26,15 +26,11 @@ In this folder you will find several files related to this simulation:
 
 INPUT:
 ------
-    - popc.itp              # Topology of the lipids  
-    - ffoplsaa_mod.itp      # Modified OPLSAA-FF, to account for lipid modifications  
-    - ffoplsaabon_mod.itp   # Modified OPLSAA-FF(bonded), to account for lipid modifications   
-    - ffoplsaanb_mod.itp    # Modified OPLSAA-FF(non-bonded), to account for lipid modifications
     - topol.tpr             # Input for the first equilibration stage
-    - topol.top             # Topology of the system
-    - protein.itp           # Topology of the protein
+    - processed.top         # Topology of the system
     - index.ndx             # Index file with appropriate groups for GROMACS
-    - prod.mdp              # Example of a parameter file to configure a production run (see TIPS)
+    - eqCA.mdp              # Example of a parameter file to configure a production run with c-alpha position restraints (see TIPS)
+    - dres.mdp              # Example of a parameter file to configure a production run with BW distance restraints (see TIPS)
 
 
 STRUCTURES:
@@ -43,6 +39,8 @@ STRUCTURES:
     - confout.gro           # Final structure of the system (see TIPS)
     - load_gpcr.pml         # Loads the initial structure and the trajectory in pymol
 
+In the "logs" subfolder, you will find the log files of mdrun:  
+    - confout{force_constant}.gro  # Final structure of the system after {force_constant} equilibration step
 
 TRAJECTORY FILES:
 -----------------
@@ -66,10 +64,12 @@ In the "reports" subfolder, you will find the following files:
 
 LOGS:
 -----
-In the "logs" subfolder, you will find the log files of mdrun:  
-    - eq_{force_constant}.log       # log of stages with restrained heavy atoms of the receptor
-    - eqCA.log                      # log of the stage with restrained C-alfa atoms of the receptor
+    - log.log                       # log of the PyMemDyn run
 
+In the "logs" subfolder, you will find the log files of mdrun:  
+    - eq_{force_constant}.log       # log of stages with restrained heavy atoms of the target
+    - md_eqCA.log                   # log of the stage with restrained C-alpha atoms of the target
+    - md_eqBW.log                   # log of the stage with distance restrained BW pairs of the target
 
 **NOTE ON GROMACS METHODS**
 To integrate  the equations of  motion we have selected  the leap-frog
@@ -97,9 +97,9 @@ steps (nsteps), and thus the simulation time, you want to run.
 After that, you just have to type:  
 
 With C-alpha position restraints:
-    gmx grompp -f eqCA.mdp -c confout.gro -p processed.top -n index.ndx -o topol_prod.tpr  
+    gmx grompp -f eqCA.mdp -c confout.gro -r confout.gro -p processed.top -n index.ndx -o topol_prod.tpr -maxwarn 1
 With BW distance restraints:
-    gmx grompp -f dres.mdp -c confout.gro -p processed.top -n index.ndx -o topol_prod.tpr  
+    gmx grompp -f dres.mdp -c confout.gro -p processed.top -n index.ndx -o topol_prod.tpr -maxwarn 1
 
     gmx mdrun -s topol_prod.tpr -o traj.trr -e ener.edr -c confout.gro -g production.log -x traj_prod.xtc
 
