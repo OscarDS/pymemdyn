@@ -1,5 +1,5 @@
 ; title =  Equilibration with C-alphas Restrained
-define              =  -DPOSRES ; Restraint heavy atoms of the protein (all except H's)
+define              = -DPOSRES   ; Restraint heavy atoms of the protein (all except H's)
 
 ; Run Parameters
 integrator          =  md        ; leap-frog integrator

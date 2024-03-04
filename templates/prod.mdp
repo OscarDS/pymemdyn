@@ -1,6 +1,4 @@
 ; title =  Production run. Restraints are released.
-;include             = -I./posre_hoh.itp
-;define              =  -DPOSRES ; Restraint heavy atoms of the protein (all except H's)
 
 ; Run Parameters
 integrator          =  md        ; leap-frog integrator

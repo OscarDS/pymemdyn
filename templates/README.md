@@ -87,21 +87,26 @@ explicitly stated in the Rodriguez et al. [1] publication.
 
 **TIPS**  
 
-NOTE: these tips work for GROMACS version >= 4.5 and < 5.0. For later 
-versions, adjustments are required, but the principle remains the same.
+NOTE: these tips work for GROMACS version 2021. For later versions, 
+adjustments may be required, but the principle remains the same.
 
 - If you want to configure a .tpr input file for a **production** run, you
 can use the template 'prod.mdp' file by introducing the number of 
-steps (nsteps), and thus the simulation time, you want to run.  
+steps (nsteps) and/or the time between steps (dt), you want to run.  
 
 After that, you just have to type:  
+    gmx grompp -f prod.mdp -c confout.gro -p prod.top -n index.ndx -o topol_prod.tpr
+
+    gmx mdrun -s topol_prod.tpr -o traj.trr -e ener.edr -c confout.gro -g prod.log -x traj_prod.xtc
+
+- If you did not execute the **full_relax** protocol to relaxate your system you can run the following commands. If you wish to adjust the relaxation protocol, you can modify the template 'eqCA.mdp' (with C-alpha position restraints) or 'dres.mdp' (with Venkatakrishnan pairs distance restraints). It is highly recommended to first do a (modified) full_relax protocol prior to a **production** run.
 
 With C-alpha position restraints:
-    gmx grompp -f eqCA.mdp -c confout.gro -r confout.gro -p processed.top -n index.ndx -o topol_prod.tpr -maxwarn 1
+    gmx grompp -f eqCA.mdp -c logs/confout200.gro -r logs/confout200.gro -p processed.top -n index.ndx -o topol_relax.tpr -maxwarn 1
 With BW distance restraints:
-    gmx grompp -f dres.mdp -c confout.gro -p processed.top -n index.ndx -o topol_prod.tpr -maxwarn 1
+    gmx grompp -f dres.mdp -c logs/confout200.gro -p processed.top -n index.ndx -o topol_relax.tpr -maxwarn 1
 
-    gmx mdrun -s topol_prod.tpr -o traj.trr -e ener.edr -c confout.gro -g production.log -x traj_prod.xtc
+    gmx mdrun -s topol_relax.tpr -o traj.trr -e ener.edr -c logs/confout200.gro -g relax.log -x traj_relax.xtc
 
 - If  you  want  to  create  a  PDB file  of  your  system  after  the
 equilibration, with the receptor centered in the box, type:  

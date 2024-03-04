@@ -544,6 +544,9 @@ class BasicCARelax(object):
                 ["confout.gro", "eqDEBUG.mdp"]
             self.recipe["grompp"]["options"]["src"] = "eqProd/eqDEBUG.mdp"
 
+        if kwargs["full_relax"] != True:
+                self.steps.remove("mdrun")
+
 
 ##########################################################################
 #                 Ballesteros-Weinstein Restrained Relaxation            #
@@ -588,6 +591,8 @@ class BasicBWRelax(object):
                 ["confout.gro", "eqDEBUG.mdp"]
             self.recipe["grompp"]["options"]["src"] = "eqProd/eqDEBUG.mdp"
 
+        if kwargs["full_relax"] != True:
+                self.steps.remove("mdrun")
 
 ##########################################################################
 #                 Collect All Results & Output                           #
@@ -606,7 +611,8 @@ class BasicCollectResults(object):
         self.breaks = {}
         self.steps = ["trjcat", "trjconv", "rms1", "rms2",
                       "rms3", "rmsf", "tot_ener", "temp", "pressure",
-                      "volume", "set_end", "set_end_2", "set_end_3", 
+                      "volume", "set_stage_init", "grompp",
+                      "set_end", "set_end_2", "set_end_3", 
                       "set_end_4", "set_end_5", "set_end_6",
                       "tar_it"]
 
@@ -656,15 +662,27 @@ class BasicCollectResults(object):
                                              "tgt": "rmsf-per-residue.xvg"},
                                  "input": "1\n"},
 
+                        "set_stage_init": {"command": "set_stage_init",  # 2
+                                           "options": {"tgt_dir": ".",
+                                                       "repo_files": ["prod.mdp"]}},
+
+                        "grompp": {"gromacs": "grompp",  # 3
+                                "options": {"src": "prod.mdp",
+                                            "src2": "eq/confout200.gro",
+                                            "top": "topol.top",
+                                            "tgt": "topol.tpr",
+                                            "tgt_top": "prod.top", # DEBUGGING
+                                            "index": "index.ndx"}},
+
                        "set_end":
                            {"command": "set_stage_init",  # 12
                                    "options": {"src_dir": "eqProd",
                                                "src_files": ["confout.gro",
-                                                             "topol.tpr",
                                                              "processed.top",
                                                              "dres.mdp",
                                                              "eqCA.mdp"],
-                                               "repo_files": ["README.md",
+                                               "repo_files": ["prod.mdp",
+                                                              "README.md",
                                                               "load_gpcr.pml"],
                                                "tgt_dir": "finalOutput"}},
 
@@ -677,7 +695,8 @@ class BasicCollectResults(object):
                                                      "index.ndx", 
                                                      "traj_EQ.xtc",
                                                      "ener_EQ.edr",
-                                                     "traj_pymol.xtc"],
+                                                     "traj_pymol.xtc",
+                                                     "prod.top"],
                                                  "tgt_dir": "finalOutput"}},
 
                        "set_end_3":
@@ -744,6 +763,10 @@ class BasicCollectResults(object):
                              "log": "{0}.log".format(option)},
                  "input": gro_key}
 
+        if kwargs["full_relax"] != True:
+            self.recipe["trjcat"]["options"]["dir2"] = ""
+            self.steps.remove("set_stage_init")
+            self.steps.remove("grompp")
 
 class BasicCACollectResults(BasicCollectResults):
     def __init__(self, **kwargs):
@@ -801,10 +824,4 @@ class BasicBWCollectResults(BasicCollectResults):
                              "name": "ener.edr",
                              "tgt": "ener_EQ.edr"},
                  "input": "y\nc\nc\nc\nc\nc\nc\n"}
-
-        # if kwargs["membrane_complex"]:    
-        #     for var, value in vars(kwargs["membrane_complex"]).items():
-        #         if isinstance(value, protein.Ligand) or isinstance(value, protein.CrystalWaters) or isinstance(value, protein.Ions):
-        #             self.recipe["set_end_2"]["options"]["src_files"].extend([
-        #                                                 f"posre_{var}.itp",
-        #                                                 f"{var}.itp"])
+        

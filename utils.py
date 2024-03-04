@@ -111,7 +111,7 @@ def make_cat(dir1, dir2, name):
     traj_src = [os.path.join(dir1, name)]
     traj_src.extend([os.path.join(dir1, "{0}", name).format(x)
                      for x in range(800, 0, -200)])
-    if dir2 != "":
+    if os.path.isdir(dir2):
         traj_src.extend([os.path.join(dir2, name)])
 
     return traj_src

@@ -35,7 +35,7 @@ class Run(object):
         self.protein = 'protein.pdb'
         self.waters = kwargs.get("waters") or ""
         self.ions = kwargs.get("ions") or ""
-        self.production = kwargs.get("production")
+        self.full_relax = kwargs.get("full_relax")
         self.restraint = kwargs.get("restraint")
         self.loop_fill = kwargs.get("loop_fill")
         self.queue = kwargs.get("queue") or ""
@@ -50,7 +50,7 @@ class Run(object):
         self.logger.debug(f'self.ligand_charge = {str(self.ligand_charge)}')
         self.logger.debug(f'self.waters = {str(self.waters)}')
         self.logger.debug(f'self.ions = {str(self.ions)}')
-        self.logger.debug(f'self.production = {str(self.production)}')
+        self.logger.debug(f'self.full_relax = {str(self.full_relax)}')
         self.logger.debug(f'self.restraint = {str(self.restraint)}')
 
         self.clean()
@@ -246,34 +246,19 @@ class Run(object):
         """
         Run all steps in a molecular dynamics simulation of a membrane protein
         """
-        if self.production == True:
-            if self.restraint == "bw":
-                steps = ["Init", "Minimization", "Equilibration", "Relax", 
-                        "BWRelax", "BWCollectResults"]
-            elif self.restraint == "ca":
-                steps = ["Init", "Minimization", "Equilibration", "Relax", 
-                        "CARelax", "CACollectResults"
-                    ]
-        else:
-            steps = ["Init", "Minimization", "Equilibration", "Relax"]
+        if self.restraint == "bw":
+            steps = ["Init", "Minimization", "Equilibration", "Relax", 
+                    "BWRelax", "BWCollectResults"]
+        elif self.restraint == "ca":
+            steps = ["Init", "Minimization", "Equilibration", "Relax", 
+                    "CARelax", "CACollectResults"]
 
         self.logger.debug(f'steps: {steps}')
 
         for step in steps:
             self.logger.info('\n\n[{}/{}]: {}\n'.format(steps.index(step)+1, len(steps), step))
-            self.g.select_recipe(stage=step, debugFast=self.debugFast)
+            self.g.select_recipe(stage=step, full_relax=self.full_relax, debugFast=self.debugFast)
             self.g.run_recipe(debugFast=self.debugFast)
-
-    def light_moldyn(self):
-        """
-        This is a function to debug a run in steps
-        """
-        steps = ["BWRelax", "BWCollectResults"]
-#        steps = ["CACollectResults"]
-
-        for step in steps:
-            self.g.select_recipe(stage=step, debugFast=self.debugFast)
-            self.g.run_recipe(debugFast = self.debugFast)
 
     def check_dist(self, vector1, vector2):
         """Check distance between protein and all possible ligands (if any).

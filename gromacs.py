@@ -408,7 +408,7 @@ class Gromacs(object):
 
         return True
 
-    def select_recipe(self, stage="", debugFast=False):
+    def select_recipe(self, stage="", debugFast=False, full_relax=True):
         """
         select_recipe: Select the appropriate recipe for the complex
         """
@@ -425,10 +425,10 @@ class Gromacs(object):
         # Init, Minimization, Equilibration...
 
         if hasattr(recipes, recipe):
-            self.recipe = getattr(recipes, recipe)(debugFast=debugFast, membrane_complex=self.membrane_complex.complex)
+            self.recipe = getattr(recipes, recipe)(debugFast=debugFast, membrane_complex=self.membrane_complex.complex, full_relax=full_relax)
         elif hasattr(recipes, "Basic" + stage):
             # Fall back to Basic recipe if no specific where found
-            self.recipe = getattr(recipes, "Basic" + stage)(debugFast=debugFast, membrane_complex=self.membrane_complex.complex)
+            self.recipe = getattr(recipes, "Basic" + stage)(debugFast=debugFast, membrane_complex=self.membrane_complex.complex, full_relax=full_relax)
 
         return True
 
@@ -641,11 +641,12 @@ class Gromacs(object):
         """
         if not os.path.isdir(kwargs["tgt_dir"]): os.mkdir(kwargs["tgt_dir"])
 
-        for src_file in kwargs["src_files"]:
-            if (os.path.isfile(os.path.join(kwargs["src_dir"], src_file))):
-                shutil.copy(os.path.join(kwargs["src_dir"], src_file),
-                            os.path.join(kwargs["tgt_dir"],
-                                         os.path.split(src_file)[1]))
+        if "src_files" in kwargs.keys():
+            for src_file in kwargs["src_files"]:
+                if (os.path.isfile(os.path.join(kwargs["src_dir"], src_file))):
+                    shutil.copy(os.path.join(kwargs["src_dir"], src_file),
+                                os.path.join(kwargs["tgt_dir"],
+                                            os.path.split(src_file)[1]))
 
         if "repo_files" in kwargs.keys():
             for repo_file in kwargs["repo_files"]:
