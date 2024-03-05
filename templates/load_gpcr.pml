@@ -5,7 +5,7 @@ load hexagon.pdb, equi
 color grey70, ini-state
 hide lines, resn pop
 hide lines, hydro and neighbor element c
-select protein, chain a and equi
+select protein, chain A and equi
 select solvent, resn SOL
 select membrane, resn POP
 select memblimi, equi and name n4+p8+na*
