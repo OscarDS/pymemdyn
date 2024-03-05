@@ -1,4 +1,4 @@
-PyMemDyn Version 2.0
+PyMemDyn Version 2.1
 ================================================================================
 
 PyMemDyn is  a standalone *python*  package to setup  membrane molecular
@@ -83,11 +83,12 @@ To install **PyMemDyn** follow these steps:
     You should obtain the following help output:
 
         usage: pymemdyn [-h] [-v] [-b OWN_DIR] [-r REPO_DIR] -p PDB [-l LIGAND]
-                        [--lc LIGAND_CHARGE] [-w WATERS] [-i IONS] [--res RESTRAINT]
-                        [-f LOOP_FILL] [-q QUEUE] [-d] [--debugFast]
-        
+                        [--lc LIGAND_CHARGE] [-w WATERS] [-i IONS]
+                        [--full_relax FULL_RELAX] [--res RESTRAINT] [-f LOOP_FILL]
+                        [-q QUEUE] [-d]
+
         == Setup Molecular Dynamics for Membrane Proteins given a PDB. ==
-        
+
         optional arguments:
           -h, --help            show this help message and exit
           -v, --version         show program's version number and exit
@@ -109,8 +110,10 @@ To install **PyMemDyn** follow these steps:
                                 present within the PDB file.
           -i IONS, --ions IONS  Ion identifiers of crystalized ions present within the
                                 PDB file.
-          --prod PRODUCTION     Toggle for performing MD production run. If set to false,
-                                the run will finish after equilibration. (default = True)
+          --full_relax FULL_RELAX
+                                Toggle for performing full MD relaxation. If set to
+                                false, the run will finish after the initial
+                                relaxation. (default = True)
           --res RESTRAINT       Position restraints during MD production run. Options:
                                 bw (Ballesteros-Weinstein Restrained Relaxation -
                                 default), ca (C-Alpha Restrained Relaxation)
@@ -124,9 +127,6 @@ To install **PyMemDyn** follow these steps:
                                 Queueing system to use (slurm, pbs, pbs_ib and svgd
                                 supported)
           -d, --debug
-          --debugFast           run pymemdyn in debug mode with less min and eq steps.
-                                Do not use for simulation results!
-
 
 
 3.  Updates are very easy thanks to the git versioning system. Once
@@ -215,6 +215,19 @@ include input file generation/processing and data processing.
 
 Changelog
 --------------------------------------------------------------------------------
+### Changes from version 2.0 to 2.1
+- March, 2024
+
+Modifications for improved robustness:
+Ligand handling by LigParGen; Protein checks with BioPython; Distance checks; 
+Set C-alpha restraints as default for `--res`; Restraint handling; Cleaning
+function.
+
+Ease of use:
+Added --full_relax to switch the final relaxation protocol on/off; Expanded
+documentation README; Expanded documentation output; Updated .pml scripts. 
+
+
 ### Changes from version 1.6.3 to 2.0
 - December, 2023
 
@@ -234,22 +247,17 @@ residue is compared to a predefined dictionary. In case of a missing sidechain
 the whole residue will be removed from the protein and replaced by the same 
 residue with Modeller.
 
-
 ### Changes from version 1.6.2 to 1.6.3
 - April, 2023
 
 Added check to see if orientation of lig/alo/ion/etc. matches that of protein. 
 Prints warning if distence between those is unusual.
 
-
-
 ### Changes from version 1.6.1 to 1.6.2
 - April, 2023
 
 Added support for using multiple alosteric molecules using a single itp file.  
 Catch gromacs fatal error and print in log.
-
-
 
 ### Changes from version 1.6 to 1.6.1
 - March, 2023
@@ -264,7 +272,6 @@ A new logfile is added (log.log) along with two different debug modes (`--debug`
 - March 8, 2023
 
 Added feature for automatic generation of itp file from pdb file (ligand and allosteric) with ligpargen.
-
 
 ### Changes from version 1.5.1 to 1.5.2
 
@@ -310,7 +317,6 @@ restraints depends on a list of tuples called bwpairs which can be defined in
 any way the user desires. In out case we are using the Venkatrakrishnan et al.
 conserved contact network. New reports for *RMSD* on c-alpha atoms and  per
 residue *RMSF*.
-
 
 ### Changes from version 1.0 to 1.1
 
