@@ -4,8 +4,8 @@ load hexagon.pdb, ini-state
 load hexagon.pdb, equi
 color grey70, ini-state
 hide lines, resn pop
-hide lines, hydro and neighbor element c
-select protein, chain a and equi
+hide lines, (element h and neighbor element c)
+select protein, chain A and equi
 select solvent, resn SOL
 select membrane, resn POP
 select memblimi, equi and name n4+p8+na*
@@ -18,8 +18,10 @@ set sphere_scale, 0.2
 cmd.spectrum("count",selection="(protein)&e. c")
 
 ### If you have a ligand ###
-select ligand, equi and resn lig
-show sticks, ligand and not (hydro and neighbor element c)
+select ligand, equi and resn L01
+show sticks, ligand and not (element h and neighbor element c)
+select bsite, br. (equi and not solvent within 5 of ligand)
+show lines, bsite and not (element h and neighbor element C)
 util.cba(154,"ligand",_self=cmd)
 cmd.disable('ligand')
 ### End of ligand settings ###

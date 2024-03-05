@@ -241,18 +241,23 @@ class Gromacs(object):
         if not os.path.isdir(kwargs["tgt_dir"]): os.makedirs(kwargs["tgt_dir"])
         posres = kwargs.get("posres", [])
 
+
         if type(self.membrane_complex.complex.proteins) == protein.Monomer:
             posres.append("posre.itp")
         elif type(self.membrane_complex.complex.proteins) == protein.Oligomer:
             for chain in self.membrane_complex.complex.proteins.chains:
                 posres.extend(["posre_Protein_chain_"+chain+".itp"])
 
-        if hasattr(self.membrane_complex.complex, "waters") and \
-                self.membrane_complex.complex.waters:
-            posres.append("posre_hoh.itp")
-        if hasattr(self.membrane_complex.complex, "ions") and \
-                self.membrane_complex.complex.ions:
-            posres.append("posre_ion.itp")
+        # for var, value in vars(kwargs["membrane_complex"]).items():            
+        #     if isinstance(value, protein.Ligand) or isinstance(value, protein.CrystalWaters) or isinstance(value, protein.Ions):
+        #         posres.append(f"posre_{var}.itp")
+
+        # if hasattr(self.membrane_complex.complex, "waters") and \
+        #         self.membrane_complex.complex.waters:
+        #     posres.append("posre_hoh.itp")
+        # if hasattr(self.membrane_complex.complex, "ions") and \
+        #         self.membrane_complex.complex.ions:
+        #     posres.append("posre_ion.itp")
 
         for posre in posres:
             new_posre = open(os.path.join(kwargs["tgt_dir"], posre), "w")
@@ -266,20 +271,79 @@ class Gromacs(object):
                     new_posre.write(line)
             new_posre.close()
 
-        new_mdp = open(os.path.join(kwargs["tgt_dir"], "eq.mdp"), "w")
+        new_mdp = open(os.path.join(kwargs["tgt_dir"], f"eq{str(kwargs['const'])}.mdp"), "w")
         src_mdp = open(os.path.join(kwargs["src_dir"], kwargs["mdp"]), "r")
 
         for line in src_mdp:
             if (line.startswith("gen_vel")):
-                new_mdp.write("gen_vel = no\n")
+                new_mdp.write("gen_vel             = no\n")
             else:
                 new_mdp.write(line)
         src_mdp.close()
         new_mdp.close()
 
-        utils.make_topol(target_dir=kwargs["tgt_dir"],
-                         working_dir=os.getcwd(),
-                         complex=self.membrane_complex.complex)
+        # utils.make_topol(target_dir=kwargs["tgt_dir"],
+        #                  working_dir=os.getcwd(),
+        #                  complex=self.membrane_complex.complex)
+
+    def restrain_ca(self, **kwargs):
+        """
+        restrain_ca: Restrain only protein CA by index
+        """
+        # Get C-alpha atoms from index
+        index_file = kwargs.get("index")
+        index = open(index_file, "r")
+
+        ca_ids = set()
+        section = False
+        for line in index:
+            if line.startswith("[ C-alpha ]"):
+                section = True
+            elif line.startswith("[") and section:
+                break
+            elif section:
+                ids = line.split()
+                for id in ids:
+                    ca_ids.add(int(id.strip()))
+        
+        self.logger.debug(f'Extracted C-alpha IDs: {sorted(ca_ids)}')
+
+        index.close()
+
+        # keep only CA atom restraints
+        src_files = kwargs["src_files"]
+        
+        self.logger.debug(f'scr_files: {src_files}')
+        for src in src_files:
+            if os.path.exists(src):
+                self.logger.debug(f'processing CA-restraints: {src}')
+                with open(src, 'r') as file:
+                    lines = file.readlines()
+
+                ca_restraints = ['[ position_restraints ]\n']
+                for line in lines:
+                    if line:
+                        parts = line.split()
+                        if parts:
+                            if parts[0].isdigit(): 
+                                final_nr = int(parts[0])
+                                if int(parts[0]) in ca_ids:
+                                    ca_restraints.append(line)
+            
+                self.logger.debug(f'ca_restr.: {ca_restraints}')
+
+                ca_corr = {x - final_nr for x in ca_ids}
+                ca_ids = {x for x in ca_corr if x > 0}
+
+                self.logger.debug(f'correction factor: {final_nr}')
+                self.logger.debug(f'corrected CA-IDs: {sorted(ca_ids)}')
+               
+                with open(src, 'w') as file:
+                    file.writelines(ca_restraints)
+            else:
+                self.logger.debug(f'{src} does not exist')
+
+        return True
 
     def run_recipe(self, debugFast=False):
         """
@@ -344,7 +408,7 @@ class Gromacs(object):
 
         return True
 
-    def select_recipe(self, stage="", debugFast=False):
+    def select_recipe(self, stage="", debugFast=False, full_relax=True):
         """
         select_recipe: Select the appropriate recipe for the complex
         """
@@ -361,10 +425,10 @@ class Gromacs(object):
         # Init, Minimization, Equilibration...
 
         if hasattr(recipes, recipe):
-            self.recipe = getattr(recipes, recipe)(debugFast=debugFast, membrane_complex=self.membrane_complex.complex)
+            self.recipe = getattr(recipes, recipe)(debugFast=debugFast, membrane_complex=self.membrane_complex.complex, full_relax=full_relax)
         elif hasattr(recipes, "Basic" + stage):
             # Fall back to Basic recipe if no specific where found
-            self.recipe = getattr(recipes, "Basic" + stage)(debugFast=debugFast, membrane_complex=self.membrane_complex.complex)
+            self.recipe = getattr(recipes, "Basic" + stage)(debugFast=debugFast, membrane_complex=self.membrane_complex.complex, full_relax=full_relax)
 
         return True
 
@@ -426,6 +490,34 @@ class Gromacs(object):
             shutil.copy(os.path.join(
                 self.repo_dir, kwargs[repo_src]),
                 repo_src)
+
+        return True
+
+    def clean_itp(self, **kwargs):
+        """
+        clean_itp: Cut a itp file to be usable later as with restraints
+        """
+        src_files = kwargs["src_files"]
+        
+        for src in src_files:
+            if os.path.exists(src):
+                with open(src, 'r') as file:
+                    lines = file.readlines()
+
+                tgt_lines = []
+                toggle_keep = True
+                for line in lines:
+                    if line.startswith("#ifdef POSRES"):
+                        toggle_keep = False
+                    
+                    if toggle_keep == True:
+                        tgt_lines.append(line)
+                    
+                    if line.startswith("#endif"):
+                        toggle_keep = True
+
+                with open(src, 'w') as file:
+                    file.writelines(tgt_lines)
 
         return True
 
@@ -549,11 +641,12 @@ class Gromacs(object):
         """
         if not os.path.isdir(kwargs["tgt_dir"]): os.mkdir(kwargs["tgt_dir"])
 
-        for src_file in kwargs["src_files"]:
-            if (os.path.isfile(os.path.join(kwargs["src_dir"], src_file))):
-                shutil.copy(os.path.join(kwargs["src_dir"], src_file),
-                            os.path.join(kwargs["tgt_dir"],
-                                         os.path.split(src_file)[1]))
+        if "src_files" in kwargs.keys():
+            for src_file in kwargs["src_files"]:
+                if (os.path.isfile(os.path.join(kwargs["src_dir"], src_file))):
+                    shutil.copy(os.path.join(kwargs["src_dir"], src_file),
+                                os.path.join(kwargs["tgt_dir"],
+                                            os.path.split(src_file)[1]))
 
         if "repo_files" in kwargs.keys():
             for repo_file in kwargs["repo_files"]:
@@ -778,6 +871,9 @@ class Wrapper(object):
                    "-po", self._setDir("mdout.mdp")]
         if "index" in kwargs.keys():
             command.extend(["-n", self._setDir(kwargs["index"])])
+
+        if "tgt_top" in kwargs.keys():
+            command.extend(["-pp", self._setDir(kwargs["tgt_top"])]) # DEBUGGING
 
         return command
 

@@ -11,7 +11,7 @@ The performed equilibration includes the following stages:
 
 |   STAGE    | RESTRAINED ATOMS        | FORCE CONSTANT       | TIME           |
 |:----------:|:-----------------------:|:--------------------:|:--------------:|
-|  -         |   -                     |kJ/(mol·nm^2)        | ns             |
+|  -         |   -                     |kJ/(molï¿½nm^2)        | ns             |
 |Minimization|   -                     | -                    |(Max. 500 steps)|
 |Equil. 1    |Protein Heavy Atoms      | 1000                 | 0.5            |
 |Equil. 2    |Protein Heavy Atoms      | 800                  | 0.5            |
@@ -26,15 +26,11 @@ In this folder you will find several files related to this simulation:
 
 INPUT:
 ------
-    - popc.itp              # Topology of the lipids  
-    - ffoplsaa_mod.itp      # Modified OPLSAA-FF, to account for lipid modifications  
-    - ffoplsaabon_mod.itp   # Modified OPLSAA-FF(bonded), to account for lipid modifications   
-    - ffoplsaanb_mod.itp    # Modified OPLSAA-FF(non-bonded), to account for lipid modifications
     - topol.tpr             # Input for the first equilibration stage
-    - topol.top             # Topology of the system
-    - protein.itp           # Topology of the protein
+    - processed.top         # Topology of the system
     - index.ndx             # Index file with appropriate groups for GROMACS
-    - prod.mdp              # Example of a parameter file to configure a production run (see TIPS)
+    - eqCA.mdp              # Example of a parameter file to configure a production run with c-alpha position restraints (see TIPS)
+    - dres.mdp              # Example of a parameter file to configure a production run with BW distance restraints (see TIPS)
 
 
 STRUCTURES:
@@ -43,6 +39,8 @@ STRUCTURES:
     - confout.gro           # Final structure of the system (see TIPS)
     - load_gpcr.pml         # Loads the initial structure and the trajectory in pymol
 
+In the "logs" subfolder, you will find the log files of mdrun:  
+    - confout{force_constant}.gro  # Final structure of the system after {force_constant} equilibration step
 
 TRAJECTORY FILES:
 -----------------
@@ -66,10 +64,12 @@ In the "reports" subfolder, you will find the following files:
 
 LOGS:
 -----
-In the "logs" subfolder, you will find the log files of mdrun:  
-    - eq_{force_constant}.log       # log of stages with restrained heavy atoms of the receptor
-    - eqCA.log                      # log of the stage with restrained C-alfa atoms of the receptor
+    - log.log                       # log of the PyMemDyn run
 
+In the "logs" subfolder, you will find the log files of mdrun:  
+    - eq_{force_constant}.log       # log of stages with restrained heavy atoms of the target
+    - md_eqCA.log                   # log of the stage with restrained C-alpha atoms of the target
+    - md_eqBW.log                   # log of the stage with distance restrained BW pairs of the target
 
 **NOTE ON GROMACS METHODS**
 To integrate  the equations of  motion we have selected  the leap-frog
@@ -87,39 +87,48 @@ explicitly stated in the Rodriguez et al. [1] publication.
 
 **TIPS**  
 
-NOTE: these tips work for GROMACS version >= 4.5 and < 5.0. For later 
-versions, adjustments are required, but the principle remains the same.
+NOTE: these tips work for GROMACS version 2021. For later versions, 
+adjustments may be required, but the principle remains the same.
 
 - If you want to configure a .tpr input file for a **production** run, you
 can use the template 'prod.mdp' file by introducing the number of 
-steps (nsteps), and thus the simulation time, you want to run.  
+steps (nsteps) and/or the time between steps (dt), you want to run.  
 
 After that, you just have to type:  
+    gmx grompp -f prod.mdp -c confout.gro -p prod.top -n index.ndx -o topol_prod.tpr
 
-    grompp -f prod.mdp -c confout.gro -p topol.top -n index.ndx -o topol_prod.tpr  
-    mdrun -s topol_prod.tpr -o traj.trr -e ener.edr -c confout.gro -g production.log -x traj_prod.xtc
+    gmx mdrun -s topol_prod.tpr -o traj.trr -e ener.edr -c confout.gro -g prod.log -x traj_prod.xtc
+
+- If you did not execute the **full_relax** protocol to relaxate your system you can run the following commands. If you wish to adjust the relaxation protocol, you can modify the template 'eqCA.mdp' (with C-alpha position restraints) or 'dres.mdp' (with Venkatakrishnan pairs distance restraints). It is highly recommended to first do a (modified) full_relax protocol prior to a **production** run.
+
+With C-alpha position restraints:
+    gmx grompp -f eqCA.mdp -c logs/confout200.gro -r logs/confout200.gro -p processed.top -n index.ndx -o topol_relax.tpr -maxwarn 1
+With BW distance restraints:
+    gmx grompp -f dres.mdp -c logs/confout200.gro -p processed.top -n index.ndx -o topol_relax.tpr -maxwarn 1
+
+    gmx mdrun -s topol_relax.tpr -o traj.trr -e ener.edr -c logs/confout200.gro -g relax.log -x traj_relax.xtc
 
 - If  you  want  to  create  a  PDB file  of  your  system  after  the
 equilibration, with the receptor centered in the box, type:  
 
-    echo 1 0 | trjconv -pbc mol -center -ur compact -f confout.gro -o confout.pdb
+    echo 1 0 | gmx trjconv -pbc mol -center -ur compact -f confout.gro -o confout.pdb
 
 - If you want to create an xmgrace graph of the root mean square
   deviation for c-alpha atoms in the 5.0 ns of simulation you can use:  
 
-    echo 3 3 | g_rms -f traj_EQ.xtc -s topol.tpr -o rmsd-calpha-vs-start.xvg
+    echo 3 3 | gmx rms -f traj_EQ.xtc -s topol.tpr -o rmsd-calpha-vs-start.xvg
 
 - You may want to get a pdb file of your last frame. You can first
 check the total time of your trajectory and then use this time to
 request the last frame with:
 
-    gmxcheck -f traj_pymol.xtc
-    echo 1 | trjconv -b 5000 -e 5000 -f traj_pymol.xtc -o last51.pdb
+    gmx check -f traj_pymol.xtc
+    echo 1 | gmx trjconv -b 5000 -e 5000 -f traj_pymol.xtc -o last51.pdb
 
 
 References
 ----------
 
-[1] Rodríguez D., Piñeiro Á. and Gutiérrez-de-Terán H.   
+[1] Rodrï¿½guez D., Piï¿½eiro ï¿½. and Gutiï¿½rrez-de-Terï¿½n H.   
 Molecular Dynamics Simulations Reveal Insights into Key Structural Elements of Adenosine Receptors   
 Biochemistry (2011), 50, 4194-208.   

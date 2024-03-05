@@ -7,7 +7,7 @@ import gromacs
 import membrane
 import protein
 import queue
-import checks
+import settings
 
 import logging
 run_logger = logging.getLogger('pymemdyn.run')
@@ -27,8 +27,6 @@ class Run(object):
 
         The queueing system is also created here to be used in certain steps.
         """
-        self.clean()
-
         self.pdb = pdb
         self.own_dir = kwargs.get("own_dir") or ""
         self.repo_dir = kwargs.get("repo_dir") or ""
@@ -37,11 +35,12 @@ class Run(object):
         self.protein = 'protein.pdb'
         self.waters = kwargs.get("waters") or ""
         self.ions = kwargs.get("ions") or ""
-        self.restraint = kwargs.get("restraint") or ""
+        self.full_relax = kwargs.get("full_relax")
+        self.restraint = kwargs.get("restraint")
         self.loop_fill = kwargs.get("loop_fill")
         self.queue = kwargs.get("queue") or ""
         self.debug = kwargs.get("debug") or False
-        self.debugFast = kwargs.get("debugFast")
+        self.debugFast = kwargs.get("debugFast") # obsolete
         
         self.logger = logging.getLogger('pymemdyn.run.Run')
   
@@ -51,7 +50,10 @@ class Run(object):
         self.logger.debug(f'self.ligand_charge = {str(self.ligand_charge)}')
         self.logger.debug(f'self.waters = {str(self.waters)}')
         self.logger.debug(f'self.ions = {str(self.ions)}')
+        self.logger.debug(f'self.full_relax = {str(self.full_relax)}')
         self.logger.debug(f'self.restraint = {str(self.restraint)}')
+
+        self.clean()
 
         # Prepare System
         self.logger.debug(f'{self.pdb} dectected.')                            
@@ -77,7 +79,7 @@ class Run(object):
         # Prepare cofactor(s)
         self.cofactors = self.ligand.split(',') + ['HOH' if self.waters else "", self.ions]
         self.cofactors = [value for value in self.cofactors if value] 
-        self.logger.debug(f'cofactors: {self.cofactors}')
+        self.logger.info(f'cofactors: {self.cofactors}')
         for index, cofactor in enumerate(self.cofactors):
             ID = cofactor
             if not cofactor:
@@ -151,42 +153,92 @@ class Run(object):
         """
         Removes all previously generated files
         """
-        to_unlink = ["#index.ndx.1#", "#index.ndx.2#", "#index.ndx.3#", 
-                     "#index.ndx.4#", "#index.ndx.5#", "#output.pdb.1#", 
-                     "#proteinopls.pdb.1#", "#proteinopls.pdb.2#", 
-                     "#proteinopls.pdb.3#", "#proteinopls.pdb.4#", 
-                     "#protpopc.pdb.1#", "#protpopc.pdb.2#" ,"#tmp.pdb.1#", 
-                     "#topol.top.1#", "#topol.top.2#", "#topol.top.3#", 
-                     "#topol.tpr.1#", "#topol.tpr.2#", "#topol.tpr.3#", 
-                     "#topol.tpr.4#", "disre.itp", "ener_EQ.edr", 
-                     "ffoplsaa_mod.itp", "ffoplsaabon_mod.itp", 
-                     "ffoplsaanb_mod.itp", "index.ndx", 
-                     "ions.itp", "ligand_ha.ndx", "MD_output.tgz", "mdout.mdp", 
-                     "mdrun.sh", "min.pdb", "output.pdb", "popc.gro", 
-                     "popc.itp", "popc.pdb", "posre.itp", "posre_lig.itp", 
-                     "posre_alo.itp","pressure.log", "pressure.xvg", 
-                     "pressure2.log", "pressure2.xvg", "protein.itp", 
-                     "protein.top", "protein_ca200.itp", "proteinopls.fasta", 
-                     "proteinopls.pdb", "proteinopls_bw.aln",
-                     "proteinopls_CA.pdb", "protpopc.pdb",
-                     "rmsd-all-atom-vs-start.xvg", 
-                     "rmsd-backbone-vs-start.xvg", "rmsd-calpha-vs-start.xvg", 
-                     "rmsf-per-residue.xvg", "spc.itp", "steep.mdp", 
-                     "temp.log", "temp.xvg", "temp2.log", "temp2.xvg", 
-                     "tmp.pdb", "tmp_proteinopls.pdb", "topol.top", 
-                     "topol.tpr", "tot_ener.log", "tot_ener.xvg", 
-                     "tot_ener2.log", "tot_ener2.xvg", "traj_EQ.xtc", 
-                     "traj_pymol.xtc", "volume.log", "volume.xvg", 
-                     "volume2.log", "volume2.xvg", "water.gro", "water.pdb"]
+        dirs_to_unlink = []
+        files_to_unlink = []
 
-        # TODO: make cleaning routine for LigParGen generated files. (Crashes on rerun if not deleted)
-        dirs_to_unlink = ["Rmin", "eq", "eqProd"]
+        self.logger.debug(f'current files/dirs: {os.listdir(self.own_dir)}')
 
-        for target in to_unlink:
-            if os.path.isfile(target): os.unlink(target)
+
+
+        template_files = os.listdir(settings.TEMPLATES_DIR)
+        generated_files = ["ener_EQ.edr", "ffoplsaanb_mod.itp", "GROMACS.log", "hexagon.pdb", "index.ndx", 
+                            "ligand_ha.ndx", "MD_output.tgz", "mdout.mdp", "mdrun.sh", "min.pdb", 
+                            "output.pdb", "popc.gro", "popc.pdb", "posre.itp", "posre_lig.itp", 
+                            "posre_alo.itp","pressure.log", "pressure.xvg", "pressure2.log", 
+                            "pressure2.xvg", "protein.pdb", "protein.itp", "protein.top", 
+                            "protein-his.pdb", "protein-modeller-his.pdb", "protein-modeller.pdb",
+                            "protein_ca200.itp", "proteinopls.fasta", "proteinopls.pdb", 
+                            "proteinopls_bw.aln", "proteinopls_CA.pdb", "protpopc.pdb",
+                            "rmsd-all-atom-vs-start.xvg", "rmsd-backbone-vs-start.xvg", 
+                            "rmsd-calpha-vs-start.xvg", "rmsf-per-residue.xvg", "temp.log", "temp.xvg", 
+                            "temp2.log", "temp2.xvg", "tmp.pdb", "tmp_proteinopls.pdb",  "topol.tpr", 
+                            "tot_ener.log", "tot_ener.xvg", "tot_ener2.log", "tot_ener2.xvg", 
+                            "traj_EQ.xtc", "traj_pymol.xtc", "volume.log", "volume.xvg", 
+                            "volume2.log", "volume2.xvg", "water.gro", "water.pdb"]
+
+        for entry in os.listdir(self.own_dir):
+            # Safeguard MD_output.tgz
+            if entry == "MD_output.tgz":
+                counter = 0
+                backup_file = f'MD_output_backup_{counter}.tgz'
+                while os.path.exists(backup_file):
+                    counter += 1
+                    backup_file = f'MD_output_backup_{counter}.tgz'
+                os.rename(entry, backup_file)
+                self.logger.debug(f'Backup: {entry} to {backup_file}')
+
+            if entry.startswith("ligpargenInput_") or entry.startswith("ligpargenOutput_"):
+                dirs_to_unlink.append(entry)
+
+            if entry in ["Rmin", "eq", "eqProd", "finalOutput"]:
+                dirs_to_unlink.append(entry)
+
+            if entry.startswith("#") and entry.endswith("#"):
+                files_to_unlink.append(entry)
+
+            if entry in template_files:
+                files_to_unlink.append(entry)
+
+            if entry in generated_files:
+                files_to_unlink.append(entry)
+
+            for lig in self.ligand.split(','):
+                if entry in [f'{lig}_backup.itp', f'{lig}_backup.pdb',
+                             #f'{lig}.ff', f'{lig}.itp', f'{lig}.pdb',         # keep {lig}.ff, {lig}.itp, {lig}.pdb to save time with re-running LigParGen
+                             f'{lig}_lpg.pdb', f'ligand_{lig}_ha.ndx', f'posre_{lig}.itp']:
+                    files_to_unlink.append(entry)
+
+            if entry in [f'{self.waters}.pdb', f'posre_{self.waters}.itp']:
+                files_to_unlink.append(entry)
+
+            if entry in [f'{self.ions}.pdb', f'posre_{self.ions}.itp']:
+                files_to_unlink.append(entry)
+            
+            if (entry.startswith("alignment_") and entry.endswith(".pir")) or \
+               (entry.startswith("posre_Protein_chain_") and entry.endswith(".itp")) or \
+               (entry.startswith("protein_") and entry.endswith(".pdb")) or \
+               (entry.startswith("protein_Protein_chain_") and entry.endswith(".itp")) or \
+               (entry.startswith("refined_") and entry.endswith(".B99990001.pdb")) or \
+               (entry.startswith("refined_") and entry.endswith(".D00000001")) or \
+               (entry.startswith("refined_") and entry.endswith(".ini")) or \
+               (entry.startswith("refined_") and entry.endswith(".rsr")) or \
+               (entry.startswith("refined_") and entry.endswith(".sch")) or \
+               (entry.startswith("refined_") and entry.endswith(".V99990001")) or \
+               (entry.startswith("seq_original_") and entry.endswith(".fasta")):  
+               files_to_unlink.append(entry)
+
+            # Safeguard self.pdb
+            if self.pdb in files_to_unlink:
+                files_to_unlink.remove(self.pdb)
+
+        self.logger.debug(f'cleaned dirs: {sorted(dirs_to_unlink)}')
+        self.logger.debug(f'cleaned files: {sorted(files_to_unlink)}')
 
         for target in dirs_to_unlink:
             if os.path.isdir(target): shutil.rmtree(target)
+
+        for target in files_to_unlink:
+            if os.path.isfile(target): os.unlink(target)
 
         return True
 
@@ -196,26 +248,17 @@ class Run(object):
         """
         if self.restraint == "bw":
             steps = ["Init", "Minimization", "Equilibration", "Relax", 
-                     "BWRelax", "BWCollectResults"]
+                    "BWRelax", "BWCollectResults"]
         elif self.restraint == "ca":
             steps = ["Init", "Minimization", "Equilibration", "Relax", 
-                     "CARelax", "CACollectResults"]
+                    "CARelax", "CACollectResults"]
+
+        self.logger.debug(f'steps: {steps}')
 
         for step in steps:
             self.logger.info('\n\n[{}/{}]: {}\n'.format(steps.index(step)+1, len(steps), step))
-            self.g.select_recipe(stage=step, debugFast=self.debugFast)
+            self.g.select_recipe(stage=step, full_relax=self.full_relax, debugFast=self.debugFast)
             self.g.run_recipe(debugFast=self.debugFast)
-
-    def light_moldyn(self):
-        """
-        This is a function to debug a run in steps
-        """
-        steps = ["BWRelax", "BWCollectResults"]
-#        steps = ["CACollectResults"]
-
-        for step in steps:
-            self.g.select_recipe(stage=step, debugFast=self.debugFast)
-            self.g.run_recipe(debugFast = self.debugFast)
 
     def check_dist(self, vector1, vector2):
         """Check distance between protein and all possible ligands (if any).

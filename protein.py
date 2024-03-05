@@ -160,7 +160,7 @@ class Protein(object):
 
     def check_number_of_chains(self):
         """
-        Determine if a PDB is a Monomer or a Dimer
+        Determine if a PDB is a Monomer or a Oligomer
         """
         chains = []
         with open(self.pdb, "r") as pdb_fp:
@@ -202,37 +202,48 @@ class Monomer(object):
         self.pdb = kwargs["pdb"]
         
         self.logger_monomer = logging.getLogger('pymemdyn.protein.Monomer')
-        self.logger_monomer.info('self.pdb in Monomer: {}'.format(self.pdb))
         if not os.path.isfile(self.pdb):
             raise IOError("File '{0}' missing".format(self.pdb))
 
         self.group = "protlig"
 
-        
         self.own_dir = kwargs['dir']
         self.loop_fill = kwargs['loopfill']
         self.chains = kwargs['chains']
 
-        self.pdb_hist = self._setRes() 
-
         self.check_protein = checks.CheckProtein(
-                pdb=self.pdb_hist,
+                pdb=self.pdb,
                 chains=self.chains, 
                 tgt='missingLoops.txt', 
                 loop_fill = self.loop_fill
                 )
-        self.missing = self.check_protein.make_ml_pir(tgt1='alignment.pir', work_dir=self.own_dir)
+        
+        self.broken_chains = self.check_protein.make_ml_pir(work_dir=self.own_dir)
+        
+        if self.broken_chains != []:
+            self.logger_monomer.info('Broken chains: {}'.format(self.broken_chains))
+            system_file = self.pdb.replace('.pdb', '-modeller.pdb')
+            system_pdbs = []
+            for chain in self.chains:
+                if chain in self.broken_chains:
+                    self.logger_monomer.debug('MODELLER input: {}'.format(self.pdb.replace('.pdb', f'_{chain}.pdb')))
+                    system_pdbs.append(self.check_protein.refine_protein(knowns=self.pdb.replace('.pdb', f'_{chain}.pdb'), chain=chain))
+                else:
+                    system_pdbs.append(self.pdb.replace('.pdb', f'_{chain}.pdb'))
+ 
+            with open(system_file, 'w') as output_file:
+                for file_idx, pdb_file in enumerate(system_pdbs):
+                    with open(pdb_file, 'r') as file:
+                        for line in file:
+                            output_file.write(line)
 
-        if self.missing:
-            new_pdb = self.check_protein.refine_protein(knowns = self.pdb_hist)
-            self.logger_monomer.info('Replacing self.pdb from {} to {}.'.format(self.pdb, new_pdb))
-            self.pdb = new_pdb
+            self.pdb = system_file
 
             # overwrite protein-his.pdb file
-            os.remove(self.pdb_hist)
-            os.rename(new_pdb, self.pdb_hist)
-               
-        self.chains = ['']      # Added empty string so length == 1
+            #os.remove(self.pdb_hist)
+            #os.rename(system_file, self.pdb_hist)
+
+        self.pdb_hist = self._setRes() 
 
         return 
 
@@ -253,11 +264,11 @@ class Monomer(object):
                     tgt.write(line.replace('HIP ','HISH'))
                 elif line.split()[3] == "CYX":
                     tgt.write(line.replace('CYX ','CYS '))
-
                 else:
                     tgt.write(line)
             else:
                 tgt.write(line)
+            
         tgt.close()
 
         
@@ -521,7 +532,7 @@ class Compound(object):
             
     def calculate_center(self):
         """
-        Determine center of the coords in the self.pdb.
+        Determine center of the coords in the self.pdb using column-based parsing.
         """
         try:
             with open(self.pdb, "r") as inf:
@@ -529,16 +540,18 @@ class Compound(object):
         except:
             with open(self, "r") as inf:
                 lines = inf.readlines()
-        
-        n = []
+
+        coords = []
         for line in lines:
-            m =  line.split()
-            if m[0] in ('ATOM', 'HETATM'):
-                n.append(m[:8])
-        matrix = np.array(n)
-        coord = matrix[:, [5, 6, 7]]
-        coord = coord.astype(float)
-        mean_coord = np.mean(coord, axis=0)
+            record_type = line[:6].strip()
+            if record_type in ('ATOM', 'HETATM'):
+                x = float(line[30:38].strip())
+                y = float(line[38:46].strip())
+                z = float(line[46:54].strip())
+                coords.append([x, y, z])
+
+        matrix = np.array(coords)
+        mean_coord = np.mean(matrix, axis=0)
         return mean_coord
 
     def correct_resid(self, pdb, resid):
@@ -653,8 +666,7 @@ class CrystalWaters(Compound):
             self.center = self.calculate_center()
             self.logger_cw.debug(f'Center of {self.pdb} at {self.center}')
         except:
-            self.logger_cw.warning('Could not calculate center of crystal waters. Please \
-                                    check crystal waters alignment manually.')        
+            self.logger_cw.warning('Could not calculate center of crystal waters. Please check crystal waters alignment manually.')        
                 
     def setWaters(self, value):
         """

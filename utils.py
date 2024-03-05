@@ -111,7 +111,7 @@ def make_cat(dir1, dir2, name):
     traj_src = [os.path.join(dir1, name)]
     traj_src.extend([os.path.join(dir1, "{0}", name).format(x)
                      for x in range(800, 0, -200)])
-    if dir2 != "":
+    if os.path.isdir(dir2):
         traj_src.extend([os.path.join(dir2, name)])
 
     return traj_src
@@ -186,50 +186,49 @@ def make_topol(template_dir = \
     
     itp_include = []  
     mol_include = []
-    add_disre = True 
     for key, value in vars(complex).items():
         # define protein topologies first
         if isinstance(value, protein.Oligomer):
             chainID = getattr(complex, key).chains
             for ID in chainID:
                 itp_include.extend([f'#include "protein_Protein_chain_{ID}.itp"',
-                                    '; Include Position restraint file',
                                     '#ifdef POSRES',
                                     f'#include "posre_Protein_chain_{ID}.itp"',
                                     '#endif'])   
                 mol_include.extend([f'Protein_chain_{ID} 1'])     
 
         elif isinstance(value, protein.Monomer):
-            itp_include.extend(['#include "protein.itp"',
-                                '; Include Position restraint file',
-                                '#ifdef POSRES',
-                                '#include "posre.itp"',
-                                '#endif'])
-            mol_include.extend(['protein_chain_A 1'])
+            chainID = getattr(complex, key).chains
+            for ID in chainID:
+                itp_include.extend(['#include "protein.itp"',
+                                    '#ifdef POSRES',
+                                    '#include "posre.itp"',
+                                    '#endif',
+                                    '#ifdef DISRE',             # DISRE (BW) only applicable for monomers
+                                    '#include "disre.itp"',
+                                    '#endif'])
+                mol_include.extend([f'Protein_chain_{ID} 1'])  
 
     for key, value in vars(complex).items():
-        # define distance restraints  
-        if add_disre == True:
-            itp_include.extend(['#ifdef DISRE',
-                                '#include "disre.itp"',
-                                '#endif'])
-            add_disre = False 
-
         # define cofactor restraints
         if isinstance(value, protein.Ligand):
             itp_include.extend([f'#include "{key}.itp"',
-                                '; Include Position restraint file',
-                                f'#include "posre_{key}.itp'])
+                                '#ifdef POSRES',
+                                f'#include "posre_{key}.itp"',
+                                '#endif'])
             mol_include.extend([f'{getattr(complex, key).ID} 1'])  
 
+        # TODO: posre ITP doesn't link to correct molecules for Ions and CrystalWaters
         if  isinstance(value, protein.Ions):
-            itp_include.extend(['; Include Position restraint file',
-                                f'#include "posre_{key}.itp'])  
+            itp_include.extend(['; posre_{key}.itp currently cannot be included"'])
+            #itp_include.extend(['; Include Position restraint file',
+            #                    f'#include "posre_{key}.itp"'])  
             mol_include.extend([f'{key} {getattr(complex, key)._n_ions}'])
 
         if isinstance(value, protein.CrystalWaters) :
-            itp_include.extend(['; Include Position restraint file',
-                                f'#include "posre_{key}.itp'])  
+            itp_include.extend(['; posre_{key}.itp currently cannot be included"'])
+            #itp_include.extend(['; Include Position restraint file',
+            #                    f'#include "posre_{key}.itp"'])  
             mol_include.extend([f'{key} {getattr(complex, key)._n_waters}'])
 
     tgt.write(t.substitute(working_dir = working_dir,
