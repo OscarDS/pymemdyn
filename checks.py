@@ -242,8 +242,8 @@ class CheckProtein():
                 # Determine which chain we are in (and how many '/'-signs we need to ignore)
                 ignore_chain_characters = self.chains.index(chain)
                 
-                start_seq_index = loop +1 - first_res_ID +1 - ignore_chain_characters  # (we ignored the beginloop)
-                end_seq_index = target - first_res_ID +1 - ignore_chain_characters
+                start_seq_index = loop - first_res_ID +1 - ignore_chain_characters  # (we ignored the beginloop)
+                end_seq_index = target - first_res_ID - ignore_chain_characters
                 self.logger.debug('\tstart: {}'.format(start_seq_index))
                 self.logger.debug('\tend:   {}\n'.format(end_seq_index))
 
