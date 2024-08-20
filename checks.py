@@ -295,7 +295,7 @@ class CheckProtein():
                     tgt1.write("\n")
 
             tgt1.write(f"\n>P1;refined_{chain}\n")
-            tgt1.write("sequence:::::::::\n")
+            tgt1.write(f"sequence:::{chain}::{chain}::::\n")
 
             new_line = 0
             for aa in mod_seq:
