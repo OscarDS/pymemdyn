@@ -295,7 +295,7 @@ class CheckProtein():
                     tgt1.write("\n")
 
             tgt1.write(f"\n>P1;refined_{chain}\n")
-            tgt1.write(f"sequence:::{chain}::{chain}::::\n")
+            tgt1.write(f"sequence:::::::::\n")
 
             new_line = 0
             for aa in mod_seq:
@@ -341,5 +341,17 @@ class CheckProtein():
 
         # Get new file name
         refined_pdb = a.get_model_filename(root_name=f'refined_{kwargs["chain"]}', id1=9999, id2=1, file_ext='.pdb')
-        
+
+        # set chain ID
+        with open(refined_pdb, "r") as src:
+            tgt_prot = open('refined_tmp.pdb', "w")
+            for line in src:
+                if line.startswith("ATOM"):
+                    # correct protein chain IDs
+                    if line[21] != kwargs["chain"]:
+                        line = line[:21] + kwargs["chain"] + line[22:]   
+                tgt_prot.write(line) 
+ 
+        os.rename('refined_tmp.pdb', refined_pdb)
+
         return refined_pdb
