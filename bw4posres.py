@@ -74,7 +74,7 @@ class Run(object):
         self.pdb = pdb
         self.own_dir = kwargs.get("own_dir") or ""
         self.clustal_bin = s.CLUSTAL_BIN
-        self.repo_dir = s.TEMPLATES_DIR
+        self.repo_dir = kwargs.get("repo_dir") or s.TEMPLATES_DIR
         self.loggerbw = logging.getLogger('pymemdyn.bw4posres.Run')
 
     def pdb2fas(self):
