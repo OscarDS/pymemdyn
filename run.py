@@ -8,6 +8,7 @@ import membrane
 import protein
 import queue
 import settings
+import forcefield_defaults
 
 import logging
 run_logger = logging.getLogger('pymemdyn.run')
@@ -169,7 +170,6 @@ class Run(object):
         self.logger.debug(f'current files/dirs: {os.listdir(self.own_dir)}')
 
 
-
         template_files = os.listdir(self.repo_dir)
         generated_files = ["ener_EQ.edr", "ffoplsaanb_mod.itp", "GROMACS.log", "hexagon.pdb", "index.ndx", 
                             "ligand_ha.ndx", "MD_output.tgz", "mdout.mdp", "mdrun.sh", "min.pdb", 
@@ -256,6 +256,14 @@ class Run(object):
         """
         Run all steps in a molecular dynamics simulation of a membrane protein
         """
+
+        # pdb2gmx looks for <ff_name>.ff in the run folder first before checking on gromacs/share/top
+        # used for oplsaam forcefield (oplsaam.ff) and amber14sb (amber14sb.ff), which are not present in the gromacs2023 version
+        ff_name = f"{self.proteinforcefield}.ff"
+        ff_dir = os.path.join(forcefield_defaults.get_forcefield_defaults(self.proteinforcefield)["templates_dir"], ff_name)
+        if os.path.isdir(ff_dir) and not os.path.isdir(ff_name):
+            shutil.copytree(ff_dir, ff_name)
+
         if self.restraint == "bw":
             steps = ["Init", "Minimization", "Equilibration", "Relax", 
                     "BWRelax", "BWCollectResults"]

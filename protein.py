@@ -257,7 +257,7 @@ class Monomer(object):
         tgt = open(self.pdb.replace(".pdb", "-his.pdb"), "w")
         self.pdb_his = tgt.name
         
-        is_opls = self.proteinforcefield and self.proteinforcefield.lower() == "oplsaa"
+        is_opls = self.proteinforcefield and self.proteinforcefield.lower() in ["oplsaa","oplsaam"]
 
         for line in open(self.pdb, "r"):
             if len(line.split()) > 3 and is_opls:

@@ -16,27 +16,30 @@ class Membrane(object):
         else:
             repo_dir = kwargs.get("repo_dir") or gromacs.Wrapper().repo_dir
 
-        # Select bilayer PDB based on lipid forcefield
+        # Bilayer PDB and sizes (Angstrom) selected by lipid forcefield.
+        # x, y, zw: box of the bilayer with waters
+        # z: bilayer without waters (max - min z coordinate of the lipids)
         bilayer_map = {
-            "berger": "x4bilayer.pdb",
-            "amberlipid21": "lipid21bilayer.pdb"
+            "berger": {"pdb": "x4bilayer.pdb",
+                       "x": 61.842, "y": 61.842, "zw": 154.053,
+                       "z": 57.78},   # Membrane thickness: 39.71
+            "amberlipid21": {"pdb": "lipid21bilayer.pdb",
+                             "x": 64.329, "y": 64.329, "zw": 153.242,
+                             "z": 56.36}   # Membrane thickness: 38.76
         }
-        bilayer_file = bilayer_map.get(lipidforcefield.lower(), "x4bilayer.pdb")
         
+        # Unknown lipid forcefield: fall back to the Berger bilayer
+        bilayer = bilayer_map.get(lipidforcefield.lower(), bilayer_map["berger"])
+
         if "pdb" not in kwargs.keys():
-            self.pdb = os.path.join(repo_dir, bilayer_file)
+            self.pdb = os.path.join(repo_dir, bilayer["pdb"])
         else:
             self.pdb = kwargs["pdb"]
 
-        #self.bilayer_x = 61.842  # xbilayer berger
-        #self.bilayer_y = 61.842  # ybilayer berger
-        #self.bilayer_zw = 154.053  # hbilayerw i.e. with waters berger
-        #self.bilayer_z = 57.78   # zbilayer i.e. without waters (max - min coordinate of bilayer in the Z axis) Berger. Actual membrane thickness: 39.71
-        
-        self.bilayer_x = 64.329  # xbilayer amber 63.908
-        self.bilayer_y = 64.329  # ybilayer amber 63.908
-        self.bilayer_zw = 153.242  # hbilayerw i.e. with waters amber 147.557
-        self.bilayer_z = 56.36   # zbilayer i.e. without waters amber. Membrane thickness: 38.76
+        self.bilayer_x = bilayer["x"]    # xbilayer
+        self.bilayer_y = bilayer["y"]    # ybilayer
+        self.bilayer_zw = bilayer["zw"]  # hbilayerw i.e. with waters
+        self.bilayer_z = bilayer["z"]    # zbilayer i.e. without waters
         self.set_nanom()
 
     def set_nanom(self):

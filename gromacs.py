@@ -967,7 +967,7 @@ class Wrapper(object):
         """
         return ["-p", self._setDir(kwargs["top"]),
                 "-i", self._setDir("posre.itp"),
-                "-ignh", "-ff", self.proteinforcefield, "-water", self.waterforcefield]
+                "-ignh", "-ff", self.proteinforcefield, "-water", self.waterforcefield.split("_")[0]]
 
     def _mode_solvate(self, kwargs):
         '''

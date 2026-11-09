@@ -3,7 +3,7 @@
 $itp_includes
 #include "${working_dir}popc.itp"
 #include "ions.itp"
-#include "tip3p.itp"
+#include "water.itp"
 [ system ]
 ; Name
 Membrane protein

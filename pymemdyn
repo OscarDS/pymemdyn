@@ -63,8 +63,8 @@ if __name__ == "__main__":
     parser.add_argument('--res',
                         dest = "restraint",
                         help = "Position restraints during MD production run. Options: bw \
-            (Ballesteros-Weinstein Restrained Relaxation - default), ca (C-Alpha Restrained \
-            Relaxation)",
+            (Ballesteros-Weinstein Restrained Relaxation), ca (C-Alpha Restrained \
+            Relaxation - default)",
                         default = "ca")
                         
     parser.add_argument('-f', "--loop_fill",
@@ -85,15 +85,15 @@ if __name__ == "__main__":
     parser.add_argument('--proteinFF',
                         dest = "proteinforcefield",
                         required = True,
-                        help = "Protein forcefield. Fully compatible options are oplsaa, amber14SB and CHARMM36m. Also accepts provided forcefield files if present in the working directory or in your GROMACS installation (see gromacs pdb2gmx documentation)")
+                        help = "Protein forcefield. Fully compatible options are oplsaa, oplsaam, amber14sb (see forcefield_defaults.py). Also accepts provided forcefield files if present in the working directory or in your GROMACS installation (see gromacs pdb2gmx documentation)")
     parser.add_argument('--waterFF',
                         dest = "waterforcefield",
                         default = "",
-                        help = "Water forcefield. Default options are SPC for OPLS-AA protein and tip3p for AMBER and CHARMM forcefields")
+                        help = "Water forcefield. Default options are spc for oplsaa protein, tip3p_opls for oplsaam protein and tip3p_amber for amber14sb protein")
     parser.add_argument('--lipidFF',
                         dest = "lipidforcefield",
                         default = "",
-                        help = "Lipid forcefield. Default options are Berger united atom for OPLS-AA, Amber Lipid21 for AMBER and CHARMM for CHARMM forcefields")
+                        help = "Lipid forcefield. Default options are berger united atom for oplsaa and oplsaam, amberLipid21 for amber14sb forcefields")
     parser.add_argument('--ligandFF',
                         dest = "ligandforcefield",
                         default = "",

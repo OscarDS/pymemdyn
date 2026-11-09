@@ -12,18 +12,27 @@ FORCEFIELD_DEFAULTS = {
         "templates_dir": os.path.join(TEMPLATES_ROOT, "oplsaa"),
         "ff_nb": os.path.join(TEMPLATES_ROOT, "oplsaa/ffoplsaanb_base.itp"),
         "set_grompp_files": { "steep.mdp": "steep.mdp",
-                                        "ff_files": ["ions.itp", "ffoplsaa_base.itp", "ffoplsaabon_mod.itp","ffoplsaa_mod.itp", "ffoplsaanb_lip.itp"]},
+                                        "ff_files": ["ions.itp", "spc.itp", "ffoplsaanb_base.itp", "ffoplsaabon_mod.itp","ffoplsaa_mod.itp", "ffoplsaanb_lip.itp"]},
+    },
+    "oplsaam": {
+        "proteinff": "oplsaam",
+        "waterff": "tip3p_opls",
+        "lipidff": "berger",
+        "ligandff": "ligpargen",
+        "templates_dir": os.path.join(TEMPLATES_ROOT, "oplsaam"),
+        "ff_nb": os.path.join(TEMPLATES_ROOT, "oplsaam/ffoplsaamnb_base.itp"),
+        "set_grompp_files": { "steep.mdp": "steep.mdp",
+                             "ff_files": ["ions.itp", "tip3p_opls.itp", "ffoplsaamnb_base.itp", "ffoplsaambon_mod.itp", "ffoplsaam_mod.itp", "ffoplsaamnb_lip.itp"]}
     },
     "amber14sb": {
         "proteinff": "amber14sb",
-        "waterff": "tip3p",
+        "waterff": "tip3p_amber",
         "lipidff": "amberlipid21",
         "ligandff": "openff-2.3.0.offxml",
         "templates_dir": os.path.join(TEMPLATES_ROOT, "amber14sb"),
         "ff_nb": os.path.join(TEMPLATES_ROOT, "amber14sb/ffnonbonded.itp"),
         "set_grompp_files": { "steep.mdp": "steep.mdp",
-                             "ff_files": ["ions.itp", "ffbonded.itp", "forcefield.itp", "amberlipid21_atomtypes.itp"]
-                             }
+                             "ff_files": ["ions.itp", "tip3p_amber.itp", "ffbonded.itp", "forcefield.itp", "amberlipid21_atomtypes.itp"]}
     }
 }
 
@@ -39,13 +48,18 @@ LIPIDFF_TEMPLATES = {
 }
 
 WATERFF_TEMPLATES = {
+    # The chosen water file is copied as water.itp, which every topol.top includes.
     "spc": {
         "templates_dir": os.path.join(TEMPLATES_ROOT, "water"),
-        "set_grompp_files": { "spc.itp": "spc.itp" }
+        "set_grompp_files": {"water.itp": "spc.itp"}
     },
-    "tip3p": {
+    "tip3p_opls": {
         "templates_dir": os.path.join(TEMPLATES_ROOT, "water"),
-        "set_grompp_files": { "tip3p.itp": "tip3p.itp" }
+        "set_grompp_files": {"water.itp": "tip3p_opls.itp"}
+    },
+    "tip3p_amber": {
+        "templates_dir": os.path.join(TEMPLATES_ROOT, "water"),
+        "set_grompp_files": {"water.itp": "tip3p_amber.itp"}
     }
 }
 

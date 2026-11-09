@@ -31,8 +31,8 @@ tau_t               =  0.1   0.1
 tc-grps             =  Protein non-Protein   ; coupling groups
 ref_t               =  310   310      
 
-Pcoupl              =  Parrinello-Rahman ; barostat
-tau_p               =  2.0          2.0
+Pcoupl              =  C-rescale ; barostat
+tau_p               =  5.0
 compressibility     =  4.5e-5       4.5e-5
 ref_p               =  1.0          1.0
 pcoupltype          =  semiisotropic 
